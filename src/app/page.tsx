@@ -220,7 +220,7 @@ function PublicHome({ authError }: { authError: boolean }) {
             </p>
             <h1 className="max-w-2xl text-5xl font-black leading-none text-white md:text-7xl">Slime Score 2026</h1>
             <p className="mt-4 max-w-xl text-lg font-semibold leading-8 text-blue-100">
-              Voorspel alle WK-wedstrijden, speel in je eigen subpoules en klim in de ranglijst.
+              Voorspel de groepsduels, kies wie ver komt en klim met je eigen poules in de ranglijst.
             </p>
           </div>
           <Image
