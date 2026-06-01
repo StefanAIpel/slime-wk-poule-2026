@@ -13,9 +13,12 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get("next") ?? "/?login=gelukt";
   const supabase = await createClient();
 
-  if (tokenHash && type) {
-    const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
-    if (!error) return NextResponse.redirect(`${origin}${next}`);
+  if (tokenHash) {
+    const typesToTry = Array.from(new Set([type, "signup", "magiclink", "email"].filter(Boolean) as EmailOtpType[]));
+    for (const otpType of typesToTry) {
+      const { error } = await supabase.auth.verifyOtp({ type: otpType, token_hash: tokenHash });
+      if (!error) return NextResponse.redirect(`${origin}${next}`);
+    }
   }
 
   if (code) {
