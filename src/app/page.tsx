@@ -1,4 +1,5 @@
 import { CalendarDays, Gamepad2, Share2, Sparkles, Trophy, Users } from "lucide-react";
+import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { LoginForm } from "@/components/login-form";
@@ -17,14 +18,19 @@ type HomeLeaderboardRow = {
   profiles: { nickname: string | null; team_name: string | null } | null;
 };
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ auth?: string; login?: string; profiel?: string }>;
+}) {
+  const params = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return <PublicHome />;
+    return <PublicHome authError={params.auth === "fout"} />;
   }
 
   const [{ data: profile }, { count: predictionCount }, { data: memberships }, { data: leaderboard }, { data: score }] =
@@ -42,9 +48,29 @@ export default async function Home() {
 
   if (!profile?.nickname || !profile.team_name) {
     return (
-      <main className="page-shell grid min-h-screen content-center gap-6">
-        <Brand />
-        <ProfileForm />
+      <main className="page-shell grid min-h-screen gap-6 md:grid-cols-[0.85fr_1fr] md:content-center md:items-center">
+        <section className="grid gap-5">
+          <Brand />
+          <Image
+            className="w-full max-w-[360px] rounded-3xl shadow-2xl shadow-black/30"
+            src="/icon.png"
+            alt="Slime Score app icon"
+            width={512}
+            height={512}
+            priority
+          />
+        </section>
+        <section className="grid gap-4">
+          <ProfileForm />
+          <div className="panel p-4">
+            <h2 className="text-xl font-black text-[#081634]">Na deze stap</h2>
+            <div className="mt-3 grid gap-2 text-sm font-bold leading-6 text-[#48617f]">
+              <p>1. Vul je groepswedstrijden in.</p>
+              <p>2. Kies je landen voor de knock-outfase.</p>
+              <p>3. Maak of join een subpoule met een code.</p>
+            </div>
+          </div>
+        </section>
       </main>
     );
   }
@@ -72,7 +98,7 @@ export default async function Home() {
             <div>
               <h1 className="text-3xl font-black leading-tight md:text-5xl">Jouw Slime Score in een helder overzicht.</h1>
               <p className="mt-2 max-w-xl text-base font-semibold text-blue-100">
-                Vul scores en rondekeuzes in zonder gedoe. Je kunt alles aanpassen tot de aftrap op{" "}
+                Vul je scores en rondekeuzes op één plek in. Je kunt alles aanpassen tot de aftrap op{" "}
                 {new Intl.DateTimeFormat("nl-NL", {
                   timeZone: "Europe/Amsterdam",
                   dateStyle: "long",
@@ -182,29 +208,51 @@ export default async function Home() {
   );
 }
 
-function PublicHome() {
+function PublicHome({ authError }: { authError: boolean }) {
   return (
-    <main className="page-shell grid min-h-screen gap-6 md:grid-cols-[1fr_420px] md:items-center">
+    <main className="page-shell grid min-h-screen gap-6 md:grid-cols-[1fr_440px] md:items-center">
       <section className="grid gap-5">
         <Brand />
-        <div>
-          <h1 className="max-w-2xl text-5xl font-black leading-none text-white md:text-7xl">Slime Score 2026</h1>
-          <p className="mt-4 max-w-xl text-lg font-semibold leading-8 text-blue-100">
-            Snel aanmelden, overzichtelijk voorspellen en samen spelen in eigen poules met vrienden, familie of
-            collega&apos;s. Je houdt je scores, ranglijsten en groepsberichten op een plek bij.
-          </p>
+        <div className="grid gap-5 lg:grid-cols-[1fr_220px] lg:items-end">
+          <div>
+            <p className="mb-3 inline-flex rounded-full bg-white/12 px-3 py-1 text-sm font-black text-[#ffd44d]">
+              WK 2026 - USA, Canada en Mexico
+            </p>
+            <h1 className="max-w-2xl text-5xl font-black leading-none text-white md:text-7xl">Slime Score 2026</h1>
+            <p className="mt-4 max-w-xl text-lg font-semibold leading-8 text-blue-100">
+              Voorspel alle WK-wedstrijden, speel in je eigen subpoules en klim in de ranglijst.
+            </p>
+          </div>
+          <Image
+            className="hidden w-full rounded-3xl shadow-2xl shadow-black/30 lg:block"
+            src="/icon.png"
+            alt="Slime Score app icon"
+            width={512}
+            height={512}
+            priority
+          />
         </div>
         <div className="grid gap-2 sm:grid-cols-3">
-          <div className="chip bg-white/10 text-white">Eigen scorekaart</div>
-          <div className="chip bg-white/10 text-white">Subpoules</div>
-          <div className="chip bg-white/10 text-white">WK-statistieken</div>
+          <div className="chip bg-white/10 text-white">72 groepsduels</div>
+          <div className="chip bg-white/10 text-white">Eigen poules</div>
+          <div className="chip bg-white/10 text-white">Live ranglijst</div>
         </div>
-        <a href="#login" className="button-primary w-fit">
-          <Share2 aria-hidden="true" className="size-5" />
-          Start makkelijk
-        </a>
+        <div className="flex flex-wrap gap-3">
+          <a href="#login" className="button-primary">
+            <Share2 aria-hidden="true" className="size-5" />
+            Doe mee
+          </a>
+          <a href="/schema" className="button-plain">
+            Bekijk schema
+          </a>
+        </div>
       </section>
       <section id="login" className="grid gap-4">
+        {authError ? (
+          <div className="panel border-red-200 bg-red-50 p-4 font-black text-red-800">
+            Deze inloglink is verlopen of al gebruikt. Vraag hieronder een nieuwe link aan.
+          </div>
+        ) : null}
         <div className="hero-score panel grid gap-4 p-5">
           <div className="relative z-[1]">
             <div className="flex items-center gap-2 text-sm font-black uppercase tracking-normal text-[#102c77]">
@@ -221,12 +269,12 @@ function PublicHome() {
         </div>
         <LoginForm />
         <div className="panel p-4">
-          <h2 className="text-xl font-black text-[#081634]">Wat zit erin?</h2>
-          <ul className="mt-3 grid gap-2 text-sm font-semibold leading-6 text-[#48617f]">
-            <li>Eigen poule met deelcode voor WhatsApp.</li>
-            <li>Totale ranglijst en subpouleranking op beste 4 spelers.</li>
-            <li>Scores, rondes, kampioen, topscorer en lichte ironische statistieken.</li>
-          </ul>
+          <h2 className="text-xl font-black text-[#081634]">Meedoen in drie stappen</h2>
+          <div className="mt-3 grid gap-2 text-sm font-bold leading-6 text-[#48617f]">
+            <p>1. Open je inloglink.</p>
+            <p>2. Kies je bijnaam en teamnaam.</p>
+            <p>3. Vul je WK-scorekaart in en deel je poulecode.</p>
+          </div>
         </div>
       </section>
     </main>

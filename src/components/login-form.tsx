@@ -31,7 +31,7 @@ export function LoginForm() {
     }
 
     setStatus("sent");
-    setMessage("Check je mail. De inloglink is eenmalig en je hoeft geen wachtwoord te onthouden.");
+    setMessage("Check je mail en open de link. Daarna kom je hier terug om je bijnaam en teamnaam te kiezen.");
   }
 
   return (
@@ -54,7 +54,7 @@ export function LoginForm() {
         {status === "loading" ? "Mail wordt verstuurd" : "Stuur inloglink"}
       </button>
       <p aria-live="polite" className={`text-sm font-semibold ${status === "error" ? "text-red-700" : "text-[#174176]"}`}>
-        {message || "Alleen e-mail. Daarna kies je een bijnaam en teamnaam."}
+        {message || "Geen wachtwoord nodig. Je krijgt een eenmalige link per e-mail."}
       </p>
     </form>
   );

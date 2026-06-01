@@ -4,8 +4,13 @@ export function ProfileForm() {
   return (
     <form action={saveProfile} className="panel grid gap-3 p-4">
       <div>
-        <h2 className="text-2xl font-black text-[#081634]">Bijna klaar</h2>
-        <p className="mt-1 text-sm font-semibold text-[#48617f]">Nog twee velden, meer vragen we niet.</p>
+        <div className="mb-3 inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-black text-[#0f7a39]">
+          Inloggen gelukt
+        </div>
+        <h2 className="text-2xl font-black text-[#081634]">Maak je scorekaart af</h2>
+        <p className="mt-1 text-sm font-semibold text-[#48617f]">
+          Kies hoe je zichtbaar bent in ranglijsten en poules. Daarna kun je direct voorspellen.
+        </p>
       </div>
       <label className="grid gap-2 text-sm font-black text-[#081634]">
         Bijnaam

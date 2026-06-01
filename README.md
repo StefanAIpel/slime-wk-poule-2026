@@ -41,17 +41,26 @@ supabase db push
 
 ## Uitslagen syncen
 
-De route `/api/sync-results` accepteert server-side updates:
+De route `/api/sync-results` accepteert server-side updates voor uitslagen, ronde-uitkomsten en bonusfeiten:
 
 ```json
 {
   "results": [
     { "id": 1, "home_score": 2, "away_score": 1, "status": "finished" }
-  ]
+  ],
+  "stage_results": {
+    "round32": ["NED", "BRA"],
+    "champion": ["NED"]
+  },
+  "facts": {
+    "top_scorers": ["Memphis Depay"],
+    "total_goals": 171,
+    "penalty_shootouts_ko": 4
+  }
 }
 ```
 
-Authenticatie via `x-result-sync-secret`.
+Authenticatie via `x-result-sync-secret`. Na elke update worden de ranglijsten opnieuw doorgerekend.
 
 ## Onderzoek
 

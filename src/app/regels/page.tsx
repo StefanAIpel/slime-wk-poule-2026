@@ -92,9 +92,8 @@ export default function RulesPage() {
             <h2 className="text-2xl font-black text-[#081634]">Data en uitslagen</h2>
           </div>
           <p className="mt-4 text-sm font-semibold leading-7 text-[#48617f]">
-            De app staat op Supabase met RLS: gebruikers zien en wijzigen hun eigen voorspellingen, teams en wedstrijden
-            zijn publiek leesbaar. Uitslagen kunnen via een beveiligde sync-route worden bijgewerkt. Goedkope opties om
-            te koppelen zijn API-Football, football-data.org of Sportmonks, afhankelijk van dekking en prijs rond WK 2026.
+            Je voorspellingen zijn privé tot de deadline. Zodra uitslagen binnenkomen, wordt de ranglijst opnieuw
+            berekend: eerst de wedstrijdpunten, daarna rondekeuzes, kampioen en bonusvragen.
           </p>
           <a className="button-secondary mt-4" href={SLIME_GAME_URL} target="_blank" rel="noopener noreferrer">
             Bonusgame openen

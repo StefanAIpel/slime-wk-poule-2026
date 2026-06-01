@@ -1,3 +1,5 @@
+import { matchScoring, specialScoring, stageScoring } from "@/lib/scoring";
+
 export const ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00+02:00";
 export const POST_GROUP_WINDOW_START_ISO = "2026-06-28T00:00:00+02:00";
 export const POST_GROUP_DEADLINE_ISO = "2026-06-28T21:00:00+02:00";
@@ -9,19 +11,19 @@ export const POST_GROUP_DEADLINE = new Date(POST_GROUP_DEADLINE_ISO);
 export const SLIME_GAME_URL = "https://slime-wk2026.netlify.app";
 
 export const scoringRules = [
-  { label: "Exacte uitslag", points: 12 },
-  { label: "Juiste winnaar of gelijkspel", points: 5 },
-  { label: "Juiste doelsaldo", points: 2 },
-  { label: "Per juist teamdoelpunt", points: 1 },
-  { label: "Land goed in volgende ronde", points: 8 },
-  { label: "Land goed in achtste finale", points: 10 },
-  { label: "Land goed in kwartfinale", points: 14 },
-  { label: "Land goed in halve finale", points: 18 },
-  { label: "Finalist goed", points: 24 },
-  { label: "Wereldkampioen goed", points: 35 },
-  { label: "Topscorer goed", points: 20 },
-  { label: "Totaal aantal doelpunten dichtbij", points: 10 },
-  { label: "Ironische statistiek goed", points: 8 },
+  { label: "Exacte uitslag", points: matchScoring.exact },
+  { label: "Juiste winnaar of gelijkspel", points: matchScoring.outcome },
+  { label: "Juiste doelsaldo", points: matchScoring.goalDifference },
+  { label: "Per juist teamdoelpunt", points: matchScoring.teamGoal },
+  { label: "Land goed in laatste 32", points: stageScoring.round32 },
+  { label: "Land goed in achtste finale", points: stageScoring.round16 },
+  { label: "Land goed in kwartfinale", points: stageScoring.quarterfinal },
+  { label: "Land goed in halve finale", points: stageScoring.semifinal },
+  { label: "Finalist goed", points: stageScoring.finalists },
+  { label: "Wereldkampioen goed", points: stageScoring.champion },
+  { label: "Topscorer goed", points: specialScoring.topScorer },
+  { label: "Totaal aantal doelpunten exact", points: specialScoring.totalGoalsExact },
+  { label: "Bonusstatistiek exact", points: specialScoring.exactStat },
 ];
 
 export const stageLabels: Record<string, string> = {

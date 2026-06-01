@@ -1,8 +1,9 @@
-import { ClipboardList, Home, ListChecks, MoreHorizontal, Trophy, Users } from "lucide-react";
+import { CalendarDays, ClipboardList, Home, ListChecks, MoreHorizontal, Trophy, Users } from "lucide-react";
 
 const links = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/voorspellingen", label: "Voorspellen", icon: ClipboardList },
+  { href: "/schema", label: "Schema", icon: CalendarDays },
+  { href: "/voorspellingen", label: "Voorspel", icon: ClipboardList },
   { href: "/poules", label: "Poules", icon: Users },
   { href: "/ranglijst", label: "Ranglijst", icon: Trophy },
   { href: "/regels", label: "Regels", icon: ListChecks },
