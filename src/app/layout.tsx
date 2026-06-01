@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Slime WK Poule 2026",
-  description: "Nederlandstalige WK 2026 voetbalpoule met e-mail login, subpoules en makkelijke voorspellingen.",
+  title: "Slime Score 2026",
+  description: "Nederlandstalige WK 2026 voetbalpoule met e-mail login, subpoules en overzichtelijke voorspellingen.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

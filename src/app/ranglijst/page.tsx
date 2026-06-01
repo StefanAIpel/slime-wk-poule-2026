@@ -53,7 +53,7 @@ export default async function RankingPage() {
 
       <section className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">
         <article className="panel overflow-hidden">
-          <div className="flex items-center gap-3 bg-[#064ed6] p-4 text-white">
+          <div className="wc-header flex items-center gap-3 p-4 text-white">
             <Trophy aria-hidden="true" className="size-7" />
             <h2 className="text-2xl font-black">Wereldranglijst</h2>
           </div>
@@ -74,7 +74,7 @@ export default async function RankingPage() {
         </article>
 
         <article className="panel overflow-hidden">
-          <div className="flex items-center gap-3 bg-[#25a84a] p-4 text-white">
+          <div className="flex items-center gap-3 bg-[#128f47] p-4 text-white">
             <Users aria-hidden="true" className="size-7" />
             <h2 className="text-2xl font-black">Subpoules</h2>
           </div>
@@ -102,7 +102,7 @@ export default async function RankingPage() {
 }
 
 function RankBadge({ rank }: { rank: number }) {
-  const color = rank === 1 ? "bg-[#f2b705]" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-orange-600" : "bg-[#064ed6]";
+  const color = rank === 1 ? "bg-[#ffb000]" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-[#ff7a00]" : "bg-[#0866e8]";
   return (
     <div className={`grid size-10 place-items-center rounded-full ${color} text-sm font-black text-white`}>
       {rank <= 3 ? <Medal aria-hidden="true" className="size-5" /> : rank}

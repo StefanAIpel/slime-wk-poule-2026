@@ -1,4 +1,4 @@
-# Slime WK Poule 2026
+# Slime Score 2026
 
 Nederlandstalige WK 2026-poule app, mobiel eerst gebouwd met Next.js, Supabase en Vercel.
 

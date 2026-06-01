@@ -70,7 +70,7 @@ export default async function PredictionsPage({
 
         {Array.from(groupedMatches.entries()).map(([group, groupMatches]) => (
           <section key={group} className="panel overflow-hidden">
-            <div className="bg-[#064ed6] px-4 py-3 text-white">
+            <div className="wc-header px-4 py-3 text-white">
               <h2 className="text-xl font-black">Groep {group}</h2>
             </div>
             <div className="divide-y divide-slate-200">

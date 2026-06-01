@@ -1,4 +1,4 @@
-import { CalendarDays, Gamepad2, Share2, Trophy, Users } from "lucide-react";
+import { CalendarDays, Gamepad2, Share2, Sparkles, Trophy, Users } from "lucide-react";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { LoginForm } from "@/components/login-form";
@@ -62,7 +62,7 @@ export default async function Home() {
             <CalendarDays aria-hidden="true" className="size-4" />
             Invullen tot 11 juni 21:00
           </span>
-          <span className="chip bg-[#25a84a] text-white">{displayName(profile)}</span>
+      <span className="chip bg-[#128f47] text-white">{displayName(profile)}</span>
         </div>
       </header>
 
@@ -70,7 +70,7 @@ export default async function Home() {
         <div className="dark-panel p-5 text-white">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-black leading-tight md:text-5xl">Jouw WK-poule in een helder overzicht.</h1>
+              <h1 className="text-3xl font-black leading-tight md:text-5xl">Jouw Slime Score in een helder overzicht.</h1>
               <p className="mt-2 max-w-xl text-base font-semibold text-blue-100">
                 Vul scores en rondekeuzes in zonder gedoe. Je kunt alles aanpassen tot de aftrap op{" "}
                 {new Intl.DateTimeFormat("nl-NL", {
@@ -82,7 +82,7 @@ export default async function Home() {
               </p>
             </div>
             <div className="hidden rounded-lg bg-white/10 p-3 md:block">
-              <Trophy aria-hidden="true" className="size-10 text-[#f2b705]" />
+              <Trophy aria-hidden="true" className="size-10 text-[#ffd44d]" />
             </div>
           </div>
           <div className="mt-6 rounded-lg bg-[#061b47] p-4">
@@ -188,14 +188,14 @@ function PublicHome() {
       <section className="grid gap-5">
         <Brand />
         <div>
-          <h1 className="max-w-2xl text-5xl font-black leading-none text-white md:text-7xl">Slime WK Poule 2026</h1>
+          <h1 className="max-w-2xl text-5xl font-black leading-none text-white md:text-7xl">Slime Score 2026</h1>
           <p className="mt-4 max-w-xl text-lg font-semibold leading-8 text-blue-100">
             Snel aanmelden, overzichtelijk voorspellen en samen spelen in eigen poules met vrienden, familie of
             collega&apos;s. Je houdt je scores, ranglijsten en groepsberichten op een plek bij.
           </p>
         </div>
         <div className="grid gap-2 sm:grid-cols-3">
-          <div className="chip bg-white/10 text-white">Eigen overzicht</div>
+          <div className="chip bg-white/10 text-white">Eigen scorekaart</div>
           <div className="chip bg-white/10 text-white">Subpoules</div>
           <div className="chip bg-white/10 text-white">WK-statistieken</div>
         </div>
@@ -205,6 +205,20 @@ function PublicHome() {
         </a>
       </section>
       <section id="login" className="grid gap-4">
+        <div className="hero-score panel grid gap-4 p-5">
+          <div className="relative z-[1]">
+            <div className="flex items-center gap-2 text-sm font-black uppercase tracking-normal text-[#102c77]">
+              <Sparkles aria-hidden="true" className="size-4 text-[#ff7a00]" />
+              WK 2026 scorekaart
+            </div>
+            <p className="mt-2 text-3xl font-black leading-none text-[#081634]">Voorspel, deel, stijg.</p>
+          </div>
+          <div className="score-podium relative z-[1]" aria-hidden="true">
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+          </div>
+        </div>
         <LoginForm />
         <div className="panel p-4">
           <h2 className="text-xl font-black text-[#081634]">Wat zit erin?</h2>
