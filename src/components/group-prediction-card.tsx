@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { TeamFlag } from "@/components/team-flag";
 import { formatAmsterdam } from "@/lib/format";
 import { calculateGroupStandings, type ScoreLookup } from "@/lib/group-standings";
 import type { MatchWithTeams } from "@/lib/types";
@@ -51,8 +52,10 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
                     Wedstrijd {match.id} - {formatAmsterdam(match.starts_at)} - {match.venue}
                   </div>
                   <div className="mt-1 flex flex-wrap items-center gap-2 text-lg font-black text-[#081634]">
+                    <TeamFlag code={match.home_code} name={match.home?.name_nl} />
                     <span>{match.home?.name_nl ?? match.home_code}</span>
                     <span className="text-[#48617f]">tegen</span>
+                    <TeamFlag code={match.away_code} name={match.away?.name_nl} />
                     <span>{match.away?.name_nl ?? match.away_code}</span>
                   </div>
                 </div>
@@ -105,7 +108,10 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
                 }`}
               >
                 <span>{index + 1}</span>
-                <span>{standing.code}</span>
+                <span className="flex items-center gap-1.5">
+                  <TeamFlag code={standing.code} size="sm" />
+                  {standing.code}
+                </span>
                 <span>{standing.points}</span>
                 <span>{standing.goalDifference > 0 ? `+${standing.goalDifference}` : standing.goalDifference}</span>
                 <span>

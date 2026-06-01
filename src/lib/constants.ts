@@ -11,19 +11,19 @@ export const POST_GROUP_DEADLINE = new Date(POST_GROUP_DEADLINE_ISO);
 export const SLIME_GAME_URL = "https://slime-wk2026.netlify.app";
 
 export const scoringRules = [
-  { label: "Exacte uitslag", points: matchScoring.exact },
-  { label: "Juiste winnaar of gelijkspel", points: matchScoring.outcome },
-  { label: "Juiste doelsaldo", points: matchScoring.goalDifference },
-  { label: "Per juist teamdoelpunt", points: matchScoring.teamGoal },
-  { label: "Land goed in laatste 32", points: stageScoring.round32 },
-  { label: "Land goed in achtste finale", points: stageScoring.round16 },
-  { label: "Land goed in kwartfinale", points: stageScoring.quarterfinal },
-  { label: "Land goed in halve finale", points: stageScoring.semifinal },
-  { label: "Finalist goed", points: stageScoring.finalists },
-  { label: "Wereldkampioen goed", points: stageScoring.champion },
-  { label: "Topscorer goed", points: specialScoring.topScorer },
-  { label: "Totaal aantal doelpunten exact", points: specialScoring.totalGoalsExact },
-  { label: "Bonusstatistiek exact", points: specialScoring.exactStat },
+  { label: "Exacte uitslag", points: matchScoring.exact, note: "Max per wedstrijd" },
+  { label: "Juiste winnaar/gelijkspel", points: matchScoring.outcome, note: "Als het niet exact is" },
+  { label: "Juiste doelsaldo", points: matchScoring.goalDifference, note: "Als het niet exact is" },
+  { label: "Per juist teamdoelpunt", points: matchScoring.teamGoal, note: "Bijv. Nederland precies 2" },
+  { label: "Land in laatste 32", points: stageScoring.round32, note: "Automatisch uit jouw groepsstand" },
+  { label: "Land in achtste finale", points: stageScoring.round16, note: "Max 16 landen" },
+  { label: "Land in kwartfinale", points: stageScoring.quarterfinal, note: "Max 8 landen" },
+  { label: "Land in halve finale", points: stageScoring.semifinal, note: "Max 4 landen" },
+  { label: "Finalist goed", points: stageScoring.finalists, note: "Max 2 landen" },
+  { label: "Wereldkampioen goed", points: stageScoring.champion, note: "Grote inhaalbonus" },
+  { label: "Topscorer goed", points: specialScoring.topScorer, note: "Gedeeld telt ook" },
+  { label: "Totaal goals exact", points: specialScoring.totalGoalsExact, note: "Dichtbij levert minder op" },
+  { label: "Bonusstat exact", points: specialScoring.exactStat, note: "Dichtbij levert minder op" },
 ];
 
 export const stageLabels: Record<string, string> = {

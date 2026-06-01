@@ -304,6 +304,8 @@ export async function savePredictions(formData: FormData) {
       total_goals: clampInt(formData.get("total_goals"), 172, 100, 400),
       group_zero_zero_count: clampInt(formData.get("group_zero_zero_count"), 4, 0, 30),
       total_red_cards: clampInt(formData.get("total_red_cards"), 8, 0, 50),
+      total_corners: clampInt(formData.get("total_corners"), 840, 400, 1400),
+      fastest_goal_minute: clampInt(formData.get("fastest_goal_minute"), 3, 1, 120),
       host_city_most_goals: cleanText(formData.get("host_city_most_goals"), 50) || null,
       champion_code: champion,
       finalists,

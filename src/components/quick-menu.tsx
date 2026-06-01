@@ -1,20 +1,43 @@
 "use client";
 
 import { CalendarDays, ClipboardList, Gamepad2, Home, ListChecks, Menu, Trophy, Users, X } from "lucide-react";
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { SLIME_GAME_URL } from "@/lib/constants";
+import { createClient } from "@/lib/supabase/browser";
 
-const links = [
+const publicLinks = [
   { href: "/", label: "Home", icon: Home },
   { href: "/schema", label: "Schema", icon: CalendarDays },
-  { href: "/voorspellingen", label: "Voorspellen", icon: ClipboardList },
-  { href: "/poules", label: "Poules", icon: Users },
   { href: "/ranglijst", label: "Ranglijst", icon: Trophy },
   { href: "/regels", label: "Regels", icon: ListChecks },
 ];
 
+const privateLinks = [
+  { href: "/voorspellingen", label: "Voorspellen", icon: ClipboardList },
+  { href: "/poules", label: "Poules", icon: Users },
+];
+
 export function QuickMenu() {
   const [open, setOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data }) => {
+      setLoggedIn(Boolean(data.session));
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setLoggedIn(Boolean(session));
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const links = loggedIn ? [...publicLinks, ...privateLinks] : publicLinks;
 
   return (
     <>
@@ -44,12 +67,18 @@ export function QuickMenu() {
               {links.map((link) => {
                 const Icon = link.icon;
                 return (
-                  <a key={link.href} href={link.href} className="quick-menu-link" onClick={() => setOpen(false)}>
+                  <Link key={link.href} href={link.href} className="quick-menu-link" onClick={() => setOpen(false)}>
                     <Icon aria-hidden="true" className="size-5" />
                     <span>{link.label}</span>
-                  </a>
+                  </Link>
                 );
               })}
+              {!loggedIn ? (
+                <Link className="quick-menu-link" href="/#login" onClick={() => setOpen(false)}>
+                  <Users aria-hidden="true" className="size-5" />
+                  <span>Log in</span>
+                </Link>
+              ) : null}
               <a className="quick-menu-link slime-link" href={SLIME_GAME_URL} target="_blank" rel="noopener noreferrer">
                 <Gamepad2 aria-hidden="true" className="size-5" />
                 <span>Slime game</span>

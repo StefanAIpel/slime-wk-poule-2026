@@ -1,10 +1,9 @@
 import { Medal, Trophy, Users } from "lucide-react";
-import { redirect } from "next/navigation";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
-import { displayName } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+
+export const revalidate = 30;
 
 type GlobalScoreRow = {
   user_id: string;
@@ -16,16 +15,9 @@ type GlobalScoreRow = {
 };
 
 export default async function RankingPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/");
-
   const admin = createAdminClient();
   const [{ data: globalScores }, { data: pools }, { data: members }, { data: allScores }] = await Promise.all([
-    supabase
+    admin
       .from("scores")
       .select("user_id,points,exact_scores,correct_results,bonus_points,profiles(nickname,team_name)")
       .order("points", { ascending: false })
@@ -43,10 +35,9 @@ export default async function RankingPage() {
       <header className="mb-6 grid gap-4 md:max-w-2xl">
         <Brand />
         <div>
-          <h1 className="text-4xl font-black leading-none text-white">Ranglijsten</h1>
+          <h1 className="text-3xl font-black leading-none text-white md:text-4xl">Ranglijsten</h1>
           <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-blue-100">
-            Punten komen automatisch binnen zodra uitslagen zijn verwerkt. Subpoules tellen mee op basis van de beste
-            vier spelers.
+            Algemene stand en subpoules. Meedoen of voorspellingen aanpassen kan na login.
           </p>
         </div>
       </header>
@@ -62,9 +53,9 @@ export default async function RankingPage() {
               <div key={row.user_id} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 p-4 text-[#081634]">
                 <RankBadge rank={index + 1} />
                 <div>
-                  <div className="font-black">{displayName(row.profiles)}</div>
+                  <div className="font-black">{row.profiles?.team_name || "Team zonder naam"}</div>
                   <div className="text-sm font-bold text-[#48617f]">
-                    {row.exact_scores} exact, {row.correct_results} juiste richting
+                    {row.profiles?.nickname || "Naam volgt"} · {row.exact_scores} exact · {row.correct_results} juiste richting
                   </div>
                 </div>
                 <div className="text-right text-xl font-black">{row.points} pt</div>
@@ -96,7 +87,7 @@ export default async function RankingPage() {
         </article>
       </section>
 
-      <BottomNav current="/ranglijst" />
+      <BottomNav current="/ranglijst" showPrivate={false} />
     </main>
   );
 }

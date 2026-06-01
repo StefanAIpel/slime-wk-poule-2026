@@ -32,16 +32,17 @@ Datum: 2026-06-01.
 - Daarna rondekeuzes in plaats van een hele dynamische knock-out bracket. Dit houdt de app rustiger dan apps waarbij je elke knock-outwedstrijd later opnieuw moet invullen.
 - Een beperkte update na de groepsfase voor finalisten, kampioen en knock-outstatistieken.
 - Subpoule-ranking op basis van de beste 4 spelers, zodat grotere groepen niet automatisch winnen.
-- Ironische statistieken: 0-0's, rode kaarten, speelstad met meeste goals, penaltyseries, eigen goals en kaartenkoning-team.
+- Ironische statistieken: 0-0's, rode kaarten, totaal corners, snelste goal, speelstad met meeste goals, penaltyseries, eigen goals en kaartenkoning-team.
 - Moderators kunnen een poule aankleden met emoji/kleur/tekst en berichten op het prikbord plaatsen.
 
 ## Puntentelling Slime Score
 
 - Wedstrijd exact: 12 punten maximum per wedstrijd.
-- Niet exact: juiste richting 6, juist doelsaldo 3, per juist teamdoelpunt 1.
+- Niet exact: juiste richting 6, juist doelsaldo 2, per juist teamdoelpunt 2.
 - Rondekeuzes: laatste 32 automatisch uit groepsstand, daarna oplopend per ronde.
-- Kampioen: 55 punten. Daarmee blijft kampioen ruim onder 8% van het totale haalbare pakket.
-- Bonusvragen: topscorer, totaal goals en trackbare statistieken. Samen leuk, maar niet dominant.
+- Knock-outweging: halve finalisten, finalisten en kampioen zijn bewust zwaarder gemaakt dan in de eerste opzet. Met 72 groepsduels moet iemand met sterke eindrondekeuzes nog kunnen inlopen.
+- Kampioen: 90 punten.
+- Bonusvragen: topscorer, totaal goals, corners, snelste goal en trackbare statistieken. Samen leuk, maar niet dominant.
 
 Belangrijk: stage-checkboxes worden server-side begrensd. Maximaal 16 landen bij achtste finale, 8 bij kwartfinale, 4 bij halve finale en 2 finalisten.
 

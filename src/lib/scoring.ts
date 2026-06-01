@@ -1,26 +1,26 @@
 export const matchScoring = {
   exact: 12,
   outcome: 6,
-  goalDifference: 3,
-  teamGoal: 1,
+  goalDifference: 2,
+  teamGoal: 2,
 };
 
 export const stageScoring: Record<string, number> = {
-  round32: 5,
-  round16: 7,
-  quarterfinal: 10,
-  semifinal: 14,
-  finalists: 20,
-  champion: 55,
+  round32: 4,
+  round16: 8,
+  quarterfinal: 14,
+  semifinal: 30,
+  finalists: 45,
+  champion: 90,
 };
 
 export const specialScoring = {
-  topScorer: 25,
-  totalGoalsExact: 15,
-  totalGoalsClose: 10,
-  totalGoalsNear: 5,
-  exactStat: 10,
-  closeStat: 5,
+  topScorer: 35,
+  totalGoalsExact: 20,
+  totalGoalsClose: 12,
+  totalGoalsNear: 6,
+  exactStat: 12,
+  closeStat: 6,
 };
 
 export type MatchPredictionScoreInput = {

@@ -1,11 +1,13 @@
-import { CalendarDays, Gamepad2, Share2, Sparkles, Trophy, Users } from "lucide-react";
+import { CalendarDays, Gamepad2, Share2, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
+import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { ProfileForm } from "@/components/profile-form";
 import { ENTRY_DEADLINE_ISO, SLIME_GAME_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 type HomeMembership = {
@@ -30,7 +32,19 @@ export default async function Home({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return <PublicHome authError={params.auth === "fout"} />;
+    const admin = createAdminClient();
+    const { data: publicLeaderboard } = await admin
+      .from("scores")
+      .select("points,profiles(nickname,team_name)")
+      .order("points", { ascending: false })
+      .limit(3);
+
+    return (
+      <PublicHome
+        authError={params.auth === "fout"}
+        leaderboard={(publicLeaderboard ?? []) as unknown as HomeLeaderboardRow[]}
+      />
+    );
   }
 
   const [{ data: profile }, { count: predictionCount }, { data: memberships }, { data: leaderboard }, { data: score }] =
@@ -208,43 +222,33 @@ export default async function Home({
   );
 }
 
-function PublicHome({ authError }: { authError: boolean }) {
+function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboard: HomeLeaderboardRow[] }) {
   return (
-    <main className="page-shell grid min-h-screen gap-6 md:grid-cols-[1fr_440px] md:items-center">
-      <section className="grid gap-5">
+    <main className="page-shell grid min-h-screen gap-5 md:grid-cols-[1fr_420px] md:items-center">
+      <section className="grid gap-4">
         <Brand />
-        <div className="grid gap-5 lg:grid-cols-[1fr_220px] lg:items-end">
+        <div className="public-hero-row">
           <div>
-            <p className="mb-3 inline-flex rounded-full bg-white/12 px-3 py-1 text-sm font-black text-[#ffd44d]">
-              WK 2026 - USA, Canada en Mexico
-            </p>
-            <h1 className="max-w-2xl text-5xl font-black leading-none text-white md:text-7xl">Voorspel met je groep.</h1>
-            <p className="mt-4 max-w-xl text-lg font-semibold leading-8 text-blue-100">
-              Voorspel de groepsduels, kies wie ver komt en klim met je eigen poules in de ranglijst.
+            <h1 className="max-w-2xl text-4xl font-black leading-none text-white md:text-6xl">WK-poule zonder gedoe.</h1>
+            <p className="mt-3 max-w-xl text-lg font-semibold leading-8 text-blue-100">
+              Vul je scores in, deel je poulecode en volg de stand. 100% gratis.
             </p>
           </div>
           <Image
-            className="hidden w-full rounded-3xl shadow-2xl shadow-black/30 lg:block"
+            className="public-hero-icon"
             src="/icon.png"
             alt="Slime Score app icon"
             width={512}
             height={512}
+            sizes="(min-width: 1024px) 190px, 170px"
             priority
           />
         </div>
-        <Image
-          className="mx-auto w-full max-w-[230px] rounded-3xl shadow-2xl shadow-black/30 lg:hidden"
-          src="/icon.png"
-          alt="Slime Score app icon"
-          width={512}
-          height={512}
-          priority
-        />
-        <div className="grid gap-2 sm:grid-cols-3">
-          <div className="chip bg-white/10 text-white">72 groepsduels</div>
-          <div className="chip bg-white/10 text-white">Groepsstand live</div>
-          <div className="chip bg-white/10 text-white">Poulecode delen</div>
-        </div>
+        <ol className="grid gap-2 text-sm font-semibold text-blue-100 sm:grid-cols-3">
+          <li className="step-pill">1. Mail-link openen</li>
+          <li className="step-pill">2. Scores invullen</li>
+          <li className="step-pill">3. Poulecode delen</li>
+        </ol>
         <div className="flex flex-wrap gap-3">
           <a href="#login" className="button-primary">
             <Share2 aria-hidden="true" className="size-5" />
@@ -254,6 +258,24 @@ function PublicHome({ authError }: { authError: boolean }) {
             Bekijk schema
           </a>
         </div>
+        <a href="/ranglijst" className="panel public-score-card p-4 no-underline">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-lg font-black text-[#081634]">Live ranglijst</h2>
+            <span className="text-sm font-black text-[#0866e8]">Bekijk alles</span>
+          </div>
+          <div className="mt-3 grid gap-2">
+            {leaderboard.length ? (
+              leaderboard.map((row, index) => (
+                <div key={`${index}-${row.points}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
+                  <span className="font-semibold">{index + 1}. {displayName(row.profiles)}</span>
+                  <span className="font-black">{row.points} pt</span>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm font-semibold text-[#48617f]">De stand verschijnt zodra de eerste punten zijn verwerkt.</p>
+            )}
+          </div>
+        </a>
       </section>
       <section id="login" className="grid gap-4">
         {authError ? (
@@ -263,11 +285,10 @@ function PublicHome({ authError }: { authError: boolean }) {
         ) : null}
         <div className="hero-score panel grid gap-4 p-5">
           <div className="relative z-[1]">
-            <div className="flex items-center gap-2 text-sm font-black uppercase tracking-normal text-[#102c77]">
-              <Sparkles aria-hidden="true" className="size-4 text-[#ff7a00]" />
-              WK 2026 scorekaart
-            </div>
-            <p className="mt-2 text-3xl font-black leading-none text-[#081634]">Scores erin. Stand erbij.</p>
+            <p className="text-3xl font-black leading-none text-[#081634]">Maak je scorekaart.</p>
+            <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
+              E-mailadres invullen, link openen, naam en teamnaam kiezen.
+            </p>
           </div>
           <div className="score-podium relative z-[1]" aria-hidden="true">
             <span>1</span>
@@ -276,13 +297,12 @@ function PublicHome({ authError }: { authError: boolean }) {
           </div>
         </div>
         <LoginForm />
+        <InstallAppCard />
         <div className="panel p-4">
-          <h2 className="text-xl font-black text-[#081634]">Meedoen in drie stappen</h2>
-          <div className="mt-3 grid gap-2 text-sm font-bold leading-6 text-[#48617f]">
-            <p>1. Open je inloglink.</p>
-            <p>2. Kies je bijnaam en teamnaam.</p>
-            <p>3. Vul je WK-scorekaart in en deel je poulecode.</p>
-          </div>
+          <h2 className="text-xl font-black text-[#081634]">Inloggen</h2>
+          <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
+            Je gebruikt steeds een nieuwe eenmalige mail-link. Als je sessie nog actief is, blijf je gewoon ingelogd.
+          </p>
         </div>
       </section>
     </main>

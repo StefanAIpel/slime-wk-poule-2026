@@ -9,11 +9,11 @@ export function ProfileForm() {
         </div>
         <h2 className="text-2xl font-black text-[#081634]">Maak je scorekaart af</h2>
         <p className="mt-1 text-sm font-semibold text-[#48617f]">
-          Kies hoe je zichtbaar bent in ranglijsten en poules. Daarna kun je direct voorspellen.
+          Deze naam en teamnaam zijn zichtbaar in de ranglijst.
         </p>
       </div>
       <label className="grid gap-2 text-sm font-black text-[#081634]">
-        Bijnaam
+        Naam of bijnaam
         <input className="field" name="nickname" required minLength={2} maxLength={40} placeholder="Stefan" />
       </label>
       <label className="grid gap-2 text-sm font-black text-[#081634]">
@@ -21,7 +21,7 @@ export function ProfileForm() {
         <input className="field" name="team_name" required minLength={2} maxLength={40} placeholder="VARschrikkelijk goed" />
       </label>
       <button className="button-primary" type="submit">
-        Start mijn poule
+        Start mijn scorekaart
       </button>
     </form>
   );

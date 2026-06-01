@@ -9,9 +9,9 @@ export default function RulesPage() {
       <header className="mb-6 grid gap-4 md:max-w-3xl">
         <Brand />
         <div>
-          <h1 className="text-4xl font-black leading-none text-white">Regels en uitleg</h1>
+          <h1 className="text-3xl font-black leading-none text-white md:text-4xl">Regels en uitleg</h1>
           <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-blue-100">
-            Kort genoeg om te lezen, precies genoeg om discussie in de groepsapp te voorkomen.
+            Kort, duidelijk en net precies genoeg voor discussie in de groepsapp.
           </p>
         </div>
       </header>
@@ -55,8 +55,11 @@ export default function RulesPage() {
           </div>
           <div className="mt-4 grid gap-2">
             {scoringRules.map((rule) => (
-              <div key={rule.label} className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3 text-[#081634]">
-                <span className="font-bold">{rule.label}</span>
+              <div key={rule.label} className="grid gap-1 rounded-lg border border-slate-200 p-3 text-[#081634] sm:grid-cols-[1fr_auto] sm:items-center">
+                <div>
+                  <span className="font-bold">{rule.label}</span>
+                  <span className="mt-1 block text-xs font-semibold text-[#48617f]">{rule.note}</span>
+                </div>
                 <span className="font-black">{rule.points} pt</span>
               </div>
             ))}
@@ -67,7 +70,11 @@ export default function RulesPage() {
           </p>
           <p className="mt-3 text-sm font-semibold leading-7 text-[#48617f]">
             De laatste 32 worden automatisch berekend uit je voorspelde groepsstanden: nummers 1 en 2 plus de beste
-            acht nummers 3. De kampioen blijft onder 8% van het totale puntenpakket.
+            acht nummers 3. De knock-outkeuzes leveren relatief meer op, zodat een goede eindsprint echt telt.
+          </p>
+          <p className="mt-3 text-sm font-semibold leading-7 text-[#48617f]">
+            Bonusvragen gaan over zaken die op grote toernooien worden bijgehouden: topscorer, totaal goals, corners,
+            rode kaarten, 0-0-wedstrijden, snelste goal en de speelstad met de meeste doelpunten.
           </p>
           <p className="mt-3 text-sm font-semibold leading-7 text-[#48617f]">
             Gelijke stand? Dan kijken we achtereenvolgens naar meeste exacte uitslagen, meeste juiste resultaten,
@@ -105,7 +112,7 @@ export default function RulesPage() {
         </article>
       </section>
 
-      <BottomNav current="/regels" />
+      <BottomNav current="/regels" showPrivate={false} />
     </main>
   );
 }

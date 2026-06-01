@@ -9,9 +9,11 @@ Nederlandstalige WK 2026-poule app, mobiel eerst gebouwd met Next.js, Supabase e
 - Scores voorspellen voor alle groepswedstrijden met live berekende groepsstanden.
 - Laatste 32 automatisch uit de voorspelde groepsstanden.
 - Rondekeuzes, kampioen, topscorer en licht ironische bonusstatistieken.
+- Publieke ranglijst en schema zijn zonder login zichtbaar en cachebaar.
 - Eigen subpoules met deelcode, WhatsApp-link, beheerder en moderators.
 - Moderators kunnen poules aankleden met emoji, kleur en tekst en berichten op het prikbord plaatsen.
 - Algemene ranglijst en subpoule-ranking op basis van de beste 4 spelers.
+- Wegklikbare PWA-installkaart: werkt als browser-app en als beginscherm-app.
 - Bonuslink naar de bestaande Slime World Cup game.
 
 ## Stack
@@ -56,6 +58,8 @@ De route `/api/sync-results` accepteert server-side updates voor uitslagen, rond
   "facts": {
     "top_scorers": ["Memphis Depay"],
     "total_goals": 171,
+    "total_corners": 840,
+    "fastest_goal_minute": 3,
     "penalty_shootouts_ko": 4
   }
 }
@@ -73,3 +77,4 @@ Authenticatie via `x-result-sync-secret`. Na elke update worden de ranglijsten o
 - Huidige live URL: `https://slimescore.vercel.app`.
 - Auth-link fallback zit zowel in `/auth/confirm` als globaal in `AuthLinkBridge`, omdat Supabase-links afhankelijk van template/config op verschillende manieren kunnen terugkomen.
 - De app kiest bewust voor gemak: groepsduels + automatisch berekende laatste 32 + rondekeuzes, niet alle 104 wedstrijden apart invullen.
+- De publieke pagina's `/schema` en `/ranglijst` gebruiken ISR (`1h` en `30s`) om Supabase-load en TTFB laag te houden.

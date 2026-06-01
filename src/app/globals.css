@@ -157,6 +157,69 @@ select {
   background: linear-gradient(180deg, #2bc35f, var(--green));
 }
 
+.public-hero-row {
+  display: grid;
+  gap: 16px;
+}
+
+.public-hero-icon {
+  width: min(170px, 58vw);
+  justify-self: center;
+  border-radius: 18px;
+  box-shadow: 0 22px 46px rgba(0, 0, 0, 0.28);
+}
+
+.step-pill {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 12px;
+  color: #e8f0ff;
+}
+
+.public-score-card {
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.public-score-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 52px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.52);
+}
+
+.install-card {
+  color: var(--panel-ink);
+  background:
+    linear-gradient(135deg, rgba(255, 176, 0, 0.18), transparent 42%),
+    #fffdf8;
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
+}
+
+.install-card-icon {
+  display: grid;
+  flex: 0 0 auto;
+  min-width: 42px;
+  min-height: 42px;
+  place-items: center;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  color: #fff;
+}
+
+.install-card-close {
+  display: inline-grid;
+  flex: 0 0 auto;
+  min-width: 36px;
+  min-height: 36px;
+  place-items: center;
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 8px;
+  background: #fff;
+  color: #081634;
+}
+
 .brand-mark {
   position: relative;
   overflow: hidden;
@@ -282,6 +345,14 @@ select {
   backdrop-filter: blur(16px);
 }
 
+.bottom-nav[data-count="4"] {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.bottom-nav[data-count="5"] {
+  grid-template-columns: repeat(5, 1fr);
+}
+
 .bottom-nav a {
   display: grid;
   min-height: 58px;
@@ -368,6 +439,15 @@ select {
     padding: 32px 24px 40px;
   }
 
+  .public-hero-row {
+    grid-template-columns: 1fr 190px;
+    align-items: end;
+  }
+
+  .public-hero-icon {
+    width: 190px;
+  }
+
   .bottom-nav {
     top: 18px;
     right: 24px;
@@ -376,6 +456,14 @@ select {
     width: auto;
     grid-template-columns: repeat(6, minmax(76px, auto));
     max-width: none;
+  }
+
+  .bottom-nav[data-count="4"] {
+    grid-template-columns: repeat(4, minmax(76px, auto));
+  }
+
+  .bottom-nav[data-count="5"] {
+    grid-template-columns: repeat(5, minmax(76px, auto));
   }
 
   .bottom-nav a {

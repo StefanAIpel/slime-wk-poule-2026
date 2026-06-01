@@ -3,7 +3,7 @@ import { savePredictions } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { GroupPredictionCard } from "@/components/group-prediction-card";
-import { ENTRY_DEADLINE, hostCities, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
+import { ENTRY_DEADLINE, groupLetters, hostCities, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 import type { MatchWithTeams, Team } from "@/lib/types";
 
@@ -46,7 +46,7 @@ export default async function PredictionsPage({
       <header className="mb-6 grid gap-4 md:max-w-2xl">
         <Brand />
         <div>
-          <h1 className="text-4xl font-black leading-none text-white">Voorspellingen</h1>
+          <h1 className="text-3xl font-black leading-none text-white md:text-4xl">Voorspellingen</h1>
           <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-blue-100">
             Snel invullen, later nog bijschaven tot 11 juni 21:00 Nederlandse tijd. Na de groepsfase is er een kleine
             optionele herziening tot 28 juni 21:00.
@@ -68,20 +68,24 @@ export default async function PredictionsPage({
           </p>
         </section>
 
-        {Array.from(groupedMatches.entries()).map(([group, groupMatches]) => (
-          <GroupPredictionCard
-            key={group}
-            group={group}
-            matches={groupMatches}
-            disabled={!mainOpen}
-            initialScores={Object.fromEntries(
-              groupMatches.map((match) => {
-                const existing = predictionByMatch.get(match.id);
-                return [match.id, { home: existing?.home_score ?? 1, away: existing?.away_score ?? 1 }];
-              }),
-            )}
-          />
-        ))}
+        {groupLetters.map((group) => {
+          const groupMatches = groupedMatches.get(group);
+          if (!groupMatches?.length) return null;
+          return (
+            <GroupPredictionCard
+              key={group}
+              group={group}
+              matches={groupMatches}
+              disabled={!mainOpen}
+              initialScores={Object.fromEntries(
+                groupMatches.map((match) => {
+                  const existing = predictionByMatch.get(match.id);
+                  return [match.id, { home: existing?.home_score ?? 1, away: existing?.away_score ?? 1 }];
+                }),
+              )}
+            />
+          );
+        })}
 
         <section className="panel p-4">
           <h2 className="text-2xl font-black text-[#081634]">Rondes en eindwinnaar</h2>
@@ -148,18 +152,17 @@ export default async function PredictionsPage({
         </section>
 
         <section className="panel p-4">
-          <h2 className="text-2xl font-black text-[#081634]">Bonus en licht ironische statistieken</h2>
-          <p className="mt-1 text-sm font-semibold text-[#48617f]">
-            Deze leveren minder op dan de scores. Leuk voor onderscheid, niet bepalend genoeg om de poule te kapen.
-          </p>
+          <h2 className="text-2xl font-black text-[#081634]">Bonusvragen</h2>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             <label className="grid gap-2 text-sm font-black text-[#081634]">
               Topscorer
               <input className="field" name="top_scorer" defaultValue={special?.top_scorer ?? ""} placeholder="Bijv. Mbappe" />
             </label>
             <NumberField name="total_goals" label="Totaal aantal goals" value={special?.total_goals ?? 172} min={100} max={400} />
-            <NumberField name="group_zero_zero_count" label="Aantal 0-0's in de groepsfase" value={special?.group_zero_zero_count ?? 4} min={0} max={30} />
-            <NumberField name="total_red_cards" label="Totaal rode kaarten" value={special?.total_red_cards ?? 8} min={0} max={50} />
+            <NumberField name="total_corners" label="Totaal corners" value={special?.total_corners ?? 840} min={400} max={1400} />
+            <NumberField name="fastest_goal_minute" label="Snelste goal in minuut" value={special?.fastest_goal_minute ?? 3} min={1} max={120} />
+            <NumberField name="group_zero_zero_count" label="0-0's in de groepsfase" value={special?.group_zero_zero_count ?? 4} min={0} max={30} />
+            <NumberField name="total_red_cards" label="Rode kaarten totaal" value={special?.total_red_cards ?? 8} min={0} max={50} />
             <label className="grid gap-2 text-sm font-black text-[#081634] md:col-span-2">
               Speelstad met de meeste doelpunten
               <select className="field" name="host_city_most_goals" defaultValue={special?.host_city_most_goals ?? ""}>

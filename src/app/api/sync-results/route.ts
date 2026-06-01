@@ -26,6 +26,8 @@ type FactUpdate = {
   total_goals?: number;
   group_zero_zero_count?: number;
   total_red_cards?: number;
+  total_corners?: number;
+  fastest_goal_minute?: number;
   host_city_most_goals?: string;
   finalists?: string[];
   champion_code?: string;
@@ -62,6 +64,8 @@ type SpecialPrediction = {
   total_goals: number | null;
   group_zero_zero_count: number | null;
   total_red_cards: number | null;
+  total_corners: number | null;
+  fastest_goal_minute: number | null;
   host_city_most_goals: string | null;
   penalty_shootouts_ko: number | null;
   own_goals_ko: number | null;
@@ -73,6 +77,8 @@ type TournamentFacts = {
   total_goals: number | null;
   group_zero_zero_count: number | null;
   total_red_cards: number | null;
+  total_corners: number | null;
+  fastest_goal_minute: number | null;
   host_city_most_goals: string | null;
   penalty_shootouts_ko: number | null;
   own_goals_ko: number | null;
@@ -150,6 +156,8 @@ export async function POST(request: NextRequest) {
       total_goals?: number;
       group_zero_zero_count?: number;
       total_red_cards?: number;
+      total_corners?: number;
+      fastest_goal_minute?: number;
       host_city_most_goals?: string;
       penalty_shootouts_ko?: number;
       own_goals_ko?: number;
@@ -160,6 +168,8 @@ export async function POST(request: NextRequest) {
     if (body.facts.total_goals !== undefined) factRow.total_goals = body.facts.total_goals;
     if (body.facts.group_zero_zero_count !== undefined) factRow.group_zero_zero_count = body.facts.group_zero_zero_count;
     if (body.facts.total_red_cards !== undefined) factRow.total_red_cards = body.facts.total_red_cards;
+    if (body.facts.total_corners !== undefined) factRow.total_corners = body.facts.total_corners;
+    if (body.facts.fastest_goal_minute !== undefined) factRow.fastest_goal_minute = body.facts.fastest_goal_minute;
     if (body.facts.host_city_most_goals !== undefined) factRow.host_city_most_goals = body.facts.host_city_most_goals;
     if (body.facts.penalty_shootouts_ko !== undefined) factRow.penalty_shootouts_ko = body.facts.penalty_shootouts_ko;
     if (body.facts.own_goals_ko !== undefined) factRow.own_goals_ko = body.facts.own_goals_ko;
@@ -219,7 +229,7 @@ async function recalculateScores() {
       admin.from("stage_results").select("stage_key,team_codes"),
       admin
         .from("special_predictions")
-        .select("user_id,top_scorer,total_goals,group_zero_zero_count,total_red_cards,host_city_most_goals,penalty_shootouts_ko,own_goals_ko,cards_ko_team_code"),
+        .select("user_id,top_scorer,total_goals,group_zero_zero_count,total_red_cards,total_corners,fastest_goal_minute,host_city_most_goals,penalty_shootouts_ko,own_goals_ko,cards_ko_team_code"),
       admin.from("tournament_facts").select("*").eq("id", true).maybeSingle(),
     ]);
 
@@ -247,6 +257,8 @@ async function recalculateScores() {
       );
       addBonus(current, scoreCloseNumber(prediction.group_zero_zero_count, actualFacts.group_zero_zero_count));
       addBonus(current, scoreCloseNumber(prediction.total_red_cards, actualFacts.total_red_cards));
+      addBonus(current, scoreCloseNumber(prediction.total_corners, actualFacts.total_corners, specialScoring.exactStat, specialScoring.closeStat, 25));
+      addBonus(current, scoreCloseNumber(prediction.fastest_goal_minute, actualFacts.fastest_goal_minute, specialScoring.exactStat, specialScoring.closeStat, 2));
       addBonus(current, scoreTextPrediction(prediction.host_city_most_goals, actualFacts.host_city_most_goals ? [actualFacts.host_city_most_goals] : [], specialScoring.exactStat));
       addBonus(current, scoreCloseNumber(prediction.penalty_shootouts_ko, actualFacts.penalty_shootouts_ko));
       addBonus(current, scoreCloseNumber(prediction.own_goals_ko, actualFacts.own_goals_ko));
