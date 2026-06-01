@@ -5,8 +5,16 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
+import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+
+const stageSelectionLimits: Record<string, number> = {
+  round16: 16,
+  quarterfinal: 8,
+  semifinal: 4,
+  finalists: 2,
+};
 
 async function requireUser() {
   const supabase = await createClient();
@@ -229,7 +237,10 @@ export async function savePredictions(formData: FormData) {
   const canEditMain = now < ENTRY_DEADLINE;
   const canEditPostGroup = now >= POST_GROUP_WINDOW_START && now < POST_GROUP_DEADLINE;
 
-  const { data: matches, error: matchError } = await supabase.from("matches").select("id").eq("stage", "group");
+  const { data: matches, error: matchError } = await supabase
+    .from("matches")
+    .select("id,group_letter,home_code,away_code")
+    .eq("stage", "group");
   if (matchError) throw new Error(matchError.message);
 
   if (canEditMain) {
@@ -239,17 +250,21 @@ export async function savePredictions(formData: FormData) {
       home_score: number;
       away_score: number;
     }[] = [];
+    const scoreLookup: ScoreLookup = new Map();
 
     for (const match of matches ?? []) {
       const home = formData.get(`match_${match.id}_home`);
       const away = formData.get(`match_${match.id}_away`);
       if (home === null || away === null) continue;
+      const homeScore = clampInt(home, 0, 0, 20);
+      const awayScore = clampInt(away, 0, 0, 20);
       predictionRows.push({
         user_id: user.id,
         match_id: match.id,
-        home_score: clampInt(home, 0, 0, 20),
-        away_score: clampInt(away, 0, 0, 20),
+        home_score: homeScore,
+        away_score: awayScore,
       });
+      scoreLookup.set(match.id, { home: homeScore, away: awayScore });
     }
 
     if (predictionRows.length) {
@@ -257,9 +272,20 @@ export async function savePredictions(formData: FormData) {
       if (error) throw new Error(error.message);
     }
 
-    const stageKeys = ["round32", "round16", "quarterfinal", "semifinal", "finalists"] as const;
+    const round32 = calculateRound32(matches ?? [], scoreLookup);
+    const { error: round32Error } = await supabase.from("bracket_predictions").upsert({
+      user_id: user.id,
+      stage_key: "round32",
+      team_codes: round32,
+    });
+    if (round32Error) throw new Error(round32Error.message);
+
+    const stageKeys = ["round16", "quarterfinal", "semifinal", "finalists"] as const;
     for (const stageKey of stageKeys) {
-      const teams = formData.getAll(stageKey).map(String).filter(Boolean);
+      const teams = Array.from(new Set(formData.getAll(stageKey).map(String).filter(Boolean))).slice(
+        0,
+        stageSelectionLimits[stageKey],
+      );
       const { error } = await supabase.from("bracket_predictions").upsert({
         user_id: user.id,
         stage_key: stageKey,
@@ -271,7 +297,7 @@ export async function savePredictions(formData: FormData) {
 
   if (canEditMain || canEditPostGroup) {
     const champion = cleanText(formData.get("champion_code"), 3).toUpperCase() || null;
-    const finalists = formData.getAll("finalists").map(String).filter(Boolean);
+    const finalists = Array.from(new Set(formData.getAll("finalists").map(String).filter(Boolean))).slice(0, 2);
     const special = {
       user_id: user.id,
       top_scorer: cleanText(formData.get("top_scorer"), 60) || null,

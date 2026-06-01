@@ -1,20 +1,9 @@
 "use client";
 
-import { type EmailOtpType } from "@supabase/supabase-js";
 import { LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/browser";
-
-function safeRedirectTarget(value: string | null) {
-  if (!value) return "/?login=gelukt";
-  if (value.startsWith("/") && !value.startsWith("//")) return value;
-  return "/?login=gelukt";
-}
-
-function uniqueOtpTypes(primary: string | null) {
-  return Array.from(new Set([primary, "email", "magiclink", "signup"].filter(Boolean))) as EmailOtpType[];
-}
+import { finishSupabaseAuth } from "@/lib/supabase/finish-auth";
 
 export function AuthConfirmClient() {
   const router = useRouter();
@@ -24,55 +13,14 @@ export function AuthConfirmClient() {
     let cancelled = false;
 
     async function finishLogin() {
-      const supabase = createClient();
-      const url = new URL(window.location.href);
-      const redirectTo = safeRedirectTarget(url.searchParams.get("next"));
-      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-
-      const accessToken = hashParams.get("access_token");
-      const refreshToken = hashParams.get("refresh_token");
-      const code = url.searchParams.get("code");
-      const tokenHash = url.searchParams.get("token_hash");
-      const type = url.searchParams.get("type");
-
       if (!cancelled) setMessage("Sessie wordt klaargezet.");
-
-      if (accessToken && refreshToken) {
-        const { error } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
-        if (error) throw error;
-      } else if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (error) throw error;
-      } else if (tokenHash) {
-        let verified = false;
-        let lastError: Error | null = null;
-
-        for (const otpType of uniqueOtpTypes(type)) {
-          const { error } = await supabase.auth.verifyOtp({
-            type: otpType,
-            token_hash: tokenHash,
-          });
-          if (!error) {
-            verified = true;
-            break;
-          }
-          lastError = error;
-        }
-
-        if (!verified) throw lastError ?? new Error("Inloglink kon niet worden bevestigd.");
-      } else {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (!session) throw new Error("Geen sessie gevonden in de inloglink.");
-      }
+      const result = await finishSupabaseAuth();
+      if (!result.ok) throw new Error(result.error);
 
       if (!cancelled) {
         setMessage("Gelukt. Je scorekaart wordt geopend.");
-        router.replace(redirectTo);
+        window.history.replaceState(null, "", result.redirectTo);
+        router.replace(result.redirectTo);
         router.refresh();
       }
     }

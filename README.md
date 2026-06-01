@@ -6,7 +6,8 @@ Nederlandstalige WK 2026-poule app, mobiel eerst gebouwd met Next.js, Supabase e
 
 - E-mail login via Supabase magic links, zonder wachtwoorden.
 - Minimale profieldata: bijnaam en teamnaam.
-- Scores voorspellen voor alle groepswedstrijden.
+- Scores voorspellen voor alle groepswedstrijden met live berekende groepsstanden.
+- Laatste 32 automatisch uit de voorspelde groepsstanden.
 - Rondekeuzes, kampioen, topscorer en licht ironische bonusstatistieken.
 - Eigen subpoules met deelcode, WhatsApp-link, beheerder en moderators.
 - Moderators kunnen poules aankleden met emoji, kleur en tekst en berichten op het prikbord plaatsen.
@@ -62,6 +63,13 @@ De route `/api/sync-results` accepteert server-side updates voor uitslagen, rond
 
 Authenticatie via `x-result-sync-secret`. Na elke update worden de ranglijsten opnieuw doorgerekend.
 
-## Onderzoek
+## Agent-documentatie
 
-Zie [docs/onderzoek-wk-poule.md](docs/onderzoek-wk-poule.md).
+- [Agent brief](docs/AGENT_BRIEF.md)
+- [Onderzoek WK-poule](docs/onderzoek-wk-poule.md)
+
+## Productnotities
+
+- Huidige live URL: `https://slimescore.vercel.app`.
+- Auth-link fallback zit zowel in `/auth/confirm` als globaal in `AuthLinkBridge`, omdat Supabase-links afhankelijk van template/config op verschillende manieren kunnen terugkomen.
+- De app kiest bewust voor gemak: groepsduels + automatisch berekende laatste 32 + rondekeuzes, niet alle 104 wedstrijden apart invullen.

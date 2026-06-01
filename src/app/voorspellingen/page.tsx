@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import { savePredictions } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
+import { GroupPredictionCard } from "@/components/group-prediction-card";
 import { ENTRY_DEADLINE, hostCities, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
-import { formatAmsterdam } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import type { MatchWithTeams, Team } from "@/lib/types";
 
@@ -69,72 +69,34 @@ export default async function PredictionsPage({
         </section>
 
         {Array.from(groupedMatches.entries()).map(([group, groupMatches]) => (
-          <section key={group} className="panel overflow-hidden">
-            <div className="wc-header px-4 py-3 text-white">
-              <h2 className="text-xl font-black">Groep {group}</h2>
-            </div>
-            <div className="divide-y divide-slate-200">
-              {groupMatches.map((match) => {
+          <GroupPredictionCard
+            key={group}
+            group={group}
+            matches={groupMatches}
+            disabled={!mainOpen}
+            initialScores={Object.fromEntries(
+              groupMatches.map((match) => {
                 const existing = predictionByMatch.get(match.id);
-                return (
-                  <div key={match.id} className="grid gap-3 p-4 md:grid-cols-[1fr_auto] md:items-center">
-                    <div>
-                      <div className="text-xs font-black uppercase tracking-normal text-[#48617f]">
-                        Wedstrijd {match.id} - {formatAmsterdam(match.starts_at)} - {match.venue}
-                      </div>
-                      <div className="mt-1 flex flex-wrap items-center gap-2 text-lg font-black text-[#081634]">
-                        <span>{match.home?.name_nl ?? match.home_code}</span>
-                        <span className="text-[#48617f]">tegen</span>
-                        <span>{match.away?.name_nl ?? match.away_code}</span>
-                      </div>
-                    </div>
-                    <fieldset className="flex items-center gap-2" disabled={!mainOpen}>
-                      <legend className="sr-only">Voorspel score wedstrijd {match.id}</legend>
-                      <input
-                        className="score-input"
-                        name={`match_${match.id}_home`}
-                        type="number"
-                        min={0}
-                        max={20}
-                        defaultValue={existing?.home_score ?? 1}
-                        aria-label={`${match.home?.name_nl ?? match.home_code} goals`}
-                      />
-                      <span className="font-black text-[#48617f]">-</span>
-                      <input
-                        className="score-input"
-                        name={`match_${match.id}_away`}
-                        type="number"
-                        min={0}
-                        max={20}
-                        defaultValue={existing?.away_score ?? 1}
-                        aria-label={`${match.away?.name_nl ?? match.away_code} goals`}
-                      />
-                    </fieldset>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
+                return [match.id, { home: existing?.home_score ?? 1, away: existing?.away_score ?? 1 }];
+              }),
+            )}
+          />
         ))}
 
         <section className="panel p-4">
           <h2 className="text-2xl font-black text-[#081634]">Rondes en eindwinnaar</h2>
           <p className="mt-1 text-sm font-semibold text-[#48617f]">
-            Je hoeft geen hele bracket te tekenen. Kies simpelweg welke landen ver komen.
+            De laatste 32 worden uit je groepsstanden berekend. Daarna kies je simpelweg welke landen verder komen.
           </p>
+          <div className="mt-4 rounded-lg border border-[#bce8c8] bg-[#f4fbf0] p-3 text-sm font-black leading-6 text-[#137c35]">
+            Laatste 32: automatisch uitgerekend met nummers 1 en 2 per groep plus de beste acht nummers 3.
+          </div>
           <div className="mt-4 grid gap-4">
-            <TeamChecklist
-              name="round32"
-              title="Laatste 32"
-              hint="Kies de landen die volgens jou de groepsfase overleven."
-              teams={typedTeams}
-              selected={bracketByStage.get("round32")}
-              disabled={!mainOpen}
-            />
             <TeamChecklist
               name="round16"
               title="Achtste finale"
               hint="Welke landen winnen hun eerste knock-outwedstrijd?"
+              maxCount={16}
               teams={typedTeams}
               selected={bracketByStage.get("round16")}
               disabled={!mainOpen}
@@ -143,6 +105,7 @@ export default async function PredictionsPage({
               name="quarterfinal"
               title="Kwartfinale"
               hint="Kies je laatste acht."
+              maxCount={8}
               teams={typedTeams}
               selected={bracketByStage.get("quarterfinal")}
               disabled={!mainOpen}
@@ -151,6 +114,7 @@ export default async function PredictionsPage({
               name="semifinal"
               title="Halve finale"
               hint="Vier landen die echt mogen dromen."
+              maxCount={4}
               teams={typedTeams}
               selected={bracketByStage.get("semifinal")}
               disabled={!mainOpen}
@@ -159,6 +123,7 @@ export default async function PredictionsPage({
               name="finalists"
               title="Finale"
               hint="Twee finalisten. Deze mag na de groepsfase nog een keer aangepast worden."
+              maxCount={2}
               teams={typedTeams}
               selected={new Set((special?.finalists as string[] | undefined) ?? Array.from(bracketByStage.get("finalists") ?? []))}
               disabled={!mainOpen && !postGroupOpen}
@@ -254,6 +219,7 @@ function TeamChecklist({
   name,
   title,
   hint,
+  maxCount,
   teams,
   selected,
   disabled,
@@ -261,6 +227,7 @@ function TeamChecklist({
   name: string;
   title: string;
   hint: string;
+  maxCount: number;
   teams: Team[];
   selected?: Set<string>;
   disabled?: boolean;
@@ -268,7 +235,9 @@ function TeamChecklist({
   return (
     <fieldset className="rounded-lg border border-slate-200 p-3" disabled={disabled}>
       <legend className="px-1 text-lg font-black text-[#081634]">{title}</legend>
-      <p className="mb-3 text-sm font-semibold text-[#48617f]">{hint}</p>
+      <p className="mb-3 text-sm font-semibold text-[#48617f]">
+        {hint} Kies maximaal {maxCount}; extra keuzes tellen niet mee.
+      </p>
       <div className="grid max-h-72 gap-2 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
         {teams.map((team) => (
           <label key={`${name}-${team.code}`} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-2 text-sm font-bold text-[#081634]">

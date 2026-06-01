@@ -218,7 +218,7 @@ function PublicHome({ authError }: { authError: boolean }) {
             <p className="mb-3 inline-flex rounded-full bg-white/12 px-3 py-1 text-sm font-black text-[#ffd44d]">
               WK 2026 - USA, Canada en Mexico
             </p>
-            <h1 className="max-w-2xl text-5xl font-black leading-none text-white md:text-7xl">Slime Score 2026</h1>
+            <h1 className="max-w-2xl text-5xl font-black leading-none text-white md:text-7xl">Voorspel met je groep.</h1>
             <p className="mt-4 max-w-xl text-lg font-semibold leading-8 text-blue-100">
               Voorspel de groepsduels, kies wie ver komt en klim met je eigen poules in de ranglijst.
             </p>
@@ -232,10 +232,18 @@ function PublicHome({ authError }: { authError: boolean }) {
             priority
           />
         </div>
+        <Image
+          className="mx-auto w-full max-w-[230px] rounded-3xl shadow-2xl shadow-black/30 lg:hidden"
+          src="/icon.png"
+          alt="Slime Score app icon"
+          width={512}
+          height={512}
+          priority
+        />
         <div className="grid gap-2 sm:grid-cols-3">
           <div className="chip bg-white/10 text-white">72 groepsduels</div>
-          <div className="chip bg-white/10 text-white">Eigen poules</div>
-          <div className="chip bg-white/10 text-white">Live ranglijst</div>
+          <div className="chip bg-white/10 text-white">Groepsstand live</div>
+          <div className="chip bg-white/10 text-white">Poulecode delen</div>
         </div>
         <div className="flex flex-wrap gap-3">
           <a href="#login" className="button-primary">
@@ -259,7 +267,7 @@ function PublicHome({ authError }: { authError: boolean }) {
               <Sparkles aria-hidden="true" className="size-4 text-[#ff7a00]" />
               WK 2026 scorekaart
             </div>
-            <p className="mt-2 text-3xl font-black leading-none text-[#081634]">Voorspel, deel, stijg.</p>
+            <p className="mt-2 text-3xl font-black leading-none text-[#081634]">Scores erin. Stand erbij.</p>
           </div>
           <div className="score-podium relative z-[1]" aria-hidden="true">
             <span>1</span>

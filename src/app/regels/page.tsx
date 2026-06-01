@@ -62,8 +62,12 @@ export default function RulesPage() {
             ))}
           </div>
           <p className="mt-4 text-sm font-semibold leading-7 text-[#48617f]">
-            De kampioen is bewust veel waard, maar blijft onder ongeveer 8% van het totale haalbare puntenpakket. Scores
-            en rondekeuzes blijven dus de basis.
+            Per wedstrijd is 12 punten het maximum. Bij een exacte uitslag stapelen de deelpunten niet door; bij een
+            gedeeltelijk goede voorspelling tellen juiste richting, doelsaldo en teamgoals wel samen op.
+          </p>
+          <p className="mt-3 text-sm font-semibold leading-7 text-[#48617f]">
+            De laatste 32 worden automatisch berekend uit je voorspelde groepsstanden: nummers 1 en 2 plus de beste
+            acht nummers 3. De kampioen blijft onder 8% van het totale puntenpakket.
           </p>
           <p className="mt-3 text-sm font-semibold leading-7 text-[#48617f]">
             Gelijke stand? Dan kijken we achtereenvolgens naar meeste exacte uitslagen, meeste juiste resultaten,

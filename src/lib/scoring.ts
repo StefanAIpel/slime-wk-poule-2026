@@ -1,26 +1,26 @@
 export const matchScoring = {
   exact: 12,
-  outcome: 5,
-  goalDifference: 2,
+  outcome: 6,
+  goalDifference: 3,
   teamGoal: 1,
 };
 
 export const stageScoring: Record<string, number> = {
-  round32: 8,
-  round16: 10,
-  quarterfinal: 14,
-  semifinal: 18,
-  finalists: 24,
-  champion: 35,
+  round32: 5,
+  round16: 7,
+  quarterfinal: 10,
+  semifinal: 14,
+  finalists: 20,
+  champion: 55,
 };
 
 export const specialScoring = {
-  topScorer: 20,
-  totalGoalsExact: 10,
-  totalGoalsClose: 8,
+  topScorer: 25,
+  totalGoalsExact: 15,
+  totalGoalsClose: 10,
   totalGoalsNear: 5,
-  exactStat: 8,
-  closeStat: 4,
+  exactStat: 10,
+  closeStat: 5,
 };
 
 export type MatchPredictionScoreInput = {
@@ -41,11 +41,16 @@ export function scoreMatchPrediction(input: MatchPredictionScoreInput) {
   const correct = actualOutcome === predictedOutcome;
 
   let points = 0;
-  if (exact) points += matchScoring.exact;
-  else if (correct) points += matchScoring.outcome;
-  if (input.actualHome - input.actualAway === input.predictedHome - input.predictedAway) points += matchScoring.goalDifference;
-  if (input.actualHome === input.predictedHome) points += matchScoring.teamGoal;
-  if (input.actualAway === input.predictedAway) points += matchScoring.teamGoal;
+  if (exact) {
+    points = matchScoring.exact;
+  } else {
+    if (correct) points += matchScoring.outcome;
+    if (input.actualHome - input.actualAway === input.predictedHome - input.predictedAway) {
+      points += matchScoring.goalDifference;
+    }
+    if (input.actualHome === input.predictedHome) points += matchScoring.teamGoal;
+    if (input.actualAway === input.predictedAway) points += matchScoring.teamGoal;
+  }
 
   return { points, exact: exact ? 1 : 0, correct: correct ? 1 : 0 };
 }
