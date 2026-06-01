@@ -1,12 +1,10 @@
 "use client";
 
 import { LoaderCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { finishSupabaseAuth } from "@/lib/supabase/finish-auth";
 
 export function AuthConfirmClient() {
-  const router = useRouter();
   const [message, setMessage] = useState("Je inloglink wordt gecontroleerd.");
 
   useEffect(() => {
@@ -19,23 +17,21 @@ export function AuthConfirmClient() {
 
       if (!cancelled) {
         setMessage("Gelukt. Je scorekaart wordt geopend.");
-        window.history.replaceState(null, "", result.redirectTo);
-        router.replace(result.redirectTo);
-        router.refresh();
+        window.location.replace(result.redirectTo);
       }
     }
 
     finishLogin().catch(() => {
       if (!cancelled) {
         setMessage("Deze link is verlopen of al gebruikt. Vraag een nieuwe inloglink aan.");
-        router.replace("/?auth=fout");
+        window.location.replace("/?auth=fout");
       }
     });
 
     return () => {
       cancelled = true;
     };
-  }, [router]);
+  }, []);
 
   return (
     <div className="flex items-center gap-3 rounded-lg bg-[#eef6ff] px-4 py-3 text-sm font-black text-[#102c77]">

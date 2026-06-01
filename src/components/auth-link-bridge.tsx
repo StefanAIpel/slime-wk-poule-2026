@@ -1,12 +1,10 @@
 "use client";
 
 import { LoaderCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { finishSupabaseAuth, hasAuthCallbackPayload } from "@/lib/supabase/finish-auth";
 
 export function AuthLinkBridge() {
-  const router = useRouter();
   const [active] = useState(() => typeof window !== "undefined" && hasAuthCallbackPayload());
 
   useEffect(() => {
@@ -16,15 +14,13 @@ export function AuthLinkBridge() {
 
     finishSupabaseAuth().then((result) => {
       if (cancelled) return;
-      window.history.replaceState(null, "", result.redirectTo);
-      router.replace(result.redirectTo);
-      router.refresh();
+      window.location.replace(result.redirectTo);
     });
 
     return () => {
       cancelled = true;
     };
-  }, [active, router]);
+  }, [active]);
 
   if (!active) return null;
 
