@@ -1,22 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f3f5f9;
-  --foreground: #131c2b;
-  --muted: #5a6577;
-  --line: rgba(19, 28, 43, 0.1);
+  --background: #f5f7fb;
+  --foreground: #0e2a47;
+  --muted: #5a6b82;
+  --line: rgba(14, 42, 71, 0.1);
   --panel: #ffffff;
-  --panel-ink: #131c2b;
-  --blue: #2c4a72;
-  --blue-2: #1d3454;
-  --blue-ink: #142539;
-  --red: #b23b46;
-  --green: #2f7a60;
-  --gold: #d79a34;
-  --orange: #e06a2e;
-  --orange-2: #ef8a4f;
-  --cream: #fbf6ec;
-  --ink-soft: #4c5a70;
+  --panel-ink: #0e2a47;
+  --blue: #1e73b8;
+  --blue-2: #114b82;
+  --blue-ink: #0e2a47;
+  --red: #d23a31;
+  --green: #15a35b;
+  --green-deep: #0e7a44;
+  --gold: #e1a93a;
+  --orange: #f26a1b;
+  --orange-2: #fb8c46;
+  --cream: #fff7e8;
+  --ink-soft: #5a6b82;
 }
 
 @theme inline {
@@ -38,10 +39,10 @@ body {
   min-height: 100%;
   margin: 0;
   background:
-    radial-gradient(circle at 8% -8%, rgba(44, 74, 114, 0.1), transparent 38%),
-    radial-gradient(circle at 96% -4%, rgba(178, 59, 70, 0.06), transparent 36%),
-    radial-gradient(circle at 50% 120%, rgba(47, 122, 96, 0.07), transparent 42%),
-    linear-gradient(180deg, #eef1f7 0%, #f3f5f9 46%, #f6f8fb 100%);
+    radial-gradient(circle at 8% -8%, rgba(30, 115, 184, 0.1), transparent 38%),
+    radial-gradient(circle at 96% -4%, rgba(210, 58, 49, 0.05), transparent 36%),
+    radial-gradient(circle at 50% 120%, rgba(21, 163, 91, 0.08), transparent 42%),
+    linear-gradient(180deg, #eef2f9 0%, #f5f7fb 46%, #f7f9fc 100%);
   background-attachment: fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
@@ -73,6 +74,58 @@ textarea {
   padding: 20px 16px 110px;
 }
 
+.status-bar {
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  background: linear-gradient(90deg, var(--blue-2), var(--blue) 70%, var(--green-deep));
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(14, 42, 71, 0.18);
+}
+
+.status-bar-inner {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-bar-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.status-chip strong {
+  font-weight: 800;
+}
+
+.status-me {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  color: #fff;
+  text-decoration: none;
+}
+
+.status-chip-accent {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 3px 10px;
+}
+
 .stadium-bg {
   position: fixed;
   inset: 0;
@@ -93,11 +146,11 @@ textarea {
 .dark-panel {
   color: #fff;
   background:
-    linear-gradient(135deg, rgba(224, 106, 46, 0.12) 0 14%, transparent 14%),
-    linear-gradient(150deg, #2c4a72 0%, #1d3454 50%, #142539 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+    linear-gradient(135deg, rgba(242, 106, 27, 0.14) 0 14%, transparent 14%),
+    linear-gradient(150deg, #1e73b8 0%, #114b82 52%, #0e2a47 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 16px;
-  box-shadow: 0 18px 40px rgba(20, 37, 57, 0.24);
+  box-shadow: 0 18px 40px rgba(14, 42, 71, 0.24);
 }
 
 .wc-header {
@@ -113,10 +166,10 @@ textarea {
   padding: 20px;
   color: #fff;
   background:
-    radial-gradient(circle at 88% -20%, rgba(224, 106, 46, 0.16), transparent 42%),
-    radial-gradient(circle at 0% 120%, rgba(47, 122, 96, 0.18), transparent 44%),
-    linear-gradient(135deg, #2c4a72 0%, #1d3454 52%, #142539 100%);
-  box-shadow: 0 18px 42px rgba(20, 37, 57, 0.28);
+    radial-gradient(circle at 90% -20%, rgba(242, 106, 27, 0.2), transparent 42%),
+    radial-gradient(circle at 0% 120%, rgba(21, 163, 91, 0.26), transparent 46%),
+    linear-gradient(135deg, #1e73b8 0%, #114b82 54%, #0e7a44 100%);
+  box-shadow: 0 18px 42px rgba(14, 42, 71, 0.28);
 }
 
 .hero-band::before {
@@ -124,9 +177,9 @@ textarea {
   content: "";
   inset: 0;
   background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.5) 1.5px, transparent 2px),
-    radial-gradient(circle, rgba(224, 106, 46, 0.4) 1.5px, transparent 2px),
-    radial-gradient(circle, rgba(47, 122, 96, 0.4) 1.5px, transparent 2px);
+    radial-gradient(circle, rgba(255, 255, 255, 0.55) 1.5px, transparent 2px),
+    radial-gradient(circle, rgba(242, 106, 27, 0.45) 1.5px, transparent 2px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1.5px, transparent 2px);
   background-size: 90px 90px, 130px 130px, 170px 170px;
   background-position: 0 0, 45px 30px, 20px 70px;
   opacity: 0.22;
@@ -440,9 +493,9 @@ textarea {
   color: #fff;
   text-decoration: none;
   background:
-    linear-gradient(90deg, rgba(12, 22, 38, 0.84), rgba(12, 22, 38, 0.2) 62%),
+    linear-gradient(90deg, rgba(14, 42, 71, 0.84), rgba(14, 42, 71, 0.2) 62%),
     var(--slime-banner-image, none),
-    linear-gradient(120deg, #1d3454 0%, #2c4a72 52%, #142539 100%);
+    linear-gradient(120deg, #114b82 0%, #1e73b8 52%, #0e7a44 100%);
   background-size: cover, cover, cover;
   background-position: center, center right, center;
   background-repeat: no-repeat;
@@ -607,7 +660,7 @@ textarea {
 
 .quick-menu-button {
   position: fixed;
-  top: 16px;
+  top: 54px;
   right: 14px;
   z-index: 40;
   display: inline-grid;

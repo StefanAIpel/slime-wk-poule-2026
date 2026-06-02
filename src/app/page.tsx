@@ -80,7 +80,7 @@ export default async function Home({
         <section className="grid gap-4">
           <ProfileForm error={params.profiel} />
           <div className="panel p-4">
-            <h2 className="text-xl font-black text-[#081634]">Na deze stap</h2>
+            <h2 className="text-xl font-extrabold text-[#081634]">Na deze stap</h2>
             <div className="mt-3 grid gap-2 text-sm font-bold leading-6 text-[#48617f]">
               <p>1. Vul je groepswedstrijden in.</p>
               <p>2. Kies je landen voor de knock-outfase.</p>
@@ -100,20 +100,13 @@ export default async function Home({
     <main className="page-shell">
       <header className="mb-6 grid gap-4 md:max-w-xl">
         <Brand />
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="chip bg-[#eaf1ff] text-[#0b1f4d]">
-            <CalendarDays aria-hidden="true" className="size-4" />
-            Invullen tot 11 juni 21:00
-          </span>
-          <span className="chip bg-[#128f47] text-white">{displayName(profile)}</span>
-        </div>
       </header>
 
       <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="dark-panel p-5 text-white">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-black leading-tight md:text-5xl">Jouw Slime Score in een helder overzicht.</h1>
+              <h1 className="text-3xl font-extrabold leading-tight md:text-5xl">Jouw Slime Score in een helder overzicht.</h1>
               <p className="mt-2 max-w-xl text-base font-semibold text-blue-100">
                 Vul je scores en rondekeuzes op één plek in. Je kunt alles aanpassen tot de aftrap op{" "}
                 {new Intl.DateTimeFormat("nl-NL", {
@@ -131,8 +124,8 @@ export default async function Home({
           <div className="mt-6 rounded-lg bg-[#061b47] p-4">
             <div className="flex items-end justify-between gap-3">
               <div>
-                <p className="text-sm font-black uppercase tracking-normal text-blue-100">Voortgang</p>
-                <p className="text-4xl font-black">{progress}%</p>
+                <p className="text-sm font-extrabold uppercase tracking-normal text-blue-100">Voortgang</p>
+                <p className="text-4xl font-extrabold">{progress}%</p>
               </div>
               <p className="text-right text-sm font-bold text-blue-100">{predictionCount ?? 0} van 72 uitslagen</p>
             </div>
@@ -148,15 +141,15 @@ export default async function Home({
         <div className="grid gap-4">
           <a href="/poules" className="panel grid gap-3 p-4 no-underline">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-2xl font-black text-[#081634]">Mijn poules</h2>
+              <h2 className="text-2xl font-extrabold text-[#081634]">Mijn poules</h2>
               <Users aria-hidden="true" className="size-6 text-[#064ed6]" />
             </div>
             {homeMemberships.length ? (
               homeMemberships.map((membership) => membership.pools && (
                 <div key={membership.pools.id} className="rounded-lg border border-slate-200 p-3">
-                  <div className="font-black text-[#081634]">{membership.pools.name}</div>
+                  <div className="font-extrabold text-[#081634]">{membership.pools.name}</div>
                   <div className="mt-1 flex items-center gap-2 text-sm font-bold text-[#48617f]">
-                    Code: <span className="font-black text-[#16863a]">{membership.pools.code}</span>
+                    Code: <span className="font-extrabold text-[#16863a]">{membership.pools.code}</span>
                   </div>
                 </div>
               ))
@@ -167,21 +160,21 @@ export default async function Home({
 
           <div className="panel p-4">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-2xl font-black text-[#081634]">Wereldranglijst</h2>
-              <a className="font-black text-[#064ed6]" href="/ranglijst">
+              <h2 className="text-2xl font-extrabold text-[#081634]">Wereldranglijst</h2>
+              <a className="font-extrabold text-[#064ed6]" href="/ranglijst">
                 Alles
               </a>
             </div>
             <div className="mt-3 divide-y divide-slate-200">
               {homeLeaderboard.map((row, index) => (
                 <div key={`${index}-${row.points}`} className="flex items-center justify-between py-2 text-[#081634]">
-                  <span className="font-black">{index + 1}. {displayName(row.profiles)}</span>
-                  <span className="font-black">{row.points} pt</span>
+                  <span className="font-extrabold">{index + 1}. {displayName(row.profiles)}</span>
+                  <span className="font-extrabold">{row.points} pt</span>
                 </div>
               ))}
               <div className="flex items-center justify-between bg-green-50 px-2 py-2 text-[#137c35]">
-                <span className="font-black">Jij</span>
-                <span className="font-black">{score?.points ?? 0} pt</span>
+                <span className="font-extrabold">Jij</span>
+                <span className="font-extrabold">{score?.points ?? 0} pt</span>
               </div>
             </div>
           </div>
@@ -221,7 +214,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
 
       <div className="hero-band public-hero-row">
         <div>
-          <h1 className="text-3xl font-black leading-tight text-white md:text-4xl">
+          <h1 className="text-3xl font-extrabold leading-tight text-white md:text-4xl">
             De gratis WK 2026-poule voor je vrienden, familie en collega&rsquo;s.
           </h1>
           <p className="mt-2 max-w-xl text-base font-semibold leading-7 text-blue-50 md:text-lg">
@@ -256,7 +249,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
       <div className="grid gap-5 md:grid-cols-[1fr_minmax(320px,400px)] md:items-start">
         <section className="grid gap-4">
           <div className="panel p-4">
-            <h2 className="text-lg font-black text-[#081634]">Zo doe je mee</h2>
+            <h2 className="text-lg font-extrabold text-[#081634]">Zo doe je mee</h2>
             <ol className="mt-3 grid gap-3 sm:grid-cols-3">
               {howItWorks.map((step, index) => {
                 const Icon = step.icon;
@@ -266,7 +259,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
                       <span className="step-pill-num">{index + 1}</span>
                       <Icon aria-hidden="true" className="size-5 text-[#0866e8]" />
                     </div>
-                    <div className="mt-2 font-black text-[#081634]">{step.title}</div>
+                    <div className="mt-2 font-extrabold text-[#081634]">{step.title}</div>
                     <div className="text-sm font-semibold text-[#48617f]">{step.text}</div>
                   </li>
                 );
@@ -276,7 +269,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
 
           <div className="dark-panel grid gap-3 p-5 md:grid-cols-[1fr_auto] md:items-center">
             <div>
-              <h2 className="flex items-center gap-2 text-xl font-black text-white">
+              <h2 className="flex items-center gap-2 text-xl font-extrabold text-white">
                 <Users aria-hidden="true" className="size-6 text-[#ffd44d]" />
                 Daag je groep uit
               </h2>
@@ -289,15 +282,15 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
 
           <a href="/ranglijst" className="panel public-score-card p-4 no-underline">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-black text-[#081634]">Live ranglijst</h2>
-              <span className="text-sm font-black text-[#0866e8]">Bekijk alles</span>
+              <h2 className="text-lg font-extrabold text-[#081634]">Live ranglijst</h2>
+              <span className="text-sm font-extrabold text-[#0866e8]">Bekijk alles</span>
             </div>
             <div className="mt-3 grid gap-2">
               {leaderboard.length ? (
                 leaderboard.map((row, index) => (
                   <div key={`${index}-${row.points}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
                     <span className="truncate font-semibold">{index + 1}. {displayName(row.profiles)}</span>
-                    <span className="font-black">{row.points} pt</span>
+                    <span className="font-extrabold">{row.points} pt</span>
                   </div>
                 ))
               ) : (
@@ -320,12 +313,12 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
 
         <section id="login" className="grid gap-4 md:sticky md:top-4">
           {authError ? (
-            <div className="panel border-red-200 bg-red-50 p-4 font-black text-red-800">
+            <div className="panel border-red-200 bg-red-50 p-4 font-extrabold text-red-800">
               Deze inloglink is verlopen of al gebruikt. Vraag hieronder een nieuwe link aan.
             </div>
           ) : null}
           <div>
-            <h2 className="text-2xl font-black text-[#101a2b]">Gratis meedoen</h2>
+            <h2 className="text-2xl font-extrabold text-[#101a2b]">Gratis meedoen</h2>
             <p className="mt-1 text-sm font-semibold leading-6 text-[#475670]">
               Vul je e-mail in en je krijgt meteen een inloglink. Geen wachtwoord nodig.
             </p>
@@ -334,8 +327,8 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           <InstallAppCard />
           <p className="text-center text-xs font-semibold text-[#46566f]">
             Door mee te doen ga je akkoord met de{" "}
-            <a className="font-black text-[#064ed6]" href="/voorwaarden">voorwaarden</a> en het{" "}
-            <a className="font-black text-[#064ed6]" href="/privacy">privacybeleid</a>.
+            <a className="font-extrabold text-[#064ed6]" href="/voorwaarden">voorwaarden</a> en het{" "}
+            <a className="font-extrabold text-[#064ed6]" href="/privacy">privacybeleid</a>.
           </p>
         </section>
       </div>
