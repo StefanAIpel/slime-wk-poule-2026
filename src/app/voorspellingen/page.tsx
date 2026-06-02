@@ -46,8 +46,8 @@ export default async function PredictionsPage({
       <header className="mb-6 grid gap-4 md:max-w-2xl">
         <Brand />
         <div>
-          <h1 className="text-3xl font-black leading-none text-white md:text-4xl">Voorspellingen</h1>
-          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-blue-100">
+          <h1 className="text-3xl font-black leading-none text-[#0b1f4d] md:text-4xl">Voorspellingen</h1>
+          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-[#46566f]">
             Snel invullen, later nog bijschaven tot 11 juni 21:00 Nederlandse tijd. Na de groepsfase is er een kleine
             optionele herziening tot 28 juni 21:00.
           </p>

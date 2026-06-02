@@ -35,8 +35,8 @@ export default async function RankingPage() {
       <header className="mb-6 grid gap-4 md:max-w-2xl">
         <Brand />
         <div>
-          <h1 className="text-3xl font-black leading-none text-white md:text-4xl">Ranglijsten</h1>
-          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-blue-100">
+          <h1 className="text-3xl font-black leading-none text-[#0b1f4d] md:text-4xl">Ranglijsten</h1>
+          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-[#46566f]">
             Algemene stand en subpoules. Meedoen of voorspellingen aanpassen kan na login.
           </p>
         </div>

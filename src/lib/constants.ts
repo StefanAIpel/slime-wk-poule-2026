@@ -10,6 +10,10 @@ export const POST_GROUP_DEADLINE = new Date(POST_GROUP_DEADLINE_ISO);
 
 export const SLIME_GAME_URL = "https://slime-wk2026.netlify.app";
 
+/** Officieel domein. Gebruikt voor metadata, manifest en deel-links. */
+export const SITE_URL = "https://slimescore.nl";
+export const SITE_NAME = "Slime Score";
+
 export const scoringRules = [
   { label: "Exacte uitslag", points: matchScoring.exact, note: "Max per wedstrijd" },
   { label: "Juiste winnaar/gelijkspel", points: matchScoring.outcome, note: "Als het niet exact is" },

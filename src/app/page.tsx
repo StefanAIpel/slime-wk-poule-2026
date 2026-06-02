@@ -1,11 +1,13 @@
-import { CalendarDays, Gamepad2, Share2, Trophy, Users } from "lucide-react";
+import { CalendarDays, Gamepad2, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { ProfileForm } from "@/components/profile-form";
-import { ENTRY_DEADLINE_ISO, SLIME_GAME_URL } from "@/lib/constants";
+import { ShareButton } from "@/components/share-button";
+import { TrustBadges } from "@/components/trust-badges";
+import { ENTRY_DEADLINE_ISO, SITE_URL, SLIME_GAME_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -98,11 +100,11 @@ export default async function Home({
       <header className="mb-6 grid gap-4 md:max-w-xl">
         <Brand />
         <div className="flex flex-wrap items-center gap-2">
-          <span className="chip bg-white/10 text-white">
+          <span className="chip bg-[#eaf1ff] text-[#0b1f4d]">
             <CalendarDays aria-hidden="true" className="size-4" />
             Invullen tot 11 juni 21:00
           </span>
-      <span className="chip bg-[#128f47] text-white">{displayName(profile)}</span>
+          <span className="chip bg-[#128f47] text-white">{displayName(profile)}</span>
         </div>
       </header>
 
@@ -229,9 +231,11 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         <Brand />
         <div className="public-hero-row">
           <div>
-            <h1 className="max-w-2xl text-4xl font-black leading-none text-white md:text-6xl">WK-poule zonder gedoe.</h1>
-            <p className="mt-3 max-w-xl text-lg font-semibold leading-8 text-blue-100">
-              Vul je scores in, deel je poulecode en volg de stand. 100% gratis.
+            <h1 className="max-w-2xl text-4xl font-black leading-none text-[#0b1f4d] md:text-6xl">
+              De WK 2026-poule voor het hele team.
+            </h1>
+            <p className="mt-3 max-w-xl text-lg font-semibold leading-8 text-[#46566f]">
+              Voorspel alle wedstrijden, speel met vrienden en familie en zie wie de echte bondscoach is.
             </p>
           </div>
           <Image
@@ -240,23 +244,31 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             alt="Slime Score app icon"
             width={512}
             height={512}
-            sizes="(min-width: 1024px) 190px, 170px"
+            sizes="(min-width: 1024px) 200px, 190px"
             priority
           />
         </div>
-        <ol className="grid gap-2 text-sm font-semibold text-blue-100 sm:grid-cols-3">
-          <li className="step-pill">1. Mail-link openen</li>
-          <li className="step-pill">2. Scores invullen</li>
-          <li className="step-pill">3. Poulecode delen</li>
+        <TrustBadges />
+        <ol className="grid gap-2 sm:grid-cols-3">
+          <li className="step-pill"><span className="step-pill-num">1</span> Vul je e-mail in</li>
+          <li className="step-pill"><span className="step-pill-num">2</span> Open de mail-link</li>
+          <li className="step-pill"><span className="step-pill-num">3</span> Voorspel & speel mee</li>
         </ol>
         <div className="flex flex-wrap gap-3">
           <a href="#login" className="button-primary">
-            <Share2 aria-hidden="true" className="size-5" />
-            Doe mee
+            <Trophy aria-hidden="true" className="size-5" />
+            Gratis meedoen
           </a>
           <a href="/schema" className="button-plain">
+            <CalendarDays aria-hidden="true" className="size-5" />
             Bekijk schema
           </a>
+          <ShareButton
+            url={SITE_URL}
+            text="Doe je mee met de gratis Slime Score WK 2026-poule?"
+            label="Deel met je groep"
+            variant="secondary"
+          />
         </div>
         <a href="/ranglijst" className="panel public-score-card p-4 no-underline">
           <div className="flex items-center justify-between gap-3">
@@ -298,12 +310,6 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         </div>
         <LoginForm />
         <InstallAppCard />
-        <div className="panel p-4">
-          <h2 className="text-xl font-black text-[#081634]">Inloggen</h2>
-          <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
-            Je gebruikt steeds een nieuwe eenmalige mail-link. Als je sessie nog actief is, blijf je gewoon ingelogd.
-          </p>
-        </div>
       </section>
     </main>
   );

@@ -1,8 +1,10 @@
-import { Copy, Megaphone, Palette, Share2, ShieldCheck, Trash2, Users } from "lucide-react";
+import { Megaphone, Palette, ShieldCheck, Trash2, Users } from "lucide-react";
 import { redirect } from "next/navigation";
 import { createPool, joinPool, postPoolMessage, removeMember, setMemberRole, updatePoolStyle } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
+import { CopyButton, WhatsappShare } from "@/components/share-button";
+import { SITE_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 
@@ -65,9 +67,9 @@ export default async function PoolsPage({
       <header className="mb-6 grid gap-4 md:max-w-2xl">
         <Brand />
         <div>
-          <h1 className="text-4xl font-black leading-none text-white">Mijn poules</h1>
-          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-blue-100">
-            Maak een eigen groep, deel de geheime code via WhatsApp en beheer als eigenaar wie erin blijft.
+          <h1 className="text-4xl font-black leading-none text-[#0b1f4d]">Mijn poules</h1>
+          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-[#46566f]">
+            Maak een eigen groep, deel de code via WhatsApp en beheer als eigenaar wie erin blijft.
           </p>
         </div>
       </header>
@@ -119,7 +121,7 @@ export default async function PoolsPage({
             const currentMember = pool.members.find((member) => member.user_id === user.id);
             const isOwner = currentMember?.role === "owner";
             const isManager = currentMember?.role === "owner" || currentMember?.role === "moderator";
-            const shareText = encodeURIComponent(`Doe mee met mijn WK Poule "${pool.name}". Code: ${pool.code}`);
+            const shareText = `Doe mee met onze gratis WK 2026-poule "${pool.name}"! Vul code ${pool.code} in op`;
             return (
               <article key={pool.id} className="panel overflow-hidden">
                 <div className="grid gap-3 p-4 text-white md:grid-cols-[1fr_auto] md:items-center" style={{ background: pool.accentColor }}>
@@ -129,14 +131,8 @@ export default async function PoolsPage({
                     {pool.description ? <p className="mt-2 max-w-2xl text-sm font-semibold text-white/90">{pool.description}</p> : null}
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <a className="button-primary" href={`https://wa.me/?text=${shareText}`} target="_blank" rel="noopener noreferrer">
-                      <Share2 aria-hidden="true" className="size-5" />
-                      WhatsApp
-                    </a>
-                    <a className="button-secondary" href={`/poules?copy=${pool.code}`}>
-                      <Copy aria-hidden="true" className="size-5" />
-                      Code
-                    </a>
+                    <WhatsappShare text={shareText} url={SITE_URL} label="Deel via WhatsApp" />
+                    <CopyButton value={pool.code} label={`Code ${pool.code}`} />
                   </div>
                 </div>
                 {isManager ? (

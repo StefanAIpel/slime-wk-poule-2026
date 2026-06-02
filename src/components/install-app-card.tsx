@@ -57,7 +57,7 @@ export function InstallAppCard() {
               </button>
             ) : (
               <span className="text-xs font-bold leading-5 text-[#48617f]">
-                iPhone: delenknop, daarna Zet op beginscherm.
+                iPhone: tik onderin op de deelknop (vierkant met pijl) en kies &ldquo;Zet op beginscherm&rdquo;.
               </span>
             )}
           </div>
