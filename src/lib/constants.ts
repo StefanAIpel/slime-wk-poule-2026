@@ -11,7 +11,9 @@ export const POST_GROUP_DEADLINE = new Date(POST_GROUP_DEADLINE_ISO);
 export const SLIME_GAME_URL = "https://soccer.slimescore.com";
 
 /** Officieel domein. Gebruikt voor metadata, manifest en deel-links. */
-export const SITE_URL = "https://slimescore.nl";
+export const SITE_URL = "https://slimescore.com";
+/** Alternatief domein (PWA), wijst naar dezelfde app. */
+export const SITE_URL_APP = "https://slimescore.app";
 export const SITE_NAME = "Slime Score";
 
 export const scoringRules = [

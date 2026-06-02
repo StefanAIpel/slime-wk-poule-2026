@@ -1,6 +1,7 @@
 import { Megaphone, Palette, ShieldCheck, Trash2, Users } from "lucide-react";
 import { redirect } from "next/navigation";
 import { createPool, joinPool, postPoolMessage, removeMember, setMemberRole, updatePoolStyle } from "@/app/actions";
+import { Avatar } from "@/components/avatar";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
@@ -199,9 +200,12 @@ export default async function PoolsPage({
                 <div className="divide-y divide-slate-200">
                   {pool.members.map((member) => (
                     <div key={member.user_id} className="grid gap-3 p-4 md:grid-cols-[1fr_auto] md:items-center">
-                      <div>
-                        <div className="font-black text-[#081634]">{displayName(member.profiles)}</div>
-                        <div className="text-sm font-bold text-[#48617f]">{roleLabel(member.role)}</div>
+                      <div className="flex items-center gap-3">
+                        <Avatar name={displayName(member.profiles)} />
+                        <div className="min-w-0">
+                          <div className="truncate font-black text-[#081634]">{displayName(member.profiles)}</div>
+                          <div className="text-sm font-bold text-[#48617f]">{roleLabel(member.role)}</div>
+                        </div>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {isOwner && member.role !== "owner" ? (

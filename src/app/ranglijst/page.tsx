@@ -1,4 +1,5 @@
 import { Medal, Trophy, Users } from "lucide-react";
+import { Avatar } from "@/components/avatar";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
@@ -49,11 +50,12 @@ export default async function RankingPage() {
           </div>
           <div className="divide-y divide-slate-200">
             {rows.map((row, index) => (
-              <div key={row.user_id} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 p-4 text-[#081634]">
+              <div key={row.user_id} className="grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 p-4 text-[#081634]">
                 <RankBadge rank={index + 1} />
-                <div>
-                  <div className="font-black">{row.profiles?.team_name || "Team zonder naam"}</div>
-                  <div className="text-sm font-bold text-[#48617f]">
+                <Avatar name={row.profiles?.team_name || row.profiles?.nickname || "Anoniem"} />
+                <div className="min-w-0">
+                  <div className="truncate font-black">{row.profiles?.team_name || "Team zonder naam"}</div>
+                  <div className="truncate text-sm font-bold text-[#48617f]">
                     {row.profiles?.nickname || "Naam volgt"} · {row.exact_scores} exact · {row.correct_results} juiste richting
                   </div>
                 </div>

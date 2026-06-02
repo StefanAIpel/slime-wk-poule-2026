@@ -2,7 +2,7 @@
 
 Datum: 2026-06-02. Bouwt voort op `README.md`, `docs/AGENT_BRIEF.md` en
 `docs/onderzoek-wk-poule.md`. Status na PR #1 (lichte WK 2026-stijl, share-functies,
-domein `slimescore.nl`).
+domein `slimescore.com`).
 
 ---
 
@@ -40,7 +40,7 @@ domein `slimescore.nl`).
 - Dubbele ranglijst (personen + subpoules op beste 4).
 - PWA, ISR-caching op publieke pagina's, server-side service-role.
 - **Nieuw in PR #1:** licht/professioneel WK 2026-thema, trust-badges, share-knoppen
-  (Web Share API + WhatsApp + kopieer), domein `slimescore.nl` centraal in metadata,
+  (Web Share API + WhatsApp + kopieer), domein `slimescore.com` centraal in metadata,
   manifest en deel-links; Slime-game-knop → `soccer.slimescore.com`.
 
 ### Open uit de brief (nog niet af)
@@ -110,7 +110,7 @@ toegevoegd aan beginscherm). **Doen voor dit WK.**
 
 ### Optie B — Play Store via TWA (Trusted Web Activity)
 Wrap de PWA met Bubblewrap/PWABuilder. Goedkoop, snel, door Google geaccepteerd.
-Vereist `assetlinks.json` (Digital Asset Links) op `slimescore.nl`. Alleen Android.
+Vereist `assetlinks.json` (Digital Asset Links) op `slimescore.com`. Alleen Android.
 Apple accepteert een kale webview-wrapper niet (richtlijn 4.2 "minimal functionality").
 
 ### Optie C — App Store + Play Store via Capacitor-shell
@@ -157,7 +157,7 @@ Bouw dit hoe dan ook; het is ook los van native waardevol.
       poule-lidmaatschappen en auth-user verwijdert (Supabase admin `deleteUser`).
       Apple-verplicht.
 - [ ] **Deep links**: Universal Links (`apple-app-site-association`) + Android App Links
-      (`assetlinks.json`) op `slimescore.nl`, en Supabase redirect-URL's bijwerken zodat
+      (`assetlinks.json`) op `slimescore.com`, en Supabase redirect-URL's bijwerken zodat
       de magic-link de app heropent.
 - [ ] **Login die Apple accepteert**: e-mail magic-link is first-party en mag; de
       "Sign in with Apple verplicht"-regel geldt alleen bij third-party social logins.
@@ -172,7 +172,7 @@ Bouw dit hoe dan ook; het is ook los van native waardevol.
 ## 7. Productkansen (groei zonder reclame)
 
 ### Activatie & conversie
-- **Uitnodigingslinks i.p.v. alleen codes** (Fase 3): `slimescore.nl/join/<code>` die na
+- **Uitnodigingslinks i.p.v. alleen codes** (Fase 3): `slimescore.com/join/<code>` die na
   login direct in de poule plaatst. Halveert frictie bij delen.
 - **Deel-momenten verzilveren**: na opslaan voorspellingen → "deel je scorekaart",
   na aanmaken poule → "nodig je groep uit". Share-componenten staan al klaar (PR #1).

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AuthLinkBridge } from "@/components/auth-link-bridge";
 import { PwaRegister } from "@/components/pwa-register";
@@ -51,6 +51,13 @@ export const metadata: Metadata = {
     description,
     images: ["/icon.png"],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ff7a00",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

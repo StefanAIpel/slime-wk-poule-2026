@@ -533,6 +533,16 @@ textarea {
   color: #fff;
 }
 
+.avatar {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 900;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45), 0 4px 10px rgba(8, 22, 52, 0.12);
+}
+
 .bottom-nav {
   position: fixed;
   right: 12px;

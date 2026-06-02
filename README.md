@@ -74,7 +74,7 @@ Authenticatie via `x-result-sync-secret`. Na elke update worden de ranglijsten o
 
 ## Productnotities
 
-- Officieel domein: `https://slimescore.nl` (centraal in `SITE_URL`, gebruikt voor metadata, manifest en deel-links). Hosting draait op Vercel (`https://slimescore.vercel.app`).
+- Officieel domein: `https://slimescore.com` (centraal in `SITE_URL`, gebruikt voor metadata, manifest en deel-links). Hosting draait op Vercel (`https://slimescore.vercel.app`).
 - Auth-link fallback zit zowel in `/auth/confirm` als globaal in `AuthLinkBridge`, omdat Supabase-links afhankelijk van template/config op verschillende manieren kunnen terugkomen.
 - De app kiest bewust voor gemak: groepsduels + automatisch berekende laatste 32 + rondekeuzes, niet alle 104 wedstrijden apart invullen.
 - De publieke pagina's `/schema` en `/ranglijst` gebruiken ISR (`1h` en `30s`) om Supabase-load en TTFB laag te houden.
