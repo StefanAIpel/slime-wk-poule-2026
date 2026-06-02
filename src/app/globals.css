@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f3f6fb;
-  --foreground: #101a2b;
-  --muted: #586a82;
-  --line: rgba(16, 26, 43, 0.1);
+  --background: #f3f5f9;
+  --foreground: #131c2b;
+  --muted: #5a6577;
+  --line: rgba(19, 28, 43, 0.1);
   --panel: #ffffff;
-  --panel-ink: #101a2b;
-  --blue: #20508c;
-  --blue-2: #15375f;
-  --blue-ink: #0c2240;
-  --red: #d23a31;
-  --green: #1c855a;
-  --gold: #efa820;
-  --orange: #f4661e;
-  --orange-2: #ff8a3c;
-  --cream: #fff7e8;
-  --ink-soft: #475670;
+  --panel-ink: #131c2b;
+  --blue: #2c4a72;
+  --blue-2: #1d3454;
+  --blue-ink: #142539;
+  --red: #b23b46;
+  --green: #2f7a60;
+  --gold: #d79a34;
+  --orange: #e06a2e;
+  --orange-2: #ef8a4f;
+  --cream: #fbf6ec;
+  --ink-soft: #4c5a70;
 }
 
 @theme inline {
@@ -38,10 +38,10 @@ body {
   min-height: 100%;
   margin: 0;
   background:
-    radial-gradient(circle at 8% -8%, rgba(8, 102, 232, 0.12), transparent 38%),
-    radial-gradient(circle at 96% -4%, rgba(225, 38, 47, 0.09), transparent 36%),
-    radial-gradient(circle at 50% 120%, rgba(18, 143, 71, 0.08), transparent 42%),
-    linear-gradient(180deg, #eef3fc 0%, #f5f8fd 46%, #f7fafe 100%);
+    radial-gradient(circle at 8% -8%, rgba(44, 74, 114, 0.1), transparent 38%),
+    radial-gradient(circle at 96% -4%, rgba(178, 59, 70, 0.06), transparent 36%),
+    radial-gradient(circle at 50% 120%, rgba(47, 122, 96, 0.07), transparent 42%),
+    linear-gradient(180deg, #eef1f7 0%, #f3f5f9 46%, #f6f8fb 100%);
   background-attachment: fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
@@ -93,11 +93,11 @@ textarea {
 .dark-panel {
   color: #fff;
   background:
-    linear-gradient(135deg, rgba(244, 102, 30, 0.18) 0 14%, transparent 14%),
-    linear-gradient(150deg, #20508c 0%, #15375f 50%, #0c2240 100%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+    linear-gradient(135deg, rgba(224, 106, 46, 0.12) 0 14%, transparent 14%),
+    linear-gradient(150deg, #2c4a72 0%, #1d3454 50%, #142539 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
-  box-shadow: 0 18px 40px rgba(12, 34, 64, 0.26);
+  box-shadow: 0 18px 40px rgba(20, 37, 57, 0.24);
 }
 
 .wc-header {
@@ -113,10 +113,10 @@ textarea {
   padding: 20px;
   color: #fff;
   background:
-    radial-gradient(circle at 88% -20%, rgba(244, 102, 30, 0.28), transparent 42%),
-    radial-gradient(circle at 0% 120%, rgba(28, 133, 90, 0.3), transparent 44%),
-    linear-gradient(135deg, #20508c 0%, #15375f 52%, #0c2240 100%);
-  box-shadow: 0 18px 42px rgba(12, 34, 64, 0.3);
+    radial-gradient(circle at 88% -20%, rgba(224, 106, 46, 0.16), transparent 42%),
+    radial-gradient(circle at 0% 120%, rgba(47, 122, 96, 0.18), transparent 44%),
+    linear-gradient(135deg, #2c4a72 0%, #1d3454 52%, #142539 100%);
+  box-shadow: 0 18px 42px rgba(20, 37, 57, 0.28);
 }
 
 .hero-band::before {
@@ -124,12 +124,12 @@ textarea {
   content: "";
   inset: 0;
   background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.6) 1.5px, transparent 2px),
-    radial-gradient(circle, rgba(244, 102, 30, 0.55) 1.5px, transparent 2px),
-    radial-gradient(circle, rgba(43, 195, 95, 0.5) 1.5px, transparent 2px);
+    radial-gradient(circle, rgba(255, 255, 255, 0.5) 1.5px, transparent 2px),
+    radial-gradient(circle, rgba(224, 106, 46, 0.4) 1.5px, transparent 2px),
+    radial-gradient(circle, rgba(47, 122, 96, 0.4) 1.5px, transparent 2px);
   background-size: 90px 90px, 130px 130px, 170px 170px;
   background-position: 0 0, 45px 30px, 20px 70px;
-  opacity: 0.35;
+  opacity: 0.22;
   pointer-events: none;
 }
 
@@ -440,9 +440,9 @@ textarea {
   color: #fff;
   text-decoration: none;
   background:
-    linear-gradient(90deg, rgba(8, 20, 40, 0.84), rgba(8, 20, 40, 0.2) 62%),
+    linear-gradient(90deg, rgba(12, 22, 38, 0.84), rgba(12, 22, 38, 0.2) 62%),
     var(--slime-banner-image, none),
-    linear-gradient(120deg, #15375f 0%, #20508c 52%, #0c2240 100%);
+    linear-gradient(120deg, #1d3454 0%, #2c4a72 52%, #142539 100%);
   background-size: cover, cover, cover;
   background-position: center, center right, center;
   background-repeat: no-repeat;
