@@ -2,6 +2,7 @@ import { CalendarDays, ClipboardList, ListChecks, Mail, MousePointerClick, Troph
 import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
+import { HeroArt } from "@/components/hero-art";
 import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { ProfileForm } from "@/components/profile-form";
@@ -212,8 +213,11 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
     <main className="page-shell grid gap-5">
       <Brand />
 
-      <div className="hero-band public-hero-row">
-        <div>
+      <div
+        className="hero-band hero-band-visual"
+        style={{ "--hero-image": "url('/slimes/hero-bg.webp')" } as React.CSSProperties}
+      >
+        <div className="hero-content">
           <h1 className="text-3xl font-extrabold leading-tight text-white md:text-4xl">
             De gratis WK 2026-poule voor je vrienden, familie en collega&rsquo;s.
           </h1>
@@ -233,15 +237,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             />
           </div>
         </div>
-        <Image
-          className="public-hero-icon"
-          src="/icon.png"
-          alt="Slime Score app icon"
-          width={512}
-          height={512}
-          sizes="(min-width: 1024px) 200px, 160px"
-          priority
-        />
+        <HeroArt />
       </div>
 
       <TrustBadges />
