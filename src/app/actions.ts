@@ -192,9 +192,65 @@ export async function postPoolMessage(formData: FormData) {
   const admin = createAdminClient();
   const poolId = cleanText(formData.get("pool_id"), 60);
   const body = cleanText(formData.get("body"), 500);
-  const pinned = formData.get("pinned") === "on";
+  const wantsPin = formData.get("pinned") === "on";
 
   if (body.length < 2) redirect("/poules?fout=bericht");
+
+  const { data: membership } = await admin
+    .from("pool_members")
+    .select("role")
+    .eq("pool_id", poolId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (!membership) redirect("/poules?fout=rechten");
+
+  const isManager = membership.role === "owner" || membership.role === "moderator";
+
+  const { error } = await admin.from("pool_messages").insert({
+    pool_id: poolId,
+    author_id: user.id,
+    body,
+    pinned: wantsPin && isManager,
+  });
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/poules");
+  redirect("/poules?bericht=geplaatst");
+}
+
+export async function deletePoolMessage(formData: FormData) {
+  const { user } = await requireUser();
+  const admin = createAdminClient();
+  const poolId = cleanText(formData.get("pool_id"), 60);
+  const messageId = cleanText(formData.get("message_id"), 60);
+
+  const [{ data: membership }, { data: message }] = await Promise.all([
+    admin.from("pool_members").select("role").eq("pool_id", poolId).eq("user_id", user.id).maybeSingle(),
+    admin.from("pool_messages").select("author_id").eq("id", messageId).maybeSingle(),
+  ]);
+
+  const isManager = membership?.role === "owner" || membership?.role === "moderator";
+  const isAuthor = message?.author_id === user.id;
+  if (!isManager && !isAuthor) redirect("/poules?fout=rechten");
+
+  const { error } = await admin.from("pool_messages").delete().eq("id", messageId).eq("pool_id", poolId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/poules");
+  redirect("/poules?bijgewerkt=1");
+}
+
+const POOL_MEDIA_BUCKET = "pool-media";
+
+export async function uploadPoolImage(formData: FormData) {
+  const { user } = await requireUser();
+  const admin = createAdminClient();
+  const poolId = cleanText(formData.get("pool_id"), 60);
+  const file = formData.get("image");
+
+  if (!(file instanceof File) || file.size === 0) redirect("/poules?fout=afbeelding");
+  if (!file.type.startsWith("image/")) redirect("/poules?fout=afbeelding");
+  if (file.size > 8 * 1024 * 1024) redirect("/poules?fout=afbeelding-groot");
 
   const { data: manager } = await admin
     .from("pool_members")
@@ -203,19 +259,25 @@ export async function postPoolMessage(formData: FormData) {
     .eq("user_id", user.id)
     .in("role", ["owner", "moderator"])
     .maybeSingle();
-
   if (!manager) redirect("/poules?fout=rechten");
 
-  const { error } = await admin.from("pool_messages").insert({
-    pool_id: poolId,
-    author_id: user.id,
-    body,
-    pinned,
-  });
+  // Auto-conversie: schaal naar max 1600px en comprimeer naar WebP.
+  const sharp = (await import("sharp")).default;
+  const input = Buffer.from(await file.arrayBuffer());
+  const webp = await sharp(input)
+    .rotate()
+    .resize(1600, 900, { fit: "cover", withoutEnlargement: true })
+    .webp({ quality: 82 })
+    .toBuffer();
 
+  await admin.storage.createBucket(POOL_MEDIA_BUCKET, { public: true }).catch(() => null);
+  const { error } = await admin.storage
+    .from(POOL_MEDIA_BUCKET)
+    .upload(`pools/${poolId}.webp`, webp, { contentType: "image/webp", upsert: true });
   if (error) throw new Error(error.message);
+
   revalidatePath("/poules");
-  redirect("/poules?bericht=geplaatst");
+  redirect("/poules?bijgewerkt=1");
 }
 
 export async function setMemberRole(formData: FormData) {

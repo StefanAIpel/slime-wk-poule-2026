@@ -1,14 +1,29 @@
-import { Megaphone, Palette, ShieldCheck, Trash2, Users } from "lucide-react";
+import { ImagePlus, Megaphone, Palette, ShieldCheck, Trash2, Users } from "lucide-react";
 import { redirect } from "next/navigation";
-import { createPool, joinPool, postPoolMessage, removeMember, setMemberRole, updatePoolStyle } from "@/app/actions";
+import {
+  createPool,
+  deletePoolMessage,
+  joinPool,
+  postPoolMessage,
+  removeMember,
+  setMemberRole,
+  updatePoolStyle,
+  uploadPoolImage,
+} from "@/app/actions";
 import { Avatar } from "@/components/avatar";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
+import { PoolBanner } from "@/components/pool-banner";
 import { CopyButton, WhatsappShare } from "@/components/share-button";
 import { SITE_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+function poolBannerUrl(poolId: string) {
+  return `${supabaseUrl}/storage/v1/object/public/pool-media/pools/${poolId}.webp`;
+}
 
 type MemberRow = {
   pool_id: string;
@@ -29,6 +44,7 @@ type MemberRow = {
 type MessageRow = {
   id: string;
   pool_id: string;
+  author_id: string;
   body: string;
   pinned: boolean;
   created_at: string;
@@ -55,7 +71,7 @@ export default async function PoolsPage({
       .order("joined_at"),
     supabase
       .from("pool_messages")
-      .select("id,pool_id,body,pinned,created_at,profiles(nickname,team_name)")
+      .select("id,pool_id,author_id,body,pinned,created_at,profiles(nickname,team_name)")
       .order("pinned", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(50),
@@ -124,10 +140,11 @@ export default async function PoolsPage({
             const shareText = `Doe mee met onze gratis WK 2026-poule "${pool.name}"! Vul code ${pool.code} in op`;
             return (
               <article key={pool.id} className="panel overflow-hidden">
+                <PoolBanner src={poolBannerUrl(pool.id)} alt={`Banner van ${pool.name}`} />
                 <div className="grid gap-3 p-4 text-white md:grid-cols-[1fr_auto] md:items-center" style={{ background: pool.accentColor }}>
                   <div>
                     <h2 className="text-2xl font-black"><span aria-hidden="true">{pool.badgeEmoji}</span> {pool.name}</h2>
-                    <p className="mt-1 font-semibold text-blue-100">Code: <span className="font-black text-white">{pool.code}</span></p>
+                    <p className="mt-1 font-semibold text-white/85">Code: <span className="font-black text-white">{pool.code}</span></p>
                     {pool.description ? <p className="mt-2 max-w-2xl text-sm font-semibold text-white/90">{pool.description}</p> : null}
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -139,61 +156,93 @@ export default async function PoolsPage({
                   <div className="grid gap-4 border-b border-slate-200 bg-slate-50 p-4 lg:grid-cols-2">
                     <form action={updatePoolStyle} className="grid gap-3">
                       <input type="hidden" name="pool_id" value={pool.id} />
-                      <div className="flex items-center gap-2 font-black text-[#081634]">
-                        <Palette aria-hidden="true" className="size-5 text-[#064ed6]" />
+                      <div className="flex items-center gap-2 font-black text-[#101a2b]">
+                        <Palette aria-hidden="true" className="size-5 text-[#2c4a72]" />
                         Poule aankleden
                       </div>
                       <div className="grid gap-2 sm:grid-cols-[72px_110px_1fr]">
-                        <label className="grid gap-1 text-xs font-black text-[#081634]">
+                        <label className="grid gap-1 text-xs font-black text-[#101a2b]">
                           Emoji
                           <input className="field" name="badge_emoji" defaultValue={pool.badgeEmoji} maxLength={8} />
                         </label>
-                        <label className="grid gap-1 text-xs font-black text-[#081634]">
+                        <label className="grid gap-1 text-xs font-black text-[#101a2b]">
                           Kleur
                           <input className="field h-[46px]" name="accent_color" type="color" defaultValue={pool.accentColor} />
                         </label>
-                        <label className="grid gap-1 text-xs font-black text-[#081634]">
+                        <label className="grid gap-1 text-xs font-black text-[#101a2b]">
                           Groepszin
                           <input className="field" name="description" maxLength={180} defaultValue={pool.description ?? ""} placeholder="Bijv. iedereen tegen oom Jan" />
                         </label>
                       </div>
                       <button className="button-secondary w-fit" type="submit">Opslaan</button>
                     </form>
-                    <form action={postPoolMessage} className="grid gap-3">
+                    <form action={uploadPoolImage} className="grid gap-3">
                       <input type="hidden" name="pool_id" value={pool.id} />
-                      <div className="flex items-center gap-2 font-black text-[#081634]">
-                        <Megaphone aria-hidden="true" className="size-5 text-[#e1262f]" />
-                        Bericht aan deelnemers
+                      <div className="flex items-center gap-2 font-black text-[#101a2b]">
+                        <ImagePlus aria-hidden="true" className="size-5 text-[#2f7a60]" />
+                        Poulebanner uploaden
                       </div>
-                      <textarea
-                        className="field min-h-24"
-                        name="body"
-                        maxLength={500}
-                        required
-                        placeholder="Bijv. Vrijdag 20:30 checken we samen Nederland - Japan."
-                      />
-                      <label className="flex items-center gap-2 text-sm font-black text-[#081634]">
-                        <input type="checkbox" name="pinned" /> Vastzetten bovenaan
-                      </label>
-                      <button className="button-primary w-fit" type="submit">Plaats bericht</button>
+                      <input className="field" type="file" name="image" accept="image/*" required />
+                      <p className="text-xs font-semibold text-[#4c5a70]">
+                        Wordt automatisch bijgesneden en geoptimaliseerd (WebP). Max 8 MB.
+                      </p>
+                      <button className="button-secondary w-fit" type="submit">Upload banner</button>
                     </form>
                   </div>
                 ) : null}
                 <div className="border-b border-slate-200 p-4">
-                  <h3 className="text-lg font-black text-[#081634]">Prikbord</h3>
+                  <h3 className="text-lg font-black text-[#101a2b]">Prikbord</h3>
+                  <form action={postPoolMessage} className="mt-3 grid gap-2">
+                    <input type="hidden" name="pool_id" value={pool.id} />
+                    <textarea
+                      className="field min-h-20"
+                      name="body"
+                      maxLength={500}
+                      required
+                      placeholder="Schrijf iets voor je poule…"
+                    />
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      {isManager ? (
+                        <label className="flex items-center gap-2 text-sm font-black text-[#101a2b]">
+                          <input type="checkbox" name="pinned" /> Vastzetten bovenaan
+                        </label>
+                      ) : (
+                        <span />
+                      )}
+                      <button className="button-primary min-h-10 px-4" type="submit">
+                        <Megaphone aria-hidden="true" className="size-4" />
+                        Plaats
+                      </button>
+                    </div>
+                  </form>
                   <div className="mt-3 grid gap-2">
-                    {(messagesByPool.get(pool.id) ?? []).slice(0, 4).map((message) => (
-                      <div key={message.id} className={`rounded-lg border p-3 ${message.pinned ? "border-[#f2b705] bg-yellow-50" : "border-slate-200 bg-white"}`}>
-                        <div className="flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-normal text-[#48617f]">
-                          {message.pinned ? <span className="text-[#a66c00]">Vastgezet</span> : null}
-                          <span>{displayName(message.profiles)}</span>
-                          <span>{new Intl.DateTimeFormat("nl-NL", { dateStyle: "short", timeStyle: "short" }).format(new Date(message.created_at))}</span>
+                    {(messagesByPool.get(pool.id) ?? []).slice(0, 6).map((message) => {
+                      const canDelete = isManager || message.author_id === user.id;
+                      return (
+                        <div
+                          key={message.id}
+                          className={`rounded-lg border p-3 ${message.pinned ? "border-[#e0b23a] bg-amber-50" : "border-slate-200 bg-white"}`}
+                        >
+                          <div className="flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-normal text-[#4c5a70]">
+                            {message.pinned ? <span className="text-[#9a6b12]">Vastgezet</span> : null}
+                            <span>{displayName(message.profiles)}</span>
+                            <span>{new Intl.DateTimeFormat("nl-NL", { dateStyle: "short", timeStyle: "short" }).format(new Date(message.created_at))}</span>
+                            {canDelete ? (
+                              <form action={deletePoolMessage} className="ml-auto">
+                                <input type="hidden" name="pool_id" value={pool.id} />
+                                <input type="hidden" name="message_id" value={message.id} />
+                                <button className="font-black text-[#b23b46] hover:underline" type="submit">
+                                  Verwijder
+                                </button>
+                              </form>
+                            ) : null}
+                          </div>
+                          <p className="mt-1 text-sm font-semibold leading-6 text-[#101a2b]">{message.body}</p>
                         </div>
-                        <p className="mt-1 text-sm font-semibold leading-6 text-[#081634]">{message.body}</p>
-                      </div>
-                    ))}
+                      );
+                    })}
                     {!messagesByPool.get(pool.id)?.length ? (
-                      <p className="text-sm font-semibold text-[#48617f]">Nog geen berichten.</p>
+                      <p className="text-sm font-semibold text-[#4c5a70]">Nog geen berichten.</p>
                     ) : null}
                   </div>
                 </div>

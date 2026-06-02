@@ -77,6 +77,7 @@ Authenticatie via `x-result-sync-secret`. Na elke update worden de ranglijsten o
 - Officieel domein: `https://slimescore.com` (centraal in `SITE_URL`, gebruikt voor metadata, manifest en deel-links). Hosting draait op Vercel (`https://slimescore.vercel.app`).
 - E-mail: inlog-/systeemmails gaan via `MAIL_FROM` (`noreply@slimesports.com`, Cloudflare Email Routing); contact via `CONTACT_EMAIL`. Stel dit in als Supabase SMTP-afzender en zet SPF/DKIM klaar in Cloudflare.
 - Juridische pagina's: `/privacy` en `/voorwaarden` (publiek, in de sitemap, uitgesloten privé-routes in `robots.txt`).
+- Poule-beheer: leden mogen prikbordberichten plaatsen; beheerder/moderators kunnen vastzetten en berichten verwijderen (auteur mag eigen bericht wissen). Beheer kan een poulebanner uploaden — server-side auto-conversie naar WebP (max 1600×900) in de publieke Supabase Storage-bucket `pool-media` (lazy aangemaakt op pad `pools/<poolId>.webp`).
 - Auth-link fallback zit zowel in `/auth/confirm` als globaal in `AuthLinkBridge`, omdat Supabase-links afhankelijk van template/config op verschillende manieren kunnen terugkomen.
 - De app kiest bewust voor gemak: groepsduels + automatisch berekende laatste 32 + rondekeuzes, niet alle 104 wedstrijden apart invullen.
 - De publieke pagina's `/schema` en `/ranglijst` gebruiken ISR (`1h` en `30s`) om Supabase-load en TTFB laag te houden.
