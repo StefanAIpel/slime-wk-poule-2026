@@ -13,7 +13,7 @@ import {
 import { Avatar } from "@/components/avatar";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
-import { PageHero } from "@/components/page-hero";
+import { HeroArt } from "@/components/hero-art";
 import { PendingButton } from "@/components/pending-button";
 import { PoolBanner } from "@/components/pool-banner";
 import { CopyButton, WhatsappShare } from "@/components/share-button";
@@ -95,12 +95,22 @@ export default async function PoolsPage({
 
   return (
     <main className="page-shell">
-      <header className="mb-6 grid gap-4">
+      <header className="mb-5 grid gap-4">
         <Brand />
-        <PageHero
-          title="Mijn poules"
-          subtitle="Maak een eigen groep, deel de code via WhatsApp en beheer als eigenaar wie erin blijft."
-        />
+        <div
+          className="hero-band hero-band-visual"
+          style={{ "--hero-image": "url('/slimes/hero-bg.webp')" } as React.CSSProperties}
+        >
+          <div className="hero-content">
+            <h1 className="text-2xl font-extrabold leading-tight text-white md:text-3xl">
+              Speel samen — maak of join je poule
+            </h1>
+            <p className="mt-1 text-sm font-semibold leading-6 text-blue-50 md:text-base">
+              Daag vrienden, familie of collega&rsquo;s uit, vul je scores in en strijd om de eerste plek.
+            </p>
+          </div>
+          <HeroArt src="/slimes/poule-slime.png" />
+        </div>
       </header>
 
       {params.aangemaakt || params.joined || params.bijgewerkt ? (

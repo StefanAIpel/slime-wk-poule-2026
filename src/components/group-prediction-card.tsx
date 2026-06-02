@@ -82,7 +82,7 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
                       aria-label={`${homeName} doelpunten`}
                       placeholder="–"
                     />
-                    <span className="text-xs font-bold text-[var(--muted)]">vs</span>
+                    <span className="text-sm font-bold text-[var(--muted)]">-</span>
                     <input
                       className="score-input"
                       name={`match_${match.id}_away`}

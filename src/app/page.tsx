@@ -9,6 +9,7 @@ import { ProfileForm } from "@/components/profile-form";
 import { ShareButton } from "@/components/share-button";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
 import { TrustBadges } from "@/components/trust-badges";
+import { UpcomingMatches } from "@/components/upcoming-matches";
 import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -140,6 +141,7 @@ export default async function Home({
         </div>
 
         <div className="grid gap-4">
+          <UpcomingMatches />
           <a href="/poules" className="panel grid gap-3 p-4 no-underline">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-2xl font-extrabold text-[#081634]">Mijn poules</h2>
@@ -244,6 +246,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
 
       <div className="grid gap-5 md:grid-cols-[1fr_minmax(320px,400px)] md:items-start">
         <section className="grid gap-4">
+          <UpcomingMatches />
           <div className="panel p-4">
             <h2 className="text-lg font-extrabold text-[#081634]">Zo doe je mee</h2>
             <ol className="mt-3 grid gap-3 sm:grid-cols-3">

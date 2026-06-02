@@ -39,6 +39,7 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
     () => Array.from(new Set(matches.map((m) => m.group).filter(Boolean) as string[])).sort(),
     [matches],
   );
+  const hasKnockout = useMemo(() => matches.some((m) => !m.group), [matches]);
   const teams = useMemo(() => {
     const map = new Map<string, string>();
     for (const m of matches) {
@@ -72,46 +73,47 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
 
   return (
     <section className="grid gap-3">
-      <div className="panel grid gap-3 p-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <GroupChip label="Alle" active={group === "all"} onClick={() => setGroup("all")} />
-          {groups.map((g) => (
-            <GroupChip key={g} label={g} active={group === g} onClick={() => setGroup(g)} />
-          ))}
-          {matches.some((m) => !m.group) ? (
-            <GroupChip label="Knock-out" active={group === "ko"} onClick={() => setGroup("ko")} />
-          ) : null}
-        </div>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-[#475670]">
-            Team
-            <select className="field" value={team} onChange={(e) => setTeam(e.target.value)}>
-              <option value="all">Alle teams</option>
-              {teams.map((t) => (
-                <option key={t.code} value={t.code}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-[#475670]">
-            Datum
-            <select className="field" value={date} onChange={(e) => setDate(e.target.value)}>
-              <option value="all">Alle datums</option>
-              {dates.map((d) => (
-                <option key={d.key} value={d.key}>
-                  {d.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-sm font-bold text-[#475670]">{filtered.length} wedstrijden</span>
+      <div className="panel grid gap-2 p-3 sm:grid-cols-3">
+        <label className="grid gap-1 text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
+          Groep
+          <select className="field" value={group} onChange={(e) => setGroup(e.target.value)}>
+            <option value="all">Alle groepen</option>
+            {groups.map((g) => (
+              <option key={g} value={g}>
+                Groep {g}
+              </option>
+            ))}
+            {hasKnockout ? <option value="ko">Knock-out</option> : null}
+          </select>
+        </label>
+        <label className="grid gap-1 text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
+          Team
+          <select className="field" value={team} onChange={(e) => setTeam(e.target.value)}>
+            <option value="all">Alle teams</option>
+            {teams.map((t) => (
+              <option key={t.code} value={t.code}>
+                {t.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="grid gap-1 text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
+          Datum
+          <select className="field" value={date} onChange={(e) => setDate(e.target.value)}>
+            <option value="all">Alle datums</option>
+            {dates.map((d) => (
+              <option key={d.key} value={d.key}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className="flex items-center justify-between gap-3 sm:col-span-3">
+          <span className="text-sm font-semibold text-[var(--muted)]">{filtered.length} wedstrijden</span>
           {hasFilter ? (
             <button
               type="button"
-              className="button-secondary min-h-10 px-3 text-sm"
+              className="button-secondary min-h-9 px-3 text-sm"
               onClick={() => {
                 setGroup("all");
                 setTeam("all");
@@ -127,55 +129,46 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
 
       <div className="panel divide-y divide-slate-200">
         {filtered.length ? (
-          filtered.map((match) => (
-            <div key={match.id} className="grid gap-2 p-4 md:grid-cols-[1fr_auto] md:items-center">
-              <div>
-                <div className="flex flex-wrap items-center gap-2 text-base font-black text-[#101a2b]">
-                  <TeamFlag code={match.homeCode} name={match.homeName} />
-                  <span>{match.homeName ?? match.homeCode}</span>
-                  <span className="text-[#475670]">-</span>
-                  <TeamFlag code={match.awayCode} name={match.awayName} />
-                  <span>{match.awayName ?? match.awayCode}</span>
-                  {match.group ? (
-                    <span className="chip bg-[#eef3fc] text-[#15375f]">Groep {match.group}</span>
-                  ) : (
-                    <span className="chip bg-[#eef3fc] text-[#15375f]">Knock-out</span>
-                  )}
-                </div>
-                <div className="mt-1 flex flex-wrap items-center gap-3 text-sm font-bold text-[#475670]">
-                  <span className="flex items-center gap-1.5">
-                    <CalendarDays aria-hidden="true" className="size-4" />
-                    {formatAmsterdam(match.startsAt)}
-                  </span>
-                  {match.venue ? (
-                    <span className="flex items-center gap-1.5">
-                      <MapPin aria-hidden="true" className="size-4" />
-                      {match.venue}
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          ))
+          filtered.map((match) => <MatchRow key={match.id} match={match} />)
         ) : (
-          <p className="p-4 text-sm font-semibold text-[#475670]">Geen wedstrijden voor deze filters.</p>
+          <p className="p-4 text-sm font-medium text-[var(--muted)]">Geen wedstrijden voor deze filters.</p>
         )}
       </div>
     </section>
   );
 }
 
-function GroupChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+function MatchRow({ match }: { match: ScheduleMatch }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`min-h-9 rounded-full border px-3 text-sm font-black transition ${
-        active ? "border-transparent bg-[#15375f] text-white" : "border-slate-200 bg-white text-[#15375f]"
-      }`}
-    >
-      {label}
-    </button>
+    <div className="px-3 py-2.5">
+      <div className="mb-1 flex items-center gap-2 text-xs font-semibold text-[var(--muted)]">
+        <span className="grid size-5 place-items-center rounded-full bg-[#e7eef8] text-[10px] font-extrabold text-[var(--blue-2)]">
+          {match.group ?? "KO"}
+        </span>
+        <CalendarDays aria-hidden="true" className="size-3.5" />
+        {formatAmsterdam(match.startsAt)}
+        {match.venue ? (
+          <span className="hidden items-center gap-1 sm:inline-flex">
+            <MapPin aria-hidden="true" className="size-3.5" />
+            {match.venue}
+          </span>
+        ) : null}
+      </div>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <TeamFlag code={match.homeCode} name={match.homeName} />
+          <span className="truncate text-sm font-semibold text-[var(--ink)] sm:text-base">
+            {match.homeName ?? match.homeCode}
+          </span>
+        </div>
+        <span className="px-1 text-sm font-bold text-[var(--muted)]">-</span>
+        <div className="flex min-w-0 items-center justify-end gap-2 text-right">
+          <span className="truncate text-sm font-semibold text-[var(--ink)] sm:text-base">
+            {match.awayName ?? match.awayCode}
+          </span>
+          <TeamFlag code={match.awayCode} name={match.awayName} />
+        </div>
+      </div>
+    </div>
   );
 }
