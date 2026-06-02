@@ -53,17 +53,17 @@ export default async function PredictionsPage({
       </header>
 
       {params.opgeslagen ? (
-        <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-4 font-black text-green-800">
+        <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-4 font-extrabold text-green-800">
           Opgeslagen.
         </div>
       ) : null}
 
       <form action={savePredictions} className="grid gap-5">
         <section className="dark-panel p-4 text-white">
-          <h2 className="text-2xl font-black">Groepswedstrijden</h2>
+          <h2 className="text-2xl font-extrabold">Groepswedstrijden</h2>
           <p className="mt-1 text-sm font-semibold text-blue-100">
             {mainOpen
-              ? "Tik op − en + of typ je score. Alles is aanpasbaar tot de aftrap."
+              ? "Typ je verwachte uitslag. Leeg laten mag; alles is aanpasbaar tot de aftrap."
               : "De hoofdvoorspellingen zijn gesloten."}
           </p>
         </section>
@@ -90,7 +90,7 @@ export default async function PredictionsPage({
               initialScores={Object.fromEntries(
                 groupMatches.map((match) => {
                   const existing = predictionByMatch.get(match.id);
-                  return [match.id, { home: existing?.home_score ?? 1, away: existing?.away_score ?? 1 }];
+                  return [match.id, { home: existing?.home_score ?? null, away: existing?.away_score ?? null }];
                 }),
               )}
             />
@@ -98,11 +98,11 @@ export default async function PredictionsPage({
         })}
 
         <section className="panel p-4">
-          <h2 className="text-2xl font-black text-[#081634]">Rondes en eindwinnaar</h2>
+          <h2 className="text-2xl font-extrabold text-[#081634]">Rondes en eindwinnaar</h2>
           <p className="mt-1 text-sm font-semibold text-[#48617f]">
             De laatste 32 worden uit je groepsstanden berekend. Daarna kies je simpelweg welke landen verder komen.
           </p>
-          <div className="mt-4 rounded-lg border border-[#bce8c8] bg-[#f4fbf0] p-3 text-sm font-black leading-6 text-[#137c35]">
+          <div className="mt-4 rounded-lg border border-[#bce8c8] bg-[#f4fbf0] p-3 text-sm font-extrabold leading-6 text-[#137c35]">
             Laatste 32: automatisch uitgerekend met nummers 1 en 2 per groep plus de beste acht nummers 3.
           </div>
           <div className="mt-4 grid gap-4">
@@ -142,7 +142,7 @@ export default async function PredictionsPage({
               selected={new Set((special?.finalists as string[] | undefined) ?? Array.from(bracketByStage.get("finalists") ?? []))}
               disabled={!mainOpen && !postGroupOpen}
             />
-            <label className="grid gap-2 text-sm font-black text-[#081634]">
+            <label className="grid gap-2 text-sm font-extrabold text-[#081634]">
               Wereldkampioen
               <select
                 className="field"
@@ -162,9 +162,9 @@ export default async function PredictionsPage({
         </section>
 
         <section className="panel p-4">
-          <h2 className="text-2xl font-black text-[#081634]">Bonusvragen</h2>
+          <h2 className="text-2xl font-extrabold text-[#081634]">Bonusvragen</h2>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <label className="grid gap-2 text-sm font-black text-[#081634]">
+            <label className="grid gap-2 text-sm font-extrabold text-[#081634]">
               Topscorer
               <input className="field" name="top_scorer" defaultValue={special?.top_scorer ?? ""} placeholder="Bijv. Mbappe" />
             </label>
@@ -173,7 +173,7 @@ export default async function PredictionsPage({
             <NumberField name="fastest_goal_minute" label="Snelste goal in minuut" value={special?.fastest_goal_minute ?? 3} min={1} max={120} />
             <NumberField name="group_zero_zero_count" label="0-0's in de groepsfase" value={special?.group_zero_zero_count ?? 4} min={0} max={30} />
             <NumberField name="total_red_cards" label="Rode kaarten totaal" value={special?.total_red_cards ?? 8} min={0} max={50} />
-            <label className="grid gap-2 text-sm font-black text-[#081634] md:col-span-2">
+            <label className="grid gap-2 text-sm font-extrabold text-[#081634] md:col-span-2">
               Speelstad met de meeste doelpunten
               <select className="field" name="host_city_most_goals" defaultValue={special?.host_city_most_goals ?? ""}>
                 <option value="">Kies speelstad</option>
@@ -188,14 +188,14 @@ export default async function PredictionsPage({
         </section>
 
         <section className="panel p-4">
-          <h2 className="text-2xl font-black text-[#081634]">Optionele update na de groepsfase</h2>
+          <h2 className="text-2xl font-extrabold text-[#081634]">Optionele update na de groepsfase</h2>
           <p className="mt-1 text-sm font-semibold text-[#48617f]">
             Open van 28 juni 00:00 tot 28 juni 21:00 Nederlandse tijd. Vooraf invullen mag nu al.
           </p>
           <fieldset className="mt-4 grid gap-3 md:grid-cols-3" disabled={!mainOpen && !postGroupOpen}>
             <NumberField name="penalty_shootouts_ko" label="Penaltyseries in knock-outfase" value={special?.penalty_shootouts_ko ?? 4} min={0} max={20} />
             <NumberField name="own_goals_ko" label="Eigen goals in knock-outfase" value={special?.own_goals_ko ?? 2} min={0} max={20} />
-            <label className="grid gap-2 text-sm font-black text-[#081634]">
+            <label className="grid gap-2 text-sm font-extrabold text-[#081634]">
               Meeste kaarten in knock-outs
               <select className="field" name="cards_ko_team_code" defaultValue={special?.cards_ko_team_code ?? ""}>
                 <option value="">Kies land</option>
@@ -247,7 +247,7 @@ function TeamChecklist({
 }) {
   return (
     <fieldset className="rounded-lg border border-slate-200 p-3" disabled={disabled}>
-      <legend className="px-1 text-lg font-black text-[#081634]">{title}</legend>
+      <legend className="px-1 text-lg font-extrabold text-[#081634]">{title}</legend>
       <p className="mb-3 text-sm font-semibold text-[#48617f]">
         {hint} Kies maximaal {maxCount}; extra keuzes tellen niet mee.
       </p>
@@ -255,7 +255,7 @@ function TeamChecklist({
         {teams.map((team) => (
           <label key={`${name}-${team.code}`} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-2 text-sm font-bold text-[#081634]">
             <input name={name} type="checkbox" value={team.code} defaultChecked={selected?.has(team.code)} />
-            <span className="font-black text-[#064ed6]">{team.code}</span>
+            <span className="font-extrabold text-[#064ed6]">{team.code}</span>
             <span>{team.name_nl}</span>
           </label>
         ))}
@@ -278,7 +278,7 @@ function NumberField({
   max: number;
 }) {
   return (
-    <label className="grid gap-2 text-sm font-black text-[#081634]">
+    <label className="grid gap-2 text-sm font-extrabold text-[#081634]">
       {label}
       <input className="field" type="number" min={min} max={max} name={name} defaultValue={value} />
     </label>

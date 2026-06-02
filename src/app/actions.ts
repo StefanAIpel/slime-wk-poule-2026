@@ -332,11 +332,11 @@ export async function savePredictions(formData: FormData) {
     const scoreLookup: ScoreLookup = new Map();
 
     for (const match of matches ?? []) {
-      const home = formData.get(`match_${match.id}_home`);
-      const away = formData.get(`match_${match.id}_away`);
-      if (home === null || away === null) continue;
-      const homeScore = clampInt(home, 0, 0, 20);
-      const awayScore = clampInt(away, 0, 0, 20);
+      const homeRaw = String(formData.get(`match_${match.id}_home`) ?? "").trim();
+      const awayRaw = String(formData.get(`match_${match.id}_away`) ?? "").trim();
+      if (homeRaw === "" || awayRaw === "") continue;
+      const homeScore = clampInt(homeRaw, 0, 0, 20);
+      const awayScore = clampInt(awayRaw, 0, 0, 20);
       predictionRows.push({
         user_id: user.id,
         match_id: match.id,
