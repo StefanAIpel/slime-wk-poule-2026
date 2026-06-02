@@ -8,7 +8,6 @@ import { LoginForm } from "@/components/login-form";
 import { ProfileForm } from "@/components/profile-form";
 import { ShareButton } from "@/components/share-button";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
-import { TrustBadges } from "@/components/trust-badges";
 import { UpcomingMatches } from "@/components/upcoming-matches";
 import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
@@ -224,7 +223,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             De gratis WK 2026-poule voor je vrienden, familie en collega&rsquo;s.
           </h1>
           <p className="mt-2 max-w-xl text-base font-semibold leading-7 text-blue-50 md:text-lg">
-            Eén keer invullen, je eigen poule maken en zien wie de beste bondscoach is.
+            Gratis en alleen je e-mailadres. Geen dagelijkse inlog — in 10 minuten klaar voor het hele WK.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <a href="#login" className="button-primary">
@@ -241,8 +240,6 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         </div>
         <HeroArt src="/assets/slime-02-mascotte-bal.png" />
       </div>
-
-      <TrustBadges />
 
       <div className="grid gap-5 md:grid-cols-[1fr_minmax(320px,400px)] md:items-start">
         <section className="grid gap-4">

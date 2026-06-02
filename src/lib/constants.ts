@@ -16,10 +16,15 @@ export const SITE_URL = "https://slimescore.com";
 export const SITE_URL_APP = "https://slimescore.app";
 export const SITE_NAME = "Slime Score";
 
-/** Afzender van de inlog-/systeemmails (Cloudflare Email Routing). */
+/** Afzender van de inlog-/systeemmails (Cloudflare Email Routing → Resend). */
 export const MAIL_FROM = "noreply@slimesports.com";
 /** Contactadres voor vragen, privacy en account-verzoeken. */
-export const CONTACT_EMAIL = "hallo@slimescore.com";
+export const CONTACT_EMAIL = "contact@slimescore.com";
+/** Bèta-versie, handmatig ophogen bij releases. */
+export const APP_VERSION = "0.10";
+/** Maker. */
+export const COMPANY_NAME = "Feliro";
+export const COMPANY_URL = "https://feliro.nl";
 
 export const scoringRules = [
   { label: "Exacte uitslag", points: matchScoring.exact, note: "Max per wedstrijd" },

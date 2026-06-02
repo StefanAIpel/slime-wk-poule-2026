@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
-import { CONTACT_EMAIL, MAIL_FROM } from "@/lib/constants";
+import { APP_VERSION, COMPANY_NAME, COMPANY_URL, CONTACT_EMAIL, MAIL_FROM } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Privacy",
@@ -85,7 +85,14 @@ export default function PrivacyPage() {
       </section>
 
       <p className="mt-5 text-sm font-semibold text-[#48617f]">
-        Zie ook onze <a className="font-black text-[#064ed6]" href="/voorwaarden">voorwaarden</a>.
+        Zie ook onze <a className="font-extrabold text-[#064ed6]" href="/voorwaarden">voorwaarden</a>.
+      </p>
+      <p className="mt-2 text-xs font-semibold text-[#7a879b]">
+        Slime Score is een bèta-product (v{APP_VERSION}) van{" "}
+        <a className="font-bold text-[#064ed6]" href={COMPANY_URL} target="_blank" rel="noopener noreferrer">
+          {COMPANY_NAME}
+        </a>
+        . Contact: <a className="font-bold text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
       </p>
 
       <BottomNav current="/privacy" showPrivate={false} />

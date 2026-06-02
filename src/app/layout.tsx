@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AuthLinkBridge } from "@/components/auth-link-bridge";
 import { PwaRegister } from "@/components/pwa-register";
 import { QuickMenu } from "@/components/quick-menu";
+import { SiteFooter } from "@/components/site-footer";
 import { StatusBar } from "@/components/status-bar";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import "./globals.css";
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <StatusBar />
         <QuickMenu />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );
