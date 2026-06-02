@@ -194,7 +194,7 @@ export async function postPoolMessage(formData: FormData) {
   const body = cleanText(formData.get("body"), 500);
   const wantsPin = formData.get("pinned") === "on";
 
-  if (body.length < 2) redirect("/poules?fout=bericht");
+  if (body.length < 10) redirect("/poules?fout=bericht-kort");
 
   const { data: membership } = await admin
     .from("pool_members")
@@ -204,6 +204,19 @@ export async function postPoolMessage(formData: FormData) {
     .maybeSingle();
 
   if (!membership) redirect("/poules?fout=rechten");
+
+  // Anti-spam: maximaal 1 bericht per 15 seconden per gebruiker per poule.
+  const { data: last } = await admin
+    .from("pool_messages")
+    .select("created_at")
+    .eq("pool_id", poolId)
+    .eq("author_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (last && Date.now() - new Date(last.created_at).getTime() < 15000) {
+    redirect("/poules?fout=te-snel");
+  }
 
   const isManager = membership.role === "owner" || membership.role === "moderator";
 
@@ -250,7 +263,7 @@ export async function uploadPoolImage(formData: FormData) {
 
   if (!(file instanceof File) || file.size === 0) redirect("/poules?fout=afbeelding");
   if (!file.type.startsWith("image/")) redirect("/poules?fout=afbeelding");
-  if (file.size > 8 * 1024 * 1024) redirect("/poules?fout=afbeelding-groot");
+  if (file.size > 6 * 1024 * 1024) redirect("/poules?fout=afbeelding-groot");
 
   const { data: manager } = await admin
     .from("pool_members")

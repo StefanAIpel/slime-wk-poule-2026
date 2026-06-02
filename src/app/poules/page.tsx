@@ -14,6 +14,7 @@ import { Avatar } from "@/components/avatar";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
+import { PendingButton } from "@/components/pending-button";
 import { PoolBanner } from "@/components/pool-banner";
 import { CopyButton, WhatsappShare } from "@/components/share-button";
 import { SITE_URL } from "@/lib/constants";
@@ -24,6 +25,18 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 function poolBannerUrl(poolId: string) {
   return `${supabaseUrl}/storage/v1/object/public/pool-media/pools/${poolId}.webp`;
 }
+
+const poolErrors: Record<string, string> = {
+  code: "Die poulecode klopt niet. Controleer de code.",
+  rechten: "Je hebt hier geen rechten voor.",
+  naam: "Kies een geldige poulenaam (min. 2 tekens).",
+  kleur: "Kies een geldige kleur.",
+  rol: "Die rol kan niet worden ingesteld.",
+  "bericht-kort": "Je bericht is te kort (minimaal 10 tekens).",
+  "te-snel": "Even rustig — wacht een paar tellen voor je opnieuw post.",
+  afbeelding: "Kies een geldige afbeelding.",
+  "afbeelding-groot": "De afbeelding is te groot (max 6 MB).",
+};
 
 type MemberRow = {
   pool_id: string;
@@ -96,8 +109,8 @@ export default async function PoolsPage({
         </div>
       ) : null}
       {params.fout ? (
-        <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-4 font-black text-red-800">
-          Er ging iets mis. Controleer de code of je rechten.
+        <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-4 font-extrabold text-red-800">
+          {poolErrors[params.fout] ?? "Er ging iets mis. Probeer het opnieuw."}
         </div>
       ) : null}
 
@@ -184,9 +197,11 @@ export default async function PoolsPage({
                       </div>
                       <input className="field" type="file" name="image" accept="image/*" required />
                       <p className="text-xs font-semibold text-[#4c5a70]">
-                        Wordt automatisch bijgesneden en geoptimaliseerd (WebP). Max 8 MB.
+                        Wordt automatisch bijgesneden en geoptimaliseerd (WebP). Max 6 MB.
                       </p>
-                      <button className="button-secondary w-fit" type="submit">Upload banner</button>
+                      <PendingButton className="button-secondary w-fit" pendingText="Uploaden…">
+                        Upload banner
+                      </PendingButton>
                     </form>
                   </div>
                 ) : null}
@@ -197,22 +212,23 @@ export default async function PoolsPage({
                     <textarea
                       className="field min-h-20"
                       name="body"
+                      minLength={10}
                       maxLength={500}
                       required
-                      placeholder="Schrijf iets voor je poule…"
+                      placeholder="Schrijf iets voor je poule… (min. 10 tekens)"
                     />
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       {isManager ? (
-                        <label className="flex items-center gap-2 text-sm font-black text-[#101a2b]">
+                        <label className="flex items-center gap-2 text-sm font-semibold text-[#101a2b]">
                           <input type="checkbox" name="pinned" /> Vastzetten bovenaan
                         </label>
                       ) : (
                         <span />
                       )}
-                      <button className="button-primary min-h-10 px-4" type="submit">
+                      <PendingButton className="button-primary min-h-10 px-4" pendingText="Plaatsen…">
                         <Megaphone aria-hidden="true" className="size-4" />
                         Plaats
-                      </button>
+                      </PendingButton>
                     </div>
                   </form>
                   <div className="mt-3 grid gap-2">

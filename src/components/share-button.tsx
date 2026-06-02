@@ -64,10 +64,10 @@ export function WhatsappShare({
   label?: string;
   variant?: Variant;
 }) {
-  const buttonClass = variant === "primary" ? "button-primary" : "button-secondary";
+  void variant;
   const message = encodeURIComponent(`${text} ${url}`.trim());
   return (
-    <a className={buttonClass} href={`https://wa.me/?text=${message}`} target="_blank" rel="noopener noreferrer">
+    <a className="button-whatsapp" href={`https://wa.me/?text=${message}`} target="_blank" rel="noopener noreferrer">
       <Send aria-hidden="true" className="size-5" />
       {label}
     </a>
