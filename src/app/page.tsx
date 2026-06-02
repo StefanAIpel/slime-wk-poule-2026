@@ -1,4 +1,4 @@
-import { CalendarDays, Gamepad2, Trophy, Users } from "lucide-react";
+import { CalendarDays, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
@@ -6,8 +6,9 @@ import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { ProfileForm } from "@/components/profile-form";
 import { ShareButton } from "@/components/share-button";
+import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
 import { TrustBadges } from "@/components/trust-badges";
-import { ENTRY_DEADLINE_ISO, SITE_URL, SLIME_GAME_URL } from "@/lib/constants";
+import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -187,37 +188,20 @@ export default async function Home({
         </div>
       </section>
 
-      <section className="mt-4 grid gap-4 md:grid-cols-4">
-        {[
-          ["Voorspellingen", "/voorspellingen"],
-          ["Mijn poules", "/poules"],
-          ["Ranglijst", "/ranglijst"],
-          ["Regels", "/regels"],
-        ].map(([label, href]) => (
-          <a key={href} href={href} className="panel grid min-h-24 place-items-center p-4 text-center text-xl font-black no-underline">
-            {label}
-          </a>
-        ))}
+      <section className="mt-4">
+        <SlimeSoccerBanner />
       </section>
 
-      <section className="mt-4 dark-panel grid gap-4 p-5 text-white md:grid-cols-[1fr_auto] md:items-center">
-        <div>
-          <h2 className="text-2xl font-black">Bonus: Slime World Cup</h2>
-          <p className="mt-1 font-semibold text-blue-100">
-            Even geen zin in voorspellingen? Speel de bestaande Slime-game als WK-opwarmertje.
-          </p>
-        </div>
-        <a className="button-primary" href={SLIME_GAME_URL} target="_blank" rel="noopener noreferrer">
-          <Gamepad2 aria-hidden="true" className="size-5" />
-          Speel Slime
-        </a>
-      </section>
-
-      <form action="/logout" method="post" className="mt-4">
-        <button className="button-plain" type="submit">
-          Uitloggen
-        </button>
-      </form>
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm font-semibold text-[#46566f]">
+          Gratis · geen reclame · geen onnodige data · jouw voorspellingen blijven privé.
+        </p>
+        <form action="/logout" method="post">
+          <button className="button-plain" type="submit">
+            Uitloggen
+          </button>
+        </form>
+      </div>
 
       <BottomNav current="/" />
     </main>

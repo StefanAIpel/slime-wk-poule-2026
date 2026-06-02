@@ -62,9 +62,21 @@ export default async function PredictionsPage({
         <section className="dark-panel p-4 text-white">
           <h2 className="text-2xl font-black">Groepswedstrijden</h2>
           <p className="mt-1 text-sm font-semibold text-blue-100">
-            {mainOpen ? "Alle scores zijn nu nog aanpasbaar." : "De hoofdvoorspellingen zijn gesloten."}
+            {mainOpen
+              ? "Tik op − en + of typ je score. Alles is aanpasbaar tot de aftrap."
+              : "De hoofdvoorspellingen zijn gesloten."}
           </p>
         </section>
+
+        <nav className="group-jump" aria-label="Spring naar groep">
+          {groupLetters.map((group) =>
+            groupedMatches.get(group)?.length ? (
+              <a key={group} href={`#groep-${group}`}>
+                {group}
+              </a>
+            ) : null,
+          )}
+        </nav>
 
         {groupLetters.map((group) => {
           const groupMatches = groupedMatches.get(group);

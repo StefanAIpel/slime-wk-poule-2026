@@ -23,21 +23,30 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
     return calculateGroupStandings(matches, scoreMapFromState(scores)).get(group) ?? [];
   }, [group, matches, scores]);
 
-  function updateScore(matchId: number, side: "home" | "away", value: string) {
-    const parsed = Number.parseInt(value, 10);
-    const next = Number.isFinite(parsed) ? Math.max(0, Math.min(20, parsed)) : 0;
+  function setSide(matchId: number, side: "home" | "away", next: number) {
+    const clamped = Math.max(0, Math.min(20, next));
     setScores((current) => ({
       ...current,
       [matchId]: {
         home: current[matchId]?.home ?? 1,
         away: current[matchId]?.away ?? 1,
-        [side]: next,
+        [side]: clamped,
       },
     }));
   }
 
+  function updateScore(matchId: number, side: "home" | "away", value: string) {
+    const parsed = Number.parseInt(value, 10);
+    setSide(matchId, side, Number.isFinite(parsed) ? parsed : 0);
+  }
+
+  function step(matchId: number, side: "home" | "away", delta: number) {
+    const current = scores[matchId]?.[side] ?? 1;
+    setSide(matchId, side, current + delta);
+  }
+
   return (
-    <section className="panel overflow-hidden">
+    <section id={`groep-${group}`} className="panel scroll-mt-20 overflow-hidden">
       <div className="wc-header px-4 py-3 text-white">
         <h2 className="text-xl font-black">Groep {group}</h2>
       </div>
@@ -59,29 +68,67 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
                     <span>{match.away?.name_nl ?? match.away_code}</span>
                   </div>
                 </div>
-                <fieldset className="flex items-center gap-2" disabled={disabled}>
+                <fieldset className="flex items-center justify-center gap-2 md:justify-end" disabled={disabled}>
                   <legend className="sr-only">Voorspel score wedstrijd {match.id}</legend>
-                  <input
-                    className="score-input"
-                    name={`match_${match.id}_home`}
-                    type="number"
-                    min={0}
-                    max={20}
-                    value={existing.home}
-                    onChange={(event) => updateScore(match.id, "home", event.target.value)}
-                    aria-label={`${match.home?.name_nl ?? match.home_code} goals`}
-                  />
+                  <div className="stepper">
+                    <button
+                      type="button"
+                      onClick={() => step(match.id, "home", -1)}
+                      disabled={existing.home <= 0}
+                      aria-label={`${match.home?.name_nl ?? match.home_code} één minder`}
+                    >
+                      −
+                    </button>
+                    <input
+                      className="score-input"
+                      name={`match_${match.id}_home`}
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      max={20}
+                      value={existing.home}
+                      onChange={(event) => updateScore(match.id, "home", event.target.value)}
+                      aria-label={`${match.home?.name_nl ?? match.home_code} goals`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => step(match.id, "home", 1)}
+                      disabled={existing.home >= 20}
+                      aria-label={`${match.home?.name_nl ?? match.home_code} één meer`}
+                    >
+                      +
+                    </button>
+                  </div>
                   <span className="font-black text-[#48617f]">-</span>
-                  <input
-                    className="score-input"
-                    name={`match_${match.id}_away`}
-                    type="number"
-                    min={0}
-                    max={20}
-                    value={existing.away}
-                    onChange={(event) => updateScore(match.id, "away", event.target.value)}
-                    aria-label={`${match.away?.name_nl ?? match.away_code} goals`}
-                  />
+                  <div className="stepper">
+                    <button
+                      type="button"
+                      onClick={() => step(match.id, "away", -1)}
+                      disabled={existing.away <= 0}
+                      aria-label={`${match.away?.name_nl ?? match.away_code} één minder`}
+                    >
+                      −
+                    </button>
+                    <input
+                      className="score-input"
+                      name={`match_${match.id}_away`}
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      max={20}
+                      value={existing.away}
+                      onChange={(event) => updateScore(match.id, "away", event.target.value)}
+                      aria-label={`${match.away?.name_nl ?? match.away_code} goals`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => step(match.id, "away", 1)}
+                      disabled={existing.away >= 20}
+                      aria-label={`${match.away?.name_nl ?? match.away_code} één meer`}
+                    >
+                      +
+                    </button>
+                  </div>
                 </fieldset>
               </div>
             );

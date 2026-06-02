@@ -429,6 +429,110 @@ textarea {
   font-weight: 800;
 }
 
+.slime-banner {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 18px;
+  padding: 20px;
+  color: #fff;
+  text-decoration: none;
+  background:
+    linear-gradient(90deg, rgba(6, 18, 44, 0.82), rgba(6, 18, 44, 0.18) 62%),
+    var(--slime-banner-image, none),
+    linear-gradient(120deg, #082a6e 0%, #0a3ea0 52%, #1763d8 100%);
+  background-size: cover, cover, cover;
+  background-position: center, center right, center;
+  background-repeat: no-repeat;
+  box-shadow: 0 18px 42px rgba(8, 22, 52, 0.26);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.slime-banner:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 22px 50px rgba(8, 22, 52, 0.3);
+}
+
+.slime-banner .chip {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stepper button {
+  display: inline-grid;
+  width: 42px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid rgba(8, 22, 52, 0.14);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--blue-2);
+  font-size: 1.4rem;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(8, 22, 52, 0.06);
+  transition: filter 120ms ease, transform 120ms ease;
+}
+
+.stepper button:hover {
+  filter: brightness(0.98);
+}
+
+.stepper button:active {
+  transform: scale(0.95);
+}
+
+.stepper button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.group-jump {
+  position: sticky;
+  top: 8px;
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px;
+  border: 1px solid rgba(8, 22, 52, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 22px rgba(8, 22, 52, 0.1);
+  backdrop-filter: blur(12px);
+  scrollbar-width: none;
+}
+
+.group-jump::-webkit-scrollbar {
+  display: none;
+}
+
+.group-jump a {
+  display: inline-grid;
+  min-width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+  background: #eef3fc;
+  color: var(--panel-ink);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.group-jump a:hover {
+  background: linear-gradient(135deg, var(--orange), var(--red));
+  color: #fff;
+}
+
 .bottom-nav {
   position: fixed;
   right: 12px;
