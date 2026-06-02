@@ -9,6 +9,7 @@ export type PlayerRow = {
   rank: number;
   nickname: string | null;
   teamName: string | null;
+  avatarKey?: string | null;
   points: number;
   exact: number;
   correct: number;
@@ -24,6 +25,7 @@ function matches(query: string, ...fields: (string | null | undefined)[]) {
 
 export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pools: PoolRow[] }) {
   const [query, setQuery] = useState("");
+  const [view, setView] = useState<"wereld" | "subpoules">("wereld");
 
   const filteredPlayers = useMemo(
     () => players.filter((p) => matches(query, p.nickname, p.teamName)),
@@ -41,30 +43,53 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
           inputMode="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Zoek een speler, team of poule…"
-          aria-label="Zoek speler of poule"
+          placeholder="Zoek een speler, team of subpoule…"
+          aria-label="Zoek speler of subpoule"
         />
       </div>
 
+      {/* Tabs alleen op mobiel; op desktop staan beide tabellen naast elkaar. */}
+      <div className="flex gap-2 lg:hidden" role="tablist" aria-label="Kies ranglijst">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "wereld"}
+          className={`tab-pill ${view === "wereld" ? "is-active" : ""}`}
+          onClick={() => setView("wereld")}
+        >
+          <Trophy aria-hidden="true" className="size-4" />
+          Wereldranglijst
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "subpoules"}
+          className={`tab-pill ${view === "subpoules" ? "is-active" : ""}`}
+          onClick={() => setView("subpoules")}
+        >
+          <Users aria-hidden="true" className="size-4" />
+          Subpoules
+        </button>
+      </div>
+
       <section className="grid gap-5 lg:grid-cols-[1fr_0.9fr] lg:items-start">
-        <article className="panel overflow-hidden">
-          <div className="wc-header flex items-center gap-3 p-4 text-white">
-            <Trophy aria-hidden="true" className="size-7" />
-            <h2 className="text-2xl font-bold">Wereldranglijst</h2>
+        <article className={`panel overflow-hidden ${view === "wereld" ? "" : "hidden"} lg:block`}>
+          <div className="wc-header flex items-center gap-3 p-3 text-white">
+            <Trophy aria-hidden="true" className="size-6" />
+            <h2 className="text-xl font-bold">Wereldranglijst</h2>
           </div>
-          <div className="divide-y divide-slate-200">
+          <div className="divide-y divide-slate-100">
             {filteredPlayers.length ? (
               filteredPlayers.map((row) => (
-                <div key={row.userId} className="grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 p-4 text-[#101a2b]">
+                <div key={row.userId} className="flex items-center gap-3 px-3 py-2 text-[#101a2b]">
                   <RankBadge rank={row.rank} />
-                  <Avatar name={row.nickname || row.teamName || "Speler"} />
-                  <div className="min-w-0">
-                    <div className="truncate font-bold">{row.nickname || "Speler"}</div>
-                    <div className="truncate text-sm font-semibold text-[#475670]">
-                      {row.teamName || "—"} · {row.exact} exact · {row.correct} juist
-                    </div>
+                  <Avatar name={row.nickname || row.teamName || "Speler"} avatarKey={row.avatarKey} size={30} />
+                  <div className="min-w-0 flex-1 truncate">
+                    <span className="font-bold">{row.nickname || "Speler"}</span>
+                    {row.teamName ? <span className="font-medium text-[#475670]"> · {row.teamName}</span> : null}
                   </div>
-                  <div className="text-right text-xl font-bold">{row.points} pt</div>
+                  <span className="hidden text-xs font-semibold text-[#475670] sm:inline">{row.exact} exact</span>
+                  <span className="font-bold tabular-nums">{row.points} pt</span>
                 </div>
               ))
             ) : (
@@ -73,25 +98,25 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
           </div>
         </article>
 
-        <article className="panel overflow-hidden">
-          <div className="flex items-center gap-3 bg-[#1c855a] p-4 text-white">
-            <Users aria-hidden="true" className="size-7" />
-            <h2 className="text-2xl font-bold">Subpoules</h2>
+        <article className={`panel overflow-hidden ${view === "subpoules" ? "" : "hidden"} lg:block`}>
+          <div className="flex items-center gap-3 bg-[#1c855a] p-3 text-white">
+            <Users aria-hidden="true" className="size-6" />
+            <h2 className="text-xl font-bold">Subpoules</h2>
           </div>
-          <div className="divide-y divide-slate-200">
+          <div className="divide-y divide-slate-100">
             {filteredPools.length ? (
               filteredPools.map((pool) => (
-                <div key={pool.id} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 p-4 text-[#101a2b]">
+                <div key={pool.id} className="flex items-center gap-3 px-3 py-2 text-[#101a2b]">
                   <RankBadge rank={pool.rank} />
-                  <div className="min-w-0">
-                    <div className="truncate font-bold">{pool.name}</div>
-                    <div className="text-sm font-semibold text-[#475670]">Beste 4 samen · code {pool.code}</div>
+                  <div className="min-w-0 flex-1 truncate">
+                    <span className="font-bold">{pool.name}</span>
+                    <span className="font-medium text-[#475670]"> · {pool.code}</span>
                   </div>
-                  <div className="text-right text-xl font-bold">{pool.points} pt</div>
+                  <span className="font-bold tabular-nums">{pool.points} pt</span>
                 </div>
               ))
             ) : (
-              <p className="p-4 text-sm font-medium text-[#475670]">Geen poules gevonden.</p>
+              <p className="p-4 text-sm font-medium text-[#475670]">Geen subpoules gevonden.</p>
             )}
           </div>
         </article>
@@ -103,8 +128,8 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
 function RankBadge({ rank }: { rank: number }) {
   const color = rank === 1 ? "bg-[#efa820]" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-[#f4661e]" : "bg-[#20508c]";
   return (
-    <div className={`grid size-10 place-items-center rounded-full ${color} text-sm font-bold text-white`}>
-      {rank <= 3 ? <Medal aria-hidden="true" className="size-5" /> : rank}
+    <div className={`grid size-7 flex-none place-items-center rounded-full ${color} text-xs font-bold text-white`}>
+      {rank <= 3 ? <Medal aria-hidden="true" className="size-4" /> : rank}
     </div>
   );
 }

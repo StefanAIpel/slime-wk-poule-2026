@@ -12,7 +12,7 @@ type GlobalScoreRow = {
   exact_scores: number;
   correct_results: number;
   bonus_points: number;
-  profiles: { nickname: string | null; team_name: string | null } | null;
+  profiles: { nickname: string | null; team_name: string | null; avatar_key: string | null } | null;
 };
 
 export default async function RankingPage() {
@@ -20,7 +20,7 @@ export default async function RankingPage() {
   const [{ data: globalScores }, { data: pools }, { data: members }, { data: allScores }] = await Promise.all([
     admin
       .from("scores")
-      .select("user_id,points,exact_scores,correct_results,bonus_points,profiles(nickname,team_name)")
+      .select("user_id,points,exact_scores,correct_results,bonus_points,profiles(nickname,team_name,avatar_key)")
       .order("points", { ascending: false })
       .limit(100),
     admin.from("pools").select("id,name,code"),
@@ -34,6 +34,7 @@ export default async function RankingPage() {
     rank: index + 1,
     nickname: row.profiles?.nickname ?? null,
     teamName: row.profiles?.team_name ?? null,
+    avatarKey: row.profiles?.avatar_key ?? null,
     points: row.points,
     exact: row.exact_scores,
     correct: row.correct_results,
