@@ -721,7 +721,7 @@ textarea {
 
 @media (min-width: 800px) {
   .page-shell {
-    padding: 32px 24px 40px;
+    padding: 64px 24px 40px;
   }
 
   .public-hero-row {
@@ -734,12 +734,13 @@ textarea {
   }
 
   .bottom-nav {
-    top: 18px;
-    right: 24px;
+    top: 8px;
+    right: 0;
     bottom: auto;
-    left: auto;
-    width: auto;
-    grid-template-columns: repeat(6, minmax(76px, auto));
+    left: 0;
+    width: fit-content;
+    margin: 0 auto;
+    grid-template-columns: repeat(6, minmax(72px, auto));
     max-width: none;
   }
 
