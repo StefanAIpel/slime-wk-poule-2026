@@ -43,13 +43,13 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: "Slime Score · Gratis WK 2026-poule",
     description,
-    images: [{ url: "/icon.png", width: 512, height: 512, alt: "Slime Score" }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Slime Score — gratis WK 2026-poule" }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Slime Score · Gratis WK 2026-poule",
     description,
-    images: ["/icon.png"],
+    images: ["/og.png"],
   },
 };
 

@@ -545,6 +545,14 @@ textarea {
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45), 0 4px 10px rgba(8, 22, 52, 0.12);
 }
 
+.avatar-img {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  object-fit: cover;
+  background: #eef3fc;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.6), 0 4px 10px rgba(12, 34, 64, 0.12);
+}
+
 .bottom-nav {
   position: fixed;
   right: 12px;

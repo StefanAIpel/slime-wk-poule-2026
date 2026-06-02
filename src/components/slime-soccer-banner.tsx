@@ -8,7 +8,7 @@ import { SLIME_GAME_URL } from "@/lib/constants";
  */
 export function SlimeSoccerBanner() {
   const style = {
-    "--slime-banner-image": "url('/slimes/slime-soccer-banner.png')",
+    "--slime-banner-image": "url('/slimes/slime-soccer-banner-web.png')",
   } as CSSProperties;
 
   return (
