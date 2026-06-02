@@ -190,14 +190,13 @@ export default async function Home({
 function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboard: HomeLeaderboardRow[] }) {
   return (
     <main className="page-shell grid gap-5">
-      <Brand />
-
       <div
         className="hero-band hero-band-visual"
         style={{ "--hero-image": "url('/assets/Hero-bg.webp')" } as React.CSSProperties}
       >
         <div className="hero-content">
-          <h1 className="text-3xl font-bold leading-tight text-white md:text-4xl">
+          <p className="text-sm font-bold uppercase tracking-wide text-blue-100">Slime Score · WK Poule 2026</p>
+          <h1 className="mt-1 text-3xl font-bold leading-tight text-white md:text-4xl">
             Maak een WK-poule samen met je vrienden
           </h1>
           <p className="mt-2 max-w-xl text-base font-medium leading-7 text-blue-50 md:text-lg">

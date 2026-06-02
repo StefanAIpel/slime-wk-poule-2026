@@ -3,6 +3,7 @@
 import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { isAvatarKey } from "@/lib/avatars";
 import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
@@ -77,6 +78,61 @@ export async function saveProfile(formData: FormData) {
   if (error) throw new Error(error.message);
   revalidatePath("/");
   redirect("/");
+}
+
+export async function updateAccount(formData: FormData) {
+  const { supabase, user } = await requireUser();
+  const admin = createAdminClient();
+  const nickname = cleanText(formData.get("nickname"), 24);
+  const teamName = cleanText(formData.get("team_name"), 28);
+  const avatarKeyRaw = cleanText(formData.get("avatar_key"), 40);
+  const avatarKey = isAvatarKey(avatarKeyRaw) ? avatarKeyRaw : null;
+
+  if (nickname.length < 4 || teamName.length < 4) {
+    redirect("/account?fout=te-kort");
+  }
+  if (reservedNames.includes(nickname.toLowerCase())) {
+    redirect("/account?fout=gereserveerd");
+  }
+
+  const { data: taken } = await admin
+    .from("profiles")
+    .select("id")
+    .ilike("nickname", nickname)
+    .neq("id", user.id)
+    .maybeSingle();
+  if (taken) {
+    redirect("/account?fout=bezet");
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ nickname, team_name: teamName, avatar_key: avatarKey })
+    .eq("id", user.id);
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/account");
+  revalidatePath("/");
+  redirect("/account?opgeslagen=1");
+}
+
+export async function deleteAccount(formData: FormData) {
+  const { supabase, user } = await requireUser();
+  const confirm = cleanText(formData.get("confirm"), 20).toUpperCase();
+  if (confirm !== "VERWIJDER") {
+    redirect("/account?fout=bevestig");
+  }
+
+  const admin = createAdminClient();
+  // Profiel weg cascadeert alle poule-/voorspel-/scoredata; daarna het account zelf.
+  const { error: profileError } = await admin.from("profiles").delete().eq("id", user.id);
+  if (profileError) throw new Error(profileError.message);
+
+  const { error: authError } = await admin.auth.admin.deleteUser(user.id);
+  if (authError) throw new Error(authError.message);
+
+  await supabase.auth.signOut();
+  redirect("/?verwijderd=1");
 }
 
 export async function createPool(formData: FormData) {

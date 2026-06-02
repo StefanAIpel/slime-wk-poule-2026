@@ -42,16 +42,16 @@ export function StatusBar() {
           {left ? <>Nog <strong>{left}</strong> om in te vullen</> : "Invullen gesloten"}
         </span>
         {me?.loggedIn ? (
-          <Link href="/voorspellingen" className="status-me">
-            <span className="status-chip">
+          <span className="status-me">
+            <Link href="/account" className="status-chip" aria-label="Mijn account">
               <Trophy aria-hidden="true" className="size-4" />
               {me.nickname ?? "Speler"} · #{me.rank}
-            </span>
-            <span className="status-chip status-chip-accent status-chip-progress">
+            </Link>
+            <Link href="/voorspellingen" className="status-chip status-chip-accent status-chip-progress">
               <ListChecks aria-hidden="true" className="size-4" />
               {me.progress ?? 0}% ingevuld
-            </span>
-          </Link>
+            </Link>
+          </span>
         ) : me && !me.loggedIn ? (
           <Link href="/#login" className="status-chip status-chip-accent">
             Gratis meedoen

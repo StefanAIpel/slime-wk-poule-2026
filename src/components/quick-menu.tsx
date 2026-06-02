@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, ClipboardList, Gamepad2, Home, ListChecks, Menu, Trophy, Users, X } from "lucide-react";
+import { CalendarDays, ClipboardList, Gamepad2, Home, ListChecks, Menu, Trophy, UserCog, Users, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SLIME_GAME_URL } from "@/lib/constants";
@@ -14,8 +14,9 @@ const publicLinks = [
 ];
 
 const privateLinks = [
-  { href: "/voorspellingen", label: "Voorspellen", icon: ClipboardList },
-  { href: "/poules", label: "Poules", icon: Users },
+  { href: "/voorspellingen", label: "Poule invullen / wijzigen", icon: ClipboardList },
+  { href: "/poules", label: "Subpoules", icon: Users },
+  { href: "/account", label: "Mijn account", icon: UserCog },
 ];
 
 export function QuickMenu() {

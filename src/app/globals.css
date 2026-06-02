@@ -172,6 +172,11 @@ textarea {
   text-decoration: none;
 }
 
+.status-me a {
+  color: #fff;
+  text-decoration: none;
+}
+
 .status-chip-accent {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.18);
@@ -812,6 +817,46 @@ textarea {
   object-fit: cover;
   background: #eef3fc;
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.6), 0 4px 10px rgba(12, 34, 64, 0.12);
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 8px;
+}
+
+.avatar-choice {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 4px;
+  border: 2px solid rgba(8, 22, 52, 0.1);
+  border-radius: 14px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+}
+
+.avatar-choice img {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.avatar-choice:hover {
+  transform: translateY(-1px);
+}
+
+.avatar-choice.is-selected {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(242, 106, 27, 0.18);
+}
+
+.avatar-choice-auto {
+  font-size: 0.74rem;
+  font-weight: 900;
+  color: var(--blue-2);
 }
 
 .pool-banner {
