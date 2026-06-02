@@ -294,6 +294,11 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         </div>
         <LoginForm />
         <InstallAppCard />
+        <p className="text-center text-xs font-semibold text-[#46566f]">
+          Door mee te doen ga je akkoord met de{" "}
+          <a className="font-black text-[#064ed6]" href="/voorwaarden">voorwaarden</a> en het{" "}
+          <a className="font-black text-[#064ed6]" href="/privacy">privacybeleid</a>.
+        </p>
       </section>
     </main>
   );

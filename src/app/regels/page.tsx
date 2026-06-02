@@ -79,6 +79,14 @@ export default function RulesPage() {
             Gelijke stand? Dan kijken we achtereenvolgens naar meeste exacte uitslagen, meeste juiste resultaten,
             bonuspunten en daarna vroegste volledige inzending.
           </p>
+          <div className="mt-4 rounded-lg border border-[#bcd4f5] bg-[#eef4ff] p-4 text-sm font-semibold leading-7 text-[#1c3a66]">
+            <p className="font-black text-[#0b1f4d]">Voorbeeld</p>
+            <p className="mt-1">
+              Je voorspelt <strong>2&ndash;1</strong>, het wordt <strong>2&ndash;0</strong>. Juiste winnaar (6) + thuisploeg
+              precies 2 goals (2) = <strong>8 punten</strong>. Was het exact 2&ndash;1 geweest, dan had je de volle{" "}
+              <strong>12 punten</strong> gehad.
+            </p>
+          </div>
         </article>
 
         <article className="panel p-5">
@@ -104,6 +112,10 @@ export default function RulesPage() {
           <p className="mt-4 text-sm font-semibold leading-7 text-[#48617f]">
             Je voorspellingen zijn privé tot de deadline. Zodra uitslagen binnenkomen, wordt de ranglijst opnieuw
             berekend: eerst de wedstrijdpunten, daarna rondekeuzes, kampioen en bonusvragen.
+          </p>
+          <p className="mt-3 text-sm font-semibold leading-7 text-[#48617f]">
+            Meer weten? Lees ons <a className="font-black text-[#064ed6]" href="/privacy">privacybeleid</a> en de{" "}
+            <a className="font-black text-[#064ed6]" href="/voorwaarden">voorwaarden</a>.
           </p>
           <a className="button-secondary mt-4" href={SLIME_GAME_URL} target="_blank" rel="noopener noreferrer">
             Bonusgame openen

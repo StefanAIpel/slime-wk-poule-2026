@@ -16,6 +16,11 @@ export const SITE_URL = "https://slimescore.com";
 export const SITE_URL_APP = "https://slimescore.app";
 export const SITE_NAME = "Slime Score";
 
+/** Afzender van de inlog-/systeemmails (Cloudflare Email Routing). */
+export const MAIL_FROM = "noreply@slimesports.com";
+/** Contactadres voor vragen, privacy en account-verzoeken. */
+export const CONTACT_EMAIL = "hallo@slimescore.com";
+
 export const scoringRules = [
   { label: "Exacte uitslag", points: matchScoring.exact, note: "Max per wedstrijd" },
   { label: "Juiste winnaar/gelijkspel", points: matchScoring.outcome, note: "Als het niet exact is" },
