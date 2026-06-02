@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import { AuthLinkBridge } from "@/components/auth-link-bridge";
 import { PwaRegister } from "@/components/pwa-register";
 import { QuickMenu } from "@/components/quick-menu";
@@ -8,14 +8,11 @@ import { StatusBar } from "@/components/status-bar";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 const description =
@@ -64,7 +61,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="nl" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="nl" className={poppins.variable}>
       <body>
         <div className="stadium-bg" />
         <PwaRegister />

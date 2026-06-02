@@ -23,8 +23,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-poppins);
 }
 
 * {
@@ -45,7 +44,7 @@ body {
     linear-gradient(180deg, #eef2f9 0%, #f5f7fb 46%, #f7f9fc 100%);
   background-attachment: fixed;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins), system-ui, "Segoe UI", Arial, sans-serif;
 }
 
 a {
