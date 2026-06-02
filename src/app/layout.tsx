@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 const description =
-  "Gratis Nederlandse WK 2026-poule. Voorspel alle wedstrijden, maak een poule met vrienden en familie en volg de stand. Geen reclame, jouw data privé.";
+  "Gratis Nederlandse WK 2026-poule. Eén keer invullen, maak een poule met vrienden en familie en zie wie er wint. Jouw data privé.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

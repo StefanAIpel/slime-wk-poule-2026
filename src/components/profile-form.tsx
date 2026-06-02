@@ -1,6 +1,14 @@
 import { saveProfile } from "@/app/actions";
 
-export function ProfileForm() {
+const errors: Record<string, string> = {
+  "te-kort": "Vul allebei minstens 2 tekens in.",
+  bezet: "Die naam is al bezet. Kies een andere.",
+  gereserveerd: "Kies een echte naam of bijnaam (niet ‘anoniem’).",
+};
+
+export function ProfileForm({ error }: { error?: string }) {
+  const message = error ? errors[error] : undefined;
+
   return (
     <form action={saveProfile} className="panel grid gap-3 p-4">
       <div>
@@ -9,16 +17,19 @@ export function ProfileForm() {
         </div>
         <h2 className="text-2xl font-black text-[#081634]">Maak je scorekaart af</h2>
         <p className="mt-1 text-sm font-semibold text-[#48617f]">
-          Deze naam en teamnaam zijn zichtbaar in de ranglijst.
+          Je naam staat bovenaan in de ranglijst, je teamnaam eronder.
         </p>
       </div>
+      {message ? (
+        <p className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm font-black text-red-800">{message}</p>
+      ) : null}
       <label className="grid gap-2 text-sm font-black text-[#081634]">
         Naam of bijnaam
-        <input className="field" name="nickname" required minLength={2} maxLength={40} placeholder="Stefan" />
+        <input className="field" name="nickname" required minLength={2} maxLength={24} placeholder="Stefan" />
       </label>
       <label className="grid gap-2 text-sm font-black text-[#081634]">
         Teamnaam
-        <input className="field" name="team_name" required minLength={2} maxLength={40} placeholder="VARschrikkelijk goed" />
+        <input className="field" name="team_name" required minLength={2} maxLength={28} placeholder="VARschrikkelijk goed" />
       </label>
       <button className="button-primary" type="submit">
         Start mijn scorekaart

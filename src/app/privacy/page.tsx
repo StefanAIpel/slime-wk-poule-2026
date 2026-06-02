@@ -7,7 +7,7 @@ import { CONTACT_EMAIL, MAIL_FROM } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Privacy",
-  description: "Hoe Slime Score met je gegevens omgaat: minimale data, geen reclame, geen tracking.",
+  description: "Hoe Slime Score met je gegevens omgaat: minimale data en geen tracking-cookies.",
 };
 
 export default function PrivacyPage() {
@@ -17,7 +17,7 @@ export default function PrivacyPage() {
         <Brand />
         <PageHero
           title="Privacy"
-          subtitle="Kort en eerlijk: we vragen zo min mogelijk, verkopen niets en tonen geen reclame."
+          subtitle="Kort en eerlijk: we vragen zo min mogelijk en volgen je niet met tracking-cookies."
         />
       </header>
 
@@ -44,7 +44,7 @@ export default function PrivacyPage() {
             <li>Alleen om de poule te laten werken: inloggen, voorspellen en ranglijsten.</li>
             <li>Opgeslagen bij onze databaseleverancier Supabase, met toegangsbeveiliging.</li>
             <li>Je voorspellingen blijven privé tot de deadline.</li>
-            <li>We delen je gegevens niet met derden voor reclame of verkoop.</li>
+            <li>We verkopen je gegevens niet en delen ze niet met advertentienetwerken.</li>
           </ul>
         </article>
 
@@ -79,7 +79,7 @@ export default function PrivacyPage() {
           </ul>
           <p className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#f4fbf0] px-3 py-2 text-sm font-black text-[#137c35]">
             <ShieldCheck aria-hidden="true" className="size-5" />
-            Gratis · geen reclame · geen onnodige data
+            Gratis · geen onnodige data · privé
           </p>
         </article>
       </section>

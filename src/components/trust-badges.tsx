@@ -1,8 +1,8 @@
-import { Gift, Lock, ShieldOff, Users } from "lucide-react";
+import { CalendarCheck, Gift, Lock, Users } from "lucide-react";
 
 const badges = [
   { icon: Gift, label: "100% gratis" },
-  { icon: ShieldOff, label: "Geen reclame" },
+  { icon: CalendarCheck, label: "Eén keer invullen" },
   { icon: Lock, label: "Jouw data privé" },
   { icon: Users, label: "Voor jong en oud" },
 ];

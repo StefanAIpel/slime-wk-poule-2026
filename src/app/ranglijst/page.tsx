@@ -52,11 +52,11 @@ export default async function RankingPage() {
             {rows.map((row, index) => (
               <div key={row.user_id} className="grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 p-4 text-[#081634]">
                 <RankBadge rank={index + 1} />
-                <Avatar name={row.profiles?.team_name || row.profiles?.nickname || "Anoniem"} />
+                <Avatar name={row.profiles?.nickname || row.profiles?.team_name || "Speler"} />
                 <div className="min-w-0">
-                  <div className="truncate font-black">{row.profiles?.team_name || "Team zonder naam"}</div>
+                  <div className="truncate font-black">{row.profiles?.nickname || "Speler"}</div>
                   <div className="truncate text-sm font-bold text-[#48617f]">
-                    {row.profiles?.nickname || "Naam volgt"} · {row.exact_scores} exact · {row.correct_results} juiste richting
+                    {row.profiles?.team_name || "—"} · {row.exact_scores} exact · {row.correct_results} juist
                   </div>
                 </div>
                 <div className="text-right text-xl font-black">{row.points} pt</div>

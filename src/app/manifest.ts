@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Slime Score WK 2026",
     short_name: "Slime Score",
-    description: "Gratis Nederlandse WK 2026-poule met groepsscores, subpoules en ranglijsten. Geen reclame.",
+    description: "Gratis Nederlandse WK 2026-poule met groepsscores, subpoules en ranglijsten. Eén keer invullen.",
     start_url: "/",
     scope: "/",
     display: "standalone",

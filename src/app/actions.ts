@@ -42,13 +42,30 @@ function poolCode() {
     .join("");
 }
 
+const reservedNames = ["anoniem", "naam volgt", "speler", "onbekend"];
+
 export async function saveProfile(formData: FormData) {
   const { supabase, user } = await requireUser();
-  const nickname = cleanText(formData.get("nickname"), 40);
-  const teamName = cleanText(formData.get("team_name"), 40);
+  const admin = createAdminClient();
+  const nickname = cleanText(formData.get("nickname"), 24);
+  const teamName = cleanText(formData.get("team_name"), 28);
 
   if (nickname.length < 2 || teamName.length < 2) {
     redirect("/?profiel=te-kort");
+  }
+  if (reservedNames.includes(nickname.toLowerCase())) {
+    redirect("/?profiel=gereserveerd");
+  }
+
+  // Naam moet uniek zijn voor een nette ranglijst (hoofdletter-ongevoelig).
+  const { data: taken } = await admin
+    .from("profiles")
+    .select("id")
+    .ilike("nickname", nickname)
+    .neq("id", user.id)
+    .maybeSingle();
+  if (taken) {
+    redirect("/?profiel=bezet");
   }
 
   const { error } = await supabase.from("profiles").upsert({

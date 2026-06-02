@@ -1,4 +1,4 @@
-import { CalendarDays, Trophy, Users } from "lucide-react";
+import { CalendarDays, ClipboardList, ListChecks, Mail, MousePointerClick, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
@@ -78,7 +78,7 @@ export default async function Home({
           />
         </section>
         <section className="grid gap-4">
-          <ProfileForm />
+          <ProfileForm error={params.profiel} />
           <div className="panel p-4">
             <h2 className="text-xl font-black text-[#081634]">Na deze stap</h2>
             <div className="mt-3 grid gap-2 text-sm font-bold leading-6 text-[#48617f]">
@@ -194,7 +194,7 @@ export default async function Home({
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-semibold text-[#46566f]">
-          Gratis · geen reclame · geen onnodige data · jouw voorspellingen blijven privé.
+          Gratis · één keer invullen · geen onnodige data · jouw voorspellingen blijven privé.
         </p>
         <form action="/logout" method="post">
           <button className="button-plain" type="submit">
@@ -208,98 +208,144 @@ export default async function Home({
   );
 }
 
+const howItWorks = [
+  { icon: Mail, title: "Vul je e-mail in", text: "Geen wachtwoord nodig." },
+  { icon: MousePointerClick, title: "Open de mail-link", text: "Je bent meteen ingelogd." },
+  { icon: ClipboardList, title: "Voorspel in één keer", text: "Daarna geen dagelijks gedoe." },
+];
+
 function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboard: HomeLeaderboardRow[] }) {
   return (
-    <main className="page-shell grid min-h-screen gap-5 md:grid-cols-[1fr_420px] md:items-center">
-      <section className="grid gap-4">
-        <Brand />
-        <div className="hero-band public-hero-row">
-          <div>
-            <h1 className="max-w-2xl text-4xl font-black leading-none text-white md:text-6xl">
-              De WK 2026-poule voor het hele team.
-            </h1>
-            <p className="mt-3 max-w-xl text-lg font-semibold leading-8 text-blue-50">
-              Voorspel alle wedstrijden, speel met vrienden en familie en zie wie de echte bondscoach is.
-            </p>
+    <main className="page-shell grid gap-5">
+      <Brand />
+
+      <div className="hero-band public-hero-row">
+        <div>
+          <h1 className="text-3xl font-black leading-tight text-white md:text-4xl">
+            De gratis WK 2026-poule voor je vrienden, familie en collega&rsquo;s.
+          </h1>
+          <p className="mt-2 max-w-xl text-base font-semibold leading-7 text-blue-50 md:text-lg">
+            Eén keer invullen, je eigen poule maken en zien wie de beste bondscoach is.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <a href="#login" className="button-primary">
+              <Trophy aria-hidden="true" className="size-5" />
+              Gratis meedoen
+            </a>
+            <ShareButton
+              url={SITE_URL}
+              text="Doe je mee met de gratis Slime Score WK 2026-poule?"
+              label="Nodig je groep uit"
+              variant="secondary"
+            />
           </div>
-          <Image
-            className="public-hero-icon"
-            src="/icon.png"
-            alt="Slime Score app icon"
-            width={512}
-            height={512}
-            sizes="(min-width: 1024px) 200px, 190px"
-            priority
-          />
         </div>
-        <TrustBadges />
-        <ol className="grid gap-2 sm:grid-cols-3">
-          <li className="step-pill"><span className="step-pill-num">1</span> Vul je e-mail in</li>
-          <li className="step-pill"><span className="step-pill-num">2</span> Open de mail-link</li>
-          <li className="step-pill"><span className="step-pill-num">3</span> Voorspel & speel mee</li>
-        </ol>
-        <div className="flex flex-wrap gap-3">
-          <a href="#login" className="button-primary">
-            <Trophy aria-hidden="true" className="size-5" />
-            Gratis meedoen
+        <Image
+          className="public-hero-icon"
+          src="/icon.png"
+          alt="Slime Score app icon"
+          width={512}
+          height={512}
+          sizes="(min-width: 1024px) 200px, 160px"
+          priority
+        />
+      </div>
+
+      <TrustBadges />
+
+      <div className="grid gap-5 md:grid-cols-[1fr_minmax(320px,400px)] md:items-start">
+        <section className="grid gap-4">
+          <div className="panel p-4">
+            <h2 className="text-lg font-black text-[#081634]">Zo doe je mee</h2>
+            <ol className="mt-3 grid gap-3 sm:grid-cols-3">
+              {howItWorks.map((step, index) => {
+                const Icon = step.icon;
+                return (
+                  <li key={step.title} className="rounded-xl border border-slate-200 bg-[#f7faff] p-3">
+                    <div className="flex items-center gap-2">
+                      <span className="step-pill-num">{index + 1}</span>
+                      <Icon aria-hidden="true" className="size-5 text-[#0866e8]" />
+                    </div>
+                    <div className="mt-2 font-black text-[#081634]">{step.title}</div>
+                    <div className="text-sm font-semibold text-[#48617f]">{step.text}</div>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+
+          <div className="dark-panel grid gap-3 p-5 md:grid-cols-[1fr_auto] md:items-center">
+            <div>
+              <h2 className="flex items-center gap-2 text-xl font-black text-white">
+                <Users aria-hidden="true" className="size-6 text-[#ffd44d]" />
+                Daag je groep uit
+              </h2>
+              <p className="mt-1 text-sm font-semibold leading-6 text-blue-50">
+                Maak je eigen poule voor familie, vrienden of collega&rsquo;s met één deelcode. Wie wordt de baas?
+              </p>
+            </div>
+            <a href="#login" className="button-primary md:w-auto">Start je poule</a>
+          </div>
+
+          <a href="/ranglijst" className="panel public-score-card p-4 no-underline">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-lg font-black text-[#081634]">Live ranglijst</h2>
+              <span className="text-sm font-black text-[#0866e8]">Bekijk alles</span>
+            </div>
+            <div className="mt-3 grid gap-2">
+              {leaderboard.length ? (
+                leaderboard.map((row, index) => (
+                  <div key={`${index}-${row.points}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
+                    <span className="truncate font-semibold">{index + 1}. {displayName(row.profiles)}</span>
+                    <span className="font-black">{row.points} pt</span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm font-semibold text-[#48617f]">De stand verschijnt zodra de eerste punten zijn verwerkt.</p>
+              )}
+            </div>
           </a>
-          <a href="/schema" className="button-plain">
-            <CalendarDays aria-hidden="true" className="size-5" />
-            Bekijk schema
-          </a>
-          <ShareButton
-            url={SITE_URL}
-            text="Doe je mee met de gratis Slime Score WK 2026-poule?"
-            label="Deel met je groep"
-            variant="secondary"
-          />
-        </div>
-        <a href="/ranglijst" className="panel public-score-card p-4 no-underline">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-lg font-black text-[#081634]">Live ranglijst</h2>
-            <span className="text-sm font-black text-[#0866e8]">Bekijk alles</span>
+
+          <div className="flex flex-wrap gap-3">
+            <a href="/schema" className="button-plain">
+              <CalendarDays aria-hidden="true" className="size-5" />
+              Bekijk schema
+            </a>
+            <a href="/regels" className="button-plain">
+              <ListChecks aria-hidden="true" className="size-5" />
+              Spelregels
+            </a>
           </div>
-          <div className="mt-3 grid gap-2">
-            {leaderboard.length ? (
-              leaderboard.map((row, index) => (
-                <div key={`${index}-${row.points}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
-                  <span className="font-semibold">{index + 1}. {displayName(row.profiles)}</span>
-                  <span className="font-black">{row.points} pt</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm font-semibold text-[#48617f]">De stand verschijnt zodra de eerste punten zijn verwerkt.</p>
-            )}
+        </section>
+
+        <section id="login" className="grid gap-4 md:sticky md:top-4">
+          {authError ? (
+            <div className="panel border-red-200 bg-red-50 p-4 font-black text-red-800">
+              Deze inloglink is verlopen of al gebruikt. Vraag hieronder een nieuwe link aan.
+            </div>
+          ) : null}
+          <div className="hero-score panel grid gap-4 p-5">
+            <div className="relative z-[1]">
+              <p className="text-2xl font-black leading-tight text-[#081634]">Maak je scorekaart.</p>
+              <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
+                E-mailadres invullen, link openen, naam en teamnaam kiezen.
+              </p>
+            </div>
+            <div className="score-podium relative z-[1]" aria-hidden="true">
+              <span>1</span>
+              <span>2</span>
+              <span>3</span>
+            </div>
           </div>
-        </a>
-      </section>
-      <section id="login" className="grid gap-4">
-        {authError ? (
-          <div className="panel border-red-200 bg-red-50 p-4 font-black text-red-800">
-            Deze inloglink is verlopen of al gebruikt. Vraag hieronder een nieuwe link aan.
-          </div>
-        ) : null}
-        <div className="hero-score panel grid gap-4 p-5">
-          <div className="relative z-[1]">
-            <p className="text-3xl font-black leading-none text-[#081634]">Maak je scorekaart.</p>
-            <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
-              E-mailadres invullen, link openen, naam en teamnaam kiezen.
-            </p>
-          </div>
-          <div className="score-podium relative z-[1]" aria-hidden="true">
-            <span>1</span>
-            <span>2</span>
-            <span>3</span>
-          </div>
-        </div>
-        <LoginForm />
-        <InstallAppCard />
-        <p className="text-center text-xs font-semibold text-[#46566f]">
-          Door mee te doen ga je akkoord met de{" "}
-          <a className="font-black text-[#064ed6]" href="/voorwaarden">voorwaarden</a> en het{" "}
-          <a className="font-black text-[#064ed6]" href="/privacy">privacybeleid</a>.
-        </p>
-      </section>
+          <LoginForm />
+          <InstallAppCard />
+          <p className="text-center text-xs font-semibold text-[#46566f]">
+            Door mee te doen ga je akkoord met de{" "}
+            <a className="font-black text-[#064ed6]" href="/voorwaarden">voorwaarden</a> en het{" "}
+            <a className="font-black text-[#064ed6]" href="/privacy">privacybeleid</a>.
+          </p>
+        </section>
+      </div>
     </main>
   );
 }
