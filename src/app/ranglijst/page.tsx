@@ -1,8 +1,7 @@
-import { Medal, Trophy, Users } from "lucide-react";
-import { Avatar } from "@/components/avatar";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
+import { RankingExplorer, type PlayerRow, type PoolRow } from "@/components/ranking-explorer";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const revalidate = 30;
@@ -29,8 +28,23 @@ export default async function RankingPage() {
     admin.from("scores").select("user_id,points"),
   ]);
 
-  const poolRankings = buildPoolRankings(pools ?? [], members ?? [], allScores ?? []);
   const rows = (globalScores ?? []) as unknown as GlobalScoreRow[];
+  const players: PlayerRow[] = rows.map((row, index) => ({
+    userId: row.user_id,
+    rank: index + 1,
+    nickname: row.profiles?.nickname ?? null,
+    teamName: row.profiles?.team_name ?? null,
+    points: row.points,
+    exact: row.exact_scores,
+    correct: row.correct_results,
+  }));
+  const poolRankings: PoolRow[] = buildPoolRankings(pools ?? [], members ?? [], allScores ?? []).map((pool, index) => ({
+    id: pool.id,
+    rank: index + 1,
+    name: pool.name,
+    code: pool.code,
+    points: pool.points,
+  }));
 
   return (
     <main className="page-shell">
@@ -38,67 +52,14 @@ export default async function RankingPage() {
         <Brand />
         <PageHero
           title="Ranglijsten"
-          subtitle="Algemene stand en subpoules. Meedoen of voorspellingen aanpassen kan na login."
+          subtitle="Zoek een speler op naam of team, of vind je vriendenpoule. Meedoen kan na login."
         />
       </header>
 
-      <section className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">
-        <article className="panel overflow-hidden">
-          <div className="wc-header flex items-center gap-3 p-4 text-white">
-            <Trophy aria-hidden="true" className="size-7" />
-            <h2 className="text-2xl font-black">Wereldranglijst</h2>
-          </div>
-          <div className="divide-y divide-slate-200">
-            {rows.map((row, index) => (
-              <div key={row.user_id} className="grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 p-4 text-[#081634]">
-                <RankBadge rank={index + 1} />
-                <Avatar name={row.profiles?.nickname || row.profiles?.team_name || "Speler"} />
-                <div className="min-w-0">
-                  <div className="truncate font-black">{row.profiles?.nickname || "Speler"}</div>
-                  <div className="truncate text-sm font-bold text-[#48617f]">
-                    {row.profiles?.team_name || "—"} · {row.exact_scores} exact · {row.correct_results} juist
-                  </div>
-                </div>
-                <div className="text-right text-xl font-black">{row.points} pt</div>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <article className="panel overflow-hidden">
-          <div className="flex items-center gap-3 bg-[#128f47] p-4 text-white">
-            <Users aria-hidden="true" className="size-7" />
-            <h2 className="text-2xl font-black">Subpoules</h2>
-          </div>
-          <div className="divide-y divide-slate-200">
-            {poolRankings.map((pool, index) => (
-              <div key={pool.id} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 p-4 text-[#081634]">
-                <RankBadge rank={index + 1} />
-                <div>
-                  <div className="font-black">{pool.name}</div>
-                  <div className="text-sm font-bold text-[#48617f]">Beste 4 samen, code {pool.code}</div>
-                </div>
-                <div className="text-right text-xl font-black">{pool.points} pt</div>
-              </div>
-            ))}
-            {!poolRankings.length ? (
-              <div className="p-4 font-semibold text-[#48617f]">Nog geen subpoules met score.</div>
-            ) : null}
-          </div>
-        </article>
-      </section>
+      <RankingExplorer players={players} pools={poolRankings} />
 
       <BottomNav current="/ranglijst" showPrivate={false} />
     </main>
-  );
-}
-
-function RankBadge({ rank }: { rank: number }) {
-  const color = rank === 1 ? "bg-[#ffb000]" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-[#ff7a00]" : "bg-[#0866e8]";
-  return (
-    <div className={`grid size-10 place-items-center rounded-full ${color} text-sm font-black text-white`}>
-      {rank <= 3 ? <Medal aria-hidden="true" className="size-5" /> : rank}
-    </div>
   );
 }
 

@@ -324,18 +324,11 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
               Deze inloglink is verlopen of al gebruikt. Vraag hieronder een nieuwe link aan.
             </div>
           ) : null}
-          <div className="hero-score panel grid gap-4 p-5">
-            <div className="relative z-[1]">
-              <p className="text-2xl font-black leading-tight text-[#081634]">Maak je scorekaart.</p>
-              <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
-                E-mailadres invullen, link openen, naam en teamnaam kiezen.
-              </p>
-            </div>
-            <div className="score-podium relative z-[1]" aria-hidden="true">
-              <span>1</span>
-              <span>2</span>
-              <span>3</span>
-            </div>
+          <div>
+            <h2 className="text-2xl font-black text-[#101a2b]">Gratis meedoen</h2>
+            <p className="mt-1 text-sm font-semibold leading-6 text-[#475670]">
+              Vul je e-mail in en je krijgt meteen een inloglink. Geen wachtwoord nodig.
+            </p>
           </div>
           <LoginForm />
           <InstallAppCard />

@@ -1,20 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4f7fd;
-  --foreground: #0b1f4d;
-  --muted: #5d6b86;
-  --line: rgba(8, 22, 52, 0.1);
+  --background: #f3f6fb;
+  --foreground: #101a2b;
+  --muted: #586a82;
+  --line: rgba(16, 26, 43, 0.1);
   --panel: #ffffff;
-  --panel-ink: #0b1f4d;
-  --blue: #0866e8;
-  --blue-2: #0a3ea0;
-  --red: #e1262f;
-  --green: #128f47;
-  --gold: #ffb000;
-  --orange: #ff7a00;
+  --panel-ink: #101a2b;
+  --blue: #20508c;
+  --blue-2: #15375f;
+  --blue-ink: #0c2240;
+  --red: #d23a31;
+  --green: #1c855a;
+  --gold: #efa820;
+  --orange: #f4661e;
+  --orange-2: #ff8a3c;
   --cream: #fff7e8;
-  --ink-soft: #46566f;
+  --ink-soft: #475670;
 }
 
 @theme inline {
@@ -91,15 +93,15 @@ textarea {
 .dark-panel {
   color: #fff;
   background:
-    linear-gradient(135deg, rgba(255, 176, 0, 0.22) 0 14%, transparent 14%),
-    linear-gradient(150deg, #0b62d9 0%, #0a3ea0 48%, #082a6e 100%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+    linear-gradient(135deg, rgba(244, 102, 30, 0.18) 0 14%, transparent 14%),
+    linear-gradient(150deg, #20508c 0%, #15375f 50%, #0c2240 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 16px;
-  box-shadow: 0 18px 40px rgba(8, 22, 52, 0.22);
+  box-shadow: 0 18px 40px rgba(12, 34, 64, 0.26);
 }
 
 .wc-header {
-  background: linear-gradient(90deg, var(--blue), var(--green) 56%, var(--red));
+  background: linear-gradient(90deg, var(--blue), var(--green) 60%, var(--orange));
 }
 
 .hero-band {
@@ -111,10 +113,10 @@ textarea {
   padding: 20px;
   color: #fff;
   background:
-    radial-gradient(circle at 88% -20%, rgba(255, 176, 0, 0.5), transparent 42%),
-    radial-gradient(circle at 0% 120%, rgba(18, 143, 71, 0.45), transparent 44%),
-    linear-gradient(135deg, #0a64d8 0%, #0a3ea0 52%, #082a6e 100%);
-  box-shadow: 0 18px 42px rgba(8, 22, 52, 0.26);
+    radial-gradient(circle at 88% -20%, rgba(244, 102, 30, 0.28), transparent 42%),
+    radial-gradient(circle at 0% 120%, rgba(28, 133, 90, 0.3), transparent 44%),
+    linear-gradient(135deg, #20508c 0%, #15375f 52%, #0c2240 100%);
+  box-shadow: 0 18px 42px rgba(12, 34, 64, 0.3);
 }
 
 .hero-band::before {
@@ -122,12 +124,12 @@ textarea {
   content: "";
   inset: 0;
   background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.85) 1.5px, transparent 2px),
-    radial-gradient(circle, rgba(255, 198, 0, 0.7) 1.5px, transparent 2px),
-    radial-gradient(circle, rgba(43, 195, 95, 0.7) 1.5px, transparent 2px);
+    radial-gradient(circle, rgba(255, 255, 255, 0.6) 1.5px, transparent 2px),
+    radial-gradient(circle, rgba(244, 102, 30, 0.55) 1.5px, transparent 2px),
+    radial-gradient(circle, rgba(43, 195, 95, 0.5) 1.5px, transparent 2px);
   background-size: 90px 90px, 130px 130px, 170px 170px;
   background-position: 0 0, 45px 30px, 20px 70px;
-  opacity: 0.5;
+  opacity: 0.35;
   pointer-events: none;
 }
 
@@ -365,9 +367,9 @@ textarea {
 
 .button-primary {
   border: 1px solid rgba(255, 255, 255, 0.28);
-  background: linear-gradient(135deg, var(--gold), var(--orange) 58%, var(--red));
+  background: linear-gradient(135deg, var(--orange-2), var(--orange));
   color: #fff;
-  box-shadow: 0 12px 26px rgba(255, 122, 0, 0.28);
+  box-shadow: 0 12px 26px rgba(244, 102, 30, 0.26);
 }
 
 .button-secondary {
@@ -438,9 +440,9 @@ textarea {
   color: #fff;
   text-decoration: none;
   background:
-    linear-gradient(90deg, rgba(6, 18, 44, 0.82), rgba(6, 18, 44, 0.18) 62%),
+    linear-gradient(90deg, rgba(8, 20, 40, 0.84), rgba(8, 20, 40, 0.2) 62%),
     var(--slime-banner-image, none),
-    linear-gradient(120deg, #082a6e 0%, #0a3ea0 52%, #1763d8 100%);
+    linear-gradient(120deg, #15375f 0%, #20508c 52%, #0c2240 100%);
   background-size: cover, cover, cover;
   background-position: center, center right, center;
   background-repeat: no-repeat;
@@ -529,7 +531,7 @@ textarea {
 }
 
 .group-jump a:hover {
-  background: linear-gradient(135deg, var(--orange), var(--red));
+  background: linear-gradient(135deg, var(--orange-2), var(--orange));
   color: #fff;
 }
 
@@ -584,7 +586,7 @@ textarea {
 
 .bottom-nav a:hover,
 .bottom-nav a[aria-current="page"] {
-  background: linear-gradient(135deg, var(--orange), var(--red));
+  background: linear-gradient(135deg, var(--orange-2), var(--orange));
   color: #fff;
 }
 
@@ -599,9 +601,9 @@ textarea {
   place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(255, 176, 0, 0.98), rgba(255, 122, 0, 0.98) 58%, rgba(225, 38, 47, 0.98));
+  background: linear-gradient(135deg, var(--orange-2), var(--orange));
   color: white;
-  box-shadow: 0 14px 28px rgba(255, 122, 0, 0.32);
+  box-shadow: 0 14px 28px rgba(244, 102, 30, 0.32);
 }
 
 .quick-menu-backdrop {
