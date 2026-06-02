@@ -1,4 +1,4 @@
-import { CalendarDays, ClipboardList, ListChecks, Mail, MousePointerClick, Trophy, Users } from "lucide-react";
+import { CalendarDays, ListChecks, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
@@ -186,11 +186,6 @@ export default async function Home({
   );
 }
 
-const howItWorks = [
-  { icon: Mail, title: "Vul je e-mail in", text: "Geen wachtwoord nodig." },
-  { icon: MousePointerClick, title: "Open de mail-link", text: "Je bent meteen ingelogd." },
-  { icon: ClipboardList, title: "Voorspel in één keer", text: "Daarna geen dagelijks gedoe." },
-];
 
 function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboard: HomeLeaderboardRow[] }) {
   return (
@@ -203,15 +198,16 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
       >
         <div className="hero-content">
           <h1 className="text-3xl font-bold leading-tight text-white md:text-4xl">
-            De gratis WK 2026-poule voor je vrienden, familie en collega&rsquo;s.
+            Maak een WK-poule samen met je vrienden
           </h1>
           <p className="mt-2 max-w-xl text-base font-medium leading-7 text-blue-50 md:text-lg">
-            Gratis en alleen je e-mailadres. Geen dagelijkse inlog — in 10 minuten klaar voor het hele WK.
+            Gratis aanmelden met alleen je e-mail. In 10 minuten klaar voor het hele WK. Geen irritante advertenties,
+            geen cookiegedoe.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <a href="#login" className="button-primary">
               <Trophy aria-hidden="true" className="size-5" />
-              Gratis meedoen
+              Doe mee!
             </a>
             <ShareButton
               url={SITE_URL}
@@ -227,29 +223,11 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
       <div className="grid gap-5 md:grid-cols-[1fr_minmax(320px,400px)] md:items-start">
         <section className="grid gap-4">
           <UpcomingMatches />
-          <div className="panel p-4">
-            <h2 className="text-lg font-bold text-[#081634]">Zo doe je mee</h2>
-            <ol className="mt-3 grid gap-3 sm:grid-cols-3">
-              {howItWorks.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <li key={step.title} className="rounded-xl border border-slate-200 bg-[#f7faff] p-3">
-                    <div className="flex items-center gap-2">
-                      <span className="step-pill-num">{index + 1}</span>
-                      <Icon aria-hidden="true" className="size-5 text-[#0866e8]" />
-                    </div>
-                    <div className="mt-2 font-bold text-[#081634]">{step.title}</div>
-                    <div className="text-sm font-medium text-[#48617f]">{step.text}</div>
-                  </li>
-                );
-              })}
-            </ol>
-          </div>
 
           <div className="dark-panel grid gap-3 p-5 md:grid-cols-[1fr_auto] md:items-center">
             <div>
               <h2 className="flex items-center gap-2 text-xl font-bold text-white">
-                <Users aria-hidden="true" className="size-6 text-[#ffd44d]" />
+                <Users aria-hidden="true" className="size-6 text-white" />
                 Daag je groep uit
               </h2>
               <p className="mt-1 text-sm font-medium leading-6 text-blue-50">
