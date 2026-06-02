@@ -1,6 +1,7 @@
 import { Medal, Trophy, Users } from "lucide-react";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
+import { PageHero } from "@/components/page-hero";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const revalidate = 30;
@@ -32,14 +33,12 @@ export default async function RankingPage() {
 
   return (
     <main className="page-shell">
-      <header className="mb-6 grid gap-4 md:max-w-2xl">
+      <header className="mb-6 grid gap-4">
         <Brand />
-        <div>
-          <h1 className="text-3xl font-black leading-none text-[#0b1f4d] md:text-4xl">Ranglijsten</h1>
-          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-[#46566f]">
-            Algemene stand en subpoules. Meedoen of voorspellingen aanpassen kan na login.
-          </p>
-        </div>
+        <PageHero
+          title="Ranglijsten"
+          subtitle="Algemene stand en subpoules. Meedoen of voorspellingen aanpassen kan na login."
+        />
       </header>
 
       <section className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">

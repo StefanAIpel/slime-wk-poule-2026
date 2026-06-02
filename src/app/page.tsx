@@ -229,12 +229,12 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
     <main className="page-shell grid min-h-screen gap-5 md:grid-cols-[1fr_420px] md:items-center">
       <section className="grid gap-4">
         <Brand />
-        <div className="public-hero-row">
+        <div className="hero-band public-hero-row">
           <div>
-            <h1 className="max-w-2xl text-4xl font-black leading-none text-[#0b1f4d] md:text-6xl">
+            <h1 className="max-w-2xl text-4xl font-black leading-none text-white md:text-6xl">
               De WK 2026-poule voor het hele team.
             </h1>
-            <p className="mt-3 max-w-xl text-lg font-semibold leading-8 text-[#46566f]">
+            <p className="mt-3 max-w-xl text-lg font-semibold leading-8 text-blue-50">
               Voorspel alle wedstrijden, speel met vrienden en familie en zie wie de echte bondscoach is.
             </p>
           </div>

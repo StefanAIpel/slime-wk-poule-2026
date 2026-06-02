@@ -3,6 +3,7 @@ import { savePredictions } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { GroupPredictionCard } from "@/components/group-prediction-card";
+import { PageHero } from "@/components/page-hero";
 import { ENTRY_DEADLINE, groupLetters, hostCities, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 import type { MatchWithTeams, Team } from "@/lib/types";
@@ -43,15 +44,12 @@ export default async function PredictionsPage({
 
   return (
     <main className="page-shell">
-      <header className="mb-6 grid gap-4 md:max-w-2xl">
+      <header className="mb-6 grid gap-4">
         <Brand />
-        <div>
-          <h1 className="text-3xl font-black leading-none text-[#0b1f4d] md:text-4xl">Voorspellingen</h1>
-          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-[#46566f]">
-            Snel invullen, later nog bijschaven tot 11 juni 21:00 Nederlandse tijd. Na de groepsfase is er een kleine
-            optionele herziening tot 28 juni 21:00.
-          </p>
-        </div>
+        <PageHero
+          title="Voorspellingen"
+          subtitle="Snel invullen, later nog bijschaven tot 11 juni 21:00 Nederlandse tijd. Na de groepsfase is er een kleine optionele herziening tot 28 juni 21:00."
+        />
       </header>
 
       {params.opgeslagen ? (

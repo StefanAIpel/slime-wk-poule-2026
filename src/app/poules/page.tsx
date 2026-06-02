@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createPool, joinPool, postPoolMessage, removeMember, setMemberRole, updatePoolStyle } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
+import { PageHero } from "@/components/page-hero";
 import { CopyButton, WhatsappShare } from "@/components/share-button";
 import { SITE_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
@@ -64,14 +65,12 @@ export default async function PoolsPage({
 
   return (
     <main className="page-shell">
-      <header className="mb-6 grid gap-4 md:max-w-2xl">
+      <header className="mb-6 grid gap-4">
         <Brand />
-        <div>
-          <h1 className="text-4xl font-black leading-none text-[#0b1f4d]">Mijn poules</h1>
-          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-[#46566f]">
-            Maak een eigen groep, deel de code via WhatsApp en beheer als eigenaar wie erin blijft.
-          </p>
-        </div>
+        <PageHero
+          title="Mijn poules"
+          subtitle="Maak een eigen groep, deel de code via WhatsApp en beheer als eigenaar wie erin blijft."
+        />
       </header>
 
       {params.aangemaakt || params.joined || params.bijgewerkt ? (

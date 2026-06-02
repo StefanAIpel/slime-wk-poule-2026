@@ -1,19 +1,18 @@
 import { BookOpen, CalendarClock, Database, ShieldCheck } from "lucide-react";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
+import { PageHero } from "@/components/page-hero";
 import { ENTRY_DEADLINE_ISO, POST_GROUP_DEADLINE_ISO, scoringRules, SLIME_GAME_URL } from "@/lib/constants";
 
 export default function RulesPage() {
   return (
     <main className="page-shell">
-      <header className="mb-6 grid gap-4 md:max-w-3xl">
+      <header className="mb-6 grid gap-4">
         <Brand />
-        <div>
-          <h1 className="text-3xl font-black leading-none text-[#0b1f4d] md:text-4xl">Regels en uitleg</h1>
-          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-[#46566f]">
-            Kort, duidelijk en net precies genoeg voor discussie in de groepsapp.
-          </p>
-        </div>
+        <PageHero
+          title="Regels en uitleg"
+          subtitle="Kort, duidelijk en net precies genoeg voor discussie in de groepsapp."
+        />
       </header>
 
       <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">

@@ -1,6 +1,7 @@
 import { CalendarDays, MapPin, Trophy } from "lucide-react";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
+import { PageHero } from "@/components/page-hero";
 import { TeamFlag } from "@/components/team-flag";
 import { groupLetters } from "@/lib/constants";
 import { formatAmsterdam } from "@/lib/format";
@@ -20,14 +21,12 @@ export default async function SchedulePage() {
 
   return (
     <main className="page-shell">
-      <header className="mb-6 grid gap-4 md:max-w-3xl">
+      <header className="mb-6 grid gap-4">
         <Brand />
-        <div>
-          <h1 className="text-3xl font-black leading-none text-[#0b1f4d] md:text-4xl">Groepsfase</h1>
-          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-[#46566f]">
-            Alle wedstrijden die je voorspelt, met Nederlandse tijden en speelsteden.
-          </p>
-        </div>
+        <PageHero
+          title="Groepsfase"
+          subtitle="Alle wedstrijden die je voorspelt, met Nederlandse tijden en speelsteden."
+        />
       </header>
 
       <section className="grid gap-3 md:grid-cols-3">
