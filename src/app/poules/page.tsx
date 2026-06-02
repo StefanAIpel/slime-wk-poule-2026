@@ -99,7 +99,7 @@ export default async function PoolsPage({
         <Brand />
         <div
           className="hero-band hero-band-visual"
-          style={{ "--hero-image": "url('/slimes/hero-bg.webp')" } as React.CSSProperties}
+          style={{ "--hero-image": "url('/assets/Hero-bg.webp')" } as React.CSSProperties}
         >
           <div className="hero-content">
             <h1 className="text-2xl font-extrabold leading-tight text-white md:text-3xl">
@@ -109,7 +109,7 @@ export default async function PoolsPage({
               Daag vrienden, familie of collega&rsquo;s uit, vul je scores in en strijd om de eerste plek.
             </p>
           </div>
-          <HeroArt src="/slimes/poule-slime.png" />
+          <HeroArt src="/assets/slime-05-ikea.png" />
         </div>
       </header>
 

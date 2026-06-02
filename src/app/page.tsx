@@ -217,7 +217,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
 
       <div
         className="hero-band hero-band-visual"
-        style={{ "--hero-image": "url('/slimes/hero-bg.webp')" } as React.CSSProperties}
+        style={{ "--hero-image": "url('/assets/Hero-bg.webp')" } as React.CSSProperties}
       >
         <div className="hero-content">
           <h1 className="text-3xl font-extrabold leading-tight text-white md:text-4xl">
@@ -239,7 +239,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             />
           </div>
         </div>
-        <HeroArt />
+        <HeroArt src="/assets/slime-02-mascotte-bal.png" />
       </div>
 
       <TrustBadges />
