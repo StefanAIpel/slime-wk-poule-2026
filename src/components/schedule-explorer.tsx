@@ -148,7 +148,7 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
         <CalendarDays aria-hidden="true" className="size-3.5" />
         {formatAmsterdam(match.startsAt)}
         {match.venue ? (
-          <span className="hidden items-center gap-1 sm:inline-flex">
+          <span className="inline-flex items-center gap-1">
             <MapPin aria-hidden="true" className="size-3.5" />
             {match.venue}
           </span>
@@ -158,13 +158,15 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
         <div className="flex min-w-0 items-center gap-2">
           <TeamFlag code={match.homeCode} name={match.homeName} />
           <span className="truncate text-sm font-medium text-[var(--ink)] sm:text-base">
-            {match.homeName ?? match.homeCode}
+            <span className="sm:hidden">{match.homeCode ?? match.homeName}</span>
+            <span className="hidden sm:inline">{match.homeName ?? match.homeCode}</span>
           </span>
         </div>
         <span className="px-1 text-sm font-semibold text-[var(--muted)]">-</span>
         <div className="flex min-w-0 items-center justify-end gap-2 text-right">
           <span className="truncate text-sm font-medium text-[var(--ink)] sm:text-base">
-            {match.awayName ?? match.awayCode}
+            <span className="sm:hidden">{match.awayCode ?? match.awayName}</span>
+            <span className="hidden sm:inline">{match.awayName ?? match.awayCode}</span>
           </span>
           <TeamFlag code={match.awayCode} name={match.awayName} />
         </div>

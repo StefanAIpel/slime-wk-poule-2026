@@ -47,7 +47,7 @@ export function StatusBar() {
               <Trophy aria-hidden="true" className="size-4" />
               {me.nickname ?? "Speler"} · #{me.rank}
             </span>
-            <span className="status-chip status-chip-accent">
+            <span className="status-chip status-chip-accent status-chip-progress">
               <ListChecks aria-hidden="true" className="size-4" />
               {me.progress ?? 0}% ingevuld
             </span>

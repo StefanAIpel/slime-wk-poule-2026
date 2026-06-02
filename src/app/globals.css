@@ -54,15 +54,12 @@ a {
 h1,
 h2,
 h3 {
-  text-wrap: balance;
+  /* 'pretty' voorkomt rare losse woorden zonder gecentreerde, hakkelige regels. */
+  text-wrap: pretty;
 }
 
 p {
   text-wrap: pretty;
-}
-
-.hero-content h1 {
-  text-wrap: balance;
 }
 
 button,
@@ -179,6 +176,17 @@ textarea {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.18);
   padding: 3px 10px;
+}
+
+/* Voortgang-chip kost te veel ruimte op smalle schermen; pas vanaf tablet tonen. */
+.status-chip-progress {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .status-chip-progress {
+    display: inline-flex;
+  }
 }
 
 .status-chip-countdown {
@@ -535,10 +543,14 @@ textarea {
 }
 
 .button-primary {
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: linear-gradient(135deg, var(--orange-2), var(--orange));
+  border: 1px solid rgba(120, 40, 0, 0.3);
+  /* Dieper oranje + extra vet + tekstschaduw: witte tekst leest scherp en stevig. */
+  background: linear-gradient(135deg, #ef7a2c, #d9540d);
   color: #fff;
-  box-shadow: 0 12px 26px rgba(244, 102, 30, 0.26);
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px rgba(90, 34, 0, 0.55);
+  box-shadow: 0 12px 26px rgba(200, 76, 14, 0.3);
 }
 
 .button-secondary {
@@ -557,11 +569,12 @@ textarea {
   border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 12px;
   padding: 11px 16px;
-  font-weight: 800;
+  font-weight: 900;
   text-decoration: none;
   cursor: pointer;
   color: #fff;
   background: linear-gradient(135deg, #2bb564, #1f9d57);
+  text-shadow: 0 1px 2px rgba(0, 60, 30, 0.45);
   box-shadow: 0 12px 26px rgba(31, 157, 87, 0.26);
   transition: transform 140ms ease, filter 140ms ease;
 }
@@ -621,6 +634,49 @@ textarea {
   padding: 6px 12px;
   font-size: 0.84rem;
   font-weight: 800;
+}
+
+.share-pill {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 12px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 8px 18px rgba(8, 22, 52, 0.16);
+  transition: transform 140ms ease, filter 140ms ease;
+}
+
+.share-pill:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.share-pill-whatsapp {
+  background: linear-gradient(135deg, #2bb564, #1f9d57);
+}
+
+.share-pill-facebook {
+  background: linear-gradient(135deg, #2b7bf3, #1559c9);
+}
+
+.share-pill-x {
+  background: linear-gradient(135deg, #2a2a2a, #050505);
+}
+
+.share-pill-telegram {
+  background: linear-gradient(135deg, #36aee0, #1d8fc4);
+}
+
+.share-pill-email {
+  background: linear-gradient(135deg, #6b7894, #4a5670);
+}
+
+.share-pill-copy {
+  background: #ffffff;
+  color: var(--blue-2);
+  border-color: rgba(8, 22, 52, 0.14);
 }
 
 .slime-banner {
@@ -709,6 +765,19 @@ textarea {
   display: none;
 }
 
+.group-jump-label {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  padding: 0 8px 0 4px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
 .group-jump a {
   display: inline-grid;
   min-width: 38px;
@@ -791,10 +860,15 @@ textarea {
   text-decoration: none;
 }
 
-.bottom-nav a:hover,
+.bottom-nav a:hover {
+  background: #eef3fc;
+  color: var(--blue-2);
+}
+
 .bottom-nav a[aria-current="page"] {
-  background: linear-gradient(135deg, var(--orange-2), var(--orange));
+  background: linear-gradient(135deg, var(--blue), var(--blue-2));
   color: #fff;
+  box-shadow: 0 6px 14px rgba(17, 75, 130, 0.28);
 }
 
 .quick-menu-button {
@@ -873,16 +947,30 @@ textarea {
   }
 
   .bottom-nav {
-    top: 46px;
+    position: fixed;
+    top: 42px;
     right: 0;
     bottom: auto;
     left: 0;
     width: fit-content;
     margin: 0 auto;
-    grid-template-columns: repeat(6, minmax(72px, auto));
+    grid-template-columns: repeat(6, minmax(80px, auto));
     max-width: none;
-    border: 1px solid rgba(14, 42, 71, 0.12);
-    box-shadow: 0 10px 28px rgba(14, 42, 71, 0.18);
+    border: 1px solid rgba(14, 42, 71, 0.1);
+    box-shadow: 0 14px 32px rgba(14, 42, 71, 0.18);
+    backdrop-filter: blur(16px);
+    background: rgba(255, 255, 255, 0.96);
+    isolation: isolate;
+  }
+
+  /* WK-tricolor accent onder de desktop-menubalk. */
+  .bottom-nav::after {
+    content: "";
+    position: absolute;
+    inset: auto 14px -1px 14px;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--blue), var(--green) 55%, var(--orange));
   }
 
   .bottom-nav[data-count="4"] {

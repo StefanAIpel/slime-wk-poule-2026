@@ -52,7 +52,7 @@ export default async function RankingPage() {
         <Brand />
         <PageHero
           title="Ranglijsten"
-          subtitle="Zoek een speler op naam of team, of vind je vriendenpoule. Meedoen kan na login."
+          subtitle="Zoek een speler op naam of team, of vind je subpoule. Meedoen kan na login."
         />
       </header>
 

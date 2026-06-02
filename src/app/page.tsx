@@ -1,4 +1,4 @@
-import { CalendarDays, ListChecks, Trophy, Users } from "lucide-react";
+import { CalendarDays, ListChecks, Share2, Ticket, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
@@ -6,7 +6,7 @@ import { HeroArt } from "@/components/hero-art";
 import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { ProfileForm } from "@/components/profile-form";
-import { ShareButton } from "@/components/share-button";
+import { ShareRow } from "@/components/share-button";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
 import { UpcomingMatches } from "@/components/upcoming-matches";
 import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
@@ -207,14 +207,12 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           <div className="mt-4 flex flex-wrap gap-3">
             <a href="#login" className="button-primary">
               <Trophy aria-hidden="true" className="size-5" />
-              Doe mee!
+              Gratis meedoen
             </a>
-            <ShareButton
-              url={SITE_URL}
-              text="Doe je mee met de gratis Slime Score WK 2026-poule?"
-              label="Nodig je groep uit"
-              variant="secondary"
-            />
+            <a href="#login" className="button-secondary">
+              <Ticket aria-hidden="true" className="size-5" />
+              Ik heb een poulecode
+            </a>
           </div>
         </div>
         <HeroArt src="/assets/slime-02-mascotte-bal.png" />
@@ -228,13 +226,25 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             <div>
               <h2 className="flex items-center gap-2 text-xl font-bold text-white">
                 <Users aria-hidden="true" className="size-6 text-white" />
-                Daag je groep uit
+                Samen spelen: maak of join een poule
               </h2>
               <p className="mt-1 text-sm font-medium leading-6 text-blue-50">
-                Maak je eigen poule voor familie, vrienden of collega&rsquo;s met één deelcode. Wie wordt de baas?
+                Start je eigen poule voor familie, vrienden of collega&rsquo;s met één deelcode — of sluit aan bij een
+                bestaande poule. Je vult de code in zodra je bent ingelogd.
               </p>
             </div>
             <a href="#login" className="button-primary md:w-auto">Start je poule</a>
+          </div>
+
+          <div className="panel grid gap-3 p-4">
+            <h2 className="flex items-center gap-2 text-lg font-bold text-[#081634]">
+              <Share2 aria-hidden="true" className="size-5 text-[#064ed6]" />
+              Nodig je groep uit
+            </h2>
+            <ShareRow
+              url={SITE_URL}
+              text="Doe je mee met de gratis Slime Score WK 2026-poule?"
+            />
           </div>
 
           <a href="/ranglijst" className="panel public-score-card p-4 no-underline">
@@ -282,11 +292,6 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           </div>
           <LoginForm />
           <InstallAppCard />
-          <p className="text-center text-xs font-medium text-[#46566f]">
-            Door mee te doen ga je akkoord met de{" "}
-            <a className="font-bold text-[#064ed6]" href="/voorwaarden">voorwaarden</a> en het{" "}
-            <a className="font-bold text-[#064ed6]" href="/privacy">privacybeleid</a>.
-          </p>
         </section>
       </div>
     </main>

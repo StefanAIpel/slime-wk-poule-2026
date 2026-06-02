@@ -1,4 +1,4 @@
-import { CalendarDays, ClipboardList, Home, ListChecks, MoreHorizontal, Trophy, Users } from "lucide-react";
+import { CalendarDays, ClipboardList, Home, ListChecks, Trophy, Users } from "lucide-react";
 
 const links = [
   { href: "/", label: "Home", icon: Home },
@@ -15,7 +15,7 @@ export function BottomNav({ current = "/", showPrivate = true }: { current?: str
   return (
     <nav className="bottom-nav" data-count={visibleLinks.length} aria-label="Hoofdnavigatie">
       {visibleLinks.map((link) => {
-        const Icon = link.icon === ListChecks && current !== "/regels" ? MoreHorizontal : link.icon;
+        const Icon = link.icon;
         return (
           <a key={link.href} href={link.href} aria-current={current === link.href ? "page" : undefined}>
             <Icon aria-hidden="true" className="size-5" />

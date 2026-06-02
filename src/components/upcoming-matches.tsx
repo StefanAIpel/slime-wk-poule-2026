@@ -1,4 +1,4 @@
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, MapPin } from "lucide-react";
 import { TeamFlag } from "@/components/team-flag";
 import { formatAmsterdam } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -7,6 +7,7 @@ type Row = {
   id: number;
   starts_at: string | null;
   group_letter: string | null;
+  venue: string | null;
   home_code: string | null;
   away_code: string | null;
   home: { name_nl: string | null } | null;
@@ -19,7 +20,7 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
   const { data } = await admin
     .from("matches")
     .select(
-      "id,starts_at,group_letter,home_code,away_code,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)",
+      "id,starts_at,group_letter,venue,home_code,away_code,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)",
     )
     .gte("starts_at", new Date().toISOString())
     .order("starts_at", { ascending: true })
@@ -47,15 +48,27 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                 {m.group_letter ?? "KO"}
               </span>
               {formatAmsterdam(m.starts_at)}
+              {m.venue ? (
+                <span className="inline-flex items-center gap-1 text-[var(--muted)]">
+                  <MapPin aria-hidden="true" className="size-3.5" />
+                  {m.venue}
+                </span>
+              ) : null}
             </div>
             <div className="mt-1 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 text-sm">
               <div className="flex min-w-0 items-center gap-2">
                 <TeamFlag code={m.home_code} name={m.home?.name_nl} />
-                <span className="truncate font-medium text-[var(--ink)]">{m.home?.name_nl ?? m.home_code}</span>
+                <span className="truncate font-medium text-[var(--ink)]">
+                  <span className="sm:hidden">{m.home_code ?? m.home?.name_nl}</span>
+                  <span className="hidden sm:inline">{m.home?.name_nl ?? m.home_code}</span>
+                </span>
               </div>
               <span className="px-1 font-semibold text-[var(--muted)]">-</span>
               <div className="flex min-w-0 items-center justify-end gap-2 text-right">
-                <span className="truncate font-medium text-[var(--ink)]">{m.away?.name_nl ?? m.away_code}</span>
+                <span className="truncate font-medium text-[var(--ink)]">
+                  <span className="sm:hidden">{m.away_code ?? m.away?.name_nl}</span>
+                  <span className="hidden sm:inline">{m.away?.name_nl ?? m.away_code}</span>
+                </span>
                 <TeamFlag code={m.away_code} name={m.away?.name_nl} />
               </div>
             </div>

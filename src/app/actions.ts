@@ -50,7 +50,7 @@ export async function saveProfile(formData: FormData) {
   const nickname = cleanText(formData.get("nickname"), 24);
   const teamName = cleanText(formData.get("team_name"), 28);
 
-  if (nickname.length < 2 || teamName.length < 2) {
+  if (nickname.length < 4 || teamName.length < 4) {
     redirect("/?profiel=te-kort");
   }
   if (reservedNames.includes(nickname.toLowerCase())) {

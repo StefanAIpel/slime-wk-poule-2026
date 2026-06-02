@@ -69,6 +69,7 @@ export default async function PredictionsPage({
         </section>
 
         <nav className="group-jump" aria-label="Spring naar groep">
+          <span className="group-jump-label">Selecteer groep</span>
           {groupLetters.map((group) =>
             groupedMatches.get(group)?.length ? (
               <a key={group} href={`#groep-${group}`}>

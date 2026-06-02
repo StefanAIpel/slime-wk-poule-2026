@@ -76,7 +76,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
         <article className="panel overflow-hidden">
           <div className="flex items-center gap-3 bg-[#1c855a] p-4 text-white">
             <Users aria-hidden="true" className="size-7" />
-            <h2 className="text-2xl font-bold">Vriendenpoules</h2>
+            <h2 className="text-2xl font-bold">Subpoules</h2>
           </div>
           <div className="divide-y divide-slate-200">
             {filteredPools.length ? (
