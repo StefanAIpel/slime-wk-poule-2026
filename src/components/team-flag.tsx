@@ -19,7 +19,7 @@ export function TeamFlag({
   if (!url) {
     return (
       <span
-        className={`${size === "sm" ? "h-4 w-6 text-[9px]" : "h-6 w-9 text-[10px]"} inline-grid place-items-center rounded-[4px] bg-slate-200 font-black text-slate-600`}
+        className={`${size === "sm" ? "h-4 w-6 text-[9px]" : "h-6 w-9 text-[10px]"} inline-grid place-items-center rounded-[4px] bg-slate-200 font-bold text-slate-600`}
         aria-hidden="true"
       >
         {code?.slice(0, 2) ?? "?"}

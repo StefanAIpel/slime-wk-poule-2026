@@ -25,9 +25,9 @@ export default function PrivacyPage() {
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <Database aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-black text-[#081634]">Welke gegevens</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">Welke gegevens</h2>
           </div>
-          <ul className="mt-4 grid gap-2 text-sm font-semibold leading-7 text-[#48617f]">
+          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
             <li>Je e-mailadres, alleen om in te loggen via een eenmalige link.</li>
             <li>Je bijnaam en teamnaam, zichtbaar in de ranglijst.</li>
             <li>Je voorspellingen en in welke poules je zit.</li>
@@ -38,9 +38,9 @@ export default function PrivacyPage() {
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <Lock aria-hidden="true" className="size-7 text-[#25a84a]" />
-            <h2 className="text-2xl font-black text-[#081634]">Waarvoor en hoe</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">Waarvoor en hoe</h2>
           </div>
-          <ul className="mt-4 grid gap-2 text-sm font-semibold leading-7 text-[#48617f]">
+          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
             <li>Alleen om de poule te laten werken: inloggen, voorspellen en ranglijsten.</li>
             <li>Opgeslagen bij onze databaseleverancier Supabase, met toegangsbeveiliging.</li>
             <li>Je voorspellingen blijven privé tot de deadline.</li>
@@ -51,9 +51,9 @@ export default function PrivacyPage() {
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <Cookie aria-hidden="true" className="size-7 text-[#e1262f]" />
-            <h2 className="text-2xl font-black text-[#081634]">Cookies en e-mail</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">Cookies en e-mail</h2>
           </div>
-          <ul className="mt-4 grid gap-2 text-sm font-semibold leading-7 text-[#48617f]">
+          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
             <li>Alleen noodzakelijke cookies om je ingelogd te houden. Geen tracking-cookies.</li>
             <li>Geen analytics die je over websites volgt.</li>
             <li>
@@ -65,34 +65,34 @@ export default function PrivacyPage() {
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <Trash2 aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-black text-[#081634]">Jouw controle</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">Jouw controle</h2>
           </div>
-          <ul className="mt-4 grid gap-2 text-sm font-semibold leading-7 text-[#48617f]">
+          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
             <li>Je kunt je account en gegevens laten verwijderen.</li>
             <li>Je kunt opvragen welke gegevens we van je hebben.</li>
             <li className="flex items-center gap-2">
               <Mail aria-hidden="true" className="size-4 text-[#064ed6]" />
-              <a className="font-black text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>
+              <a className="font-bold text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>
                 {CONTACT_EMAIL}
               </a>
             </li>
           </ul>
-          <p className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#f4fbf0] px-3 py-2 text-sm font-black text-[#137c35]">
+          <p className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#f4fbf0] px-3 py-2 text-sm font-bold text-[#137c35]">
             <ShieldCheck aria-hidden="true" className="size-5" />
             Gratis · geen onnodige data · privé
           </p>
         </article>
       </section>
 
-      <p className="mt-5 text-sm font-semibold text-[#48617f]">
-        Zie ook onze <a className="font-extrabold text-[#064ed6]" href="/voorwaarden">voorwaarden</a>.
+      <p className="mt-5 text-sm font-medium text-[#48617f]">
+        Zie ook onze <a className="font-bold text-[#064ed6]" href="/voorwaarden">voorwaarden</a>.
       </p>
-      <p className="mt-2 text-xs font-semibold text-[#7a879b]">
+      <p className="mt-2 text-xs font-medium text-[#7a879b]">
         Slime Score is een bèta-product (v{APP_VERSION}) van{" "}
-        <a className="font-bold text-[#064ed6]" href={COMPANY_URL} target="_blank" rel="noopener noreferrer">
+        <a className="font-semibold text-[#064ed6]" href={COMPANY_URL} target="_blank" rel="noopener noreferrer">
           {COMPANY_NAME}
         </a>
-        . Contact: <a className="font-bold text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+        . Contact: <a className="font-semibold text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
       </p>
 
       <BottomNav current="/privacy" showPrivate={false} />

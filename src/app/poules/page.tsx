@@ -102,10 +102,10 @@ export default async function PoolsPage({
           style={{ "--hero-image": "url('/assets/Hero-bg.webp')" } as React.CSSProperties}
         >
           <div className="hero-content">
-            <h1 className="text-2xl font-extrabold leading-tight text-white md:text-3xl">
+            <h1 className="text-2xl font-bold leading-tight text-white md:text-3xl">
               Speel samen — maak of join je poule
             </h1>
-            <p className="mt-1 text-sm font-semibold leading-6 text-blue-50 md:text-base">
+            <p className="mt-1 text-sm font-medium leading-6 text-blue-50 md:text-base">
               Daag vrienden, familie of collega&rsquo;s uit, vul je scores in en strijd om de eerste plek.
             </p>
           </div>
@@ -114,12 +114,12 @@ export default async function PoolsPage({
       </header>
 
       {params.aangemaakt || params.joined || params.bijgewerkt ? (
-        <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-4 font-black text-green-800">
+        <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-4 font-bold text-green-800">
           Bijgewerkt{params.aangemaakt ? `: code ${params.aangemaakt}` : ""}{params.joined ? `: je doet mee met ${params.joined}` : ""}.
         </div>
       ) : null}
       {params.fout ? (
-        <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-4 font-extrabold text-red-800">
+        <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-4 font-bold text-red-800">
           {poolErrors[params.fout] ?? "Er ging iets mis. Probeer het opnieuw."}
         </div>
       ) : null}
@@ -128,9 +128,9 @@ export default async function PoolsPage({
         <form action={createPool} className="panel grid gap-3 p-4">
           <div className="flex items-center gap-3">
             <ShieldCheck aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-black text-[#081634]">Nieuwe poule</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">Nieuwe poule</h2>
           </div>
-          <label className="grid gap-2 text-sm font-black text-[#081634]">
+          <label className="grid gap-2 text-sm font-bold text-[#081634]">
             Naam van je poule
             <input className="field" name="name" required minLength={2} maxLength={50} placeholder="Familie Dijkstra" />
           </label>
@@ -142,9 +142,9 @@ export default async function PoolsPage({
         <form action={joinPool} className="panel grid gap-3 p-4">
           <div className="flex items-center gap-3">
             <Users aria-hidden="true" className="size-7 text-[#25a84a]" />
-            <h2 className="text-2xl font-black text-[#081634]">Meedoen met code</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">Meedoen met code</h2>
           </div>
-          <label className="grid gap-2 text-sm font-black text-[#081634]">
+          <label className="grid gap-2 text-sm font-bold text-[#081634]">
             Poulecode
             <input className="field uppercase" name="code" required minLength={6} maxLength={10} placeholder="SLIME26" />
           </label>
@@ -166,9 +166,9 @@ export default async function PoolsPage({
                 <PoolBanner src={poolBannerUrl(pool.id)} alt={`Banner van ${pool.name}`} />
                 <div className="grid gap-3 p-4 text-white md:grid-cols-[1fr_auto] md:items-center" style={{ background: pool.accentColor }}>
                   <div>
-                    <h2 className="text-2xl font-black"><span aria-hidden="true">{pool.badgeEmoji}</span> {pool.name}</h2>
-                    <p className="mt-1 font-semibold text-white/85">Code: <span className="font-black text-white">{pool.code}</span></p>
-                    {pool.description ? <p className="mt-2 max-w-2xl text-sm font-semibold text-white/90">{pool.description}</p> : null}
+                    <h2 className="text-2xl font-bold"><span aria-hidden="true">{pool.badgeEmoji}</span> {pool.name}</h2>
+                    <p className="mt-1 font-medium text-white/85">Code: <span className="font-bold text-white">{pool.code}</span></p>
+                    {pool.description ? <p className="mt-2 max-w-2xl text-sm font-medium text-white/90">{pool.description}</p> : null}
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <WhatsappShare text={shareText} url={SITE_URL} label="Deel via WhatsApp" />
@@ -179,20 +179,20 @@ export default async function PoolsPage({
                   <div className="grid gap-4 border-b border-slate-200 bg-slate-50 p-4 lg:grid-cols-2">
                     <form action={updatePoolStyle} className="grid gap-3">
                       <input type="hidden" name="pool_id" value={pool.id} />
-                      <div className="flex items-center gap-2 font-black text-[#101a2b]">
+                      <div className="flex items-center gap-2 font-bold text-[#101a2b]">
                         <Palette aria-hidden="true" className="size-5 text-[#2c4a72]" />
                         Poule aankleden
                       </div>
                       <div className="grid gap-2 sm:grid-cols-[72px_110px_1fr]">
-                        <label className="grid gap-1 text-xs font-black text-[#101a2b]">
+                        <label className="grid gap-1 text-xs font-bold text-[#101a2b]">
                           Emoji
                           <input className="field" name="badge_emoji" defaultValue={pool.badgeEmoji} maxLength={8} />
                         </label>
-                        <label className="grid gap-1 text-xs font-black text-[#101a2b]">
+                        <label className="grid gap-1 text-xs font-bold text-[#101a2b]">
                           Kleur
                           <input className="field h-[46px]" name="accent_color" type="color" defaultValue={pool.accentColor} />
                         </label>
-                        <label className="grid gap-1 text-xs font-black text-[#101a2b]">
+                        <label className="grid gap-1 text-xs font-bold text-[#101a2b]">
                           Groepszin
                           <input className="field" name="description" maxLength={180} defaultValue={pool.description ?? ""} placeholder="Bijv. iedereen tegen oom Jan" />
                         </label>
@@ -201,12 +201,12 @@ export default async function PoolsPage({
                     </form>
                     <form action={uploadPoolImage} className="grid gap-3">
                       <input type="hidden" name="pool_id" value={pool.id} />
-                      <div className="flex items-center gap-2 font-black text-[#101a2b]">
+                      <div className="flex items-center gap-2 font-bold text-[#101a2b]">
                         <ImagePlus aria-hidden="true" className="size-5 text-[#2f7a60]" />
                         Poulebanner uploaden
                       </div>
                       <input className="field" type="file" name="image" accept="image/*" required />
-                      <p className="text-xs font-semibold text-[#4c5a70]">
+                      <p className="text-xs font-medium text-[#4c5a70]">
                         Wordt automatisch bijgesneden en geoptimaliseerd (WebP). Max 6 MB.
                       </p>
                       <PendingButton className="button-secondary w-fit" pendingText="Uploaden…">
@@ -216,7 +216,7 @@ export default async function PoolsPage({
                   </div>
                 ) : null}
                 <div className="border-b border-slate-200 p-4">
-                  <h3 className="text-lg font-black text-[#101a2b]">Prikbord</h3>
+                  <h3 className="text-lg font-bold text-[#101a2b]">Prikbord</h3>
                   <form action={postPoolMessage} className="mt-3 grid gap-2">
                     <input type="hidden" name="pool_id" value={pool.id} />
                     <textarea
@@ -229,7 +229,7 @@ export default async function PoolsPage({
                     />
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       {isManager ? (
-                        <label className="flex items-center gap-2 text-sm font-semibold text-[#101a2b]">
+                        <label className="flex items-center gap-2 text-sm font-medium text-[#101a2b]">
                           <input type="checkbox" name="pinned" /> Vastzetten bovenaan
                         </label>
                       ) : (
@@ -249,7 +249,7 @@ export default async function PoolsPage({
                           key={message.id}
                           className={`rounded-lg border p-3 ${message.pinned ? "border-[#e0b23a] bg-amber-50" : "border-slate-200 bg-white"}`}
                         >
-                          <div className="flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-normal text-[#4c5a70]">
+                          <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-normal text-[#4c5a70]">
                             {message.pinned ? <span className="text-[#9a6b12]">Vastgezet</span> : null}
                             <span>{displayName(message.profiles)}</span>
                             <span>{new Intl.DateTimeFormat("nl-NL", { dateStyle: "short", timeStyle: "short" }).format(new Date(message.created_at))}</span>
@@ -257,18 +257,18 @@ export default async function PoolsPage({
                               <form action={deletePoolMessage} className="ml-auto">
                                 <input type="hidden" name="pool_id" value={pool.id} />
                                 <input type="hidden" name="message_id" value={message.id} />
-                                <button className="font-black text-[#b23b46] hover:underline" type="submit">
+                                <button className="font-bold text-[#b23b46] hover:underline" type="submit">
                                   Verwijder
                                 </button>
                               </form>
                             ) : null}
                           </div>
-                          <p className="mt-1 text-sm font-semibold leading-6 text-[#101a2b]">{message.body}</p>
+                          <p className="mt-1 text-sm font-medium leading-6 text-[#101a2b]">{message.body}</p>
                         </div>
                       );
                     })}
                     {!messagesByPool.get(pool.id)?.length ? (
-                      <p className="text-sm font-semibold text-[#4c5a70]">Nog geen berichten.</p>
+                      <p className="text-sm font-medium text-[#4c5a70]">Nog geen berichten.</p>
                     ) : null}
                   </div>
                 </div>
@@ -278,8 +278,8 @@ export default async function PoolsPage({
                       <div className="flex items-center gap-3">
                         <Avatar name={displayName(member.profiles)} />
                         <div className="min-w-0">
-                          <div className="truncate font-black text-[#081634]">{displayName(member.profiles)}</div>
-                          <div className="text-sm font-bold text-[#48617f]">{roleLabel(member.role)}</div>
+                          <div className="truncate font-bold text-[#081634]">{displayName(member.profiles)}</div>
+                          <div className="text-sm font-semibold text-[#48617f]">{roleLabel(member.role)}</div>
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -313,8 +313,8 @@ export default async function PoolsPage({
           })
         ) : (
           <div className="panel p-5">
-            <h2 className="text-2xl font-black text-[#081634]">Nog geen poules</h2>
-            <p className="mt-2 font-semibold text-[#48617f]">Maak er een aan of vraag een code aan je groep.</p>
+            <h2 className="text-2xl font-bold text-[#081634]">Nog geen poules</h2>
+            <p className="mt-2 font-medium text-[#48617f]">Maak er een aan of vraag een code aan je groep.</p>
           </div>
         )}
       </section>

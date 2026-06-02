@@ -12,22 +12,22 @@ export function ProfileForm({ error }: { error?: string }) {
   return (
     <form action={saveProfile} className="panel grid gap-3 p-4">
       <div>
-        <div className="mb-3 inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-black text-[#0f7a39]">
+        <div className="mb-3 inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-bold text-[#0f7a39]">
           Inloggen gelukt
         </div>
-        <h2 className="text-2xl font-black text-[#081634]">Maak je scorekaart af</h2>
-        <p className="mt-1 text-sm font-semibold text-[#48617f]">
+        <h2 className="text-2xl font-bold text-[#081634]">Maak je scorekaart af</h2>
+        <p className="mt-1 text-sm font-medium text-[#48617f]">
           Je naam staat bovenaan in de ranglijst, je teamnaam eronder.
         </p>
       </div>
       {message ? (
-        <p className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm font-black text-red-800">{message}</p>
+        <p className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm font-bold text-red-800">{message}</p>
       ) : null}
-      <label className="grid gap-2 text-sm font-black text-[#081634]">
+      <label className="grid gap-2 text-sm font-bold text-[#081634]">
         Naam of bijnaam
         <input className="field" name="nickname" required minLength={2} maxLength={24} placeholder="Stefan" />
       </label>
-      <label className="grid gap-2 text-sm font-black text-[#081634]">
+      <label className="grid gap-2 text-sm font-bold text-[#081634]">
         Teamnaam
         <input className="field" name="team_name" required minLength={2} maxLength={28} placeholder="VARschrikkelijk goed" />
       </label>

@@ -21,8 +21,8 @@ export function SlimeSoccerBanner() {
     >
       <div className="max-w-md">
         <span className="chip">Bonus · gratis</span>
-        <h2 className="mt-2 text-2xl font-black leading-tight md:text-3xl">Speel Slime Soccer — WC &rsquo;26</h2>
-        <p className="mt-1 text-sm font-semibold leading-6 text-blue-50">
+        <h2 className="mt-2 text-2xl font-bold leading-tight md:text-3xl">Speel Slime Soccer — WC &rsquo;26</h2>
+        <p className="mt-1 text-sm font-medium leading-6 text-blue-50">
           Even geen zin in voorspellen? Trap een balletje in de WK-game als opwarmer.
         </p>
       </div>

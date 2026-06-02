@@ -14,8 +14,8 @@ export function Brand() {
         priority
       />
       <div>
-        <div className="text-2xl font-extrabold leading-none tracking-normal text-[#0b1f4d]">Slime Score</div>
-        <div className="text-sm font-extrabold leading-none text-[#0f8a43]">WK Poule 2026</div>
+        <div className="text-2xl font-bold leading-none tracking-normal text-[#0b1f4d]">Slime Score</div>
+        <div className="text-sm font-bold leading-none text-[#0f8a43]">WK Poule 2026</div>
       </div>
     </Link>
   );

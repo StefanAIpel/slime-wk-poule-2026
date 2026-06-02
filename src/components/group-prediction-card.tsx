@@ -46,7 +46,7 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
   return (
     <section id={`groep-${group}`} className="panel scroll-mt-24 overflow-hidden">
       <div className="wc-header px-4 py-3 text-white">
-        <h2 className="text-lg font-extrabold">Groep {group}</h2>
+        <h2 className="text-lg font-bold">Groep {group}</h2>
       </div>
       <div className="grid gap-0 lg:grid-cols-[1fr_300px]">
         <div className="divide-y divide-slate-200">
@@ -56,7 +56,7 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
             const awayName = match.away?.name_nl ?? match.away_code ?? "";
             return (
               <div key={match.id} className="p-3 md:p-4">
-                <div className="mb-1.5 text-xs font-semibold text-[var(--muted)]">
+                <div className="mb-1.5 text-xs font-medium text-[var(--muted)]">
                   {formatAmsterdam(match.starts_at)}
                   {match.venue ? ` · ${match.venue}` : ""}
                 </div>
@@ -66,7 +66,7 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
                 >
                   <legend className="sr-only">Voorspel {homeName} vs {awayName}</legend>
                   <div className="flex min-w-0 items-center justify-end gap-2">
-                    <span className="truncate font-semibold text-[var(--ink-soft)]">{homeName}</span>
+                    <span className="truncate font-medium text-[var(--ink-soft)]">{homeName}</span>
                     <TeamFlag code={match.home_code} name={homeName} />
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -82,7 +82,7 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
                       aria-label={`${homeName} doelpunten`}
                       placeholder="–"
                     />
-                    <span className="text-sm font-bold text-[var(--muted)]">-</span>
+                    <span className="text-sm font-semibold text-[var(--muted)]">-</span>
                     <input
                       className="score-input"
                       name={`match_${match.id}_away`}
@@ -98,7 +98,7 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
                   </div>
                   <div className="flex min-w-0 items-center justify-start gap-2">
                     <TeamFlag code={match.away_code} name={awayName} />
-                    <span className="truncate font-semibold text-[var(--ink-soft)]">{awayName}</span>
+                    <span className="truncate font-medium text-[var(--ink-soft)]">{awayName}</span>
                   </div>
                 </fieldset>
               </div>
@@ -107,10 +107,10 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
         </div>
         <aside className="border-t border-slate-200 bg-[#eef7f1] p-4 lg:border-l lg:border-t-0">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <h3 className="text-base font-extrabold text-[var(--ink)]">Stand uit jouw scores</h3>
-            <span className="rounded-full bg-[var(--green)] px-2 py-1 text-xs font-bold text-white">live</span>
+            <h3 className="text-base font-bold text-[var(--ink)]">Stand uit jouw scores</h3>
+            <span className="rounded-full bg-[var(--green)] px-2 py-1 text-xs font-semibold text-white">live</span>
           </div>
-          <div className="grid grid-cols-[28px_1fr_32px_34px] gap-2 text-xs font-bold uppercase text-[var(--muted)]">
+          <div className="grid grid-cols-[28px_1fr_32px_34px] gap-2 text-xs font-semibold uppercase text-[var(--muted)]">
             <span>#</span>
             <span>Land</span>
             <span>Pt</span>
@@ -120,16 +120,16 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
             {standings.map((standing, index) => (
               <div
                 key={standing.code}
-                className={`grid grid-cols-[28px_1fr_32px_34px] items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-semibold ${
+                className={`grid grid-cols-[28px_1fr_32px_34px] items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium ${
                   index < 2 ? "bg-white text-[var(--ink)]" : index === 2 ? "bg-amber-50 text-[#8a5a00]" : "text-[var(--muted)]"
                 }`}
               >
-                <span className="font-bold">{index + 1}</span>
+                <span className="font-semibold">{index + 1}</span>
                 <span className="flex items-center gap-1.5">
                   <TeamFlag code={standing.code} size="sm" />
                   {standing.code}
                 </span>
-                <span className="font-bold">{standing.points}</span>
+                <span className="font-semibold">{standing.points}</span>
                 <span>{standing.goalDifference > 0 ? `+${standing.goalDifference}` : standing.goalDifference}</span>
               </div>
             ))}

@@ -17,9 +17,9 @@ export function PageHero({
   return (
     <div className="hero-band">
       <div>
-        <h1 className="text-3xl font-black leading-none md:text-4xl">{title}</h1>
+        <h1 className="text-3xl font-bold leading-none md:text-4xl">{title}</h1>
         {subtitle ? (
-          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-blue-50">{subtitle}</p>
+          <p className="mt-2 max-w-2xl text-base font-medium leading-7 text-blue-50">{subtitle}</p>
         ) : null}
         {children ? <div className="mt-3">{children}</div> : null}
       </div>

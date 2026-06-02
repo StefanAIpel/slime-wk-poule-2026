@@ -36,7 +36,7 @@ export function LoginForm() {
 
   return (
     <form onSubmit={onSubmit} className="panel grid gap-3 p-4" aria-label="Aanmelden met e-mail">
-      <label className="grid gap-2 text-sm font-black text-[#081634]">
+      <label className="grid gap-2 text-sm font-bold text-[#081634]">
         E-mailadres
         <input
           className="field"
@@ -53,7 +53,7 @@ export function LoginForm() {
         <Mail aria-hidden="true" className="size-5" />
         {status === "loading" ? "Mail wordt verstuurd" : "Stuur inloglink"}
       </button>
-      <p aria-live="polite" className={`text-sm font-semibold ${status === "error" ? "text-red-700" : "text-[#174176]"}`}>
+      <p aria-live="polite" className={`text-sm font-medium ${status === "error" ? "text-red-700" : "text-[#174176]"}`}>
         {message || "Geen wachtwoord. Je krijgt een eenmalige link per e-mail."}
       </p>
     </form>

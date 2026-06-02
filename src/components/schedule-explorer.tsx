@@ -74,7 +74,7 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
   return (
     <section className="grid gap-3">
       <div className="panel grid gap-2 p-3 sm:grid-cols-3">
-        <label className="grid gap-1 text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
+        <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
           Groep
           <select className="field" value={group} onChange={(e) => setGroup(e.target.value)}>
             <option value="all">Alle groepen</option>
@@ -86,7 +86,7 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
             {hasKnockout ? <option value="ko">Knock-out</option> : null}
           </select>
         </label>
-        <label className="grid gap-1 text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
+        <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
           Team
           <select className="field" value={team} onChange={(e) => setTeam(e.target.value)}>
             <option value="all">Alle teams</option>
@@ -97,7 +97,7 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
             ))}
           </select>
         </label>
-        <label className="grid gap-1 text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
+        <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
           Datum
           <select className="field" value={date} onChange={(e) => setDate(e.target.value)}>
             <option value="all">Alle datums</option>
@@ -109,7 +109,7 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
           </select>
         </label>
         <div className="flex items-center justify-between gap-3 sm:col-span-3">
-          <span className="text-sm font-semibold text-[var(--muted)]">{filtered.length} wedstrijden</span>
+          <span className="text-sm font-medium text-[var(--muted)]">{filtered.length} wedstrijden</span>
           {hasFilter ? (
             <button
               type="button"
@@ -141,8 +141,8 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
 function MatchRow({ match }: { match: ScheduleMatch }) {
   return (
     <div className="px-3 py-2.5">
-      <div className="mb-1 flex items-center gap-2 text-xs font-semibold text-[var(--muted)]">
-        <span className="grid size-5 place-items-center rounded-full bg-[#e7eef8] text-[10px] font-extrabold text-[var(--blue-2)]">
+      <div className="mb-1 flex items-center gap-2 text-xs font-medium text-[var(--muted)]">
+        <span className="grid size-5 place-items-center rounded-full bg-[#e7eef8] text-[10px] font-bold text-[var(--blue-2)]">
           {match.group ?? "KO"}
         </span>
         <CalendarDays aria-hidden="true" className="size-3.5" />
@@ -157,13 +157,13 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
       <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <TeamFlag code={match.homeCode} name={match.homeName} />
-          <span className="truncate text-sm font-semibold text-[var(--ink)] sm:text-base">
+          <span className="truncate text-sm font-medium text-[var(--ink)] sm:text-base">
             {match.homeName ?? match.homeCode}
           </span>
         </div>
-        <span className="px-1 text-sm font-bold text-[var(--muted)]">-</span>
+        <span className="px-1 text-sm font-semibold text-[var(--muted)]">-</span>
         <div className="flex min-w-0 items-center justify-end gap-2 text-right">
-          <span className="truncate text-sm font-semibold text-[var(--ink)] sm:text-base">
+          <span className="truncate text-sm font-medium text-[var(--ink)] sm:text-base">
             {match.awayName ?? match.awayCode}
           </span>
           <TeamFlag code={match.awayCode} name={match.awayName} />

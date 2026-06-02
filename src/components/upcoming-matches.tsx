@@ -31,19 +31,19 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
   return (
     <div className="panel p-3">
       <div className="mb-1 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-base font-extrabold text-[var(--ink)]">
+        <h2 className="flex items-center gap-2 text-base font-bold text-[var(--ink)]">
           <CalendarDays aria-hidden="true" className="size-5 text-[var(--blue)]" />
           Eerstvolgende wedstrijden
         </h2>
-        <a href="/schema" className="text-sm font-bold text-[var(--blue)]">
+        <a href="/schema" className="text-sm font-semibold text-[var(--blue)]">
           Hele schema
         </a>
       </div>
       <div className="divide-y divide-slate-200">
         {rows.map((m) => (
           <div key={m.id} className="py-2">
-            <div className="flex items-center gap-2 text-xs font-semibold text-[var(--muted)]">
-              <span className="grid size-5 place-items-center rounded-full bg-[#e7eef8] text-[10px] font-extrabold text-[var(--blue-2)]">
+            <div className="flex items-center gap-2 text-xs font-medium text-[var(--muted)]">
+              <span className="grid size-5 place-items-center rounded-full bg-[#e7eef8] text-[10px] font-bold text-[var(--blue-2)]">
                 {m.group_letter ?? "KO"}
               </span>
               {formatAmsterdam(m.starts_at)}
@@ -51,11 +51,11 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
             <div className="mt-1 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 text-sm">
               <div className="flex min-w-0 items-center gap-2">
                 <TeamFlag code={m.home_code} name={m.home?.name_nl} />
-                <span className="truncate font-semibold text-[var(--ink)]">{m.home?.name_nl ?? m.home_code}</span>
+                <span className="truncate font-medium text-[var(--ink)]">{m.home?.name_nl ?? m.home_code}</span>
               </div>
-              <span className="px-1 font-bold text-[var(--muted)]">-</span>
+              <span className="px-1 font-semibold text-[var(--muted)]">-</span>
               <div className="flex min-w-0 items-center justify-end gap-2 text-right">
-                <span className="truncate font-semibold text-[var(--ink)]">{m.away?.name_nl ?? m.away_code}</span>
+                <span className="truncate font-medium text-[var(--ink)]">{m.away?.name_nl ?? m.away_code}</span>
                 <TeamFlag code={m.away_code} name={m.away?.name_nl} />
               </div>
             </div>

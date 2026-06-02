@@ -19,9 +19,9 @@ export default function RulesPage() {
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <CalendarClock aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-black text-[#081634]">Deadlines</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">Deadlines</h2>
           </div>
-          <div className="mt-4 grid gap-3 text-sm font-semibold leading-7 text-[#48617f]">
+          <div className="mt-4 grid gap-3 text-sm font-medium leading-7 text-[#48617f]">
             <p>
               Alle hoofdvoorspellingen sluiten op{" "}
               <strong className="text-[#081634]">
@@ -50,37 +50,37 @@ export default function RulesPage() {
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <BookOpen aria-hidden="true" className="size-7 text-[#25a84a]" />
-            <h2 className="text-2xl font-black text-[#081634]">Puntentelling</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">Puntentelling</h2>
           </div>
           <div className="mt-4 grid gap-2">
             {scoringRules.map((rule) => (
               <div key={rule.label} className="grid gap-1 rounded-lg border border-slate-200 p-3 text-[#081634] sm:grid-cols-[1fr_auto] sm:items-center">
                 <div>
-                  <span className="font-bold">{rule.label}</span>
-                  <span className="mt-1 block text-xs font-semibold text-[#48617f]">{rule.note}</span>
+                  <span className="font-semibold">{rule.label}</span>
+                  <span className="mt-1 block text-xs font-medium text-[#48617f]">{rule.note}</span>
                 </div>
-                <span className="font-black">{rule.points} pt</span>
+                <span className="font-bold">{rule.points} pt</span>
               </div>
             ))}
           </div>
-          <p className="mt-4 text-sm font-semibold leading-7 text-[#48617f]">
+          <p className="mt-4 text-sm font-medium leading-7 text-[#48617f]">
             Per wedstrijd is 12 punten het maximum. Bij een exacte uitslag stapelen de deelpunten niet door; bij een
             gedeeltelijk goede voorspelling tellen juiste richting, doelsaldo en teamgoals wel samen op.
           </p>
-          <p className="mt-3 text-sm font-semibold leading-7 text-[#48617f]">
+          <p className="mt-3 text-sm font-medium leading-7 text-[#48617f]">
             De laatste 32 worden automatisch berekend uit je voorspelde groepsstanden: nummers 1 en 2 plus de beste
             acht nummers 3. De knock-outkeuzes leveren relatief meer op, zodat een goede eindsprint echt telt.
           </p>
-          <p className="mt-3 text-sm font-semibold leading-7 text-[#48617f]">
+          <p className="mt-3 text-sm font-medium leading-7 text-[#48617f]">
             Bonusvragen gaan over zaken die op grote toernooien worden bijgehouden: topscorer, totaal goals, corners,
             rode kaarten, 0-0-wedstrijden, snelste goal en de speelstad met de meeste doelpunten.
           </p>
-          <p className="mt-3 text-sm font-semibold leading-7 text-[#48617f]">
+          <p className="mt-3 text-sm font-medium leading-7 text-[#48617f]">
             Gelijke stand? Dan kijken we achtereenvolgens naar meeste exacte uitslagen, meeste juiste resultaten,
             bonuspunten en daarna vroegste volledige inzending.
           </p>
-          <div className="mt-4 rounded-lg border border-[#bcd4f5] bg-[#eef4ff] p-4 text-sm font-semibold leading-7 text-[#1c3a66]">
-            <p className="font-black text-[#0b1f4d]">Voorbeeld</p>
+          <div className="mt-4 rounded-lg border border-[#bcd4f5] bg-[#eef4ff] p-4 text-sm font-medium leading-7 text-[#1c3a66]">
+            <p className="font-bold text-[#0b1f4d]">Voorbeeld</p>
             <p className="mt-1">
               Je voorspelt <strong>2&ndash;1</strong>, het wordt <strong>2&ndash;0</strong>. Juiste winnaar (6) + thuisploeg
               precies 2 goals (2) = <strong>8 punten</strong>. Was het exact 2&ndash;1 geweest, dan had je de volle{" "}
@@ -92,9 +92,9 @@ export default function RulesPage() {
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <ShieldCheck aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-black text-[#081634]">Poules</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">Poules</h2>
           </div>
-          <ul className="mt-4 grid gap-2 text-sm font-semibold leading-7 text-[#48617f]">
+          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
             <li>Iedereen doet mee in de algemene ranglijst.</li>
             <li>Je kunt in meerdere subpoules zitten.</li>
             <li>Een subpoule heeft een beheerder en een geheime code.</li>
@@ -107,15 +107,15 @@ export default function RulesPage() {
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <Database aria-hidden="true" className="size-7 text-[#e1262f]" />
-            <h2 className="text-2xl font-black text-[#081634]">Data en uitslagen</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">Data en uitslagen</h2>
           </div>
-          <p className="mt-4 text-sm font-semibold leading-7 text-[#48617f]">
+          <p className="mt-4 text-sm font-medium leading-7 text-[#48617f]">
             Je voorspellingen zijn privé tot de deadline. Zodra uitslagen binnenkomen, wordt de ranglijst opnieuw
             berekend: eerst de wedstrijdpunten, daarna rondekeuzes, kampioen en bonusvragen.
           </p>
-          <p className="mt-3 text-sm font-semibold leading-7 text-[#48617f]">
-            Meer weten? Lees ons <a className="font-black text-[#064ed6]" href="/privacy">privacybeleid</a> en de{" "}
-            <a className="font-black text-[#064ed6]" href="/voorwaarden">voorwaarden</a>.
+          <p className="mt-3 text-sm font-medium leading-7 text-[#48617f]">
+            Meer weten? Lees ons <a className="font-bold text-[#064ed6]" href="/privacy">privacybeleid</a> en de{" "}
+            <a className="font-bold text-[#064ed6]" href="/voorwaarden">voorwaarden</a>.
           </p>
           <a className="button-secondary mt-4" href={SLIME_GAME_URL} target="_blank" rel="noopener noreferrer">
             Bonusgame openen

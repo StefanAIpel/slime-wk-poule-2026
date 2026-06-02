@@ -37,7 +37,7 @@ export function StatusBar() {
   return (
     <div className="status-bar">
       <div className="status-bar-inner">
-        <span className="status-chip">
+        <span className="status-chip status-chip-countdown">
           <CalendarClock aria-hidden="true" className="size-4" />
           {left ? <>Nog <strong>{left}</strong> om in te vullen</> : "Invullen gesloten"}
         </span>

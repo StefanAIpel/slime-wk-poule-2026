@@ -36,7 +36,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
       <div className="panel flex items-center gap-2 p-2">
         <Search aria-hidden="true" className="ml-2 size-5 text-[#475670]" />
         <input
-          className="w-full bg-transparent p-2 font-semibold text-[#101a2b] outline-none"
+          className="w-full bg-transparent p-2 font-medium text-[#101a2b] outline-none"
           type="search"
           inputMode="search"
           value={query}
@@ -50,7 +50,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
         <article className="panel overflow-hidden">
           <div className="wc-header flex items-center gap-3 p-4 text-white">
             <Trophy aria-hidden="true" className="size-7" />
-            <h2 className="text-2xl font-black">Wereldranglijst</h2>
+            <h2 className="text-2xl font-bold">Wereldranglijst</h2>
           </div>
           <div className="divide-y divide-slate-200">
             {filteredPlayers.length ? (
@@ -59,16 +59,16 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
                   <RankBadge rank={row.rank} />
                   <Avatar name={row.nickname || row.teamName || "Speler"} />
                   <div className="min-w-0">
-                    <div className="truncate font-black">{row.nickname || "Speler"}</div>
-                    <div className="truncate text-sm font-bold text-[#475670]">
+                    <div className="truncate font-bold">{row.nickname || "Speler"}</div>
+                    <div className="truncate text-sm font-semibold text-[#475670]">
                       {row.teamName || "—"} · {row.exact} exact · {row.correct} juist
                     </div>
                   </div>
-                  <div className="text-right text-xl font-black">{row.points} pt</div>
+                  <div className="text-right text-xl font-bold">{row.points} pt</div>
                 </div>
               ))
             ) : (
-              <p className="p-4 text-sm font-semibold text-[#475670]">Geen spelers gevonden.</p>
+              <p className="p-4 text-sm font-medium text-[#475670]">Geen spelers gevonden.</p>
             )}
           </div>
         </article>
@@ -76,7 +76,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
         <article className="panel overflow-hidden">
           <div className="flex items-center gap-3 bg-[#1c855a] p-4 text-white">
             <Users aria-hidden="true" className="size-7" />
-            <h2 className="text-2xl font-black">Vriendenpoules</h2>
+            <h2 className="text-2xl font-bold">Vriendenpoules</h2>
           </div>
           <div className="divide-y divide-slate-200">
             {filteredPools.length ? (
@@ -84,14 +84,14 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
                 <div key={pool.id} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 p-4 text-[#101a2b]">
                   <RankBadge rank={pool.rank} />
                   <div className="min-w-0">
-                    <div className="truncate font-black">{pool.name}</div>
-                    <div className="text-sm font-bold text-[#475670]">Beste 4 samen · code {pool.code}</div>
+                    <div className="truncate font-bold">{pool.name}</div>
+                    <div className="text-sm font-semibold text-[#475670]">Beste 4 samen · code {pool.code}</div>
                   </div>
-                  <div className="text-right text-xl font-black">{pool.points} pt</div>
+                  <div className="text-right text-xl font-bold">{pool.points} pt</div>
                 </div>
               ))
             ) : (
-              <p className="p-4 text-sm font-semibold text-[#475670]">Geen poules gevonden.</p>
+              <p className="p-4 text-sm font-medium text-[#475670]">Geen poules gevonden.</p>
             )}
           </div>
         </article>
@@ -103,7 +103,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
 function RankBadge({ rank }: { rank: number }) {
   const color = rank === 1 ? "bg-[#efa820]" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-[#f4661e]" : "bg-[#20508c]";
   return (
-    <div className={`grid size-10 place-items-center rounded-full ${color} text-sm font-black text-white`}>
+    <div className={`grid size-10 place-items-center rounded-full ${color} text-sm font-bold text-white`}>
       {rank <= 3 ? <Medal aria-hidden="true" className="size-5" /> : rank}
     </div>
   );

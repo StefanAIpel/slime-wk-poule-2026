@@ -50,8 +50,8 @@ export function InstallAppCard() {
           <Download className="size-5" />
         </div>
         <div className="min-w-0">
-          <h2 className="text-base font-extrabold text-[#081634]">Zet Slime Score op je beginscherm</h2>
-          <p className="mt-1 text-sm font-semibold leading-5 text-[#48617f]">
+          <h2 className="text-base font-bold text-[#081634]">Zet Slime Score op je beginscherm</h2>
+          <p className="mt-1 text-sm font-medium leading-5 text-[#48617f]">
             Werkt als app op je telefoon en gewoon in de browser.
           </p>
           <div className="mt-3">
@@ -61,7 +61,7 @@ export function InstallAppCard() {
             </button>
           </div>
           {showHelp && !installPrompt ? (
-            <ul className="mt-2 grid gap-1 text-xs font-semibold leading-5 text-[#48617f]">
+            <ul className="mt-2 grid gap-1 text-xs font-medium leading-5 text-[#48617f]">
               <li><strong>iPhone (Safari):</strong> tik onderin op de deelknop (vierkant met pijl) → &ldquo;Zet op beginscherm&rdquo;.</li>
               <li><strong>Android (Chrome):</strong> menu ⋮ → &ldquo;App installeren&rdquo; / &ldquo;Toevoegen aan startscherm&rdquo;.</li>
               <li><strong>Desktop:</strong> klik op het installatie-icoon in de adresbalk.</li>
