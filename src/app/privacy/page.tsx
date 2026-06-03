@@ -95,7 +95,7 @@ export default function PrivacyPage() {
         . Contact: <a className="font-semibold text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
       </p>
 
-      <BottomNav current="/privacy" showPrivate={false} />
+      <BottomNav current="/privacy" />
     </main>
   );
 }

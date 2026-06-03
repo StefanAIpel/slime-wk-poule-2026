@@ -154,7 +154,7 @@ export default function RulesPage() {
         </div>
       </section>
 
-      <BottomNav current="/regels" showPrivate={false} />
+      <BottomNav current="/regels" />
     </main>
   );
 }

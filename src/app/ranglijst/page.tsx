@@ -70,7 +70,7 @@ export default async function RankingPage() {
 
       <RankingExplorer players={players} pools={poolRankings} />
 
-      <BottomNav current="/ranglijst" showPrivate={false} />
+      <BottomNav current="/ranglijst" />
     </main>
   );
 }

@@ -68,7 +68,7 @@ export default function TermsPage() {
         Lees ook ons <a className="font-bold text-[#064ed6]" href="/privacy">privacybeleid</a>.
       </p>
 
-      <BottomNav current="/voorwaarden" showPrivate={false} />
+      <BottomNav current="/voorwaarden" />
     </main>
   );
 }

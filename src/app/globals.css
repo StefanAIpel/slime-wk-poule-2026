@@ -164,6 +164,37 @@ textarea {
   font-weight: 700;
 }
 
+.inapp-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: 8px 14px;
+  background: #0b1f4d;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.inapp-hint-text {
+  flex: 1;
+  margin: 0;
+}
+
+.inapp-hint-close {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  cursor: pointer;
+}
+
 .status-cta {
   display: inline-flex;
   align-items: center;

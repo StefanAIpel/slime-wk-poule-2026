@@ -3,18 +3,18 @@ import { CalendarDays, ClipboardList, Home, ListChecks, Trophy, Users } from "lu
 const links = [
   { href: "/", label: "Home", icon: Home },
   { href: "/schema", label: "Schema", icon: CalendarDays },
-  { href: "/voorspellingen", label: "Voorspel", icon: ClipboardList, private: true },
-  { href: "/poules", label: "Poules", icon: Users, private: true },
+  { href: "/voorspellingen", label: "Voorspel", icon: ClipboardList },
+  { href: "/poules", label: "Subpoules", icon: Users },
   { href: "/ranglijst", label: "Ranglijst", icon: Trophy },
   { href: "/regels", label: "Regels", icon: ListChecks },
 ];
 
-export function BottomNav({ current = "/", showPrivate = true }: { current?: string; showPrivate?: boolean }) {
-  const visibleLinks = links.filter((link) => showPrivate || !link.private);
-
+// Altijd alle bestemmingen tonen — ook uitgelogd. Privé-pagina's vragen zelf om
+// inloggen, zodat je vanaf b.v. het schema makkelijk bij de subpoules komt.
+export function BottomNav({ current = "/" }: { current?: string }) {
   return (
-    <nav className="bottom-nav" data-count={visibleLinks.length} aria-label="Hoofdnavigatie">
-      {visibleLinks.map((link) => {
+    <nav className="bottom-nav" data-count={links.length} aria-label="Hoofdnavigatie">
+      {links.map((link) => {
         const Icon = link.icon;
         return (
           <a key={link.href} href={link.href} aria-current={current === link.href ? "page" : undefined}>

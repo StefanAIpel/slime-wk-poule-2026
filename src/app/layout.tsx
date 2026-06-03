@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { AuthLinkBridge } from "@/components/auth-link-bridge";
+import { InAppHint } from "@/components/in-app-hint";
 import { PwaRegister } from "@/components/pwa-register";
 import { QuickMenu } from "@/components/quick-menu";
 import { SiteFooter } from "@/components/site-footer";
@@ -102,6 +103,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <PwaRegister />
         <AuthLinkBridge />
         <StatusBar />
+        <InAppHint />
         <QuickMenu />
         {children}
         <SiteFooter />
