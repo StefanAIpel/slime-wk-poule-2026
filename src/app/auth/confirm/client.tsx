@@ -3,6 +3,7 @@
 import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { finishSupabaseAuth } from "@/lib/supabase/finish-auth";
+import { serverAuthCallbackPath } from "@/lib/supabase/auth-redirect";
 
 export function AuthConfirmClient() {
   const [message, setMessage] = useState("Je inloglink wordt gecontroleerd.");
@@ -11,6 +12,13 @@ export function AuthConfirmClient() {
     let cancelled = false;
 
     async function finishLogin() {
+      const serverCallback = serverAuthCallbackPath(new URL(window.location.href));
+      if (serverCallback) {
+        if (!cancelled) setMessage("Sessie wordt veilig klaargezet.");
+        window.location.replace(serverCallback);
+        return;
+      }
+
       if (!cancelled) setMessage("Sessie wordt klaargezet.");
       const result = await finishSupabaseAuth();
       if (!result.ok) throw new Error(result.error);

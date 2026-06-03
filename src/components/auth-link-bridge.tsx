@@ -3,6 +3,7 @@
 import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { finishSupabaseAuth, hasAuthCallbackPayload } from "@/lib/supabase/finish-auth";
+import { serverAuthCallbackPath } from "@/lib/supabase/auth-redirect";
 
 export function AuthLinkBridge() {
   const [active] = useState(() => typeof window !== "undefined" && hasAuthCallbackPayload());
@@ -11,6 +12,11 @@ export function AuthLinkBridge() {
     if (!active) return;
 
     let cancelled = false;
+    const serverCallback = serverAuthCallbackPath(new URL(window.location.href));
+    if (serverCallback) {
+      window.location.replace(serverCallback);
+      return;
+    }
 
     finishSupabaseAuth().then((result) => {
       if (cancelled) return;

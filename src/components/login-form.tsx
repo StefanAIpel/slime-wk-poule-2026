@@ -3,6 +3,7 @@
 import { Check, ExternalLink, KeyRound, Mail } from "lucide-react";
 import { useState } from "react";
 import { kidEmail } from "@/lib/kid";
+import { buildEmailRedirectTo } from "@/lib/supabase/auth-redirect";
 import { createClient } from "@/lib/supabase/browser";
 
 type WebmailProvider = {
@@ -130,7 +131,7 @@ export function LoginForm() {
     const origin = window.location.origin;
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${origin}/auth/confirm`, shouldCreateUser: true },
+      options: { emailRedirectTo: buildEmailRedirectTo(origin), shouldCreateUser: true },
     });
 
     if (error) {

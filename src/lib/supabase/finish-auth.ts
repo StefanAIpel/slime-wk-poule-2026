@@ -1,17 +1,12 @@
 "use client";
 
 import { type EmailOtpType } from "@supabase/supabase-js";
+import { safeRedirectTarget } from "@/lib/supabase/auth-redirect";
 import { createClient } from "@/lib/supabase/browser";
 
 export type FinishAuthResult =
   | { ok: true; redirectTo: string; handled: true }
   | { ok: false; redirectTo: string; handled: boolean; error: string };
-
-function safeRedirectTarget(value: string | null) {
-  if (!value) return "/?login=gelukt";
-  if (value.startsWith("/") && !value.startsWith("//")) return value;
-  return "/?login=gelukt";
-}
 
 function otpTypes(primary: string | null) {
   return Array.from(new Set([primary, "email", "magiclink", "signup"].filter(Boolean))) as EmailOtpType[];
