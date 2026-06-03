@@ -25,6 +25,16 @@ export const metadata: Metadata = {
     template: "%s · Slime Score",
   },
   description,
+  keywords: [
+    "WK 2026 poule",
+    "WK poule",
+    "voetbalpoule",
+    "WK voorspellen",
+    "gratis WK poule",
+    "wereldkampioenschap 2026",
+    "poule maken",
+    "Slime Score",
+  ],
   applicationName: SITE_NAME,
   appleWebApp: {
     capable: true,
@@ -59,10 +69,24 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: SITE_NAME,
+  url: SITE_URL,
+  applicationCategory: "GameApplication",
+  operatingSystem: "Web, iOS, Android",
+  inLanguage: "nl-NL",
+  description,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+  publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+};
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="nl" className={poppins.variable}>
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <div className="stadium-bg" />
         <PwaRegister />
         <AuthLinkBridge />

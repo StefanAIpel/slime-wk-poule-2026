@@ -310,6 +310,15 @@ textarea {
   height: 84px;
   border-radius: 18px;
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
+  object-fit: contain;
+}
+
+/* Transparante slime-PNG zonder kaartje eromheen. */
+.hero-band-art-plain {
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.3));
 }
 
 @media (min-width: 800px) {

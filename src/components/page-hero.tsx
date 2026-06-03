@@ -9,10 +9,14 @@ export function PageHero({
   title,
   subtitle,
   children,
+  image = "/icon.png",
+  imageRounded = true,
 }: {
   title: string;
   subtitle?: string;
   children?: React.ReactNode;
+  image?: string;
+  imageRounded?: boolean;
 }) {
   return (
     <div className="hero-band">
@@ -24,8 +28,8 @@ export function PageHero({
         {children ? <div className="mt-3">{children}</div> : null}
       </div>
       <Image
-        className="hero-band-art justify-self-start md:justify-self-end"
-        src="/icon.png"
+        className={`hero-band-art justify-self-start md:justify-self-end ${imageRounded ? "" : "hero-band-art-plain"}`}
+        src={image}
         alt=""
         aria-hidden="true"
         width={208}
