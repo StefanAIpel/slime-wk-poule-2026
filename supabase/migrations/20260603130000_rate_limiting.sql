@@ -31,4 +31,6 @@ begin
 end;
 $$;
 
-revoke all on function public.rate_limit_hit(text, integer, integer) from anon, authenticated;
+-- Alleen de server (service-role) mag de limiter aanroepen, niet anon/authenticated.
+revoke execute on function public.rate_limit_hit(text, integer, integer) from public, anon, authenticated;
+grant execute on function public.rate_limit_hit(text, integer, integer) to service_role;

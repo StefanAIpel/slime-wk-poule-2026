@@ -12,6 +12,13 @@ Bijgehouden tijdens de UI-review. Status: ✅ klaar · 🟡 deels · ⬜ open.
 - Subpoule: **invite-link resetten** (nieuwe deelcode) voor beheerder.
 - Ranglijst: **"Laatste resultaten-update"** tijdstempel.
 - Aanmelden: expliciete **akkoord-checkbox** (ronde 3).
+- **Rate limiting** (DB-functie `rate_limit_hit`) op poule maken/joinen/berichten + cap op eigen poules.
+- **Structured logging** (`lib/log`) in server-actions, sync-results en foutpagina's (klaar voor Sentry).
+- **Transparant scorelog**: "Mijn punten" (totaal/exact/juist/bonus/laatst berekend) op `/account`.
+- **Support-/debug-info per gebruiker** (uitklapbaar) op `/account`: id, voortgang, versie, laatste update.
+- **"Nog X wedstrijden in te vullen"** op home.
+- **Contact/e-mail consequent** overal via `CONTACT_EMAIL` (geverifieerd: privacy, voorwaarden, footer, foutpagina).
+- **Operatie-doc** `docs/operatie-launch.md`: auth-URLs, SMTP, back-up/restore, deploy + smoke test.
 
 **✅ Al aanwezig (lijst nagelopen)**
 - Profielnaam + avatar (`/account`), voortgang ("x/72" + waarschuwing bij onvolledig),
