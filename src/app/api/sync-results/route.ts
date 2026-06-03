@@ -1,5 +1,6 @@
 import { timingSafeEqual as nodeTimingSafeEqual } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
+import { logError, logInfo } from "@/lib/log";
 import {
   scoreCloseNumber,
   scoreMatchPrediction,
@@ -179,7 +180,17 @@ export async function POST(request: NextRequest) {
   }
 
   const recalculation = await recalculateScores();
-  if ("error" in recalculation) return NextResponse.json({ error: recalculation.error }, { status: 500 });
+  if ("error" in recalculation) {
+    logError("sync-results.recalculate", recalculation.error);
+    return NextResponse.json({ error: recalculation.error }, { status: 500 });
+  }
+
+  logInfo("sync-results.ok", {
+    updated_matches: results.length,
+    updated_stage_results: stageRows.length,
+    updated_facts: Boolean(body.facts),
+    recalculated_users: recalculation.recalculatedUsers,
+  });
 
   return NextResponse.json({
     ok: true,

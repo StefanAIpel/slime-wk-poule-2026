@@ -39,7 +39,7 @@ const poolErrors: Record<string, string> = {
   kleur: "Kies een geldige kleur.",
   rol: "Die rol kan niet worden ingesteld.",
   "bericht-kort": "Je bericht is te kort (minimaal 10 tekens).",
-  "te-snel": "Even rustig — wacht een paar tellen voor je opnieuw post.",
+  "te-snel": "Even rustig aan — je doet dit te vaak achter elkaar. Probeer het zo nog eens.",
   afbeelding: "Kies een geldige afbeelding.",
   "afbeelding-groot": "De afbeelding is te groot (max 6 MB).",
 };

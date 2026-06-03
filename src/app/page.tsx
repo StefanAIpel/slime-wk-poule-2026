@@ -127,7 +127,12 @@ export default async function Home({
             <div className="mt-3 h-4 overflow-hidden rounded-full bg-black/32">
               <div className="h-full rounded-full bg-[#25a84a]" style={{ width: `${Math.min(progress, 100)}%` }} />
             </div>
-            <a href="/voorspellingen" className="button-secondary mt-4 w-full">
+            <p className="mt-2 text-sm font-semibold text-blue-100">
+              {72 - (predictionCount ?? 0) > 0
+                ? `Nog ${72 - (predictionCount ?? 0)} wedstrijden in te vullen.`
+                : "Alle wedstrijden ingevuld — top!"}
+            </p>
+            <a href="/voorspellingen" className="button-secondary mt-3 w-full">
               Verder invullen
             </a>
           </div>

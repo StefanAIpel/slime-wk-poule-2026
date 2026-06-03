@@ -7,6 +7,8 @@ import { isAvatarKey } from "@/lib/avatars";
 import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
+import { logError } from "@/lib/log";
+import { rateLimit } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -142,6 +144,9 @@ export async function createPool(formData: FormData) {
 
   if (name.length < 2) redirect("/poules?fout=naam");
 
+  // Rate limit: max 5 nieuwe poules per 10 minuten per gebruiker.
+  if (!(await rateLimit(admin, `pool_create:${user.id}`, 5, 600))) redirect("/poules?fout=te-snel");
+
   // Anti-misbruik: maximaal aantal eigen poules per gebruiker.
   const { count: ownedCount } = await admin
     .from("pools")
@@ -179,6 +184,9 @@ export async function joinPool(formData: FormData) {
   const { user } = await requireUser();
   const admin = createAdminClient();
   const code = cleanText(formData.get("code"), 10).toUpperCase();
+
+  // Rate limit: max 15 join-pogingen per 10 min (tegen het raden van codes).
+  if (!(await rateLimit(admin, `pool_join:${user.id}`, 15, 600))) redirect("/poules?fout=te-snel");
 
   const { data: pool, error } = await admin.from("pools").select("id").eq("code", code).single();
   if (error || !pool) redirect("/poules?fout=code");
@@ -287,18 +295,8 @@ export async function postPoolMessage(formData: FormData) {
 
   if (!membership) redirect("/poules?fout=rechten");
 
-  // Anti-spam: maximaal 1 bericht per 15 seconden per gebruiker per poule.
-  const { data: last } = await admin
-    .from("pool_messages")
-    .select("created_at")
-    .eq("pool_id", poolId)
-    .eq("author_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (last && Date.now() - new Date(last.created_at).getTime() < 15000) {
-    redirect("/poules?fout=te-snel");
-  }
+  // Anti-spam: max 5 berichten per minuut per gebruiker per poule.
+  if (!(await rateLimit(admin, `pool_msg:${user.id}:${poolId}`, 5, 60))) redirect("/poules?fout=te-snel");
 
   const isManager = membership.role === "owner" || membership.role === "moderator";
 
@@ -445,7 +443,10 @@ export async function savePredictions(formData: FormData) {
 
     if (predictionRows.length) {
       const { error } = await supabase.from("predictions").upsert(predictionRows);
-      if (error) throw new Error(error.message);
+      if (error) {
+        logError("savePredictions.upsert", error, { userId: user.id, rows: predictionRows.length });
+        throw new Error(error.message);
+      }
     }
 
     const round32 = calculateRound32(matches ?? [], scoreLookup);
