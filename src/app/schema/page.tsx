@@ -2,17 +2,19 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
 import { ScheduleExplorer, type ScheduleMatch } from "@/components/schedule-explorer";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createOptionalAdminClient } from "@/lib/supabase/admin";
 import type { MatchWithTeams } from "@/lib/types";
 
 export const revalidate = 3600;
 
 export default async function SchedulePage() {
-  const admin = createAdminClient();
-  const { data } = await admin
-    .from("matches")
-    .select("*,home:teams!matches_home_code_fkey(*),away:teams!matches_away_code_fkey(*)")
-    .order("id");
+  const admin = createOptionalAdminClient();
+  const { data } = admin
+    ? await admin
+        .from("matches")
+        .select("*,home:teams!matches_home_code_fkey(*),away:teams!matches_away_code_fkey(*)")
+        .order("id")
+    : { data: [] };
 
   const matches = (data ?? []) as MatchWithTeams[];
   const scheduleMatches: ScheduleMatch[] = matches.map((match) => ({

@@ -14,7 +14,7 @@ const faq: { q: string; a: string }[] = [
   { q: "Zijn mijn WK 2026-voorspellingen privé?", a: "Ja, tot de deadline. Daarna zijn ze zichtbaar voor je medespelers in dezelfde WK-poule. Je e-mailadres blijft altijd privé." },
   { q: "Hoe werkt de laatste 32?", a: "Die rekenen we automatisch uit jouw voorspelde groepsstanden: de nummers 1 en 2 plus de beste acht nummers 3." },
   { q: "Kan ik in meerdere WK-poules zitten?", a: "Ja. Maak je eigen WK-poule met een deelcode of sluit aan bij bestaande WK-poules van familie, vrienden of collega's." },
-  { q: "Wat gebeurt er bij een gelijke stand?", a: "We kijken achtereenvolgens naar meeste exacte uitslagen, meeste juiste resultaten, bonuspunten en daarna de vroegste volledige inzending." },
+  { q: "Wat gebeurt er bij een gelijke stand?", a: "We kijken achtereenvolgens naar meeste exacte uitslagen, meeste juiste resultaten en bonuspunten. Is het dan nog gelijk, dan blijft het gewoon spannend gelijk." },
   { q: "Kan ik mijn account verwijderen?", a: "Ja, via Mijn account. Daarmee verdwijnen je profiel, voorspellingen, scores en deelnames definitief." },
 ];
 
@@ -90,6 +90,20 @@ export default function RulesPage() {
               <a className="font-bold text-[#064ed6]" href="/voorwaarden">voorwaarden</a>.
             </p>
           </article>
+
+          <article className="panel p-5">
+            <div className="flex items-center gap-3">
+              <HelpCircle aria-hidden="true" className="size-7 text-[#f26a1b]" />
+              <h2 className="text-2xl font-bold text-[#081634]">Randgevallen</h2>
+            </div>
+            <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
+              <li><strong className="text-[#081634]">Verplaatste wedstrijd:</strong> je voorspelling verhuist mee en blijft in de oorspronkelijke ronde meetellen.</li>
+              <li><strong className="text-[#081634]">Afgelast of gestaakt:</strong> zonder officiële eindstand geven we geen wedstrijdpunten; met een officiële eindstand gebruiken we die stand.</li>
+              <li><strong className="text-[#081634]">Correcties achteraf:</strong> als een officiële uitslag of toernooifeit wijzigt, herberekenen we de ranglijst.</li>
+              <li><strong className="text-[#081634]">Groepsstand-tiebreak:</strong> voor jouw automatische laatste 32 sorteren we op punten, doelsaldo, goals voor, goals tegen en daarna landcode.</li>
+              <li><strong className="text-[#081634]">Knock-out:</strong> landen die een ronde halen tellen op basis van de officiële winnaar, dus inclusief eventuele verlenging of penalty&rsquo;s.</li>
+            </ul>
+          </article>
         </div>
 
         {/* Rechts: puntentelling + FAQ. */}
@@ -131,8 +145,7 @@ export default function RulesPage() {
                 </p>
               </div>
               <p className="mt-3 text-sm font-medium leading-7 text-[#48617f]">
-                Gelijke stand? Dan kijken we naar meeste exacte uitslagen, meeste juiste resultaten, bonuspunten en
-                daarna de vroegste volledige inzending.
+                Gelijke stand? Dan kijken we naar meeste exacte uitslagen, meeste juiste resultaten en bonuspunten.
               </p>
             </details>
           </article>
