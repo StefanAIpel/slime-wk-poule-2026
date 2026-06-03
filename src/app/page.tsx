@@ -3,7 +3,7 @@ import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
-import { HeroArt } from "@/components/hero-art";
+import { SlimeImage } from "@/components/slime-image";
 import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { ProfileForm } from "@/components/profile-form";
@@ -218,7 +218,10 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             </a>
           </div>
         </div>
-        <HeroArt src="/assets/slime-02-mascotte-bal.png" />
+        <SlimeImage
+          candidates={["/assets/slime-07-duo.png", "/assets/slime-02-mascotte-bal.png"]}
+          className="hero-mascot"
+        />
       </div>
 
       <div className="grid gap-5 md:grid-cols-[1fr_minmax(320px,400px)] md:items-start">
