@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { AuthLinkBridge } from "@/components/auth-link-bridge";
 import { PwaRegister } from "@/components/pwa-register";
 import { QuickMenu } from "@/components/quick-menu";
@@ -8,8 +8,9 @@ import { StatusBar } from "@/components/status-bar";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+// Plus Jakarta Sans: vriendelijk maar volwassener en beter leesbaar dan Poppins.
+const appFont = Plus_Jakarta_Sans({
+  variable: "--font-app",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   display: "swap",
@@ -84,7 +85,7 @@ const structuredData = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="nl" className={poppins.variable}>
+    <html lang="nl" className={appFont.variable}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <div className="stadium-bg" />

@@ -23,7 +23,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-poppins);
+  --font-sans: var(--font-app);
 }
 
 * {
@@ -44,7 +44,7 @@ body {
     linear-gradient(180deg, #eef2f9 0%, #f5f7fb 46%, #f7f9fc 100%);
   background-attachment: fixed;
   color: var(--foreground);
-  font-family: var(--font-poppins), system-ui, "Segoe UI", Arial, sans-serif;
+  font-family: var(--font-app), system-ui, "Segoe UI", Arial, sans-serif;
 }
 
 a {
@@ -281,11 +281,28 @@ textarea {
   inset: 0;
   z-index: 0;
   background:
-    linear-gradient(105deg, rgba(14, 42, 71, 0.95) 0%, rgba(14, 42, 71, 0.62) 46%, rgba(14, 42, 71, 0.15) 100%),
+    linear-gradient(105deg, rgba(14, 42, 71, 0.9) 0%, rgba(14, 42, 71, 0.55) 46%, rgba(14, 42, 71, 0.1) 100%),
     var(--hero-image, none);
   background-size: cover, cover;
-  background-position: center, center right;
+  /* Onderkant tonen zodat het gras zichtbaar is en de slimes erop staan. */
+  background-position: center, center bottom;
   background-repeat: no-repeat, no-repeat;
+}
+
+/* Hero met geïntegreerde header: ruimte bovenin voor de balk. */
+.hero-band-topbar {
+  padding-top: 60px;
+}
+
+/* Compactere stadion-kop voor binnenpagina's. */
+.hero-band-page {
+  min-height: 200px;
+}
+
+@media (min-width: 800px) {
+  .hero-band-page {
+    min-height: 220px;
+  }
 }
 
 .hero-content {
@@ -507,6 +524,61 @@ textarea {
   border-radius: 10px;
   background: #fff;
   color: #0b1f4d;
+}
+
+.brand-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  font-weight: 800;
+  font-style: italic;
+  font-size: 1.55rem;
+  letter-spacing: -0.015em;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand-wordmark-slime {
+  color: #0b1f4d;
+}
+
+.brand-wordmark-score {
+  color: #15a35b;
+}
+
+.brand-wordmark-tld {
+  margin-left: 1px;
+  font-size: 0.62em;
+  font-weight: 700;
+  font-style: italic;
+  color: #5a6b82;
+}
+
+.brand-wordmark-dark .brand-wordmark-slime {
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 18, 48, 0.55);
+}
+
+.brand-wordmark-dark .brand-wordmark-score {
+  color: #36d65f;
+  text-shadow: 0 1px 3px rgba(0, 18, 48, 0.45);
+}
+
+.brand-wordmark-dark .brand-wordmark-tld {
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 3px rgba(0, 18, 48, 0.45);
+}
+
+/* Geïntegreerde header-balk bovenin de stadion-hero. */
+.hero-topbar {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
 }
 
 .brand-mark {

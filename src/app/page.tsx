@@ -2,6 +2,7 @@ import { CalendarDays, ListChecks, Share2, Ticket, Trophy, Users } from "lucide-
 import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
+import { BrandWordmark } from "@/components/brand-wordmark";
 import { HeroArt } from "@/components/hero-art";
 import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
@@ -191,11 +192,14 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
   return (
     <main className="page-shell grid gap-5">
       <div
-        className="hero-band hero-band-visual"
+        className="hero-band hero-band-visual hero-band-topbar"
         style={{ "--hero-image": "url('/assets/Hero-bg.webp')" } as React.CSSProperties}
       >
+        <div className="hero-topbar">
+          <BrandWordmark onDark />
+        </div>
         <div className="hero-content">
-          <p className="text-sm font-bold uppercase tracking-wide text-blue-100">Slime Score · WK Poule 2026</p>
+          <p className="text-sm font-bold uppercase tracking-wide text-blue-100">WK Poule 2026</p>
           <h1 className="mt-1 text-3xl font-bold leading-tight text-white md:text-4xl">
             Maak een WK-poule samen met je vrienden
           </h1>

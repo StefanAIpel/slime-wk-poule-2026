@@ -40,7 +40,7 @@ export default async function AccountPage({
     <main className="page-shell">
       <header className="mb-6 grid gap-4">
         <Brand />
-        <PageHero title="Mijn account" subtitle="Beheer je naam, teamnaam, avatar en je account." />
+        <PageHero title="Mijn account" subtitle="Beheer je naam, teamnaam, avatar en je account." slime="/assets/slime-02-mascotte-bal.png" />
       </header>
 
       {params.opgeslagen ? (

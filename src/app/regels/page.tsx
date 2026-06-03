@@ -37,8 +37,7 @@ export default function RulesPage() {
         <PageHero
           title="Regels en uitleg"
           subtitle="Kort, duidelijk en net precies genoeg voor discussie in de groepsapp."
-          image="/assets/slime-04-coach.png"
-          imageRounded={false}
+          slime="/assets/slime-08-scheidsrechter.png"
         />
       </header>
 

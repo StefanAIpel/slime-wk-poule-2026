@@ -33,6 +33,7 @@ export default async function SchedulePage() {
         <PageHero
           title="Speelschema"
           subtitle="Filter op groep, team of datum en vind elke wedstrijd in seconden — met Nederlandse tijden."
+          slime="/assets/slime-01-voetbal.png"
         />
       </header>
 
