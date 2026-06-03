@@ -42,3 +42,20 @@ Files in `public/` are served by Next/Vercel from the site root.
 
 - `/slimes/uploads/telegram-2026-06-02/01-img_fb85a3824538.jpg`
 - through `/slimes/uploads/telegram-2026-06-02/29-img_57c6452f1e72.jpg`
+
+## Curated ZIP upload 2026-06-03
+
+Uit `laatste_goede_kwaliteit_slimes.zip`:
+
+- `/slimes/uploads/zip-2026-06-03/blije_oranje_mascotte_met_bal.png`
+- `/slimes/uploads/zip-2026-06-03/blije_mascotte_met_voetbal_en_fluit.png`
+- `/slimes/uploads/zip-2026-06-03/vrolijke_gemotiveerde_mascotte_met_bal.png`
+- `/slimes/uploads/zip-2026-06-03/blije_mascotte_met_bier_en_overwinning.png`
+- `/slimes/uploads/zip-2026-06-03/blije_oranje_slijm_mascot_met_duim_omhoog.png`
+- `/slimes/uploads/zip-2026-06-03/gelatine_coach_met_clipboard_en_fluit.png`
+- `/slimes/uploads/zip-2026-06-03/speelse_oranje_mascotte_met_voetbal.png`
+- `/slimes/uploads/zip-2026-06-03/sportieve_oranje_mascotte_met_voetbal.png`
+- `/slimes/uploads/zip-2026-06-03/blije_blob_met_voetbal_en_duim_omhoog.png`
+- `/slimes/uploads/zip-2026-06-03/jelly_achtige_keeper_met_voetbal.png`
+- `/slimes/uploads/zip-2026-06-03/coach_curaçao_in_action.png`
+
