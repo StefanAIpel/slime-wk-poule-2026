@@ -101,10 +101,9 @@ textarea {
 .site-footer {
   width: min(1280px, 100%);
   margin: 0 auto;
-  padding: 10px 8px 112px;
+  padding: 8px 8px 112px;
   text-align: center;
-  border-top: 2px solid transparent;
-  border-image: linear-gradient(90deg, var(--blue), var(--green) 60%, var(--orange)) 1;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .site-footer-line {
@@ -115,26 +114,27 @@ textarea {
   gap: 4px;
   overflow: hidden;
   white-space: nowrap;
-  font-size: 0.62rem;
-  font-weight: 600;
-  color: var(--muted);
+  font-size: 0.56rem;
+  font-weight: 500;
+  color: #9aa4b2;
 }
 
 .site-footer-line a {
-  color: var(--blue-2);
+  color: #9aa4b2;
   text-decoration: none;
 }
 
 .site-footer-line a:hover {
+  color: #6b7280;
   text-decoration: underline;
 }
 
 .site-footer-beta {
   border-radius: 999px;
-  background: #e7eef8;
+  background: rgba(148, 163, 184, 0.12);
   padding: 1px 5px;
-  font-weight: 700;
-  color: var(--blue-2);
+  font-weight: 600;
+  color: #9aa4b2;
 }
 
 @media (min-width: 800px) {
@@ -144,7 +144,7 @@ textarea {
 
   .site-footer-line {
     gap: 8px;
-    font-size: 0.78rem;
+    font-size: 0.68rem;
   }
 
   .site-footer-beta {
