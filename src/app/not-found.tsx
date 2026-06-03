@@ -47,9 +47,9 @@ export default function NotFound() {
             <Image
               className="relative z-10 h-auto w-full drop-shadow-2xl"
               src="/slimes/ikea-maintenance-slime.png"
-              alt="Zweedse Slime die een bouwpakket in elkaar zet"
-              width={1200}
-              height={1200}
+              alt="Zweedse Slime met een stapelbed-bouwpakket"
+              width={1161}
+              height={1355}
               priority
             />
           </div>
