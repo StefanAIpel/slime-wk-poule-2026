@@ -29,7 +29,7 @@ export default function NotFound() {
             <div className="flex flex-wrap gap-3">
               <Link href="/" className="button-primary">
                 <ArrowLeft aria-hidden="true" className="size-5" />
-                Terug naar de poule
+                Terug naar de WK-poule
               </Link>
               <a href={SLIME_GAME_URL} className="button-secondary">
                 Slime Soccer
@@ -62,7 +62,7 @@ export default function NotFound() {
               Handleiding kwijt?
             </div>
             <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
-              Check de spelling of ga terug naar de startpagina. De poule staat nog gewoon stevig in elkaar.
+              Check de spelling of ga terug naar de startpagina. De WK-poule staat nog gewoon stevig in elkaar.
             </p>
           </div>
           <a className="panel p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-xl" href={SLIME_GAME_URL}>

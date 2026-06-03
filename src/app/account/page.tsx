@@ -137,7 +137,7 @@ export default async function AccountPage({
               <h2 className="text-xl font-bold text-[#081634]">Account verwijderen</h2>
             </div>
             <p className="text-sm font-medium leading-6 text-[#48617f]">
-              Dit verwijdert je profiel, voorspellingen, scores en je deelname aan subpoules. Poules waarvan jij beheerder
+              Dit verwijdert je profiel, voorspellingen, scores en je deelname aan WK-poules. WK-poules waarvan jij beheerder
               bent worden ook verwijderd. Dit kan niet ongedaan worden gemaakt.
             </p>
             <label className="grid gap-2 text-sm font-bold text-[#081634]">

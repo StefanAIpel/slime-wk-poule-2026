@@ -112,7 +112,7 @@ export function LoginForm() {
           {status === "loading" ? "Inloggen…" : "Inloggen met code"}
         </button>
         <p aria-live="polite" className={`text-sm font-medium ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-          {message || "De code krijg je van de beheerder van je poule."}
+          {message || "De code krijg je van de beheerder van je WK-poule."}
         </p>
         <button type="button" className="text-sm font-bold text-[#0e7a44] underline" onClick={() => { setMode("email"); setStatus("idle"); setMessage(""); }}>
           Terug naar inloggen met e-mail
@@ -181,14 +181,7 @@ export function LoginForm() {
         {status === "loading" ? "Versturen…" : "Stuur inloglink"}
       </button>
       <p aria-live="polite" className={`text-sm font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-        {message || (
-          <>
-            Eenmalige inloglink (±1 uur geldig, werkt 1×). Door in te loggen ga je akkoord met de{" "}
-            <a className="font-semibold text-[#0e7a44]" href="/voorwaarden" target="_blank" rel="noopener noreferrer">voorwaarden</a>{" "}
-            en het{" "}
-            <a className="font-semibold text-[#0e7a44]" href="/privacy" target="_blank" rel="noopener noreferrer">privacybeleid</a>.
-          </>
-        )}
+        {message || "Eenmalige inloglink voor je WK 2026-poule (±1 uur geldig, werkt 1×)."}
       </p>
       <button
         type="button"

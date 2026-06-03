@@ -16,7 +16,7 @@ const publicTail = [
 ];
 const privateLinks = [
   { href: "/voorspellingen", label: "Voorspel", icon: ClipboardList },
-  { href: "/poules", label: "Subpoules", icon: Users },
+  { href: "/poules", label: "WK-poules", icon: Users },
 ];
 
 /**

@@ -21,7 +21,7 @@ export function Brand({ hideIcon = false }: { hideIcon?: boolean }) {
       )}
       <div>
         <div className="text-2xl font-bold leading-none tracking-normal text-[#0b1f4d]">Slime Score</div>
-        <div className="text-sm font-bold leading-none text-[#0f8a43]">WK Poule 2026</div>
+        <div className="text-sm font-bold leading-none text-[#0f8a43]">WK-poule 2026</div>
       </div>
     </Link>
   );

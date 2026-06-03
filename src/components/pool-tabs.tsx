@@ -21,7 +21,7 @@ export function PoolTabs({
   return (
     <div className="grid gap-4">
       {multiple ? (
-        <div className="pool-tabs" role="tablist" aria-label="Kies subpoule">
+        <div className="pool-tabs" role="tablist" aria-label="Kies WK-poule">
           {tabs.map((tab) => (
             <button
               key={tab.id}

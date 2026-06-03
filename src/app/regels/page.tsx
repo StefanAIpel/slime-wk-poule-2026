@@ -11,9 +11,9 @@ const faq: { q: string; a: string }[] = [
     q: "Tot wanneer kan ik invullen?",
     a: "Je groepswedstrijden en de meeste bonusvragen sluiten bij de aftrap op 11 juni 21:00. Wereldkampioen, finalisten, penaltyseries en 'hoe ver komt Oranje' blijf je aanpassen t/m 28 juni 21:00.",
   },
-  { q: "Zijn mijn voorspellingen privé?", a: "Ja, tot de deadline. Daarna zijn ze zichtbaar voor je medespelers in dezelfde subpoule. Je e-mailadres blijft altijd privé." },
+  { q: "Zijn mijn WK 2026-voorspellingen privé?", a: "Ja, tot de deadline. Daarna zijn ze zichtbaar voor je medespelers in dezelfde WK-poule. Je e-mailadres blijft altijd privé." },
   { q: "Hoe werkt de laatste 32?", a: "Die rekenen we automatisch uit jouw voorspelde groepsstanden: de nummers 1 en 2 plus de beste acht nummers 3." },
-  { q: "Kan ik in meerdere subpoules zitten?", a: "Ja. Maak je eigen subpoule met een deelcode of sluit aan bij bestaande poules van familie, vrienden of collega's." },
+  { q: "Kan ik in meerdere WK-poules zitten?", a: "Ja. Maak je eigen WK-poule met een deelcode of sluit aan bij bestaande WK-poules van familie, vrienden of collega's." },
   { q: "Wat gebeurt er bij een gelijke stand?", a: "We kijken achtereenvolgens naar meeste exacte uitslagen, meeste juiste resultaten, bonuspunten en daarna de vroegste volledige inzending." },
   { q: "Kan ik mijn account verwijderen?", a: "Ja, via Mijn account. Daarmee verdwijnen je profiel, voorspellingen, scores en deelnames definitief." },
 ];
@@ -35,8 +35,8 @@ export default function RulesPage() {
       <header className="mb-6 grid gap-4">
         <Brand />
         <PageHero
-          title="Regels en uitleg"
-          subtitle="Kort, duidelijk en net precies genoeg voor discussie in de groepsapp."
+          title="WK 2026-regels en uitleg"
+          subtitle="Kort, duidelijk en net precies genoeg voor discussie in de WK-poule-groepsapp."
           slime="/assets/slime-08-scheidsrechter.webp"
         />
       </header>
@@ -64,15 +64,15 @@ export default function RulesPage() {
           <article className="panel p-5">
             <div className="flex items-center gap-3">
               <ShieldCheck aria-hidden="true" className="size-7 text-[#064ed6]" />
-              <h2 className="text-2xl font-bold text-[#081634]">Subpoules</h2>
+              <h2 className="text-2xl font-bold text-[#081634]">WK-poules</h2>
             </div>
             <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
-              <li>Iedereen doet mee in de algemene ranglijst.</li>
-              <li>Je kunt in meerdere subpoules zitten (familie, vrienden, collega&rsquo;s).</li>
-              <li>Een subpoule heeft een beheerder en een geheime deelcode.</li>
+              <li>Iedereen doet mee in de algemene WK 2026-ranglijst.</li>
+              <li>Je kunt in meerdere WK-poules zitten (familie, vrienden, collega&rsquo;s).</li>
+              <li>Een WK-poule heeft een beheerder en een geheime deelcode.</li>
               <li>Beheerders kunnen leden verwijderen en moderators aanwijzen.</li>
-              <li>Beheerders en moderators kunnen de poule aankleden en berichten plaatsen.</li>
-              <li>Subpoules krijgen een ranglijst op de score van hun beste 4 spelers.</li>
+              <li>Beheerders en moderators kunnen de WK-poule aankleden en berichten plaatsen.</li>
+              <li>WK-poules krijgen een ranglijst op de score van hun beste 4 spelers.</li>
             </ul>
           </article>
 

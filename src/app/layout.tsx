@@ -19,7 +19,7 @@ const appFont = Plus_Jakarta_Sans({
 });
 
 const description =
-  "Gratis Nederlandse WK 2026-poule. Eén keer invullen, maak een poule met vrienden en familie en zie wie er wint. Jouw data privé.";
+  "Gratis Nederlandse WK 2026-poule. Eén keer invullen, maak een WK-poule met vrienden en familie en zie wie er wint. Jouw data privé.";
 
 const appIcon = "/icons/slimescore-app-icon-v2-512.png";
 const appleTouchIcon = "/icons/slimescore-apple-touch-icon-v2-180.png";

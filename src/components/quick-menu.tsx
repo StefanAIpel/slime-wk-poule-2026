@@ -14,8 +14,8 @@ const publicLinks = [
 ];
 
 const privateLinks = [
-  { href: "/voorspellingen", label: "Poule invullen / wijzigen", icon: ClipboardList },
-  { href: "/poules", label: "Subpoules", icon: Users },
+  { href: "/voorspellingen", label: "WK-poule invullen / wijzigen", icon: ClipboardList },
+  { href: "/poules", label: "WK-poules", icon: Users },
   { href: "/account", label: "Mijn account", icon: UserCog },
 ];
 

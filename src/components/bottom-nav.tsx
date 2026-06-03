@@ -6,7 +6,7 @@ const links = [
   { href: "/", label: "Home", icon: Home },
   { href: "/schema", label: "Schema", icon: CalendarDays },
   { href: "/voorspellingen", label: "Voorspel", icon: ClipboardList },
-  { href: "/poules", label: "Subpoules", icon: Users },
+  { href: "/poules", label: "WK-poules", icon: Users },
   { href: "/ranglijst", label: "Ranglijst", icon: Trophy },
   { href: "/regels", label: "Regels", icon: ListChecks },
 ];

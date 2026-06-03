@@ -79,7 +79,7 @@ export default async function Home({
             <div className="mt-3 grid gap-2 text-sm font-semibold leading-6 text-[#48617f]">
               <p>1. Vul je groepswedstrijden in.</p>
               <p>2. Kies je landen voor de knock-outfase.</p>
-              <p>3. Maak of join een subpoule met een code.</p>
+              <p>3. Maak of join een WK-poule met een code.</p>
             </div>
           </div>
         </section>
@@ -141,7 +141,7 @@ export default async function Home({
           <UpcomingMatches />
           <a href="/poules" className="panel grid gap-2 p-4 no-underline">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-bold text-[#081634]">Mijn subpoules</h2>
+              <h2 className="text-lg font-bold text-[#081634]">Mijn WK-poules</h2>
               <Users aria-hidden="true" className="size-5 text-[#064ed6]" />
             </div>
             {homeMemberships.length ? (
@@ -155,7 +155,7 @@ export default async function Home({
                 </div>
               ))
             ) : (
-              <p className="text-sm font-medium text-[#48617f]">Maak een subpoule of sluit aan met een code.</p>
+              <p className="text-sm font-medium text-[#48617f]">Maak een WK-poule of sluit aan met een code.</p>
             )}
           </a>
 
@@ -211,7 +211,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             Gratis WK 2026-poule voor vrienden en familie
           </h1>
           <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-blue-50 sm:text-base md:text-lg">
-            Voorspel alle wedstrijden van het WK voetbal 2026, maak je eigen poule en volg live wie er wint.
+            Voorspel alle WK 2026-wedstrijden, maak je eigen WK-poule en volg live wie er wint.
             Eén keer invullen, geen advertenties, geen cookiegedoe.
           </p>
           <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
@@ -242,14 +242,14 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
               <div>
                 <h2 className="flex items-start gap-3 text-2xl font-bold leading-tight text-white sm:text-3xl">
                   <Users aria-hidden="true" className="mt-1 size-7 flex-none text-white" />
-                  Samen spelen: maak of join een poule
+                  Samen spelen: maak of join een WK-poule
                 </h2>
                 <p className="mt-3 text-base font-semibold leading-7 text-blue-50">
-                  Start je eigen poule voor familie, vrienden of collega&rsquo;s met één deelcode — of sluit aan bij een
-                  bestaande poule. Je vult de code in zodra je bent ingelogd.
+                  Start je eigen WK-poule voor familie, vrienden of collega&rsquo;s met één deelcode — of sluit aan bij een
+                  bestaande WK-poule. Je vult de code in zodra je bent ingelogd.
                 </p>
               </div>
-              <a href="#login" className="button-primary w-full justify-center text-base sm:w-auto">Start je poule</a>
+              <a href="#login" className="button-primary w-full justify-center text-base sm:w-auto">Start je WK-poule</a>
             </div>
             <div className="share-panel-strip">
               <p className="text-sm font-bold text-blue-50">Deel Slime Score WK 2026:</p>

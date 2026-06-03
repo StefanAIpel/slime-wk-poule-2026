@@ -98,7 +98,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Stat icon={<Users className="size-5" />} label="Spelers" value={userCount ?? 0} />
         <Stat icon={<ClipboardList className="size-5" />} label="Voorspellingen" value={predictionCount ?? 0} />
-        <Stat icon={<Users className="size-5" />} label="Subpoules" value={poolCount ?? 0} />
+        <Stat icon={<Users className="size-5" />} label="WK-poules" value={poolCount ?? 0} />
         <Stat icon={<Activity className="size-5" />} label="Afgerond" value={`${finishedCount}/${matchRows.length}`} />
       </section>
 

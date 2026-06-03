@@ -30,7 +30,7 @@ export default function PrivacyPage() {
           <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
             <li>Je e-mailadres, alleen om in te loggen via een eenmalige link.</li>
             <li>Je bijnaam en teamnaam, zichtbaar in de ranglijst.</li>
-            <li>Je voorspellingen en in welke poules je zit.</li>
+            <li>Je WK 2026-voorspellingen en in welke WK-poules je zit.</li>
             <li>Geen wachtwoorden, geen telefoonnummer, geen advertentie-ID&rsquo;s.</li>
           </ul>
         </article>
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-bold text-[#081634]">Waarvoor en hoe</h2>
           </div>
           <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
-            <li>Alleen om de poule te laten werken: inloggen, voorspellen en ranglijsten.</li>
+            <li>Alleen om de WK-poule te laten werken: inloggen, voorspellen en ranglijsten.</li>
             <li>Opgeslagen bij onze databaseleverancier Supabase, met toegangsbeveiliging.</li>
             <li>Je voorspellingen blijven privé tot de deadline.</li>
             <li>We verkopen je gegevens niet en delen ze niet met advertentienetwerken.</li>

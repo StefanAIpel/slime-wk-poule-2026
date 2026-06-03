@@ -58,7 +58,7 @@ export default async function RankingPage() {
         <Brand />
         <PageHero
           title="Ranglijsten"
-          subtitle="Zoek een speler op naam of team, of vind je subpoule. Meedoen kan na login."
+          subtitle="Zoek een speler op naam of team, of vind je WK-poule. Meedoen kan na login."
           slime="/assets/hd-ranglijst.webp"
         />
         {lastUpdate ? (

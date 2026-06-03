@@ -32,10 +32,10 @@ function poolBannerUrl(poolId: string) {
 }
 
 const poolErrors: Record<string, string> = {
-  code: "Die poulecode klopt niet. Controleer de code.",
+  code: "Die WK-poulecode klopt niet. Controleer de code.",
   rechten: "Je hebt hier geen rechten voor.",
-  naam: "Kies een geldige poulenaam (min. 2 tekens).",
-  limiet: "Je hebt het maximum aantal eigen poules bereikt.",
+  naam: "Kies een geldige WK-poulenaam (min. 2 tekens).",
+  limiet: "Je hebt het maximum aantal eigen WK-poules bereikt.",
   kleur: "Kies een geldige kleur.",
   rol: "Die rol kan niet worden ingesteld.",
   "bericht-kort": "Je bericht is te kort (minimaal 10 tekens).",
@@ -178,10 +178,10 @@ export default async function PoolsPage({
         <div className="hero-band hero-band-visual">
           <div className="hero-content">
             <h1 className="text-2xl font-bold leading-tight text-white md:text-3xl">
-              Speel samen — maak of join je poule
+              Speel samen — maak of join je WK-poule
             </h1>
             <p className="mt-1 text-sm font-medium leading-6 text-blue-50 md:text-base">
-              Daag vrienden, familie of collega&rsquo;s uit, vul je scores in en strijd om de eerste plek.
+              Daag vrienden, familie of collega&rsquo;s uit in je WK 2026-poule en strijd om de eerste plek.
             </p>
           </div>
           <HeroArt src="/assets/slime-05-ikea.png" />
@@ -203,14 +203,14 @@ export default async function PoolsPage({
         <form action={createPool} className="panel grid gap-3 p-4">
           <div className="flex items-center gap-3">
             <ShieldCheck aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-bold text-[#081634]">Nieuwe poule</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">Nieuwe WK-poule</h2>
           </div>
           <label className="grid gap-2 text-sm font-bold text-[#081634]">
-            Naam van je poule
+            Naam van je WK-poule
             <input className="field" name="name" required minLength={2} maxLength={50} placeholder="Familie Dijkstra" />
           </label>
           <button className="button-primary" type="submit">
-            Poule maken
+            WK-poule maken
           </button>
         </form>
 
@@ -220,7 +220,7 @@ export default async function PoolsPage({
             <h2 className="text-2xl font-bold text-[#081634]">Meedoen met code</h2>
           </div>
           <label className="grid gap-2 text-sm font-bold text-[#081634]">
-            Poulecode
+            WK-poulecode
             <input className="field uppercase" name="code" required minLength={6} maxLength={10} placeholder="SLIME26" />
           </label>
           <button className="button-primary" type="submit">
@@ -263,14 +263,14 @@ export default async function PoolsPage({
                 {isManager ? (
                   <details className="border-b border-slate-200 bg-slate-50">
                     <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">
-                      Poule-instellingen &amp; opmaak (beheer)
+                      WK-poule-instellingen &amp; opmaak (beheer)
                     </summary>
                   <div className="grid gap-4 p-4 pt-0 lg:grid-cols-2">
                     <form action={updatePoolStyle} className="grid gap-3">
                       <input type="hidden" name="pool_id" value={pool.id} />
                       <div className="flex items-center gap-2 font-bold text-[#101a2b]">
                         <Palette aria-hidden="true" className="size-5 text-[#2c4a72]" />
-                        Poule aankleden
+                        WK-poule aankleden
                       </div>
                       <div className="grid gap-2 sm:grid-cols-[72px_110px_1fr]">
                         <label className="grid gap-1 text-xs font-bold text-[#101a2b]">
@@ -292,7 +292,7 @@ export default async function PoolsPage({
                       <input type="hidden" name="pool_id" value={pool.id} />
                       <div className="flex items-center gap-2 font-bold text-[#101a2b]">
                         <ImagePlus aria-hidden="true" className="size-5 text-[#2f7a60]" />
-                        Poulebanner uploaden
+                        WK-poulebanner uploaden
                       </div>
                       <input className="field" type="file" name="image" accept="image/*" required />
                       <p className="text-xs font-medium text-[#4c5a70]">
@@ -315,7 +315,7 @@ export default async function PoolsPage({
                       minLength={10}
                       maxLength={500}
                       required
-                      placeholder="Schrijf iets voor je poule… (min. 10 tekens)"
+                      placeholder="Schrijf iets voor je WK-poule… (min. 10 tekens)"
                     />
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       {isManager ? (
@@ -408,8 +408,8 @@ export default async function PoolsPage({
           </PoolTabs>
         ) : (
           <div className="panel p-5">
-            <h2 className="text-2xl font-bold text-[#081634]">Nog geen poules</h2>
-            <p className="mt-2 font-medium text-[#48617f]">Maak er een aan of vraag een code aan je groep.</p>
+            <h2 className="text-2xl font-bold text-[#081634]">Nog geen WK-poules</h2>
+            <p className="mt-2 font-medium text-[#48617f]">Maak een WK 2026-poule aan of vraag een code aan je groep.</p>
           </div>
         )}
       </section>

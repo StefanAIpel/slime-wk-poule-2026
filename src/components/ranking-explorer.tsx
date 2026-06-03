@@ -56,7 +56,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
           onClick={() => setView("subpoules")}
         >
           <Users aria-hidden="true" className="size-4" />
-          Subpoules
+          WK-poules
         </button>
       </div>
 
@@ -90,9 +90,9 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
         <article className={`panel overflow-hidden ${view === "subpoules" ? "" : "hidden"} lg:block`}>
           <div className="flex items-center gap-3 bg-[#1c855a] p-3 text-white">
             <Users aria-hidden="true" className="size-6" />
-            <h2 className="text-xl font-bold">Subpoules</h2>
+            <h2 className="text-xl font-bold">WK-poules</h2>
           </div>
-          <TableSearch value={qPools} onChange={setQPools} placeholder="Zoek een subpoule of code…" />
+          <TableSearch value={qPools} onChange={setQPools} placeholder="Zoek een WK-poule of code…" />
           <div className="divide-y divide-slate-100">
             {filteredPools.length ? (
               filteredPools.map((pool) => (
@@ -106,7 +106,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
                 </div>
               ))
             ) : (
-              <p className="p-4 text-sm font-medium text-[#475670]">Geen subpoules gevonden.</p>
+              <p className="p-4 text-sm font-medium text-[#475670]">Geen WK-poules gevonden.</p>
             )}
           </div>
         </article>

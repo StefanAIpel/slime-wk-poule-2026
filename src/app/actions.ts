@@ -55,6 +55,11 @@ export async function saveProfile(formData: FormData) {
   const admin = createAdminClient();
   const nickname = cleanText(formData.get("nickname"), 24);
   const teamName = cleanText(formData.get("team_name"), 28);
+  const termsAccepted = formData.get("terms_accepted") === "yes";
+
+  if (!termsAccepted) {
+    redirect("/?profiel=akkoord");
+  }
 
   if (nickname.length < 4 || teamName.length < 4) {
     redirect("/?profiel=te-kort");
