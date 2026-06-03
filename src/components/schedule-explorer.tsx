@@ -87,9 +87,9 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
   const hasFilter = group !== "all" || team !== "all" || date !== "all";
 
   return (
-    <section className="grid gap-3">
+    <section className="schedule-explorer grid gap-3">
       <div className="panel grid grid-cols-2 gap-2 p-3 sm:grid-cols-3">
-        <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+        <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[#0b1f4d]">
           Groep
           <select className="field" value={group} onChange={(e) => onGroupChange(e.target.value)}>
             <option value="all">Alle groepen</option>
@@ -101,7 +101,7 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
             {hasKnockout ? <option value="ko">Knock-out</option> : null}
           </select>
         </label>
-        <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+        <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[#0b1f4d]">
           Team
           <select className="field" value={team} onChange={(e) => setTeam(e.target.value)}>
             <option value="all">{group === "all" ? "Alle teams" : "Alle teams in groep"}</option>
@@ -112,7 +112,7 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
             ))}
           </select>
         </label>
-        <label className="col-span-2 grid gap-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)] sm:col-span-1">
+        <label className="col-span-2 grid gap-1 text-xs font-semibold uppercase tracking-wide text-[#0b1f4d] sm:col-span-1">
           Datum
           <select className="field" value={date} onChange={(e) => setDate(e.target.value)}>
             <option value="all">Alle datums</option>
@@ -124,7 +124,7 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
           </select>
         </label>
         <div className="col-span-2 flex items-center justify-between gap-3 sm:col-span-3">
-          <span className="text-sm font-medium text-[var(--muted)]">{filtered.length} wedstrijden</span>
+          <span className="text-sm font-semibold text-[#0b1f4d]">{filtered.length} wedstrijden</span>
           {hasFilter ? (
             <button
               type="button"
@@ -146,7 +146,7 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
         {filtered.length ? (
           filtered.map((match) => <MatchRow key={match.id} match={match} />)
         ) : (
-          <p className="p-4 text-sm font-medium text-[var(--muted)]">Geen wedstrijden voor deze filters.</p>
+          <p className="p-4 text-sm font-semibold text-[#0b1f4d]">Geen wedstrijden voor deze filters.</p>
         )}
       </div>
     </section>
@@ -156,12 +156,12 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
 function MatchRow({ match }: { match: ScheduleMatch }) {
   const offset = venueHourOffset(match.startsAt, match.venue);
   return (
-    <div className="flex items-stretch gap-3 px-3 py-2.5">
+    <div className="schedule-match-row">
       <div className="flex items-center">
         <span className="match-group">{match.group ?? "KO"}</span>
       </div>
       <div className="min-w-0 flex-1">
-        <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-medium text-[#54657f]">
+        <div className="schedule-match-meta">
           <CalendarDays aria-hidden="true" className="size-3.5" />
           {formatAmsterdam(match.startsAt)}
           {offset !== null ? (
@@ -177,17 +177,18 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
             </span>
           ) : null}
         </div>
-        <div className="grid gap-1">
-          <div className="flex items-center gap-2">
+        <div className="schedule-team-grid" aria-label={`${match.homeName ?? match.homeCode} tegen ${match.awayName ?? match.awayCode}`}>
+          <div className="schedule-team-cell">
             <TeamFlag code={match.homeCode} name={match.homeName} />
-            <span className="font-medium text-[var(--ink)]">
+            <span className="schedule-team-name">
               <span className="sm:hidden">{match.homeCode ?? match.homeName}</span>
               <span className="hidden sm:inline">{match.homeName ?? match.homeCode}</span>
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <span className="schedule-team-separator" aria-hidden="true">—</span>
+          <div className="schedule-team-cell">
             <TeamFlag code={match.awayCode} name={match.awayName} />
-            <span className="font-medium text-[var(--ink)]">
+            <span className="schedule-team-name">
               <span className="sm:hidden">{match.awayCode ?? match.awayName}</span>
               <span className="hidden sm:inline">{match.awayName ?? match.awayCode}</span>
             </span>

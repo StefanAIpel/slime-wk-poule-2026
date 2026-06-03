@@ -1,4 +1,4 @@
-import { CalendarDays, ListChecks, Share2, Trophy, Users } from "lucide-react";
+import { CalendarDays, ListChecks, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
@@ -232,28 +232,19 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         <section className="grid gap-4">
           <UpcomingMatches />
 
-          <div className="dark-panel grid gap-3 p-5 md:grid-cols-[1fr_auto] md:items-center">
-            <div>
+          <div className="dark-panel grid gap-4 p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="flex items-center gap-2 text-xl font-bold text-white">
                 <Users aria-hidden="true" className="size-6 text-white" />
-                Samen spelen: start of join een subpoule
+                Start of join poule
               </h2>
-              <p className="mt-1 text-sm font-medium leading-6 text-blue-50">
-                Start je eigen subpoule voor familie, vrienden of collega&rsquo;s met één deelcode — of sluit aan bij een
-                bestaande subpoule. Je vult de code in zodra je bent ingelogd.
-              </p>
+              <a href="#login" className="button-primary md:w-auto">Start of join poule</a>
             </div>
-            <a href="#login" className="button-primary md:w-auto">Start of join subpoule</a>
-          </div>
-
-          <div className="panel grid gap-3 p-4">
-            <h2 className="flex items-center gap-2 text-lg font-bold text-[#081634]">
-              <Share2 aria-hidden="true" className="size-5 text-[#064ed6]" />
-              Nodig je groep uit
-            </h2>
             <ShareRow
               url={SITE_URL}
               text="Doe je mee met de gratis Slime Score WK 2026-poule?"
+              compact
+              onDark
             />
           </div>
 

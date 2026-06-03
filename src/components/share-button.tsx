@@ -82,10 +82,14 @@ export function ShareRow({
   url,
   text,
   title = "Slime Score WK 2026",
+  compact = false,
+  onDark = false,
 }: {
   url: string;
   text: string;
   title?: string;
+  compact?: boolean;
+  onDark?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const encodedBoth = encodeURIComponent(`${text} ${url}`.trim());
@@ -130,7 +134,7 @@ export function ShareRow({
   }
 
   return (
-    <div className="share-row">
+    <div className={`share-row${compact ? " share-row-compact" : ""}${onDark ? " share-row-on-dark" : ""}`}>
       <div className="share-actions">
         {targets.map((target) => {
           const Icon = target.icon;
@@ -145,13 +149,13 @@ export function ShareRow({
               title={`Delen via ${target.label}`}
             >
               <Icon aria-hidden="true" className="size-5" />
-              <span>{target.label}</span>
+              <span className={compact ? "sr-only" : undefined}>{target.label}</span>
             </a>
           );
         })}
         <button type="button" className="share-link share-link-signal" onClick={onSignalShare}>
           <SignalGlyph className="size-5" />
-          <span>Signal</span>
+          <span className={compact ? "sr-only" : undefined}>Signal</span>
         </button>
         <button
           type="button"
@@ -161,12 +165,14 @@ export function ShareRow({
           title="Link kopiëren"
         >
           {copied ? <Check aria-hidden="true" className="size-5" /> : <Link2 aria-hidden="true" className="size-5" />}
-          <span>{copied ? "Gekopieerd" : "Link"}</span>
+          <span className={compact ? "sr-only" : undefined}>{copied ? "Gekopieerd" : "Link"}</span>
         </button>
       </div>
-      <p aria-live="polite" className="text-xs font-medium text-[#46566f]">
-        {copied ? "Link gekopieerd." : "Deel via WhatsApp, Signal, mail of kopieer de link."}
-      </p>
+      {compact ? null : (
+        <p aria-live="polite" className="text-xs font-medium text-[#46566f]">
+          {copied ? "Link gekopieerd." : "Deel via WhatsApp, Signal, mail of kopieer de link."}
+        </p>
+      )}
     </div>
   );
 }

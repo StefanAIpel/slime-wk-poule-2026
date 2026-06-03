@@ -992,6 +992,58 @@ textarea {
   font-size: 0.95rem;
 }
 
+.schedule-match-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  padding: 12px;
+}
+
+.schedule-match-meta {
+  margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  color: #0b1f4d;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.schedule-team-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 8px;
+  color: #0b1f4d;
+}
+
+.schedule-team-cell {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  color: #0b1f4d;
+}
+
+.schedule-team-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.schedule-team-separator {
+  display: inline-grid;
+  min-width: 18px;
+  place-items: center;
+  color: #0b1f4d;
+  font-weight: 900;
+  line-height: 1;
+  opacity: 0.72;
+}
+
 .game-banner-tile {
   display: block;
   overflow: hidden;
@@ -1111,10 +1163,15 @@ textarea {
   gap: 8px;
 }
 
+.share-row-compact .share-actions {
+  gap: 10px;
+}
+
 .share-link {
   display: inline-flex;
   min-height: 38px;
   align-items: center;
+  justify-content: center;
   gap: 7px;
   border: 1px solid rgba(8, 22, 52, 0.1);
   border-radius: 999px;
@@ -1127,6 +1184,19 @@ textarea {
   text-decoration: none;
   box-shadow: 0 6px 14px rgba(8, 22, 52, 0.06);
   transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.share-row-compact .share-link {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px;
+}
+
+.share-row-on-dark .share-link {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  box-shadow: none;
 }
 
 .share-link:hover {
