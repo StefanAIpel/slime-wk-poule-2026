@@ -29,6 +29,7 @@ Prioriteit: **P1** launch-blocker · **P2** belangrijk · **P3** later/nice-to-h
 | 14 | Regels-icoon (geen puntjes) | P2 | ✅ | |
 | 15 | Labels "Poule invullen/wijzigen", "Subpoules" | P2 | ✅ | |
 | 16 | Uitgelogd ook Subpoules/Schema bereikbaar | P2 | ✅ | nav toont nu altijd alles |
+| 76 | Tablet (800-1023px) toonde géén menu | P1 | ✅ | headerbalk + onderbalk wisselen nu beide op 768px; "Schema"-label past |
 
 ## Wedstrijden / schema
 | # | Punt | Prio | Status | Opmerking |
@@ -66,6 +67,7 @@ Prioriteit: **P1** launch-blocker · **P2** belangrijk · **P3** later/nice-to-h
 | 39 | Taalkeuze NL/EN | P3 | ⬜ | **Tegengeluid:** i18n = veel extra onderhoud; advies ná launch |
 | 40 | Profiel min. 4 tekens + gate | P1 | ✅ | |
 | 41 | Transparant scorelog + support-info | P2 | ✅ | op /account |
+| 77 | Kind-account boardt zelf naam + team (geen vaste "Zoon") | P1 | ✅ | kind kiest bij 1e login naam/teamnaam; admin geeft alleen code |
 
 ## Regels / SEO / vertrouwen
 | # | Punt | Prio | Status | Opmerking |
