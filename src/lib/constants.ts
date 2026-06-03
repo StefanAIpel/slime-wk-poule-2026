@@ -9,6 +9,8 @@ export const POST_GROUP_WINDOW_START = new Date(POST_GROUP_WINDOW_START_ISO);
 export const POST_GROUP_DEADLINE = new Date(POST_GROUP_DEADLINE_ISO);
 
 export const SLIME_GAME_URL = "https://soccer.slimescore.com";
+/** Volley-variant van de arcade-game (bevestig/again de juiste URL). */
+export const SLIME_VOLLEY_URL = "https://volley.slimescore.com";
 
 /** Officieel domein. Gebruikt voor metadata, manifest en deel-links. */
 export const SITE_URL = "https://slimescore.com";

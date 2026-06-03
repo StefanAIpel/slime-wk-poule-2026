@@ -40,6 +40,9 @@ export default async function PredictionsPage({
   const now = new Date();
   const mainOpen = now < ENTRY_DEADLINE;
   const lateOpen = now < POST_GROUP_DEADLINE;
+  const groupMatchTotal = (matches ?? []).length;
+  const filledGroupMatches = predictionByMatch.size;
+  const groupIncomplete = filledGroupMatches < groupMatchTotal;
   const groupedMatches = groupBy(matches as MatchWithTeams[] | null, (match) => match.group_letter ?? "?");
   const typedTeams = (teams ?? []) as Team[];
 
@@ -107,6 +110,12 @@ export default async function PredictionsPage({
           <div className="mt-4 rounded-lg border border-[#bce8c8] bg-[#f4fbf0] p-3 text-sm font-bold leading-6 text-[#137c35]">
             Laatste 32: automatisch uitgerekend met nummers 1 en 2 per groep plus de beste acht nummers 3.
           </div>
+          {groupIncomplete ? (
+            <div className="mt-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm font-bold leading-6 text-[#8a5a00]">
+              Let op: je hebt {filledGroupMatches} van {groupMatchTotal} groepswedstrijden ingevuld. Vul ze allemaal in,
+              anders klopt je automatische laatste 32 nog niet en mis je punten.
+            </div>
+          ) : null}
           <div className="mt-4 grid gap-4">
             <TeamChecklist
               name="round16"
