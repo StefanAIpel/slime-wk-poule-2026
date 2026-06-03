@@ -142,6 +142,13 @@ export async function createPool(formData: FormData) {
 
   if (name.length < 2) redirect("/poules?fout=naam");
 
+  // Anti-misbruik: maximaal aantal eigen poules per gebruiker.
+  const { count: ownedCount } = await admin
+    .from("pools")
+    .select("id", { count: "exact", head: true })
+    .eq("owner_id", user.id);
+  if ((ownedCount ?? 0) >= 20) redirect("/poules?fout=limiet");
+
   await admin.from("profiles").upsert({ id: user.id });
 
   let code = poolCode();

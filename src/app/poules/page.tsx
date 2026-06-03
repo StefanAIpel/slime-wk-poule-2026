@@ -35,6 +35,7 @@ const poolErrors: Record<string, string> = {
   code: "Die poulecode klopt niet. Controleer de code.",
   rechten: "Je hebt hier geen rechten voor.",
   naam: "Kies een geldige poulenaam (min. 2 tekens).",
+  limiet: "Je hebt het maximum aantal eigen poules bereikt.",
   kleur: "Kies een geldige kleur.",
   rol: "Die rol kan niet worden ingesteld.",
   "bericht-kort": "Je bericht is te kort (minimaal 10 tekens).",
