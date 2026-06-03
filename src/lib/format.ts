@@ -1,3 +1,5 @@
+import { stadiumByCity } from "@/lib/constants";
+
 export function formatAmsterdam(value: string | Date | null | undefined) {
   if (!value) return "Nog niet bekend";
 
@@ -16,6 +18,13 @@ export function displayName(profile?: { nickname: string | null; team_name: stri
   const teamName = profile?.team_name?.trim();
   if (nickname && teamName) return `${nickname} (${teamName})`;
   return nickname || teamName || "Speler";
+}
+
+/** "Stad · Stadion" als het stadion bekend is, anders alleen de stad. */
+export function venueLabel(city: string | null | undefined) {
+  if (!city) return "";
+  const stadium = stadiumByCity[city];
+  return stadium ? `${city} · ${stadium}` : city;
 }
 
 export function clampInt(value: FormDataEntryValue | null, fallback = 0, min = 0, max = 20) {

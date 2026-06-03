@@ -3,7 +3,7 @@
 import { CalendarDays, MapPin, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { TeamFlag } from "@/components/team-flag";
-import { formatAmsterdam } from "@/lib/format";
+import { formatAmsterdam, venueLabel } from "@/lib/format";
 
 export type ScheduleMatch = {
   id: number;
@@ -150,7 +150,8 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
         {match.venue ? (
           <span className="inline-flex items-center gap-1">
             <MapPin aria-hidden="true" className="size-3.5" />
-            {match.venue}
+            <span className="sm:hidden">{match.venue}</span>
+            <span className="hidden sm:inline">{venueLabel(match.venue)}</span>
           </span>
         ) : null}
       </div>

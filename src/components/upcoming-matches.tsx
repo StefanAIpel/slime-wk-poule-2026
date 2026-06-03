@@ -1,6 +1,6 @@
 import { CalendarDays, MapPin } from "lucide-react";
 import { TeamFlag } from "@/components/team-flag";
-import { formatAmsterdam } from "@/lib/format";
+import { formatAmsterdam, venueLabel } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 type Row = {
@@ -51,7 +51,8 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
               {m.venue ? (
                 <span className="inline-flex items-center gap-1 text-[var(--muted)]">
                   <MapPin aria-hidden="true" className="size-3.5" />
-                  {m.venue}
+                  <span className="sm:hidden">{m.venue}</span>
+                  <span className="hidden sm:inline">{venueLabel(m.venue)}</span>
                 </span>
               ) : null}
             </div>

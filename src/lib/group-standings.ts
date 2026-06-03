@@ -35,6 +35,11 @@ function row(code: string, group: string): StandingRow {
   };
 }
 
+/** Lege standingrow voor een team (bijv. om alle landen met nullen te tonen). */
+export function emptyStandingRow(code: string, group: string): StandingRow {
+  return row(code, group);
+}
+
 export function compareStandingRows(a: StandingRow, b: StandingRow) {
   return (
     b.points - a.points ||

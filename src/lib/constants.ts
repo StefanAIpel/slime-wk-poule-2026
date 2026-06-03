@@ -71,3 +71,23 @@ export const hostCities = [
   "Toronto",
   "Vancouver",
 ];
+
+/** Stadion per speelstad (WK 2026). Gebruikt om naast de stad het stadion te tonen. */
+export const stadiumByCity: Record<string, string> = {
+  Atlanta: "Mercedes-Benz Stadium",
+  Boston: "Gillette Stadium",
+  Dallas: "AT&T Stadium",
+  Guadalajara: "Estadio Akron",
+  Houston: "NRG Stadium",
+  "Kansas City": "Arrowhead Stadium",
+  "Los Angeles": "SoFi Stadium",
+  "Mexico City": "Estadio Azteca",
+  Miami: "Hard Rock Stadium",
+  Monterrey: "Estadio BBVA",
+  "New York New Jersey": "MetLife Stadium",
+  Philadelphia: "Lincoln Financial Field",
+  "San Francisco Bay Area": "Levi's Stadium",
+  Seattle: "Lumen Field",
+  Toronto: "BMO Field",
+  Vancouver: "BC Place",
+};

@@ -1,83 +1,122 @@
-# Slime Score 2026
+# Slime Score — WK Poule 2026
 
-Nederlandstalige WK 2026-poule app, mobiel eerst gebouwd met Next.js, Supabase en Vercel.
+Nederlandstalige, mobiel-eerst WK 2026-poule. Voorspel uitslagen, kies wie ver komt,
+strijd in een algemene ranglijst én in eigen subpoules met familie, vrienden of collega's.
+Gratis, zonder wachtwoord en zonder advertenties.
 
-## Kern
+Gebouwd met **Next.js (App Router)**, **Supabase** (Auth + Postgres + RLS) en gehost op
+**Vercel**. Styling met **Tailwind CSS v4**; lettertype **Poppins**.
 
-- E-mail login via Supabase magic links, zonder wachtwoorden.
-- Minimale profieldata: bijnaam en teamnaam.
-- Scores voorspellen voor alle groepswedstrijden met live berekende groepsstanden.
-- Laatste 32 automatisch uit de voorspelde groepsstanden.
-- Rondekeuzes, kampioen, topscorer en licht ironische bonusstatistieken.
-- Publieke ranglijst en schema zijn zonder login zichtbaar en cachebaar.
-- Eigen subpoules met deelcode, WhatsApp-link, beheerder en moderators.
-- Moderators kunnen poules aankleden met emoji, kleur en tekst en berichten op het prikbord plaatsen.
-- Algemene ranglijst en subpoule-ranking op basis van de beste 4 spelers.
-- Wegklikbare PWA-installkaart: werkt als browser-app en als beginscherm-app.
-- Bonuslink naar de bestaande Slime World Cup game.
+## Wat je als speler doet
 
-## Stack
+1. **Aanmelden** met alleen je e-mail (Supabase magic link, geen wachtwoord).
+2. **Scorekaart afmaken**: naam + teamnaam (allebei min. 4 tekens). Pas daarna doe je echt mee.
+3. **Groepswedstrijden voorspellen** — de groepsstanden en de laatste 32 worden live uit je
+   eigen scores berekend.
+4. **Knock-out kiezen**: welke landen halen achtste, kwart, halve finale, finale, wereldkampioen.
+5. **Bonusvragen** invullen (zie roadmap — wordt herzien).
+6. **Subpoule** maken of joinen met een deelcode en de strijd aangaan.
 
-- Next.js App Router
-- Supabase Auth, Postgres en RLS
-- Vercel deployment
-- Tailwind CSS
+Publieke pagina's (`/schema`, `/ranglijst`, `/regels`, `/privacy`, `/voorwaarden`) zijn zonder
+login zichtbaar en worden gecachet (ISR).
+
+## Slime-game koppeling
+
+Naast de poule is er de losse arcade-game **Slime Soccer / Slime Volley** (`SLIME_GAME_URL`,
+`https://soccer.slimescore.com`). Die wordt als sfeer-/bonusbanner getoond en als menu-link.
+Er is géén score-koppeling tussen game en poule; het is puur vermaak. Een **duo-banner**
+(soccer + volley naast elkaar) staat op de roadmap.
+
+## Architectuur
+
+```
+src/app            App Router pagina's + server actions (actions.ts) + API routes
+src/components      UI-componenten (server + client)
+src/lib            Domeinlogica: scoring, groepsstanden, avatars, flags, constants, types
+src/lib/supabase   Supabase clients (browser, server, admin/service-role, middleware)
+supabase           Migraties
+public             Statische assets (slimes, avatars, hero-beelden)
+docs               Productdocumentatie + werklijst
+```
+
+### Database (Supabase Postgres)
+
+Belangrijkste tabellen en koppelingen (alle user-data cascadeert vanaf `profiles`):
+
+| Tabel | Doel |
+| --- | --- |
+| `profiles` | speler: `nickname`, `team_name`, `avatar_key` (1:1 met `auth.users`, geen FK — bij verwijderen handmatig profiel + auth-user wissen) |
+| `teams` | 48 landen: `code`, `name_nl`, `group_letter`, `sort_order` |
+| `matches` | wedstrijden: `starts_at`, `venue` (speelstad), `home/away_code`, `status`, uitslag |
+| `predictions` | scorevoorspellingen per speler per wedstrijd (FK → `profiles`, cascade) |
+| `bracket_predictions` | rondekeuzes per `stage_key` (round32/16, quarter, semi, finalists, champion) |
+| `special_predictions` | bonusvragen per speler |
+| `stage_results` | werkelijke ronde-uitkomsten per `stage_key` |
+| `tournament_facts` | werkelijke bonusfeiten (één rij, `id = true`) |
+| `scores` | doorgerekende totalen per speler (`points`, `exact_scores`, `correct_results`, `bonus_points`) |
+| `pools` | subpoule: `name`, `code`, `owner_id`, opmaak (`badge_emoji`, `accent_color`, `description`) |
+| `pool_members` | lidmaatschap + rol (`owner`/`moderator`/`member`) |
+| `pool_messages` | prikbord per subpoule |
+
+Scoring zit in `src/lib/scoring.ts`; standen/laatste-32 in `src/lib/group-standings.ts`.
+
+## Uitslagen syncen (`/api/sync-results`)
+
+Server-side koppeling voor uitslagen, ronde-uitkomsten en bonusfeiten. Authenticatie via
+`x-result-sync-secret` (of `?secret=`). Na elke update worden **alle ranglijsten opnieuw
+doorgerekend**.
+
+```json
+{
+  "results": [{ "id": 1, "home_score": 2, "away_score": 1, "status": "finished" }],
+  "stage_results": { "round32": ["NED", "BRA"], "champion": ["NED"] },
+  "facts": { "total_goals": 171, "penalty_shootouts_ko": 4 }
+}
+```
+
+> **Databron is nog niet vastgelegd.** Nu wordt er handmatig/extern gepost. Een geautomatiseerde
+> koppeling met een wedstrijd-API (uitslagen + stats voor de bonusvragen) staat op de roadmap.
 
 ## Lokaal draaien
 
 ```bash
 npm install
+cp .env.example .env.local   # vul Supabase-url + keys + RESULT_SYNC_SECRET
 npm run dev
 ```
 
-Maak `.env.local` op basis van `.env.example`.
+Migraties: `supabase db push`.
 
-## Database
+## Roadmap
 
-Supabase-project: `slime-wk-poule-2026`
+Volledige, levende werklijst: **[docs/ui-review-todo.md](docs/ui-review-todo.md)**.
 
-Migraties:
+**Gepland / in uitvoering**
+- Account-pagina (✅ basis: naam/team/avatar/e-mail/verwijderen) — taalkeuze NL/EN later.
+- Subpoule-tabs met klik-op-speler (voorspellingen + punten per wedstrijd; e-mail blijft privé).
+- Regels + FAQ herschrijven; beknopte puntentelling met uitklap.
+- Voorspel-flow: groepsstand met nullen, stadionnaam naast stad, knock-out cascade-validatie.
+- Bonusvragen herzien: weg met topscorer/0-0/speelstad; toevoegen team-met-meeste-goals en
+  "hoe ver komt Oranje"; wereldkampioen + penaltyseries + Oranje wijzigbaar t/m 28 juni 21:00.
+- SEO/GEO: structured data (JSON-LD), metadata aanscherpen.
+- Duo-banner Slime Soccer + Volley.
 
-```bash
-supabase db push
-```
+**Niet gepland (bewuste keuzes)**
+- Niet alle 104 wedstrijden los invullen — alleen groepsduels + automatische laatste 32.
+- Geen score-koppeling tussen de arcade-game en de poule.
+- Geen wachtwoorden / social login — alleen e-mail magic links.
+- Geen advertenties of tracking-cookies.
 
-## Uitslagen syncen
+## Documentatie
 
-De route `/api/sync-results` accepteert server-side updates voor uitslagen, ronde-uitkomsten en bonusfeiten:
-
-```json
-{
-  "results": [
-    { "id": 1, "home_score": 2, "away_score": 1, "status": "finished" }
-  ],
-  "stage_results": {
-    "round32": ["NED", "BRA"],
-    "champion": ["NED"]
-  },
-  "facts": {
-    "top_scorers": ["Memphis Depay"],
-    "total_goals": 171,
-    "total_corners": 840,
-    "fastest_goal_minute": 3,
-    "penalty_shootouts_ko": 4
-  }
-}
-```
-
-Authenticatie via `x-result-sync-secret`. Na elke update worden de ranglijsten opnieuw doorgerekend.
-
-## Agent-documentatie
-
+- [Werklijst UI-review](docs/ui-review-todo.md)
 - [Agent brief](docs/AGENT_BRIEF.md)
 - [Onderzoek WK-poule](docs/onderzoek-wk-poule.md)
 
 ## Productnotities
 
-- Officieel domein: `https://slimescore.com` (centraal in `SITE_URL`, gebruikt voor metadata, manifest en deel-links). Hosting draait op Vercel (`https://slimescore.vercel.app`).
-- E-mail: inlog-/systeemmails gaan via `MAIL_FROM` (`noreply@slimesports.com`, Cloudflare Email Routing); contact via `CONTACT_EMAIL`. Stel dit in als Supabase SMTP-afzender en zet SPF/DKIM klaar in Cloudflare.
-- Juridische pagina's: `/privacy` en `/voorwaarden` (publiek, in de sitemap, uitgesloten privé-routes in `robots.txt`).
-- Poule-beheer: leden mogen prikbordberichten plaatsen; beheerder/moderators kunnen vastzetten en berichten verwijderen (auteur mag eigen bericht wissen). Beheer kan een poulebanner uploaden — server-side auto-conversie naar WebP (max 1600×900) in de publieke Supabase Storage-bucket `pool-media` (lazy aangemaakt op pad `pools/<poolId>.webp`).
-- Auth-link fallback zit zowel in `/auth/confirm` als globaal in `AuthLinkBridge`, omdat Supabase-links afhankelijk van template/config op verschillende manieren kunnen terugkomen.
-- De app kiest bewust voor gemak: groepsduels + automatisch berekende laatste 32 + rondekeuzes, niet alle 104 wedstrijden apart invullen.
-- De publieke pagina's `/schema` en `/ranglijst` gebruiken ISR (`1h` en `30s`) om Supabase-load en TTFB laag te houden.
+- Officieel domein `https://slimescore.com` (`SITE_URL`); hosting op Vercel.
+- Inlogmails via `MAIL_FROM` (`noreply@slimesports.com`, Cloudflare Email Routing); contact via `CONTACT_EMAIL`.
+- Juridisch: `/privacy` + `/voorwaarden` (publiek, in sitemap; privé-routes uitgesloten in `robots.txt`).
+- Subpoule-banner: server-side auto-conversie naar WebP (max 1600×900) in Storage-bucket `pool-media`.
+- Auth-link fallback in `/auth/confirm` én globaal via `AuthLinkBridge`.

@@ -2,8 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { TeamFlag } from "@/components/team-flag";
-import { formatAmsterdam } from "@/lib/format";
-import { calculateGroupStandings, type ScoreLookup } from "@/lib/group-standings";
+import { formatAmsterdam, venueLabel } from "@/lib/format";
+import {
+  calculateGroupStandings,
+  compareStandingRows,
+  emptyStandingRow,
+  type ScoreLookup,
+} from "@/lib/group-standings";
 import type { MatchWithTeams } from "@/lib/types";
 
 type Score = { home: number | null; away: number | null };
@@ -25,10 +30,25 @@ function scoreMapFromState(scores: Record<number, Score>): ScoreLookup {
 
 export function GroupPredictionCard({ group, matches, initialScores, disabled }: GroupPredictionCardProps) {
   const [scores, setScores] = useState<Record<number, Score>>(initialScores);
-  const standings = useMemo(
-    () => calculateGroupStandings(matches, scoreMapFromState(scores)).get(group) ?? [],
-    [group, matches, scores],
-  );
+
+  // Alle landen in de groep (uit de wedstrijden), zodat de stand ook met nullen
+  // alvast volledig zichtbaar is.
+  const groupTeamCodes = useMemo(() => {
+    const set = new Set<string>();
+    for (const match of matches) {
+      if (match.home_code) set.add(match.home_code);
+      if (match.away_code) set.add(match.away_code);
+    }
+    return Array.from(set);
+  }, [matches]);
+
+  const standings = useMemo(() => {
+    const computed = calculateGroupStandings(matches, scoreMapFromState(scores)).get(group) ?? [];
+    const byCode = new Map(computed.map((standing) => [standing.code, standing]));
+    return groupTeamCodes
+      .map((code) => byCode.get(code) ?? emptyStandingRow(code, group))
+      .sort(compareStandingRows);
+  }, [group, matches, scores, groupTeamCodes]);
 
   function update(matchId: number, side: "home" | "away", raw: string) {
     const digits = raw.replace(/\D/g, "").slice(0, 2);
@@ -58,7 +78,7 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
               <div key={match.id} className="p-3 md:p-4">
                 <div className="mb-1.5 text-xs font-medium text-[var(--muted)]">
                   {formatAmsterdam(match.starts_at)}
-                  {match.venue ? ` · ${match.venue}` : ""}
+                  {match.venue ? ` · ${venueLabel(match.venue)}` : ""}
                 </div>
                 <fieldset
                   className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2"
@@ -133,9 +153,6 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
                 <span>{standing.goalDifference > 0 ? `+${standing.goalDifference}` : standing.goalDifference}</span>
               </div>
             ))}
-            {!standings.length ? (
-              <p className="text-sm font-medium text-[var(--muted)]">Vul scores in om de stand te zien.</p>
-            ) : null}
           </div>
           <p className="mt-3 text-xs font-medium leading-5 text-[var(--muted)]">
             Nummers 1 en 2 gaan door; de beste acht nummers 3 tellen automatisch mee in de laatste 32.
