@@ -84,6 +84,17 @@ textarea {
   padding: 20px 16px calc(110px + env(safe-area-inset-bottom));
 }
 
+/* Landing heeft geen zwevend menu bovenaan → minder lege ruimte onder de topbalk. */
+.shell-top-tight {
+  padding-top: 12px !important;
+}
+
+@media (min-width: 800px) {
+  .shell-top-tight {
+    padding-top: 24px !important;
+  }
+}
+
 .site-footer {
   width: min(1120px, 100%);
   margin: 0 auto;

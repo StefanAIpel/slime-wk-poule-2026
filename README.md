@@ -30,12 +30,14 @@ Er is géén score-koppeling tussen game en poule; het is puur vermaak. Een **du
 ## Architectuur
 
 ```
-src/app            App Router pagina's + server actions (actions.ts) + API routes
+src/app            App Router pagina's + server actions (actions.ts) + /api/sync-results + /admin
 src/components      UI-componenten (server + client)
-src/lib            Domeinlogica: scoring, groepsstanden, avatars, flags, constants, types
+src/lib            Domeinlogica: scoring, recalculate, groepsstanden, avatars, admin, rate-limit, log, flags, constants, format, types
 src/lib/supabase   Supabase clients (browser, server, admin/service-role, middleware)
 supabase           Migraties
 public             Statische assets (slimes, avatars, hero-beelden)
+tests              Unit-tests (scoring) via `node --test`
+
 docs               Productdocumentatie + werklijst
 ```
 
@@ -81,25 +83,26 @@ doorgerekend**.
 
 ```bash
 npm install
-cp .env.example .env.local   # vul Supabase-url + keys + RESULT_SYNC_SECRET
+cp .env.example .env.local   # Supabase-url + keys + RESULT_SYNC_SECRET + ADMIN_EMAILS
 npm run dev
+npm test                     # scoring-tests (node --test)
 ```
 
-Migraties: `supabase db push`.
+Migraties: `supabase db push`. Beheer: `/admin` (toegang via `ADMIN_EMAILS`).
 
-## Roadmap
+## Roadmap & status
 
-Volledige, levende werklijst: **[docs/ui-review-todo.md](docs/ui-review-todo.md)**.
+Genummerde feedback met prioriteit + status: **[docs/feedback-status.md](docs/feedback-status.md)**.
+Werklijst per ronde: **[docs/ui-review-todo.md](docs/ui-review-todo.md)**.
 
-**Gepland / in uitvoering**
-- Account-pagina (✅ basis: naam/team/avatar/e-mail/verwijderen) — taalkeuze NL/EN later.
-- Subpoule-tabs met klik-op-speler (voorspellingen + punten per wedstrijd; e-mail blijft privé).
-- Regels + FAQ herschrijven; beknopte puntentelling met uitklap.
-- Voorspel-flow: groepsstand met nullen, stadionnaam naast stad, knock-out cascade-validatie.
-- Bonusvragen herzien: weg met topscorer/0-0/speelstad; toevoegen team-met-meeste-goals en
-  "hoe ver komt Oranje"; wereldkampioen + penaltyseries + Oranje wijzigbaar t/m 28 juni 21:00.
-- SEO/GEO: structured data (JSON-LD), metadata aanscherpen.
-- Duo-banner Slime Soccer + Volley.
+**Gedaan ✅** — account-pagina (naam/team/avatar/e-mail/verwijderen), subpoule-tabs + klik-op-speler,
+regels + FAQ, voorspel-flow (groepsstand met nullen, stadionnaam, bonusvragen herzien, t/m 28 jun),
+SEO JSON-LD, duo-gamebanner, scoring-tests, rate-limiting, sync-secret header-only, RLS-review,
+foutpagina's + logging, **admin-dashboard + auditlog**, hi-res slimes + stadion-hero's, cross-device + WhatsApp-nudge.
+
+**Open / actielijst ⬜** — automatische uitslagen-API + live scores, push-notificaties (of .ics),
+knock-out cascade-validatie, taalkeuze NL/EN, en externe config (Supabase auth-URLs + custom SMTP)
+vóór brede launch (zie `docs/operatie-launch.md`).
 
 **Niet gepland (bewuste keuzes)**
 - Niet alle 104 wedstrijden los invullen — alleen groepsduels + automatische laatste 32.

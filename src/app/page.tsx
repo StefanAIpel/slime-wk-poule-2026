@@ -139,22 +139,23 @@ export default async function Home({
 
         <div className="grid gap-4">
           <UpcomingMatches />
-          <a href="/poules" className="panel grid gap-3 p-4 no-underline">
+          <a href="/poules" className="panel grid gap-2 p-4 no-underline">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-2xl font-bold text-[#081634]">Mijn poules</h2>
-              <Users aria-hidden="true" className="size-6 text-[#064ed6]" />
+              <h2 className="text-lg font-bold text-[#081634]">Mijn subpoules</h2>
+              <Users aria-hidden="true" className="size-5 text-[#064ed6]" />
             </div>
             {homeMemberships.length ? (
               homeMemberships.map((membership) => membership.pools && (
-                <div key={membership.pools.id} className="rounded-lg border border-slate-200 p-3">
-                  <div className="font-bold text-[#081634]">{membership.pools.name}</div>
-                  <div className="mt-1 flex items-center gap-2 text-sm font-semibold text-[#48617f]">
-                    Code: <span className="font-bold text-[#16863a]">{membership.pools.code}</span>
-                  </div>
+                <div key={membership.pools.id} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-[#f7faff] px-3 py-2">
+                  <span aria-hidden="true" className="wc-header size-7 flex-none rounded-full" />
+                  <span className="truncate font-bold text-[#081634]">{membership.pools.name}</span>
+                  <span className="ml-auto rounded-full bg-[#e7eef8] px-2 py-0.5 text-xs font-bold tracking-wide text-[var(--blue-2)]">
+                    {membership.pools.code}
+                  </span>
                 </div>
               ))
             ) : (
-              <p className="text-sm font-medium text-[#48617f]">Maak een poule of sluit aan met een code.</p>
+              <p className="text-sm font-medium text-[#48617f]">Maak een subpoule of sluit aan met een code.</p>
             )}
           </a>
 
@@ -194,7 +195,7 @@ export default async function Home({
 
 function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboard: HomeLeaderboardRow[] }) {
   return (
-    <main className="page-shell grid gap-5">
+    <main className="page-shell shell-top-tight grid gap-5">
       <div className="hero-band hero-band-visual hero-home hero-band-topbar">
         <div className="hero-topbar">
           <BrandWordmark onDark />
