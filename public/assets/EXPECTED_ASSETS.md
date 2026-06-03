@@ -3,11 +3,11 @@
 De UI verwijst al naar deze bestanden met nette fallbacks. Zet de definitieve
 PNG's op exact deze paden en ze verschijnen automatisch — geen code-wijziging nodig.
 
-| Pad | Gebruikt voor | Fallback tot het bestaat |
+| Pad | Gebruikt voor | Status |
 | --- | --- | --- |
-| `public/assets/slime-07-duo.png` | Duo-mascotte (twee oranje slimes met bal) op de landing-hero | `slime-02-mascotte-bal.png` |
-| `public/assets/slime-08-scheidsrechter.png` | Scheidsrechter-slime op de Regels-pagina | `slime-04-coach.png` |
-| `public/assets/Hero-bg.webp` | Stadion-achtergrond achter de hero's (slimes staan op het gras) | bestaat al |
+| `public/assets/slime-07-duo.png` | Duo-mascotte op de landing-hero | ✅ aanwezig (samengesteld uit bestaande slimes; vervang gerust door jouw hi-res art) |
+| `public/assets/slime-08-scheidsrechter.png` | Scheidsrechter-slime op de Regels-pagina | ⬜ nog aanleveren — valt nu terug op `slime-04-coach.png` |
+| `public/assets/Hero-bg.webp` | Stadion-achtergrond achter de hero's (slimes staan op het gras) | ✅ aanwezig (vervangbaar door breder beeld) |
 
 Aanbevelingen voor de mascotte-PNG's: transparant, vierkant (bijv. 1200×1200),
 personage onderaan uitgelijnd zodat het op het gras "staat".
