@@ -63,7 +63,7 @@ Scoring zit in `src/lib/scoring.ts`; standen/laatste-32 in `src/lib/group-standi
 ## Uitslagen syncen (`/api/sync-results`)
 
 Server-side koppeling voor uitslagen, ronde-uitkomsten en bonusfeiten. Authenticatie via
-`x-result-sync-secret` (of `?secret=`). Na elke update worden **alle ranglijsten opnieuw
+`x-result-sync-secret` (alleen via header, niet via querystring). Na elke update worden **alle ranglijsten opnieuw
 doorgerekend**.
 
 ```json

@@ -2,6 +2,35 @@
 
 Bijgehouden tijdens de UI-review. Status: ✅ klaar · 🟡 deels · ⬜ open.
 
+## Ronde 4 — launch-readiness
+
+**✅ Quick wins doorgevoerd**
+- Scoring-**tests** (12, `npm test`) — puntentelling aantoonbaar correct.
+- `/api/sync-results`: secret **header-only** + constant-time vergelijking.
+- Security-advisor: vaste `search_path` op trigger-functie (warning weg).
+- **error.tsx + global-error.tsx**: nette foutpagina's + logging.
+- Subpoule: **invite-link resetten** (nieuwe deelcode) voor beheerder.
+- Ranglijst: **"Laatste resultaten-update"** tijdstempel.
+- Aanmelden: expliciete **akkoord-checkbox** (ronde 3).
+
+**✅ Al aanwezig (lijst nagelopen)**
+- Profielnaam + avatar (`/account`), voortgang ("x/72" + waarschuwing bij onvolledig),
+  puntentelling-uitleg (`/regels`), ranking + per-tabel zoeken, poule-instellingen
+  (emoji/kleur/zin/banner), leden beheren + rollen, prikbord, contact/e-mail,
+  "geen tracking-cookies", subpoule-tabs + klik-op-speler.
+- **Data-koppeling Supabase: compleet** — alle formuliervelden (profiel, account,
+  voorspellingen incl. bonus, poule-beheer) schrijven naar bestaande kolommen; RLS
+  staat eigen-rij schrijven toe, cross-member leesacties via service-role.
+
+**⬜ Actielijst (bewust later / groter)**
+- Monitoring-tool (Sentry), staging-omgeving, E2E-test, DB-indexes-check, admin-auditlog,
+  feature flags (Fase 2/3 professionalisering).
+- Reminder-/push-notificaties, meertaligheid NL/EN, dark mode, custom poule-logo,
+  openbare leaderboard-pagina, premium, WK-archief (nice-to-haves).
+- **Vóór brede launch (extern):** Supabase auth redirect-URLs + custom SMTP/Resend
+  definitief; back-up/restore-procedure; betaald e-mailplan bij hoog volume.
+- Leaked-password-protection-warning is **N.v.t.** (alleen magic links, geen wachtwoorden).
+
 ## Ronde 3 (deze sessie)
 
 **✅ Gedaan**
