@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, ClipboardList, Home, ListChecks, LogIn, Trophy, UserCog, Users } from "lucide-react";
+import { CalendarDays, ClipboardList, Gamepad2, Home, ListChecks, LogIn, Trophy, UserCog, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,6 +11,7 @@ const homeLink = { href: "/", label: "Home", icon: Home };
 const schemaLink = { href: "/schema", label: "Speelschema", icon: CalendarDays };
 const publicTail = [
   { href: "/ranglijst", label: "Ranglijst", icon: Trophy },
+  { href: "/games", label: "Spelletjes", icon: Gamepad2 },
   { href: "/regels", label: "Regels", icon: ListChecks },
 ];
 const privateLinks = [

@@ -30,7 +30,8 @@ export function LoginForm() {
     setStatus("loading");
     setMessage("");
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email: kidEmail(code), password: code.trim() });
+    const normalized = code.trim().toLowerCase();
+    const { error } = await supabase.auth.signInWithPassword({ email: kidEmail(normalized), password: normalized });
     if (error) {
       setStatus("error");
       setMessage("Die code klopt niet. Vraag je ouder/beheerder om de juiste code.");

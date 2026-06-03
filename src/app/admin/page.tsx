@@ -131,6 +131,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             Teamnaam (optioneel)
             <input className="field min-h-10" name="team_name" maxLength={28} placeholder="Bijv. Team Tom" />
           </label>
+          <label className="grid gap-1 text-xs font-bold text-[#081634]">
+            Code (optioneel, anders willekeurig)
+            <input className="field min-h-10" name="code" maxLength={16} placeholder="Bijv. fedded10" autoComplete="off" />
+          </label>
           <PendingButton className="button-primary min-h-10 px-4" pendingText="Aanmaken…">
             Maak kind-account
           </PendingButton>

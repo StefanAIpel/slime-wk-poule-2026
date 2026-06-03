@@ -3,7 +3,6 @@
 import { CalendarDays, ClipboardList, Gamepad2, Home, ListChecks, Menu, Trophy, UserCog, Users, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { SLIME_GAME_URL } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/browser";
 
 const publicLinks = [
@@ -80,10 +79,10 @@ export function QuickMenu() {
                   <span>Log in</span>
                 </Link>
               ) : null}
-              <a className="quick-menu-link slime-link" href={SLIME_GAME_URL} target="_blank" rel="noopener noreferrer">
+              <Link className="quick-menu-link slime-link" href="/games" onClick={() => setOpen(false)}>
                 <Gamepad2 aria-hidden="true" className="size-5" />
-                <span>Slime game</span>
-              </a>
+                <span>Spelletjes</span>
+              </Link>
             </div>
           </nav>
         </div>

@@ -193,19 +193,22 @@ export async function createKidAccount(formData: FormData) {
   const teamName = cleanText(formData.get("team_name"), 28) || nickname;
   if (nickname.length < 2) redirect("/admin?fout=kind-naam");
 
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    const code = kidCode();
+  // Eigen code mag, anders automatisch genereren. Code is hoofdletter-ongevoelig.
+  const customCode = cleanText(formData.get("code"), 16).replace(/[^A-Za-z0-9]/g, "");
+  if (customCode && customCode.length < 4) redirect("/admin?fout=kind-code");
+  const candidates = customCode ? [customCode] : Array.from({ length: 5 }, () => kidCode());
+
+  for (const code of candidates) {
     const { data: created, error } = await admin.auth.admin.createUser({
       email: kidEmail(code),
-      password: code,
+      password: code.toLowerCase(),
       email_confirm: true,
       user_metadata: { kid: true, nickname },
     });
     if (error || !created?.user) {
-      // Waarschijnlijk een dubbele code → opnieuw proberen.
-      if (attempt === 4) {
-        logError("createKidAccount", error ?? "geen gebruiker");
-        redirect("/admin?fout=kind");
+      if (customCode) {
+        logError("createKidAccount.custom", error ?? "geen gebruiker");
+        redirect("/admin?fout=kind-code");
       }
       continue;
     }
