@@ -190,7 +190,6 @@ export async function createKidAccount(formData: FormData) {
 
   const admin = createAdminClient();
   const nickname = cleanText(formData.get("nickname"), 24);
-  const teamName = cleanText(formData.get("team_name"), 28) || nickname;
   if (nickname.length < 2) redirect("/admin?fout=kind-naam");
 
   // Eigen code mag, anders automatisch genereren. Code is hoofdletter-ongevoelig.
@@ -203,7 +202,7 @@ export async function createKidAccount(formData: FormData) {
       email: kidEmail(code),
       password: code.toLowerCase(),
       email_confirm: true,
-      user_metadata: { kid: true, nickname },
+      user_metadata: { kid: true },
     });
     if (error || !created?.user) {
       if (customCode) {
@@ -213,7 +212,8 @@ export async function createKidAccount(formData: FormData) {
       continue;
     }
     const uid = created.user.id;
-    await admin.from("profiles").upsert({ id: uid, nickname, team_name: teamName });
+    // Leeg profiel → het kind kiest zelf naam + teamnaam bij de eerste login.
+    await admin.from("profiles").upsert({ id: uid });
     await admin.from("kid_accounts").insert({ user_id: uid, code, nickname, created_by: user.email });
     await admin.from("admin_audit_log").insert({
       actor_email: user.email,

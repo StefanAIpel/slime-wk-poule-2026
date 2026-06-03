@@ -120,16 +120,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           <h2 className="text-lg font-bold text-[#081634]">Kind-accounts (inloggen met code, geen e-mail)</h2>
         </div>
         <p className="mt-1 text-sm font-medium text-[#48617f]">
-          Maak een account voor een kind zonder e-mail. Het kind logt in met de code via “Inloggen met code”. Houd codes privé.
+          Maak een account voor een kind zonder e-mail. Het kind kiest bij de eerste login zelf naam + teamnaam. Houd codes privé.
         </p>
         <form action={createKidAccount} className="mt-3 flex flex-wrap items-end gap-2">
           <label className="grid gap-1 text-xs font-bold text-[#081634]">
-            Naam
-            <input className="field min-h-10" name="nickname" required minLength={2} maxLength={24} placeholder="Bijv. Tom" />
-          </label>
-          <label className="grid gap-1 text-xs font-bold text-[#081634]">
-            Teamnaam (optioneel)
-            <input className="field min-h-10" name="team_name" maxLength={28} placeholder="Bijv. Team Tom" />
+            Naam (voor jouw overzicht)
+            <input className="field min-h-10" name="nickname" required minLength={2} maxLength={24} placeholder="Bijv. Fedde" />
           </label>
           <label className="grid gap-1 text-xs font-bold text-[#081634]">
             Code (optioneel, anders willekeurig)

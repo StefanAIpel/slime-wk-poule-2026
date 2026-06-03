@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/browser";
 
 const homeLink = { href: "/", label: "Home", icon: Home };
-const schemaLink = { href: "/schema", label: "Speelschema", icon: CalendarDays };
+const schemaLink = { href: "/schema", label: "Schema", icon: CalendarDays };
 const publicTail = [
   { href: "/ranglijst", label: "Ranglijst", icon: Trophy },
   { href: "/games", label: "Spelletjes", icon: Gamepad2 },

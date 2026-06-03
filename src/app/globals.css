@@ -364,7 +364,7 @@ textarea {
   padding-top: 60px;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .hero-band-topbar {
     padding-top: 20px;
   }
@@ -698,12 +698,12 @@ textarea {
   padding: 14px 16px;
 }
 
-/* Desktop-headerbalk (alleen ≥1024px). */
+/* Desktop/tablet-headerbalk (≥768px; daaronder is er de onderbalk). */
 .site-header {
   display: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .site-header {
     display: block;
     background: rgba(255, 255, 255, 0.97);
@@ -1377,9 +1377,9 @@ textarea {
   color: #128f47;
 }
 
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   .page-shell {
-    padding: 64px 24px 40px;
+    padding: 22px 24px 40px;
   }
 
   .public-hero-row {
@@ -1391,34 +1391,8 @@ textarea {
     width: 200px;
   }
 
-  /* Onderbalk is alleen voor mobiel; op desktop is er de headerbalk. */
-  .bottom-nav {
-    display: none;
-  }
-
-  /* WK-tricolor accent onder de desktop-menubalk. */
-  .bottom-nav::after {
-    content: "";
-    position: absolute;
-    inset: auto 14px -1px 14px;
-    height: 3px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, var(--blue), var(--green) 55%, var(--orange));
-  }
-
-  .bottom-nav[data-count="4"] {
-    grid-template-columns: repeat(4, minmax(76px, auto));
-  }
-
-  .bottom-nav[data-count="5"] {
-    grid-template-columns: repeat(5, minmax(76px, auto));
-  }
-
-  .bottom-nav a {
-    min-height: 44px;
-    padding: 8px 10px;
-  }
-
+  /* Onderbalk + zwevend hamburgermenu zijn alleen voor mobiel; vanaf tablet is er de headerbalk. */
+  .bottom-nav,
   .quick-menu-button,
   .quick-menu-backdrop {
     display: none;
