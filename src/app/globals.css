@@ -101,7 +101,7 @@ textarea {
 .site-footer {
   width: min(1280px, 100%);
   margin: 0 auto;
-  padding: 14px 16px 120px;
+  padding: 10px 8px 112px;
   text-align: center;
   border-top: 2px solid transparent;
   border-image: linear-gradient(90deg, var(--blue), var(--green) 60%, var(--orange)) 1;
@@ -109,10 +109,13 @@ textarea {
 
 .site-footer-line {
   display: inline-flex;
-  flex-wrap: wrap;
+  max-width: 100%;
+  flex-wrap: nowrap;
   justify-content: center;
-  gap: 8px;
-  font-size: 0.78rem;
+  gap: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 0.62rem;
   font-weight: 600;
   color: var(--muted);
 }
@@ -129,7 +132,7 @@ textarea {
 .site-footer-beta {
   border-radius: 999px;
   background: #e7eef8;
-  padding: 1px 8px;
+  padding: 1px 5px;
   font-weight: 700;
   color: var(--blue-2);
 }
@@ -137,6 +140,15 @@ textarea {
 @media (min-width: 800px) {
   .site-footer {
     padding-bottom: 28px;
+  }
+
+  .site-footer-line {
+    gap: 8px;
+    font-size: 0.78rem;
+  }
+
+  .site-footer-beta {
+    padding: 1px 8px;
   }
 }
 
