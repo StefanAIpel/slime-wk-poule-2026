@@ -1317,18 +1317,18 @@ textarea {
 
 .quick-menu-button {
   position: fixed;
-  top: 54px;
+  top: 62px;
   right: 14px;
   z-index: 40;
   display: inline-grid;
   min-height: 46px;
   min-width: 46px;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: 14px;
-  background: linear-gradient(135deg, var(--orange-2), var(--orange));
+  background: linear-gradient(135deg, #2bc35f, var(--green) 56%, var(--green-deep));
   color: white;
-  box-shadow: 0 14px 28px rgba(244, 102, 30, 0.32);
+  box-shadow: 0 14px 28px rgba(21, 163, 91, 0.34);
 }
 
 .quick-menu-backdrop {
