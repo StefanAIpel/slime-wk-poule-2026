@@ -3,7 +3,6 @@ import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
-import { SlimeImage } from "@/components/slime-image";
 import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { ProfileForm } from "@/components/profile-form";
@@ -196,16 +195,16 @@ export default async function Home({
 function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboard: HomeLeaderboardRow[] }) {
   return (
     <main className="page-shell grid gap-5">
-      <div className="hero-band hero-band-visual hero-band-topbar">
+      <div className="hero-band hero-band-visual hero-home hero-band-topbar">
         <div className="hero-topbar">
           <BrandWordmark onDark />
         </div>
         <div className="hero-content">
           <p className="text-sm font-bold uppercase tracking-wide text-blue-100">WK Poule 2026</p>
-          <h1 className="mt-1 text-3xl font-bold leading-tight text-white md:text-4xl">
+          <h1 className="mt-1 text-[1.7rem] font-bold leading-[1.12] text-white sm:text-3xl md:text-4xl">
             Maak een WK-poule samen met je vrienden
           </h1>
-          <p className="mt-2 max-w-xl text-base font-medium leading-7 text-blue-50 md:text-lg">
+          <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-blue-50 sm:text-base md:text-lg">
             Gratis aanmelden met alleen je e-mail. In 10 minuten klaar voor het hele WK. Geen irritante advertenties,
             geen cookiegedoe.
           </p>
@@ -220,10 +219,6 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             </a>
           </div>
         </div>
-        <SlimeImage
-          candidates={["/assets/slime-07-duo.png", "/assets/slime-02-mascotte-bal.png"]}
-          className="hero-mascot"
-        />
       </div>
 
       <div className="grid gap-5 md:grid-cols-[1fr_minmax(320px,400px)] md:items-start">
