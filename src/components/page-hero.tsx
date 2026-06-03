@@ -8,7 +8,7 @@ export function PageHero({
   title,
   subtitle,
   children,
-  slime = "/assets/slime-06-trofee.png",
+  slime = "/assets/hd-ranglijst.webp",
 }: {
   title: string;
   subtitle?: string;
@@ -24,7 +24,7 @@ export function PageHero({
         ) : null}
         {children ? <div className="mt-3">{children}</div> : null}
       </div>
-      <SlimeImage candidates={[slime, "/assets/slime-04-coach.png"]} className="hero-mascot" />
+      <SlimeImage candidates={[slime, "/assets/hd-coach.webp"]} className="hero-mascot" />
     </div>
   );
 }

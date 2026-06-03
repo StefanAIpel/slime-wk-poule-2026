@@ -57,7 +57,7 @@ export default async function PredictionsPage({
         <PageHero
           title="Voorspellingen"
           subtitle="Snel invullen, later nog bijschaven tot 11 juni 21:00 Nederlandse tijd. Na de groepsfase is er een kleine optionele herziening tot 28 juni 21:00."
-          slime="/assets/slime-03-juichshirt.png"
+          slime="/assets/hd-voorspel.webp"
         />
       </header>
 
