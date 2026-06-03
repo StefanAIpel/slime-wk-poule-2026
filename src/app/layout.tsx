@@ -21,6 +21,9 @@ const appFont = Plus_Jakarta_Sans({
 const description =
   "Gratis Nederlandse WK 2026-poule. Eén keer invullen, maak een poule met vrienden en familie en zie wie er wint. Jouw data privé.";
 
+const appIcon = "/icons/slimescore-app-icon-v2-512.png";
+const appleTouchIcon = "/icons/slimescore-apple-touch-icon-v2-180.png";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -44,6 +47,13 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: SITE_NAME,
   },
+  icons: {
+    icon: [
+      { url: appIcon, sizes: "512x512", type: "image/png" },
+      { url: "/icons/slimescore-app-icon-v2-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: appleTouchIcon, sizes: "180x180", type: "image/png" }],
+  },
   manifest: "/manifest.webmanifest",
   alternates: {
     canonical: SITE_URL,
@@ -55,13 +65,13 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: "Slime Score · Gratis WK 2026-poule",
     description,
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Slime Score — gratis WK 2026-poule" }],
+    images: [{ url: appIcon, width: 512, height: 512, alt: "Slime Score app icon" }],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "Slime Score · Gratis WK 2026-poule",
     description,
-    images: ["/og.png"],
+    images: [appIcon],
   },
 };
 
@@ -78,8 +88,8 @@ const structuredData = [
     "@type": "Organization",
     name: SITE_NAME,
     url: SITE_URL,
-    logo: `${SITE_URL}/icon-512.png`,
-    image: `${SITE_URL}/icon-512.png`,
+    logo: `${SITE_URL}${appIcon}`,
+    image: `${SITE_URL}${appIcon}`,
   },
   {
     "@context": "https://schema.org",
