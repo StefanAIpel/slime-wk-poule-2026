@@ -87,14 +87,14 @@ textarea {
   padding: 20px 16px calc(110px + env(safe-area-inset-bottom));
 }
 
-/* Landing heeft geen zwevend menu bovenaan → minder lege ruimte onder de topbalk. */
+/* Landing: net genoeg lucht onder menu/statusbalk, daarna meteen hero. */
 .shell-top-tight {
-  padding-top: 12px !important;
+  padding-top: 10px !important;
 }
 
 @media (min-width: 800px) {
   .shell-top-tight {
-    padding-top: 24px !important;
+    padding-top: 18px !important;
   }
 }
 
@@ -860,10 +860,10 @@ textarea {
   }
 
   .site-header-logo img {
-    width: 44px;
-    height: 44px;
-    border-radius: 11px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    box-shadow: 0 7px 16px rgba(0, 0, 0, 0.24);
   }
 
   .site-header-logo .brand-wordmark {
@@ -1164,20 +1164,39 @@ textarea {
   opacity: 0.72;
 }
 
+.landing-bottom-banners {
+  margin-top: -2px;
+}
+
 .game-banner-tile {
   display: block;
   overflow: hidden;
-  border-radius: 14px;
-  border: 1px solid rgba(8, 22, 52, 0.1);
-  box-shadow: 0 10px 24px rgba(8, 22, 52, 0.12);
+  padding: 4px;
+  border-radius: 18px;
+  border: 1px solid rgba(8, 22, 52, 0.13);
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    linear-gradient(135deg, rgba(6, 78, 214, 0.42), rgba(14, 122, 68, 0.34), rgba(255, 122, 0, 0.34)) border-box;
+  box-shadow: 0 12px 26px rgba(8, 22, 52, 0.13);
   transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.game-banner-tile:first-child {
+  border-color: rgba(14, 122, 68, 0.32);
+  box-shadow: 0 14px 30px rgba(8, 22, 52, 0.15);
 }
 
 .slime-link-banners {
   display: grid;
-  width: min(680px, 100%);
+  width: min(700px, 100%);
   margin-inline: auto;
-  gap: 8px;
+  gap: 9px;
+}
+
+@media (min-width: 768px) {
+  .slime-link-banners {
+    gap: 10px;
+  }
 }
 
 .game-banner-tile:hover {

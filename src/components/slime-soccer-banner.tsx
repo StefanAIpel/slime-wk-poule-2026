@@ -1,12 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 
+import { SLIME_GAME_URL, SLIME_VOLLEY_URL } from "@/lib/constants";
+
 /**
- * Twee klikbare Slime-banners zonder tekst-overlay — de banner zelf is de knop.
- * WK/SlimeScore staat bovenaan, Volley daaronder.
+ * Twee klikbare game-banners zonder tekst-overlay — de banner zelf is de knop.
+ * Slime Soccer staat bovenaan, Slime Volley daaronder.
  */
 const tiles = [
-  { href: "https://slimescore.com", img: "/slimes/slimescore-wk2026-link-banner.png", alt: "Slime Score WK Poule 2026" },
-  { href: "https://volley.slimescore.com", img: "/slimes/slime-volley-link-banner.jpg", alt: "Slime Volley Champions" },
+  { href: SLIME_GAME_URL, img: "/slimes/slime-soccer-banner-web.png", alt: "Slime Soccer" },
+  { href: SLIME_VOLLEY_URL, img: "/slimes/slime-volley-banner-3to1.png", alt: "Slime Volley Champions" },
 ];
 
 export function SlimeSoccerBanner() {

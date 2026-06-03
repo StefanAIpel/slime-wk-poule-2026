@@ -233,10 +233,6 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         </div>
       </div>
 
-      <section aria-label="Slime Score links">
-        <SlimeSoccerBanner />
-      </section>
-
       <div className="grid gap-5 md:grid-cols-[1fr_minmax(320px,400px)] md:items-start">
         <section className="grid gap-4">
           <UpcomingMatches />
@@ -302,6 +298,10 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           </div>
         </a>
       </div>
+
+      <section className="landing-bottom-banners" aria-label="Slime Score games">
+        <SlimeSoccerBanner />
+      </section>
     </main>
   );
 }
