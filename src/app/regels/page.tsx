@@ -35,8 +35,8 @@ export default function RulesPage() {
       <header className="mb-6 grid gap-4">
         <Brand />
         <PageHero
-          title="WK 2026-regels en uitleg"
-          subtitle="Kort, duidelijk en net precies genoeg voor discussie in de WK-poule-groepsapp."
+          title="Regels en uitleg"
+          subtitle="Kort, duidelijk en net precies genoeg voor discussie in de groepsapp."
           slime="/assets/slime-08-scheidsrechter.webp"
         />
       </header>

@@ -506,6 +506,18 @@ textarea {
   padding-bottom: 88px;
 }
 
+.hero-primary-cta {
+  width: 75%;
+  min-width: 0;
+  justify-self: start;
+}
+
+@media (min-width: 640px) {
+  .hero-primary-cta {
+    width: auto;
+  }
+}
+
 /* Slime staat op het gras: verankerd op de onderrand, in de hoek zodat tekst en
    knoppen er niet achter verdwijnen. */
 .hero-mascot {
@@ -1529,18 +1541,18 @@ textarea {
 
 .quick-menu-button {
   position: fixed;
-  top: 82px;
+  top: 112px;
   right: 14px;
   z-index: 40;
   display: inline-grid;
   min-height: 46px;
   min-width: 46px;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.48);
   border-radius: 14px;
-  background: linear-gradient(135deg, #2bc35f, var(--green) 56%, var(--green-deep));
+  background: linear-gradient(135deg, #ff9a2f, #f26a1b 58%, #d94b09);
   color: white;
-  box-shadow: 0 14px 28px rgba(21, 163, 91, 0.34);
+  box-shadow: 0 14px 28px rgba(210, 82, 11, 0.34);
 }
 
 .quick-menu-backdrop {

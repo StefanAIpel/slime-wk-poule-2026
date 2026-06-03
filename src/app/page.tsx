@@ -207,7 +207,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             <span>Canada</span>
             <span>Mexico</span>
           </div>
-          <h1 className="mt-2 text-[1.55rem] font-bold leading-[1.15] text-white sm:text-[1.9rem] md:text-[2.35rem]">
+          <h1 className="mt-2 text-[1.42rem] font-bold leading-[1.15] text-white sm:text-[1.78rem] md:text-[2.25rem]">
             Gratis WK 2026-poule voor vrienden en familie
           </h1>
           <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-blue-50 sm:text-base md:text-lg">
@@ -215,9 +215,9 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             Eén keer invullen, geen advertenties, geen cookiegedoe.
           </p>
           <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
-            <a href="#login" className="button-primary w-full sm:w-auto">
+            <a href="#login" className="button-primary hero-primary-cta">
               <Trophy aria-hidden="true" className="size-5" />
-              Gratis meedoen aan WK 2026
+              Gratis meedoen
             </a>
           </div>
         </div>
@@ -228,7 +228,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           </a>
           <a href="/regels" className="hero-bottom-link">
             <ListChecks aria-hidden="true" className="size-5" />
-            WK-regels
+            Regels
           </a>
         </div>
       </div>
@@ -288,7 +288,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             </a>
             <a href="/regels" className="button-secondary">
               <ListChecks aria-hidden="true" className="size-5" />
-              WK-spelregels
+              Regels
             </a>
           </div>
         </section>
