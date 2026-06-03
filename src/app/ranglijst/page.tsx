@@ -2,6 +2,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
 import { RankingExplorer, type PlayerRow, type PoolRow } from "@/components/ranking-explorer";
+import { formatAmsterdam } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const revalidate = 30;
@@ -17,16 +18,20 @@ type GlobalScoreRow = {
 
 export default async function RankingPage() {
   const admin = createAdminClient();
-  const [{ data: globalScores }, { data: pools }, { data: members }, { data: allScores }] = await Promise.all([
-    admin
-      .from("scores")
-      .select("user_id,points,exact_scores,correct_results,bonus_points,profiles(nickname,team_name,avatar_key)")
-      .order("points", { ascending: false })
-      .limit(100),
-    admin.from("pools").select("id,name,code"),
-    admin.from("pool_members").select("pool_id,user_id"),
-    admin.from("scores").select("user_id,points"),
-  ]);
+  const [{ data: globalScores }, { data: pools }, { data: members }, { data: allScores }, { data: lastScore }] =
+    await Promise.all([
+      admin
+        .from("scores")
+        .select("user_id,points,exact_scores,correct_results,bonus_points,profiles(nickname,team_name,avatar_key)")
+        .order("points", { ascending: false })
+        .limit(100),
+      admin.from("pools").select("id,name,code"),
+      admin.from("pool_members").select("pool_id,user_id"),
+      admin.from("scores").select("user_id,points"),
+      admin.from("scores").select("updated_at").order("updated_at", { ascending: false }).limit(1).maybeSingle(),
+    ]);
+
+  const lastUpdate = (lastScore as { updated_at: string | null } | null)?.updated_at ?? null;
 
   const rows = (globalScores ?? []) as unknown as GlobalScoreRow[];
   const players: PlayerRow[] = rows.map((row, index) => ({
@@ -55,6 +60,12 @@ export default async function RankingPage() {
           title="Ranglijsten"
           subtitle="Zoek een speler op naam of team, of vind je subpoule. Meedoen kan na login."
         />
+        {lastUpdate ? (
+          <p className="text-xs font-semibold text-[var(--muted)]">
+            Laatste resultaten-update:{" "}
+            <span className="text-[var(--ink)]">{formatAmsterdam(lastUpdate)}</span>
+          </p>
+        ) : null}
       </header>
 
       <RankingExplorer players={players} pools={poolRankings} />

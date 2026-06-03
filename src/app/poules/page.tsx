@@ -1,4 +1,4 @@
-import { ImagePlus, Megaphone, Palette, ShieldCheck, Trash2, Users } from "lucide-react";
+import { ImagePlus, Megaphone, Palette, RefreshCw, ShieldCheck, Trash2, Users } from "lucide-react";
 import { redirect } from "next/navigation";
 import {
   createPool,
@@ -6,6 +6,7 @@ import {
   joinPool,
   postPoolMessage,
   removeMember,
+  resetPoolCode,
   setMemberRole,
   updatePoolStyle,
   uploadPoolImage,
@@ -247,6 +248,15 @@ export default async function PoolsPage({
                   <div className="flex flex-wrap gap-2">
                     <WhatsappShare text={shareText} url={SITE_URL} label="Deel via WhatsApp" />
                     <CopyButton value={pool.code} label={`Code ${pool.code}`} />
+                    {isOwner ? (
+                      <form action={resetPoolCode}>
+                        <input type="hidden" name="pool_id" value={pool.id} />
+                        <button className="button-plain" type="submit" title="Maak een nieuwe deelcode (oude werkt dan niet meer)">
+                          <RefreshCw aria-hidden="true" className="size-4" />
+                          Nieuwe code
+                        </button>
+                      </form>
+                    ) : null}
                   </div>
                 </div>
                 {isManager ? (

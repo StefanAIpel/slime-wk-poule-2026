@@ -187,6 +187,25 @@ export async function joinPool(formData: FormData) {
   redirect(`/poules?joined=${code}`);
 }
 
+export async function resetPoolCode(formData: FormData) {
+  const { user } = await requireUser();
+  const admin = createAdminClient();
+  const poolId = cleanText(formData.get("pool_id"), 60);
+
+  const { data: pool } = await admin.from("pools").select("owner_id").eq("id", poolId).maybeSingle();
+  if (!pool || pool.owner_id !== user.id) redirect("/poules?fout=rechten");
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const code = poolCode();
+    const { error } = await admin.from("pools").update({ code }).eq("id", poolId);
+    if (!error) {
+      revalidatePath("/poules");
+      redirect(`/poules?aangemaakt=${code}`);
+    }
+  }
+  throw new Error("Kon geen nieuwe poulecode maken.");
+}
+
 export async function removeMember(formData: FormData) {
   const { user } = await requireUser();
   const admin = createAdminClient();

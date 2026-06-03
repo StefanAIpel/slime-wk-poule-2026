@@ -1,3 +1,4 @@
+import { timingSafeEqual as nodeTimingSafeEqual } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import {
   scoreCloseNumber,
@@ -90,6 +91,13 @@ function emptyTotal(): ScoreTotal {
   return { points: 0, exact_scores: 0, correct_results: 0, bonus_points: 0 };
 }
 
+/** Constant-time vergelijking zodat het secret niet via timing lekt. */
+function safeEqual(a: string, b: string) {
+  const ab = Buffer.from(a);
+  const bb = Buffer.from(b);
+  return ab.length === bb.length && nodeTimingSafeEqual(ab, bb);
+}
+
 function addBonus(total: ScoreTotal, points: number) {
   total.points += points;
   total.bonus_points += points;
@@ -116,8 +124,10 @@ function resultFromJoin(prediction: PredictionWithResult) {
 }
 
 export async function POST(request: NextRequest) {
-  const secret = request.headers.get("x-result-sync-secret") ?? request.nextUrl.searchParams.get("secret");
-  if (!process.env.RESULT_SYNC_SECRET || secret !== process.env.RESULT_SYNC_SECRET) {
+  // Alleen via header (niet via querystring) zodat het secret niet in logs/URLs lekt.
+  const secret = request.headers.get("x-result-sync-secret");
+  const expected = process.env.RESULT_SYNC_SECRET;
+  if (!expected || !secret || !safeEqual(secret, expected)) {
     return NextResponse.json({ error: "Niet toegestaan" }, { status: 401 });
   }
 
