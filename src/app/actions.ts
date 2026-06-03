@@ -3,12 +3,14 @@
 import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { isAdminEmail } from "@/lib/admin";
 import { isAvatarKey } from "@/lib/avatars";
 import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
 import { logError } from "@/lib/log";
 import { rateLimit } from "@/lib/rate-limit";
+import { recalculateAllScores } from "@/lib/recalculate";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -135,6 +137,57 @@ export async function deleteAccount(formData: FormData) {
 
   await supabase.auth.signOut();
   redirect("/?verwijderd=1");
+}
+
+export async function adminSetResult(formData: FormData) {
+  const { user } = await requireUser();
+  if (!isAdminEmail(user.email)) redirect("/");
+
+  const admin = createAdminClient();
+  const matchId = Number.parseInt(String(formData.get("match_id") ?? ""), 10);
+  if (!Number.isFinite(matchId)) redirect("/admin?fout=match");
+  const homeScore = clampInt(formData.get("home_score"), 0, 0, 50);
+  const awayScore = clampInt(formData.get("away_score"), 0, 0, 50);
+  const finished = formData.get("finished") === "on";
+
+  const { error } = await admin
+    .from("matches")
+    .update({ home_score: homeScore, away_score: awayScore, status: finished ? "finished" : "scheduled" })
+    .eq("id", matchId);
+  if (error) {
+    logError("adminSetResult.update", error, { matchId });
+    redirect("/admin?fout=opslaan");
+  }
+
+  await admin.from("admin_audit_log").insert({
+    actor_email: user.email,
+    action: "set_result",
+    detail: { match_id: matchId, home_score: homeScore, away_score: awayScore, finished },
+  });
+
+  const recalc = await recalculateAllScores(admin);
+  if ("error" in recalc) logError("adminSetResult.recalc", recalc.error, { matchId });
+
+  revalidatePath("/admin");
+  revalidatePath("/ranglijst");
+  revalidatePath("/");
+  redirect("/admin?ok=1");
+}
+
+export async function adminRecalculate() {
+  const { user } = await requireUser();
+  if (!isAdminEmail(user.email)) redirect("/");
+
+  const admin = createAdminClient();
+  const recalc = await recalculateAllScores(admin);
+  await admin.from("admin_audit_log").insert({
+    actor_email: user.email,
+    action: "recalculate",
+    detail: "error" in recalc ? { error: recalc.error } : { users: recalc.recalculatedUsers },
+  });
+  revalidatePath("/admin");
+  revalidatePath("/ranglijst");
+  redirect("/admin?ok=1");
 }
 
 export async function createPool(formData: FormData) {
