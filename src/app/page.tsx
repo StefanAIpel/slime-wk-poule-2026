@@ -1,4 +1,4 @@
-import { CalendarDays, ListChecks, Share2, Ticket, Trophy, Users } from "lucide-react";
+import { CalendarDays, ListChecks, Share2, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
@@ -214,11 +214,17 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
               <Trophy aria-hidden="true" className="size-5" />
               Gratis meedoen
             </a>
-            <a href="#login" className="button-secondary w-full sm:w-auto">
-              <Ticket aria-hidden="true" className="size-5" />
-              Ik heb een poulecode
-            </a>
           </div>
+        </div>
+        <div className="hero-bottom-links" aria-label="Snelle links">
+          <a href="/schema" className="hero-bottom-link">
+            <CalendarDays aria-hidden="true" className="size-5" />
+            Speelschema
+          </a>
+          <a href="/regels" className="hero-bottom-link">
+            <ListChecks aria-hidden="true" className="size-5" />
+            Regels
+          </a>
         </div>
       </div>
 

@@ -383,8 +383,44 @@ textarea {
 /* Op mobiel ruimte onderaan zodat de ingebakken slime op het gras zichtbaar blijft. */
 @media (max-width: 759px) {
   .hero-home {
-    padding-bottom: 160px;
+    padding-bottom: 146px;
   }
+}
+
+.hero-bottom-links {
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
+  left: 20px;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.hero-bottom-link {
+  display: inline-flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.54);
+  border-radius: 18px;
+  background: rgba(245, 255, 250, 0.7);
+  color: #08733f;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 10px 26px rgba(7, 18, 46, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  -webkit-backdrop-filter: blur(9px) saturate(1.16);
+  backdrop-filter: blur(9px) saturate(1.16);
+}
+
+.hero-bottom-link:hover {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--green-deep);
 }
 
 @media (min-width: 760px) {
@@ -410,6 +446,10 @@ textarea {
   position: relative;
   z-index: 2;
   max-width: 100%;
+}
+
+.hero-home .hero-content {
+  padding-bottom: 88px;
 }
 
 /* Slime staat op het gras: verankerd op de onderrand, in de hoek zodat tekst en
@@ -699,6 +739,12 @@ textarea {
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px;
+}
+
+@media (min-width: 768px) {
+  .hero-topbar {
+    display: none;
+  }
 }
 
 /* Desktop/tablet-headerbalk (≥768px; daaronder is er de onderbalk). */
