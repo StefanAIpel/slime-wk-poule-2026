@@ -1173,6 +1173,13 @@ textarea {
   transition: transform 140ms ease, box-shadow 140ms ease;
 }
 
+.slime-link-banners {
+  display: grid;
+  width: min(680px, 100%);
+  margin-inline: auto;
+  gap: 8px;
+}
+
 .game-banner-tile:hover {
   transform: translateY(-2px);
   box-shadow: 0 16px 32px rgba(8, 22, 52, 0.18);

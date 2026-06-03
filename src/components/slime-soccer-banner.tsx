@@ -1,17 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
 
 /**
- * Twee klikbare game-banners (soccer + volley) zonder tekst-overlay — de banner
- * zelf is de knop. Linkt naar /games waar het spel in de eigen UI laadt.
+ * Twee klikbare Slime-banners zonder tekst-overlay — de banner zelf is de knop.
+ * WK/SlimeScore staat bovenaan, Volley daaronder.
  */
 const tiles = [
-  { href: "/games?game=soccer", img: "/slimes/slime-soccer-banner-3to1.png", alt: "Speel Slime Soccer" },
-  { href: "/games?game=volley", img: "/slimes/slime-volley-banner-3to1.png", alt: "Speel Slime Volley" },
+  { href: "https://slimescore.com", img: "/slimes/slimescore-wk2026-link-banner.png", alt: "Slime Score WK Poule 2026" },
+  { href: "https://volley.slimescore.com", img: "/slimes/slime-volley-link-banner.jpg", alt: "Slime Volley Champions" },
 ];
 
 export function SlimeSoccerBanner() {
   return (
-    <div className="grid gap-3 md:grid-cols-2">
+    <div className="slime-link-banners">
       {tiles.map((tile) => (
         <a key={tile.href} href={tile.href} className="game-banner-tile" aria-label={tile.alt}>
           <img src={tile.img} alt={tile.alt} loading="lazy" />
