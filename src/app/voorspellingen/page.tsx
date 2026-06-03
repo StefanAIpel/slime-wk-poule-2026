@@ -22,6 +22,10 @@ export default async function PredictionsPage({
 
   if (!user) redirect("/");
 
+  // Meedoen vereist een complete scorekaart (naam + teamnaam, min. 4 tekens).
+  const { data: ownProfile } = await supabase.from("profiles").select("nickname,team_name").eq("id", user.id).maybeSingle();
+  if (!ownProfile?.nickname || !ownProfile.team_name) redirect("/");
+
   const [{ data: teams }, { data: matches }, { data: predictions }, { data: bracket }, { data: special }] =
     await Promise.all([
       supabase.from("teams").select("*").order("group_letter").order("sort_order"),

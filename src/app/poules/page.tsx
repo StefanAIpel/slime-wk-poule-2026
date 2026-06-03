@@ -93,6 +93,10 @@ export default async function PoolsPage({
 
   if (!user) redirect("/");
 
+  // Meedoen vereist een complete scorekaart (naam + teamnaam, min. 4 tekens).
+  const { data: ownProfile } = await supabase.from("profiles").select("nickname,team_name").eq("id", user.id).maybeSingle();
+  if (!ownProfile?.nickname || !ownProfile.team_name) redirect("/");
+
   const [{ data }, { data: messages }] = await Promise.all([
     supabase
       .from("pool_members")
