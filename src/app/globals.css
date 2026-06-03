@@ -1334,7 +1334,7 @@ textarea {
 
 .quick-menu-button {
   position: fixed;
-  top: 62px;
+  top: 82px;
   right: 14px;
   z-index: 40;
   display: inline-grid;
@@ -1367,7 +1367,7 @@ textarea {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 18px;
+  padding: calc(34px + env(safe-area-inset-top)) 18px 18px;
   padding-bottom: calc(18px + env(safe-area-inset-bottom));
   color: #0b1f4d;
   background: linear-gradient(170deg, #ffffff, #f6f9ff);
