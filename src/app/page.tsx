@@ -236,14 +236,14 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             <div>
               <h2 className="flex items-center gap-2 text-xl font-bold text-white">
                 <Users aria-hidden="true" className="size-6 text-white" />
-                Samen spelen: maak of join een poule
+                Samen spelen: start of join een subpoule
               </h2>
               <p className="mt-1 text-sm font-medium leading-6 text-blue-50">
-                Start je eigen poule voor familie, vrienden of collega&rsquo;s met één deelcode — of sluit aan bij een
-                bestaande poule. Je vult de code in zodra je bent ingelogd.
+                Start je eigen subpoule voor familie, vrienden of collega&rsquo;s met één deelcode — of sluit aan bij een
+                bestaande subpoule. Je vult de code in zodra je bent ingelogd.
               </p>
             </div>
-            <a href="#login" className="button-primary md:w-auto">Start je poule</a>
+            <a href="#login" className="button-primary md:w-auto">Start of join subpoule</a>
           </div>
 
           <div className="panel grid gap-3 p-4">

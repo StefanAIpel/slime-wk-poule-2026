@@ -881,7 +881,8 @@ textarea {
 
 .button-primary,
 .button-secondary,
-.button-plain {
+.button-plain,
+.gmail-open-button {
   display: inline-flex;
   min-height: 48px;
   align-items: center;
@@ -910,6 +911,19 @@ textarea {
   background: #eaf6ef;
   color: #0e7a44;
   box-shadow: none;
+}
+
+.gmail-open-button {
+  border: 1px solid rgba(218, 48, 37, 0.2);
+  background: #ffffff;
+  color: #2d3748;
+  font-weight: 800;
+  box-shadow: 0 8px 20px rgba(60, 64, 67, 0.12);
+}
+
+.gmail-open-button:hover {
+  filter: brightness(1.02);
+  transform: translateY(-1px);
 }
 
 .button-whatsapp {
