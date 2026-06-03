@@ -21,7 +21,47 @@ export const specialScoring = {
   totalGoalsNear: 6,
   exactStat: 12,
   closeStat: 6,
+  teamMostGoals: 20,
+  oranjeExact: 20,
+  oranjeClose: 8,
 };
+
+/** Volgorde van hoe ver Oranje komt; gebruikt om "dichtbij" te belonen. */
+export const oranjeStageOrder = [
+  "groep",
+  "laatste32",
+  "achtste",
+  "kwart",
+  "halve",
+  "finale",
+  "kampioen",
+] as const;
+
+export const oranjeStageLabels: Record<string, string> = {
+  groep: "Groepsfase (uitgeschakeld)",
+  laatste32: "Laatste 32",
+  achtste: "Achtste finale",
+  kwart: "Kwartfinale",
+  halve: "Halve finale",
+  finale: "Finale",
+  kampioen: "Wereldkampioen",
+};
+
+export function scoreOranjeStage(
+  predicted: string | null | undefined,
+  actual: string | null | undefined,
+  exactPoints = specialScoring.oranjeExact,
+  closePoints = specialScoring.oranjeClose,
+) {
+  if (!predicted || !actual) return 0;
+  const predictedIndex = oranjeStageOrder.indexOf(predicted as (typeof oranjeStageOrder)[number]);
+  const actualIndex = oranjeStageOrder.indexOf(actual as (typeof oranjeStageOrder)[number]);
+  if (predictedIndex < 0 || actualIndex < 0) return 0;
+  const diff = Math.abs(predictedIndex - actualIndex);
+  if (diff === 0) return exactPoints;
+  if (diff === 1) return closePoints;
+  return 0;
+}
 
 export type MatchPredictionScoreInput = {
   predictedHome: number;

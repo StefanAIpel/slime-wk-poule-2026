@@ -37,7 +37,8 @@ export const scoringRules = [
   { label: "Land in halve finale", points: stageScoring.semifinal, note: "Max 4 landen" },
   { label: "Finalist goed", points: stageScoring.finalists, note: "Max 2 landen" },
   { label: "Wereldkampioen goed", points: stageScoring.champion, note: "Grote inhaalbonus" },
-  { label: "Topscorer goed", points: specialScoring.topScorer, note: "Gedeeld telt ook" },
+  { label: "Team met meeste goals", points: specialScoring.teamMostGoals, note: "Exact het juiste land" },
+  { label: "Hoe ver komt Oranje", points: specialScoring.oranjeExact, note: "Dichtbij levert minder op" },
   { label: "Totaal goals exact", points: specialScoring.totalGoalsExact, note: "Dichtbij levert minder op" },
   { label: "Bonusstat exact", points: specialScoring.exactStat, note: "Dichtbij levert minder op" },
 ];

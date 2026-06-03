@@ -4,7 +4,8 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { GroupPredictionCard } from "@/components/group-prediction-card";
 import { PageHero } from "@/components/page-hero";
-import { ENTRY_DEADLINE, groupLetters, hostCities, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
+import { ENTRY_DEADLINE, groupLetters, POST_GROUP_DEADLINE } from "@/lib/constants";
+import { oranjeStageLabels, oranjeStageOrder } from "@/lib/scoring";
 import { createClient } from "@/lib/supabase/server";
 import type { MatchWithTeams, Team } from "@/lib/types";
 
@@ -38,7 +39,7 @@ export default async function PredictionsPage({
   const bracketByStage = new Map((bracket ?? []).map((row) => [row.stage_key, new Set(row.team_codes as string[])]));
   const now = new Date();
   const mainOpen = now < ENTRY_DEADLINE;
-  const postGroupOpen = now >= POST_GROUP_WINDOW_START && now < POST_GROUP_DEADLINE;
+  const lateOpen = now < POST_GROUP_DEADLINE;
   const groupedMatches = groupBy(matches as MatchWithTeams[] | null, (match) => match.group_letter ?? "?");
   const typedTeams = (teams ?? []) as Team[];
 
@@ -137,19 +138,19 @@ export default async function PredictionsPage({
             <TeamChecklist
               name="finalists"
               title="Finale"
-              hint="Twee finalisten. Deze mag na de groepsfase nog een keer aangepast worden."
+              hint="Twee finalisten. Wijzigbaar t/m 28 juni 21:00."
               maxCount={2}
               teams={typedTeams}
               selected={new Set((special?.finalists as string[] | undefined) ?? Array.from(bracketByStage.get("finalists") ?? []))}
-              disabled={!mainOpen && !postGroupOpen}
+              disabled={!lateOpen}
             />
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
-              Wereldkampioen
+              Wereldkampioen <span className="font-medium text-[#48617f]">(wijzigbaar t/m 28 juni 21:00)</span>
               <select
                 className="field"
                 name="champion_code"
                 defaultValue={special?.champion_code ?? Array.from(bracketByStage.get("champion") ?? [])[0] ?? ""}
-                disabled={!mainOpen && !postGroupOpen}
+                disabled={!lateOpen}
               >
                 <option value="">Kies kampioen</option>
                 {typedTeams.map((team) => (
@@ -164,39 +165,45 @@ export default async function PredictionsPage({
 
         <section className="panel p-4">
           <h2 className="text-2xl font-bold text-[#081634]">Bonusvragen</h2>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <label className="grid gap-2 text-sm font-bold text-[#081634]">
-              Topscorer
-              <input className="field" name="top_scorer" defaultValue={special?.top_scorer ?? ""} placeholder="Bijv. Mbappe" />
-            </label>
-            <NumberField name="total_goals" label="Totaal aantal goals" value={special?.total_goals ?? 172} min={100} max={400} />
-            <NumberField name="total_corners" label="Totaal corners" value={special?.total_corners ?? 840} min={400} max={1400} />
-            <NumberField name="fastest_goal_minute" label="Snelste goal in minuut" value={special?.fastest_goal_minute ?? 3} min={1} max={120} />
-            <NumberField name="group_zero_zero_count" label="0-0's in de groepsfase" value={special?.group_zero_zero_count ?? 4} min={0} max={30} />
-            <NumberField name="total_red_cards" label="Rode kaarten totaal" value={special?.total_red_cards ?? 8} min={0} max={50} />
+          <p className="mt-1 text-sm font-medium text-[#48617f]">Vul deze in vóór de aftrap (11 juni 21:00).</p>
+          <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!mainOpen}>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
-              Speelstad met de meeste doelpunten
-              <select className="field" name="host_city_most_goals" defaultValue={special?.host_city_most_goals ?? ""}>
-                <option value="">Kies speelstad</option>
-                {hostCities.map((city) => (
-                  <option key={city} value={city}>
-                    {city}
+              Team met de meeste doelpunten
+              <select className="field" name="team_most_goals_code" defaultValue={special?.team_most_goals_code ?? ""}>
+                <option value="">Kies land</option>
+                {typedTeams.map((team) => (
+                  <option key={team.code} value={team.code}>
+                    {team.name_nl}
                   </option>
                 ))}
               </select>
             </label>
-          </div>
+            <NumberField name="total_goals" label="Totaal aantal goals" value={special?.total_goals ?? 172} min={100} max={400} />
+            <NumberField name="total_red_cards" label="Rode kaarten totaal" value={special?.total_red_cards ?? 8} min={0} max={50} />
+            <NumberField name="fastest_goal_minute" label="Snelste goal in minuut" value={special?.fastest_goal_minute ?? 3} min={1} max={120} />
+          </fieldset>
         </section>
 
         <section className="panel p-4">
-          <h2 className="text-2xl font-bold text-[#081634]">Optionele update na de groepsfase</h2>
+          <h2 className="text-2xl font-bold text-[#081634]">Wijzigbaar t/m 28 juni 21:00</h2>
           <p className="mt-1 text-sm font-medium text-[#48617f]">
-            Open van 28 juni 00:00 tot 28 juni 21:00 Nederlandse tijd. Vooraf invullen mag nu al.
+            Deze keuzes (samen met wereldkampioen en finalisten hierboven) mag je blijven aanpassen tot en met 28 juni 21:00 Nederlandse tijd.
           </p>
-          <fieldset className="mt-4 grid gap-3 md:grid-cols-3" disabled={!mainOpen && !postGroupOpen}>
+          <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!lateOpen}>
+            <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
+              Hoe ver komt Oranje?
+              <select className="field" name="oranje_stage" defaultValue={special?.oranje_stage ?? ""}>
+                <option value="">Kies hoe ver Nederland komt</option>
+                {oranjeStageOrder.map((stage) => (
+                  <option key={stage} value={stage}>
+                    {oranjeStageLabels[stage]}
+                  </option>
+                ))}
+              </select>
+            </label>
             <NumberField name="penalty_shootouts_ko" label="Penaltyseries in knock-outfase" value={special?.penalty_shootouts_ko ?? 4} min={0} max={20} />
             <NumberField name="own_goals_ko" label="Eigen goals in knock-outfase" value={special?.own_goals_ko ?? 2} min={0} max={20} />
-            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+            <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
               Meeste kaarten in knock-outs
               <select className="field" name="cards_ko_team_code" defaultValue={special?.cards_ko_team_code ?? ""}>
                 <option value="">Kies land</option>

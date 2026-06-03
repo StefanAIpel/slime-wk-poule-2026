@@ -383,7 +383,9 @@ export async function savePredictions(formData: FormData) {
   const { supabase, user } = await requireUser();
   const now = new Date();
   const canEditMain = now < ENTRY_DEADLINE;
-  const canEditPostGroup = now >= POST_GROUP_WINDOW_START && now < POST_GROUP_DEADLINE;
+  // Wereldkampioen, finalisten, penaltyseries en "hoe ver komt Oranje" blijven
+  // wijzigbaar t/m 28 juni 21:00 (niet pas óp 28 juni).
+  const canEditLate = now < POST_GROUP_DEADLINE;
 
   const { data: matches, error: matchError } = await supabase
     .from("matches")
@@ -443,30 +445,37 @@ export async function savePredictions(formData: FormData) {
     }
   }
 
-  if (canEditMain || canEditPostGroup) {
-    const champion = cleanText(formData.get("champion_code"), 3).toUpperCase() || null;
-    const finalists = Array.from(new Set(formData.getAll("finalists").map(String).filter(Boolean))).slice(0, 2);
-    const special = {
-      user_id: user.id,
-      top_scorer: cleanText(formData.get("top_scorer"), 60) || null,
-      total_goals: clampInt(formData.get("total_goals"), 172, 100, 400),
-      group_zero_zero_count: clampInt(formData.get("group_zero_zero_count"), 4, 0, 30),
-      total_red_cards: clampInt(formData.get("total_red_cards"), 8, 0, 50),
-      total_corners: clampInt(formData.get("total_corners"), 840, 400, 1400),
-      fastest_goal_minute: clampInt(formData.get("fastest_goal_minute"), 3, 1, 120),
-      host_city_most_goals: cleanText(formData.get("host_city_most_goals"), 50) || null,
-      champion_code: champion,
-      finalists,
-      penalty_shootouts_ko: clampInt(formData.get("penalty_shootouts_ko"), 4, 0, 20),
-      own_goals_ko: clampInt(formData.get("own_goals_ko"), 2, 0, 20),
-      cards_ko_team_code: cleanText(formData.get("cards_ko_team_code"), 3).toUpperCase() || null,
-      post_group_updated_at: canEditPostGroup ? new Date().toISOString() : null,
-    };
+  if (canEditMain || canEditLate) {
+    // Upsert raakt alleen de meegegeven kolommen; gesloten velden laten we weg
+    // zodat ze niet worden overschreven.
+    const special: Record<string, unknown> = { user_id: user.id };
+
+    if (canEditMain) {
+      // Vooraf vast te leggen bonusvragen (sluiten bij de aftrap).
+      special.total_goals = clampInt(formData.get("total_goals"), 172, 100, 400);
+      special.total_red_cards = clampInt(formData.get("total_red_cards"), 8, 0, 50);
+      special.fastest_goal_minute = clampInt(formData.get("fastest_goal_minute"), 3, 1, 120);
+      special.team_most_goals_code = cleanText(formData.get("team_most_goals_code"), 3).toUpperCase() || null;
+    }
+
+    let champion: string | null = null;
+    if (canEditLate) {
+      // Wijzigbaar t/m 28 juni 21:00.
+      champion = cleanText(formData.get("champion_code"), 3).toUpperCase() || null;
+      const finalists = Array.from(new Set(formData.getAll("finalists").map(String).filter(Boolean))).slice(0, 2);
+      special.champion_code = champion;
+      special.finalists = finalists;
+      special.penalty_shootouts_ko = clampInt(formData.get("penalty_shootouts_ko"), 4, 0, 20);
+      special.own_goals_ko = clampInt(formData.get("own_goals_ko"), 2, 0, 20);
+      special.cards_ko_team_code = cleanText(formData.get("cards_ko_team_code"), 3).toUpperCase() || null;
+      special.oranje_stage = cleanText(formData.get("oranje_stage"), 16) || null;
+      special.post_group_updated_at = now >= POST_GROUP_WINDOW_START ? new Date().toISOString() : null;
+    }
 
     const { error } = await supabase.from("special_predictions").upsert(special);
     if (error) throw new Error(error.message);
 
-    if (champion) {
+    if (canEditLate && champion) {
       const { error: championError } = await supabase.from("bracket_predictions").upsert({
         user_id: user.id,
         stage_key: "champion",
