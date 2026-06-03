@@ -2,6 +2,31 @@
 
 Bijgehouden tijdens de UI-review. Status: ✅ klaar · 🟡 deels · ⬜ open.
 
+## Ronde 3 (deze sessie)
+
+**✅ Gedaan**
+- Groene (Mexico-)knoppen i.p.v. wit; mobiele hero: slime in de hoek, knoppen volle breedte (tekst botst niet meer).
+- Aanmelden: expliciete akkoord-checkbox (voorwaarden + privacy) verplicht.
+- Statusbalk: "Gratis meedoen" is nu een duidelijke knop-link met pijl.
+- Schema: groep+team op één regel, team gefilterd op gekozen groep, tijdverschil met NL achter de tijd (bijv. −6 u).
+- Ranglijst: zoekveld **per tabel** (wereld + subpoules apart).
+- SEO: Organisatie-logo in JSON-LD (Google-logootje).
+- Lichtere fonts, stadion-hero met slime op het veld, gecentreerde footer (uit ronde 2, geverifieerd met screenshots).
+- Deepdive-document `docs/api-en-techniek.md` (API, puntentelling, push, SEO/ads, cookies, dataverkeer).
+- Cookies: alleen sessiecookie, geen banner nodig (staat al op /privacy).
+
+**🟡 / ⬜ Actielijst (open)**
+- **Push-notificaties** voor wedstrijden: vereist VAPID + cron + `push_subscriptions` (plan in api-en-techniek.md). Alternatief: "Zet in agenda" (.ics) — snel te bouwen.
+- **Uitslagen-API** automatiseren (API-Football) + `external_id` op matches + cron.
+- **Live scores / WK-app-functies** in schema zodra API live is.
+- **Scheidsrechter-slime** asset (`slime-08-scheidsrechter.png`) — valt nu terug op coach.
+- **Knock-out cascade** (kwart alleen uit achtste-keuzes) — nu volledigheidswaarschuwing.
+- **Schaalpunt:** betaald e-mailplan (Resend/SMTP) vóór ~1000 aanmeldingen/dag.
+- Sommige eerdere fixes (Regels-icoon, stadion-hero's, ranglijst-tabs, landing-CTA's) staan al in de code maar waren op de getoonde productie-screenshots nog niet live — **deploy van deze branch nodig**.
+
+---
+
+
 ## Gedaan ✅
 - ✅ Deelopties: WhatsApp, Facebook, X, Telegram, e-mail, kopieer-link (Instagram via kopieer).
 - ✅ Witte tekst op oranje/groen: dieper, extra vet, tekstschaduw.
