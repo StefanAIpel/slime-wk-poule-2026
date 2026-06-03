@@ -70,12 +70,13 @@ function WebmailButton({ provider }: { provider: WebmailProvider }) {
   );
 }
 
-export function LoginForm() {
+export function LoginForm({ surface = "panel" }: { surface?: "panel" | "inline" }) {
   const [mode, setMode] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
+  const surfaceClass = surface === "inline" ? "grid gap-3" : "panel grid gap-3 p-4";
 
   async function onCodeSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -94,7 +95,7 @@ export function LoginForm() {
 
   if (mode === "code") {
     return (
-      <form onSubmit={onCodeSubmit} className="panel grid gap-3 p-4" aria-label="Inloggen met code">
+      <form onSubmit={onCodeSubmit} className={surfaceClass} aria-label="Inloggen met code">
         <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
           Inlogcode (voor kinderen zonder e-mail)
           <input
@@ -145,14 +146,13 @@ export function LoginForm() {
   if (status === "sent") {
     const provider = webmailFor(email);
     return (
-      <div className="panel grid gap-3 p-4">
+      <div className={surfaceClass}>
         <div className="flex items-center gap-2 rounded-lg bg-green-50 p-3 font-bold text-[#0f7a39]">
           <Check aria-hidden="true" className="size-5" />
           Inloglink verstuurd!
         </div>
         <p className="text-sm font-medium leading-6 text-[#475670]">
-          We hebben een link gestuurd naar <strong className="text-[#101a2b]">{email}</strong>. Open die mail en klik op de
-          link om aan te melden. De link is <strong className="text-[#101a2b]">±1 uur geldig</strong> en werkt één keer.
+          Check <strong className="text-[#101a2b]">{email}</strong>. De link is 1 uur geldig en werkt één keer.
         </p>
         {provider ? <WebmailButton provider={provider} /> : null}
         <button className="button-secondary w-full" type="button" onClick={() => setStatus("idle")}>
@@ -163,7 +163,7 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="panel grid gap-3 p-4" aria-label="Aanmelden met e-mail">
+    <form onSubmit={onSubmit} className={surfaceClass} aria-label="Aanmelden met e-mail">
       <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
         E-mailadres
         <input
@@ -179,10 +179,10 @@ export function LoginForm() {
       </label>
       <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
         <Mail aria-hidden="true" className="size-5" />
-        {status === "loading" ? "Versturen…" : "Stuur inloglink"}
+        {status === "loading" ? "Versturen…" : "Aanmelden"}
       </button>
       <p aria-live="polite" className={`text-sm font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-        {message || "Eenmalige inloglink voor je WK 2026-poule (±1 uur geldig, werkt 1×)."}
+        {message || "Eenmalige link (1 uur geldig)"}
       </p>
       <button
         type="button"

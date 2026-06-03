@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, Link2, Mail, Send, Share2 } from "lucide-react";
+import { Check, Copy, Send, Share2 } from "lucide-react";
 import { useState } from "react";
 
 type Variant = "primary" | "secondary";
@@ -16,16 +16,10 @@ function WhatsappGlyph({ className }: GlyphProps) {
   );
 }
 
-function SignalGlyph({ className }: GlyphProps) {
+function FacebookGlyph({ className }: GlyphProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
-      <path
-        d="M12 4.2c4.2 0 7.6 2.9 7.6 6.5S16.2 17.2 12 17.2c-.7 0-1.4-.08-2.05-.24L5.1 19.8l1.35-4.12c-1.28-1.18-2.05-2.73-2.05-4.98C4.4 7.1 7.8 4.2 12 4.2Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path d="M8.8 10.8h6.4M8.8 13.2h4.4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.52 1.49-3.91 3.77-3.91 1.09 0 2.23.2 2.23.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22C18.34 21.24 22 17.08 22 12.06Z" />
     </svg>
   );
 }
@@ -93,6 +87,7 @@ export function ShareRow({
 }) {
   const [copied, setCopied] = useState(false);
   const encodedBoth = encodeURIComponent(`${text} ${url}`.trim());
+  const encodedUrl = encodeURIComponent(url);
 
   const targets = [
     {
@@ -103,11 +98,11 @@ export function ShareRow({
       className: "share-link share-link-whatsapp",
     },
     {
-      key: "email",
-      label: "Mail",
-      href: `mailto:?subject=${encodeURIComponent(title)}&body=${encodedBoth}`,
-      icon: Mail,
-      className: "share-link share-link-email",
+      key: "facebook",
+      label: "Facebook",
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedBoth}`,
+      icon: FacebookGlyph,
+      className: "share-link share-link-facebook",
     },
   ];
 
@@ -121,16 +116,16 @@ export function ShareRow({
     }
   }
 
-  async function onSignalShare() {
+  async function onNativeShare() {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({ title, text, url });
+        return;
       } catch {
         // afgebroken — geen actie nodig
       }
-    } else {
-      onCopy();
     }
+    onCopy();
   }
 
   return (
@@ -153,24 +148,20 @@ export function ShareRow({
             </a>
           );
         })}
-        <button type="button" className="share-link share-link-signal" onClick={onSignalShare}>
-          <SignalGlyph className="size-5" />
-          <span className={compact ? "sr-only" : undefined}>Signal</span>
-        </button>
         <button
           type="button"
-          className="share-link share-link-copy"
-          onClick={onCopy}
-          aria-label="Link kopiëren"
-          title="Link kopiëren"
+          className="share-link share-link-more"
+          onClick={onNativeShare}
+          aria-label="Meer delen"
+          title="Meer delen"
         >
-          {copied ? <Check aria-hidden="true" className="size-5" /> : <Link2 aria-hidden="true" className="size-5" />}
-          <span className={compact ? "sr-only" : undefined}>{copied ? "Gekopieerd" : "Link"}</span>
+          {copied ? <Check aria-hidden="true" className="size-5" /> : <Share2 aria-hidden="true" className="size-5" />}
+          <span className={compact ? "sr-only" : undefined}>{copied ? "Gekopieerd" : "Meer"}</span>
         </button>
       </div>
       {compact ? null : (
         <p aria-live="polite" className="text-xs font-medium text-[#46566f]">
-          {copied ? "Link gekopieerd." : "Deel via WhatsApp, Signal, mail of kopieer de link."}
+          {copied ? "Link gekopieerd." : "Deel via WhatsApp, Facebook of je telefoon."}
         </p>
       )}
     </div>

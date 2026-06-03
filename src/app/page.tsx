@@ -1,4 +1,4 @@
-import { CalendarDays, ListChecks, Trophy, Users } from "lucide-react";
+import { CalendarDays, ListChecks, LogIn, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
@@ -10,6 +10,7 @@ import { ShareRow } from "@/components/share-button";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
 import { UpcomingMatches } from "@/components/upcoming-matches";
 import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
+import { DEMO_PLAYERS, hasPublicProfile } from "@/lib/demo-leaderboard";
 import { displayName } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -22,6 +23,7 @@ type HomeMembership = {
 type HomeLeaderboardRow = {
   points: number;
   profiles: { nickname: string | null; team_name: string | null } | null;
+  isDemo?: boolean;
 };
 
 export default async function Home({
@@ -194,6 +196,16 @@ export default async function Home({
 
 
 function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboard: HomeLeaderboardRow[] }) {
+  const realRows = leaderboard.filter((row) => hasPublicProfile(row.profiles));
+  const displayRows: HomeLeaderboardRow[] = [
+    ...realRows,
+    ...DEMO_PLAYERS.map((player) => ({
+      points: 0,
+      isDemo: true,
+      profiles: { nickname: player.nickname, team_name: player.teamName },
+    })),
+  ].slice(0, 3);
+
   return (
     <main className="page-shell shell-top-tight grid gap-5">
       <div className="hero-band hero-band-visual hero-home hero-band-topbar">
@@ -242,17 +254,16 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
               <div>
                 <h2 className="flex items-start gap-3 text-xl font-bold leading-tight text-white sm:text-2xl">
                   <Users aria-hidden="true" className="mt-0.5 size-6 flex-none text-white" />
-                  Samen spelen: maak of join een WK-poule
+                  Samen spelen: maak je WK-poule
                 </h2>
                 <p className="mt-3 text-sm font-semibold leading-6 text-blue-50 sm:text-base">
-                  Start je eigen WK-poule voor familie, vrienden of collega&rsquo;s met één deelcode — of sluit aan bij een
-                  bestaande WK-poule. Je vult de code in zodra je bent ingelogd.
+                  Maak een poule voor familie, vrienden of collega&rsquo;s. Deel één code; iedereen vult zelf in.
                 </p>
               </div>
               <a href="#login" className="button-primary w-full justify-center text-sm sm:w-auto sm:text-base">Start je WK-poule</a>
             </div>
             <div className="share-panel-strip">
-              <p className="text-sm font-bold text-blue-50">Deel Slime Score WK 2026:</p>
+              <p className="share-panel-title text-sm font-black text-blue-50">Deel SlimeScore:</p>
               <ShareRow
                 url={SITE_URL}
                 text="Doe je mee met de gratis Slime Score WK 2026-poule?"
@@ -263,38 +274,42 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           </div>
         </section>
 
-        <section id="login" className="grid gap-4 md:sticky md:top-4">
+        <section id="login" className="public-login-panel grid gap-4 p-4 sm:p-5 md:sticky md:top-4">
           {authError ? (
-            <div className="panel border-red-200 bg-red-50 p-4 font-bold text-red-800">
-              Deze inloglink is verlopen of al gebruikt. Vraag hieronder een nieuwe link aan.
+            <div className="rounded-xl border border-red-200 bg-red-50 p-4 font-bold text-red-800">
+              Deze inloglink is verlopen. Vraag een nieuwe aan.
             </div>
           ) : null}
-          <div>
-            <h2 className="text-2xl font-bold text-[#101a2b]">Aanmelden voor de WK 2026-poule</h2>
-            <p className="mt-1 text-sm font-medium leading-6 text-[#475670]">
-              Vul je e-mailadres in — nieuw of bestaand account. Je krijgt een eenmalige inloglink. Geen wachtwoord.
-            </p>
+          <div className="flex items-start gap-3">
+            <span className="public-login-icon" aria-hidden="true">
+              <LogIn className="size-6" />
+            </span>
+            <div>
+              <h2 className="public-login-title text-2xl font-black text-[#101a2b]">Aanmelden</h2>
+              <p className="mt-1 text-sm font-semibold leading-6 text-[#38506d]">
+                E-mailadres erin. Link klikken. Meedoen.
+              </p>
+            </div>
           </div>
-          <LoginForm />
+          <LoginForm surface="inline" />
           <InstallAppCard />
         </section>
 
         <a href="/ranglijst" className="panel public-score-card p-4 no-underline md:col-start-1 md:row-start-2">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-lg font-bold text-[#081634]">Live WK 2026-ranglijst</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-bold text-[#081634]">Ranglijst</h2>
+              {displayRows.some((row) => row.isDemo) ? <span className="demo-pill">voorbeeld</span> : null}
+            </div>
             <span className="text-sm font-bold text-[#0866e8]">Bekijk alles</span>
           </div>
           <div className="mt-3 grid gap-2">
-            {leaderboard.length ? (
-              leaderboard.map((row, index) => (
-                <div key={`${index}-${row.points}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
-                  <span className="truncate font-medium">{index + 1}. {displayName(row.profiles)}</span>
-                  <span className="font-bold">{row.points} pt</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm font-medium text-[#48617f]">De stand verschijnt zodra de eerste punten zijn verwerkt.</p>
-            )}
+            {displayRows.map((row, index) => (
+              <div key={`${index}-${displayName(row.profiles)}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
+                <span className="truncate font-medium">{index + 1}. {displayName(row.profiles)}</span>
+                <span className="font-bold">{row.points} pt</span>
+              </div>
+            ))}
           </div>
         </a>
       </div>
