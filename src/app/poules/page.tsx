@@ -173,10 +173,7 @@ export default async function PoolsPage({
     <main className="page-shell">
       <header className="mb-5 grid gap-4">
         <Brand />
-        <div
-          className="hero-band hero-band-visual"
-          style={{ "--hero-image": "url('/assets/Hero-bg.webp')" } as React.CSSProperties}
-        >
+        <div className="hero-band hero-band-visual">
           <div className="hero-content">
             <h1 className="text-2xl font-bold leading-tight text-white md:text-3xl">
               Speel samen — maak of join je poule

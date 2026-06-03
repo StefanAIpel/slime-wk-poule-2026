@@ -191,10 +191,7 @@ export default async function Home({
 function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboard: HomeLeaderboardRow[] }) {
   return (
     <main className="page-shell grid gap-5">
-      <div
-        className="hero-band hero-band-visual hero-band-topbar"
-        style={{ "--hero-image": "url('/assets/Hero-bg.webp')" } as React.CSSProperties}
-      >
+      <div className="hero-band hero-band-visual hero-band-topbar">
         <div className="hero-topbar">
           <BrandWordmark onDark />
         </div>

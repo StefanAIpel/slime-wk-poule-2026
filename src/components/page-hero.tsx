@@ -16,10 +16,7 @@ export function PageHero({
   slime?: string;
 }) {
   return (
-    <div
-      className="hero-band hero-band-visual hero-band-page"
-      style={{ "--hero-image": "url('/assets/Hero-bg.webp')" } as React.CSSProperties}
-    >
+    <div className="hero-band hero-band-visual hero-band-page">
       <div className="hero-content">
         <h1 className="text-3xl font-bold leading-tight md:text-4xl">{title}</h1>
         {subtitle ? (
