@@ -270,11 +270,11 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           </a>
 
           <div className="flex flex-wrap gap-3">
-            <a href="/schema" className="button-plain">
+            <a href="/schema" className="button-secondary">
               <CalendarDays aria-hidden="true" className="size-5" />
               Bekijk schema
             </a>
-            <a href="/regels" className="button-plain">
+            <a href="/regels" className="button-secondary">
               <ListChecks aria-hidden="true" className="size-5" />
               Spelregels
             </a>

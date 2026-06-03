@@ -261,7 +261,11 @@ export default async function PoolsPage({
                   </div>
                 </div>
                 {isManager ? (
-                  <div className="grid gap-4 border-b border-slate-200 bg-slate-50 p-4 lg:grid-cols-2">
+                  <details className="border-b border-slate-200 bg-slate-50">
+                    <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">
+                      Poule-instellingen &amp; opmaak (beheer)
+                    </summary>
+                  <div className="grid gap-4 p-4 pt-0 lg:grid-cols-2">
                     <form action={updatePoolStyle} className="grid gap-3">
                       <input type="hidden" name="pool_id" value={pool.id} />
                       <div className="flex items-center gap-2 font-bold text-[#101a2b]">
@@ -299,6 +303,7 @@ export default async function PoolsPage({
                       </PendingButton>
                     </form>
                   </div>
+                  </details>
                 ) : null}
                 <div className="border-b border-slate-200 p-4">
                   <h3 className="text-lg font-bold text-[#101a2b]">Prikbord</h3>

@@ -177,22 +177,19 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
           </span>
         ) : null}
       </div>
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
-        <div className="flex min-w-0 items-center gap-2">
-          <TeamFlag code={match.homeCode} name={match.homeName} />
-          <span className="truncate text-sm font-medium text-[var(--ink)] sm:text-base">
-            <span className="sm:hidden">{match.homeCode ?? match.homeName}</span>
-            <span className="hidden sm:inline">{match.homeName ?? match.homeCode}</span>
-          </span>
-        </div>
-        <span className="px-1 text-sm font-semibold text-[var(--muted)]">-</span>
-        <div className="flex min-w-0 items-center justify-end gap-2 text-right">
-          <span className="truncate text-sm font-medium text-[var(--ink)] sm:text-base">
-            <span className="sm:hidden">{match.awayCode ?? match.awayName}</span>
-            <span className="hidden sm:inline">{match.awayName ?? match.awayCode}</span>
-          </span>
-          <TeamFlag code={match.awayCode} name={match.awayName} />
-        </div>
+      <div className="flex items-center gap-2">
+        <TeamFlag code={match.homeCode} name={match.homeName} />
+        <span className="text-sm font-medium text-[var(--ink)] sm:text-base">
+          <span className="sm:hidden">{match.homeCode ?? match.homeName}</span>
+          <span className="hidden sm:inline">{match.homeName ?? match.homeCode}</span>
+        </span>
+        <span className="px-0.5 text-sm font-semibold text-[var(--muted)]">–</span>
+        <TeamFlag code={match.awayCode} name={match.awayName} />
+        <span className="text-sm font-medium text-[var(--ink)] sm:text-base">
+          <span className="sm:hidden">{match.awayCode ?? match.awayName}</span>
+          <span className="hidden sm:inline">{match.awayName ?? match.awayCode}</span>
+        </span>
+        <span className="score-slot ml-auto">vs</span>
       </div>
     </div>
   );

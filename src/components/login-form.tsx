@@ -19,17 +19,11 @@ function webmailFor(email: string) {
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
-  const [agreed, setAgreed] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!agreed) {
-      setStatus("error");
-      setMessage("Vink eerst aan dat je akkoord gaat met de voorwaarden en het privacybeleid.");
-      return;
-    }
     setStatus("loading");
     setMessage("");
 
@@ -58,7 +52,7 @@ export function LoginForm() {
         </div>
         <p className="text-sm font-medium leading-6 text-[#475670]">
           We hebben een link gestuurd naar <strong className="text-[#101a2b]">{email}</strong>. Open die mail en klik op de
-          link om aan te melden.
+          link om aan te melden. De link is <strong className="text-[#101a2b]">±1 uur geldig</strong> en werkt één keer.
         </p>
         {provider ? (
           <a className="button-primary w-full" href={provider.url} target="_blank" rel="noopener noreferrer">
@@ -88,27 +82,19 @@ export function LoginForm() {
           placeholder="jij@example.nl"
         />
       </label>
-      <label className="flex items-start gap-2 text-xs font-medium leading-5 text-[#475670]">
-        <input
-          type="checkbox"
-          className="mt-0.5 size-4 flex-none accent-[#0e7a44]"
-          checked={agreed}
-          onChange={(event) => setAgreed(event.target.checked)}
-          required
-        />
-        <span>
-          Ik ga akkoord met de{" "}
-          <a className="font-bold text-[#0e7a44]" href="/voorwaarden" target="_blank" rel="noopener noreferrer">voorwaarden</a>{" "}
-          en het{" "}
-          <a className="font-bold text-[#0e7a44]" href="/privacy" target="_blank" rel="noopener noreferrer">privacybeleid</a>.
-        </span>
-      </label>
-      <button className="button-primary w-full" type="submit" disabled={status === "loading" || !agreed}>
+      <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
         <Mail aria-hidden="true" className="size-5" />
         {status === "loading" ? "Versturen…" : "Stuur inloglink"}
       </button>
-      <p aria-live="polite" className={`text-sm font-medium ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-        {message || "Nieuw of bestaand account — je krijgt een eenmalige link per e-mail. Geen wachtwoord."}
+      <p aria-live="polite" className={`text-sm font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
+        {message || (
+          <>
+            Eenmalige inloglink (±1 uur geldig, werkt 1×). Door in te loggen ga je akkoord met de{" "}
+            <a className="font-semibold text-[#0e7a44]" href="/voorwaarden" target="_blank" rel="noopener noreferrer">voorwaarden</a>{" "}
+            en het{" "}
+            <a className="font-semibold text-[#0e7a44]" href="/privacy" target="_blank" rel="noopener noreferrer">privacybeleid</a>.
+          </>
+        )}
       </p>
     </form>
   );

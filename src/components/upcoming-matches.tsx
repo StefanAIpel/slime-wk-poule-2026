@@ -56,22 +56,19 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                 </span>
               ) : null}
             </div>
-            <div className="mt-1 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 text-sm">
-              <div className="flex min-w-0 items-center gap-2">
-                <TeamFlag code={m.home_code} name={m.home?.name_nl} />
-                <span className="truncate font-medium text-[var(--ink)]">
-                  <span className="sm:hidden">{m.home_code ?? m.home?.name_nl}</span>
-                  <span className="hidden sm:inline">{m.home?.name_nl ?? m.home_code}</span>
-                </span>
-              </div>
-              <span className="px-1 font-semibold text-[var(--muted)]">-</span>
-              <div className="flex min-w-0 items-center justify-end gap-2 text-right">
-                <span className="truncate font-medium text-[var(--ink)]">
-                  <span className="sm:hidden">{m.away_code ?? m.away?.name_nl}</span>
-                  <span className="hidden sm:inline">{m.away?.name_nl ?? m.away_code}</span>
-                </span>
-                <TeamFlag code={m.away_code} name={m.away?.name_nl} />
-              </div>
+            <div className="mt-1 flex items-center gap-2 text-sm">
+              <TeamFlag code={m.home_code} name={m.home?.name_nl} />
+              <span className="font-medium text-[var(--ink)]">
+                <span className="sm:hidden">{m.home_code ?? m.home?.name_nl}</span>
+                <span className="hidden sm:inline">{m.home?.name_nl ?? m.home_code}</span>
+              </span>
+              <span className="px-0.5 font-semibold text-[var(--muted)]">–</span>
+              <TeamFlag code={m.away_code} name={m.away?.name_nl} />
+              <span className="font-medium text-[var(--ink)]">
+                <span className="sm:hidden">{m.away_code ?? m.away?.name_nl}</span>
+                <span className="hidden sm:inline">{m.away?.name_nl ?? m.away_code}</span>
+              </span>
+              <span className="score-slot ml-auto">vs</span>
             </div>
           </div>
         ))}
