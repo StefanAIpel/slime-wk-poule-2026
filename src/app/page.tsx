@@ -201,29 +201,34 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           <BrandWordmark onDark />
         </div>
         <div className="hero-content">
-          <p className="text-sm font-bold uppercase tracking-wide text-blue-100">WK Poule 2026</p>
-          <h1 className="mt-1 text-[1.5rem] font-bold leading-[1.15] text-white sm:text-[1.85rem] md:text-[2.25rem]">
-            Maak een WK-poule samen met je vrienden
+          <div className="world-cup-kicker" aria-label="WK 2026 in de Verenigde Staten, Canada en Mexico">
+            <span>WK 2026</span>
+            <span>USA</span>
+            <span>Canada</span>
+            <span>Mexico</span>
+          </div>
+          <h1 className="mt-2 text-[1.55rem] font-bold leading-[1.15] text-white sm:text-[1.9rem] md:text-[2.35rem]">
+            Gratis WK 2026-poule voor vrienden en familie
           </h1>
-          <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-blue-50 sm:text-base md:text-lg">
-            Gratis aanmelden met alleen je e-mail. In 10 minuten klaar voor het hele WK. Geen irritante advertenties,
-            geen cookiegedoe.
+          <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-blue-50 sm:text-base md:text-lg">
+            Voorspel alle wedstrijden van het WK voetbal 2026, maak je eigen poule en volg live wie er wint.
+            Eén keer invullen, geen advertenties, geen cookiegedoe.
           </p>
           <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
             <a href="#login" className="button-primary w-full sm:w-auto">
               <Trophy aria-hidden="true" className="size-5" />
-              Gratis meedoen
+              Gratis meedoen aan WK 2026
             </a>
           </div>
         </div>
         <div className="hero-bottom-links" aria-label="Snelle links">
           <a href="/schema" className="hero-bottom-link">
             <CalendarDays aria-hidden="true" className="size-5" />
-            Speelschema
+            WK-schema
           </a>
           <a href="/regels" className="hero-bottom-link">
             <ListChecks aria-hidden="true" className="size-5" />
-            Regels
+            WK-regels
           </a>
         </div>
       </div>
@@ -232,25 +237,34 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         <section className="grid gap-4">
           <UpcomingMatches />
 
-          <div className="dark-panel grid gap-4 p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="flex items-center gap-2 text-xl font-bold text-white">
-                <Users aria-hidden="true" className="size-6 text-white" />
-                Start of join poule
-              </h2>
-              <a href="#login" className="button-primary md:w-auto">Start of join poule</a>
+          <div className="dark-panel poule-share-panel grid gap-4 p-5 sm:p-6">
+            <div className="grid gap-4">
+              <div>
+                <h2 className="flex items-start gap-3 text-2xl font-bold leading-tight text-white sm:text-3xl">
+                  <Users aria-hidden="true" className="mt-1 size-7 flex-none text-white" />
+                  Samen spelen: maak of join een poule
+                </h2>
+                <p className="mt-3 text-base font-semibold leading-7 text-blue-50">
+                  Start je eigen poule voor familie, vrienden of collega&rsquo;s met één deelcode — of sluit aan bij een
+                  bestaande poule. Je vult de code in zodra je bent ingelogd.
+                </p>
+              </div>
+              <a href="#login" className="button-primary w-full justify-center text-base sm:w-auto">Start je poule</a>
             </div>
-            <ShareRow
-              url={SITE_URL}
-              text="Doe je mee met de gratis Slime Score WK 2026-poule?"
-              compact
-              onDark
-            />
+            <div className="share-panel-strip">
+              <p className="text-sm font-bold text-blue-50">Deel Slime Score WK 2026:</p>
+              <ShareRow
+                url={SITE_URL}
+                text="Doe je mee met de gratis Slime Score WK 2026-poule?"
+                compact
+                onDark
+              />
+            </div>
           </div>
 
           <a href="/ranglijst" className="panel public-score-card p-4 no-underline">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-bold text-[#081634]">Live ranglijst</h2>
+              <h2 className="text-lg font-bold text-[#081634]">Live WK 2026-ranglijst</h2>
               <span className="text-sm font-bold text-[#0866e8]">Bekijk alles</span>
             </div>
             <div className="mt-3 grid gap-2">
@@ -270,11 +284,11 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           <div className="flex flex-wrap gap-3">
             <a href="/schema" className="button-secondary">
               <CalendarDays aria-hidden="true" className="size-5" />
-              Bekijk schema
+              Bekijk WK-schema
             </a>
             <a href="/regels" className="button-secondary">
               <ListChecks aria-hidden="true" className="size-5" />
-              Spelregels
+              WK-spelregels
             </a>
           </div>
         </section>
@@ -286,7 +300,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             </div>
           ) : null}
           <div>
-            <h2 className="text-2xl font-bold text-[#101a2b]">Aanmelden of inloggen</h2>
+            <h2 className="text-2xl font-bold text-[#101a2b]">Aanmelden voor de WK 2026-poule</h2>
             <p className="mt-1 text-sm font-medium leading-6 text-[#475670]">
               Vul je e-mailadres in — nieuw of bestaand account. Je krijgt een eenmalige inloglink. Geen wachtwoord.
             </p>

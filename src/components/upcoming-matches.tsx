@@ -34,7 +34,7 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
       <div className="mb-1 flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-base font-bold text-[var(--ink)]">
           <CalendarDays aria-hidden="true" className="size-5 text-[var(--blue)]" />
-          Eerstvolgende wedstrijden
+          Eerstvolgende WK-wedstrijden
         </h2>
         <a href="/schema" className="text-sm font-semibold text-[var(--blue)]">
           Hele schema
