@@ -17,6 +17,30 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "6mb",
     },
   },
+  async redirects() {
+    return [
+      {
+        source: "/soccer",
+        destination: "https://soccer.slimescore.com",
+        permanent: true,
+      },
+      {
+        source: "/soccer/:path*",
+        destination: "https://soccer.slimescore.com/:path*",
+        permanent: true,
+      },
+      {
+        source: "/volley",
+        destination: "https://volley.slimescore.com",
+        permanent: true,
+      },
+      {
+        source: "/volley/:path*",
+        destination: "https://volley.slimescore.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
