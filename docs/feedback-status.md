@@ -97,6 +97,7 @@ Prioriteit: **P1** launch-blocker · **P2** belangrijk · **P3** later/nice-to-h
 | 60 | Auth-URLs / custom SMTP | P1 | ⬜ | extern (doc operatie-launch.md) |
 | 61 | Admin-dashboard + auditlog | P2 | ✅ | Fase 2 |
 | 62 | Result-correctie + herbereken | P2 | ✅ | |
+| 78 | Games (Soccer/Volley) in eigen UI inbedden | P2 | ✅ | /games tabs+iframe; CSP frame-ancestors live op soccer./volley.slimescore.com, beide laden zonder console-errors |
 | 63 | Staging-omgeving | P3 | ⬜ | extern |
 | 64 | E2E-test | P3 | ⬜ | |
 | 65 | DB-indexes-check | P3 | ⬜ | volume nu klein |
