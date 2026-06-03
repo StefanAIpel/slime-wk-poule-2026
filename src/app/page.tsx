@@ -201,7 +201,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         </div>
         <div className="hero-content">
           <p className="text-sm font-bold uppercase tracking-wide text-blue-100">WK Poule 2026</p>
-          <h1 className="mt-1 text-[1.7rem] font-bold leading-[1.12] text-white sm:text-3xl md:text-4xl">
+          <h1 className="mt-1 text-[1.5rem] font-bold leading-[1.15] text-white sm:text-[1.85rem] md:text-[2.25rem]">
             Maak een WK-poule samen met je vrienden
           </h1>
           <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-blue-50 sm:text-base md:text-lg">
