@@ -1,6 +1,6 @@
 import { CalendarDays, MapPin } from "lucide-react";
 import { TeamFlag } from "@/components/team-flag";
-import { formatAmsterdam, venueHourOffset, venueLabel } from "@/lib/format";
+import { formatAmsterdam, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 type Row = {
@@ -47,17 +47,17 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
               <span className="match-group">{m.group_letter ?? "KO"}</span>
             </div>
             <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-medium text-[#54657f]">
-                {formatAmsterdam(m.starts_at)}
+              <div className="match-meta match-meta-compact">
+                <span className="match-time">{formatAmsterdam(m.starts_at)}</span>
                 {venueHourOffset(m.starts_at, m.venue) !== null ? (
-                  <span title="Tijdverschil met Nederland">
+                  <span className="match-time-offset" title="Tijdverschil met Nederland">
                     ({(() => { const o = venueHourOffset(m.starts_at, m.venue)!; return o === 0 ? "gelijk" : `${o > 0 ? "+" : "−"}${Math.abs(o)}u`; })()})
                   </span>
                 ) : null}
                 {m.venue ? (
-                  <span className="inline-flex items-center gap-1">
+                  <span className="match-location" title={venueLabel(m.venue)}>
                     <MapPin aria-hidden="true" className="size-3.5" />
-                    <span className="sm:hidden">{m.venue}</span>
+                    <span className="sm:hidden">{venueShortLabel(m.venue)}</span>
                     <span className="hidden sm:inline">{venueLabel(m.venue)}</span>
                   </span>
                 ) : null}

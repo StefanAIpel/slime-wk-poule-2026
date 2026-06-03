@@ -54,6 +54,21 @@ export function venueLabel(city: string | null | undefined) {
   return stadium ? `${city} · ${stadium}` : city;
 }
 
+const shortVenueByCity: Record<string, string> = {
+  "Mexico City": "Mexico",
+  "Los Angeles": "LA",
+  "New York New Jersey": "NY/NJ",
+  "San Francisco Bay Area": "SF Bay",
+  "Kansas City": "KC",
+  Philadelphia: "Philly",
+};
+
+/** Korte stadnaam voor smalle wedstrijdregels op mobiel. */
+export function venueShortLabel(city: string | null | undefined) {
+  if (!city) return "";
+  return shortVenueByCity[city] ?? city;
+}
+
 export function clampInt(value: FormDataEntryValue | null, fallback = 0, min = 0, max = 20) {
   const parsed = Number.parseInt(String(value ?? ""), 10);
   if (!Number.isFinite(parsed)) return fallback;

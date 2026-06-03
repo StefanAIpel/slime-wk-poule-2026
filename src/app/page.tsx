@@ -240,16 +240,16 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           <div className="dark-panel poule-share-panel grid gap-4 p-5 sm:p-6">
             <div className="grid gap-4">
               <div>
-                <h2 className="flex items-start gap-3 text-2xl font-bold leading-tight text-white sm:text-3xl">
-                  <Users aria-hidden="true" className="mt-1 size-7 flex-none text-white" />
+                <h2 className="flex items-start gap-3 text-xl font-bold leading-tight text-white sm:text-2xl">
+                  <Users aria-hidden="true" className="mt-0.5 size-6 flex-none text-white" />
                   Samen spelen: maak of join een WK-poule
                 </h2>
-                <p className="mt-3 text-base font-semibold leading-7 text-blue-50">
+                <p className="mt-3 text-sm font-semibold leading-6 text-blue-50 sm:text-base">
                   Start je eigen WK-poule voor familie, vrienden of collega&rsquo;s met één deelcode — of sluit aan bij een
                   bestaande WK-poule. Je vult de code in zodra je bent ingelogd.
                 </p>
               </div>
-              <a href="#login" className="button-primary w-full justify-center text-base sm:w-auto">Start je WK-poule</a>
+              <a href="#login" className="button-primary w-full justify-center text-sm sm:w-auto sm:text-base">Start je WK-poule</a>
             </div>
             <div className="share-panel-strip">
               <p className="text-sm font-bold text-blue-50">Deel Slime Score WK 2026:</p>
@@ -260,36 +260,6 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
                 onDark
               />
             </div>
-          </div>
-
-          <a href="/ranglijst" className="panel public-score-card p-4 no-underline">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-bold text-[#081634]">Live WK 2026-ranglijst</h2>
-              <span className="text-sm font-bold text-[#0866e8]">Bekijk alles</span>
-            </div>
-            <div className="mt-3 grid gap-2">
-              {leaderboard.length ? (
-                leaderboard.map((row, index) => (
-                  <div key={`${index}-${row.points}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
-                    <span className="truncate font-medium">{index + 1}. {displayName(row.profiles)}</span>
-                    <span className="font-bold">{row.points} pt</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm font-medium text-[#48617f]">De stand verschijnt zodra de eerste punten zijn verwerkt.</p>
-              )}
-            </div>
-          </a>
-
-          <div className="flex flex-wrap gap-3">
-            <a href="/schema" className="button-secondary">
-              <CalendarDays aria-hidden="true" className="size-5" />
-              Bekijk WK-schema
-            </a>
-            <a href="/regels" className="button-secondary">
-              <ListChecks aria-hidden="true" className="size-5" />
-              Regels
-            </a>
           </div>
         </section>
 
@@ -308,6 +278,25 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           <LoginForm />
           <InstallAppCard />
         </section>
+
+        <a href="/ranglijst" className="panel public-score-card p-4 no-underline md:col-start-1 md:row-start-2">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-lg font-bold text-[#081634]">Live WK 2026-ranglijst</h2>
+            <span className="text-sm font-bold text-[#0866e8]">Bekijk alles</span>
+          </div>
+          <div className="mt-3 grid gap-2">
+            {leaderboard.length ? (
+              leaderboard.map((row, index) => (
+                <div key={`${index}-${row.points}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
+                  <span className="truncate font-medium">{index + 1}. {displayName(row.profiles)}</span>
+                  <span className="font-bold">{row.points} pt</span>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm font-medium text-[#48617f]">De stand verschijnt zodra de eerste punten zijn verwerkt.</p>
+            )}
+          </div>
+        </a>
       </div>
     </main>
   );

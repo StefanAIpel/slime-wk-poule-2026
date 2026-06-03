@@ -3,7 +3,7 @@
 import { CalendarDays, MapPin, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { TeamFlag } from "@/components/team-flag";
-import { formatAmsterdam, venueHourOffset, venueLabel } from "@/lib/format";
+import { formatAmsterdam, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
 
 export type ScheduleMatch = {
   id: number;
@@ -161,18 +161,18 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
         <span className="match-group">{match.group ?? "KO"}</span>
       </div>
       <div className="min-w-0 flex-1">
-        <div className="schedule-match-meta">
+        <div className="schedule-match-meta match-meta">
           <CalendarDays aria-hidden="true" className="size-3.5" />
-          {formatAmsterdam(match.startsAt)}
+          <span className="match-time">{formatAmsterdam(match.startsAt)}</span>
           {offset !== null ? (
-            <span title="Tijdverschil met Nederland">
+            <span className="match-time-offset" title="Tijdverschil met Nederland">
               ({offset === 0 ? "gelijk" : `${offset > 0 ? "+" : "−"}${Math.abs(offset)}u`})
             </span>
           ) : null}
           {match.venue ? (
-            <span className="inline-flex items-center gap-1">
+            <span className="match-location" title={venueLabel(match.venue)}>
               <MapPin aria-hidden="true" className="size-3.5" />
-              <span className="sm:hidden">{match.venue}</span>
+              <span className="sm:hidden">{venueShortLabel(match.venue)}</span>
               <span className="hidden sm:inline">{venueLabel(match.venue)}</span>
             </span>
           ) : null}

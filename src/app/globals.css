@@ -300,6 +300,7 @@ textarea {
 
 .poule-share-panel {
   min-height: 260px;
+  font-size: 0.9rem;
   background:
     linear-gradient(135deg, rgba(210, 58, 49, 0.16) 0 16%, transparent 16%),
     radial-gradient(circle at 88% 0%, rgba(21, 163, 91, 0.28), transparent 32%),
@@ -1067,13 +1068,54 @@ textarea {
 
 .schedule-match-meta {
   margin-bottom: 8px;
+}
+
+.match-meta {
   display: flex;
-  flex-wrap: wrap;
+  max-width: 100%;
+  min-width: 0;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 2px 8px;
+  gap: 0 6px;
+  overflow: hidden;
   color: #0b1f4d;
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.match-meta-compact {
+  margin-bottom: 0;
+  font-size: 0.75rem;
+}
+
+.match-time,
+.match-time-offset {
+  flex: 0 0 auto;
+  color: var(--blue-2);
+}
+
+.match-location {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 42%;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 3px;
+  overflow: hidden;
+  color: #38516f;
+  font-size: 0.72rem;
+  font-weight: 750;
+  line-height: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.match-location span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .schedule-team-grid {

@@ -52,5 +52,25 @@ export const flagIsoByTeamCode: Record<string, string> = {
 export function flagUrl(teamCode: string | null | undefined) {
   if (!teamCode) return null;
   const iso = flagIsoByTeamCode[teamCode.toUpperCase()];
-  return iso ? `https://flagcdn.com/${iso}.svg` : null;
+  return iso ? `https://flagcdn.com/w80/${iso}.png` : null;
+}
+
+const fallbackFlagByTeamCode: Record<string, string> = {
+  ENG: "🏴",
+  SCO: "🏴",
+};
+
+export function flagEmoji(teamCode: string | null | undefined) {
+  if (!teamCode) return null;
+  const code = teamCode.toUpperCase();
+  if (fallbackFlagByTeamCode[code]) return fallbackFlagByTeamCode[code];
+
+  const iso = flagIsoByTeamCode[code];
+  if (!iso || iso.includes("-")) return null;
+
+  return iso
+    .toUpperCase()
+    .split("")
+    .map((char) => String.fromCodePoint(127397 + char.charCodeAt(0)))
+    .join("");
 }

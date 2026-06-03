@@ -1,5 +1,8 @@
+"use client";
+
 /* eslint-disable @next/next/no-img-element */
-import { flagUrl } from "@/lib/flags";
+import { useState } from "react";
+import { flagEmoji, flagUrl } from "@/lib/flags";
 
 export function TeamFlag({
   code,
@@ -10,22 +13,24 @@ export function TeamFlag({
   name?: string | null;
   size?: "sm" | "md";
 }) {
+  const [broken, setBroken] = useState(false);
   const url = flagUrl(code);
+  const emoji = flagEmoji(code);
   const className =
     size === "sm"
       ? "h-4 w-6 rounded-[3px] border border-slate-200 object-cover shadow-sm"
       : "h-6 w-9 rounded-[4px] border border-slate-200 object-cover shadow-sm";
 
-  if (!url) {
+  if (!url || broken) {
     return (
       <span
-        className={`${size === "sm" ? "h-4 w-6 text-[9px]" : "h-6 w-9 text-[10px]"} inline-grid place-items-center rounded-[4px] bg-slate-200 font-bold text-slate-600`}
+        className={`${size === "sm" ? "h-4 w-6 text-[12px]" : "h-6 w-9 text-[17px]"} inline-grid place-items-center overflow-hidden rounded-[4px] border border-slate-200 bg-white font-bold leading-none text-slate-700 shadow-sm`}
         aria-hidden="true"
       >
-        {code?.slice(0, 2) ?? "?"}
+        {emoji ?? code?.slice(0, 2) ?? "?"}
       </span>
     );
   }
 
-  return <img className={className} src={url} alt={name ? `Vlag van ${name}` : ""} loading="lazy" />;
+  return <img className={className} src={url} alt={name ? `Vlag van ${name}` : ""} loading="lazy" onError={() => setBroken(true)} />;
 }
