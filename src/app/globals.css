@@ -79,7 +79,7 @@ textarea {
 }
 
 .page-shell {
-  width: min(1120px, 100%);
+  width: min(1280px, 100%);
   margin: 0 auto;
   padding: 20px 16px calc(110px + env(safe-area-inset-bottom));
 }
@@ -96,7 +96,7 @@ textarea {
 }
 
 .site-footer {
-  width: min(1120px, 100%);
+  width: min(1280px, 100%);
   margin: 0 auto;
   padding: 14px 16px 120px;
   text-align: center;
@@ -147,7 +147,7 @@ textarea {
 }
 
 .status-bar-inner {
-  width: min(1120px, 100%);
+  width: min(1280px, 100%);
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -179,7 +179,7 @@ textarea {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  width: min(1120px, 100%);
+  width: min(1280px, 100%);
   margin: 0 auto;
   padding: 8px 14px;
   background: #0b1f4d;
@@ -359,9 +359,15 @@ textarea {
   }
 }
 
-/* Hero met geïntegreerde header: ruimte bovenin voor de balk. */
+/* Hero met geïntegreerde header: ruimte bovenin voor de balk (alleen mobiel). */
 .hero-band-topbar {
   padding-top: 60px;
+}
+
+@media (min-width: 1024px) {
+  .hero-band-topbar {
+    padding-top: 20px;
+  }
 }
 
 /* Landing-hero: stadion mét slime erin verwerkt (slime staat achter de tekst). */
@@ -692,6 +698,107 @@ textarea {
   padding: 14px 16px;
 }
 
+/* Desktop-headerbalk (alleen ≥1024px). */
+.site-header {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .site-header {
+    display: block;
+    background: rgba(255, 255, 255, 0.97);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(8, 22, 52, 0.08);
+    box-shadow: 0 6px 18px rgba(8, 22, 52, 0.05);
+  }
+
+  .site-header-inner {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 10px 24px;
+  }
+
+  .site-header-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex: 0 0 auto;
+  }
+
+  .site-header-logo img {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .site-header-logo .brand-wordmark {
+    font-size: 1.6rem;
+  }
+
+  .site-header-nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .site-header-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .site-header-link:hover {
+    background: #eef3fc;
+    color: var(--blue-2);
+  }
+
+  .site-header-link.is-active {
+    background: linear-gradient(135deg, var(--blue), var(--blue-2));
+    color: #fff;
+  }
+
+  .site-header-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 6px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    text-decoration: none;
+    background: #eaf6ef;
+    color: #0e7a44;
+    border: 1px solid rgba(14, 122, 68, 0.28);
+  }
+
+  .site-header-cta-primary {
+    background: linear-gradient(135deg, #f1822f, #df5a12);
+    color: #fff;
+    border-color: transparent;
+  }
+
+  /* Logo per pagina én de zwevende pill verdwijnen op desktop — de headerbalk vervangt ze. */
+  .app-brand {
+    display: none !important;
+  }
+}
+
 .brand-mark {
   position: relative;
   overflow: hidden;
@@ -807,6 +914,19 @@ textarea {
 
 .field:focus {
   border-color: var(--blue);
+}
+
+.match-group {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #e7eefb, #d7e4f7);
+  color: var(--blue-2);
+  font-weight: 800;
+  font-size: 0.95rem;
 }
 
 .score-slot {
@@ -1233,22 +1353,9 @@ textarea {
     width: 200px;
   }
 
+  /* Onderbalk is alleen voor mobiel; op desktop is er de headerbalk. */
   .bottom-nav {
-    position: fixed;
-    top: 42px;
-    right: 0;
-    bottom: auto;
-    left: 0;
-    width: fit-content;
-    margin: 0 auto;
-    grid-template-columns: repeat(6, minmax(80px, auto));
-    max-width: none;
-    border: 1px solid rgba(14, 42, 71, 0.1);
-    box-shadow: 0 14px 32px rgba(14, 42, 71, 0.18);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
-    background: rgba(255, 255, 255, 0.96);
-    isolation: isolate;
+    display: none;
   }
 
   /* WK-tricolor accent onder de desktop-menubalk. */

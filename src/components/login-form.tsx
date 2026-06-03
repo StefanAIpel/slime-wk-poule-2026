@@ -149,7 +149,7 @@ export function LoginForm() {
         onClick={() => { setMode("code"); setStatus("idle"); setMessage(""); }}
       >
         <KeyRound aria-hidden="true" className="size-4" />
-        Kind zonder e-mail? Inloggen met code
+        Inloggen met code
       </button>
     </form>
   );

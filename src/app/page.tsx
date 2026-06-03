@@ -197,7 +197,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
   return (
     <main className="page-shell shell-top-tight grid gap-5">
       <div className="hero-band hero-band-visual hero-home hero-band-topbar">
-        <div className="hero-topbar">
+        <div className="hero-topbar lg:hidden">
           <BrandWordmark onDark />
         </div>
         <div className="hero-content">

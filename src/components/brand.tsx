@@ -7,7 +7,7 @@ import Link from "next/link";
  */
 export function Brand({ hideIcon = false }: { hideIcon?: boolean }) {
   return (
-    <Link href="/" className="flex items-center gap-3 no-underline">
+    <Link href="/" className="app-brand flex items-center gap-3 no-underline">
       {hideIcon ? null : (
         <Image
           className="size-14 rounded-xl shadow-lg shadow-black/25"

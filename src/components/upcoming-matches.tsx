@@ -1,6 +1,6 @@
 import { CalendarDays, MapPin } from "lucide-react";
 import { TeamFlag } from "@/components/team-flag";
-import { formatAmsterdam, venueLabel } from "@/lib/format";
+import { formatAmsterdam, venueHourOffset, venueLabel } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 type Row = {
@@ -42,33 +42,42 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
       </div>
       <div className="divide-y divide-slate-200">
         {rows.map((m) => (
-          <div key={m.id} className="py-2">
-            <div className="flex items-center gap-2 text-xs font-medium text-[var(--muted)]">
-              <span className="grid size-5 place-items-center rounded-full bg-[#e7eef8] text-[10px] font-bold text-[var(--blue-2)]">
-                {m.group_letter ?? "KO"}
-              </span>
-              {formatAmsterdam(m.starts_at)}
-              {m.venue ? (
-                <span className="inline-flex items-center gap-1 text-[var(--muted)]">
-                  <MapPin aria-hidden="true" className="size-3.5" />
-                  <span className="sm:hidden">{m.venue}</span>
-                  <span className="hidden sm:inline">{venueLabel(m.venue)}</span>
-                </span>
-              ) : null}
+          <div key={m.id} className="flex items-stretch gap-3 py-2">
+            <div className="flex items-center">
+              <span className="match-group">{m.group_letter ?? "KO"}</span>
             </div>
-            <div className="mt-1 flex items-center gap-2 text-sm">
-              <TeamFlag code={m.home_code} name={m.home?.name_nl} />
-              <span className="font-medium text-[var(--ink)]">
-                <span className="sm:hidden">{m.home_code ?? m.home?.name_nl}</span>
-                <span className="hidden sm:inline">{m.home?.name_nl ?? m.home_code}</span>
-              </span>
-              <span className="px-0.5 font-semibold text-[var(--muted)]">–</span>
-              <TeamFlag code={m.away_code} name={m.away?.name_nl} />
-              <span className="font-medium text-[var(--ink)]">
-                <span className="sm:hidden">{m.away_code ?? m.away?.name_nl}</span>
-                <span className="hidden sm:inline">{m.away?.name_nl ?? m.away_code}</span>
-              </span>
-              <span className="score-slot ml-auto">vs</span>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-medium text-[#54657f]">
+                {formatAmsterdam(m.starts_at)}
+                {venueHourOffset(m.starts_at, m.venue) !== null ? (
+                  <span title="Tijdverschil met Nederland">
+                    ({(() => { const o = venueHourOffset(m.starts_at, m.venue)!; return o === 0 ? "gelijk" : `${o > 0 ? "+" : "−"}${Math.abs(o)}u`; })()})
+                  </span>
+                ) : null}
+                {m.venue ? (
+                  <span className="inline-flex items-center gap-1">
+                    <MapPin aria-hidden="true" className="size-3.5" />
+                    <span className="sm:hidden">{m.venue}</span>
+                    <span className="hidden sm:inline">{venueLabel(m.venue)}</span>
+                  </span>
+                ) : null}
+              </div>
+              <div className="mt-1 grid gap-1 text-sm">
+                <div className="flex items-center gap-2">
+                  <TeamFlag code={m.home_code} name={m.home?.name_nl} />
+                  <span className="font-medium text-[var(--ink)]">
+                    <span className="sm:hidden">{m.home_code ?? m.home?.name_nl}</span>
+                    <span className="hidden sm:inline">{m.home?.name_nl ?? m.home_code}</span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <TeamFlag code={m.away_code} name={m.away?.name_nl} />
+                  <span className="font-medium text-[var(--ink)]">
+                    <span className="sm:hidden">{m.away_code ?? m.away?.name_nl}</span>
+                    <span className="hidden sm:inline">{m.away?.name_nl ?? m.away_code}</span>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Clock, MapPin, RotateCcw } from "lucide-react";
+import { CalendarDays, MapPin, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { TeamFlag } from "@/components/team-flag";
 import { formatAmsterdam, venueHourOffset, venueLabel } from "@/lib/format";
@@ -156,40 +156,43 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
 function MatchRow({ match }: { match: ScheduleMatch }) {
   const offset = venueHourOffset(match.startsAt, match.venue);
   return (
-    <div className="px-3 py-2.5">
-      <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-[var(--muted)]">
-        <span className="grid size-5 place-items-center rounded-full bg-[#e7eef8] text-[10px] font-bold text-[var(--blue-2)]">
-          {match.group ?? "KO"}
-        </span>
-        <CalendarDays aria-hidden="true" className="size-3.5" />
-        {formatAmsterdam(match.startsAt)}
-        {offset !== null ? (
-          <span className="inline-flex items-center gap-1" title="Tijdverschil met Nederland">
-            <Clock aria-hidden="true" className="size-3.5" />
-            {offset === 0 ? "gelijk" : `${offset > 0 ? "+" : "−"}${Math.abs(offset)} u`}
-          </span>
-        ) : null}
-        {match.venue ? (
-          <span className="inline-flex items-center gap-1">
-            <MapPin aria-hidden="true" className="size-3.5" />
-            <span className="sm:hidden">{match.venue}</span>
-            <span className="hidden sm:inline">{venueLabel(match.venue)}</span>
-          </span>
-        ) : null}
+    <div className="flex items-stretch gap-3 px-3 py-2.5">
+      <div className="flex items-center">
+        <span className="match-group">{match.group ?? "KO"}</span>
       </div>
-      <div className="flex items-center gap-2">
-        <TeamFlag code={match.homeCode} name={match.homeName} />
-        <span className="text-sm font-medium text-[var(--ink)] sm:text-base">
-          <span className="sm:hidden">{match.homeCode ?? match.homeName}</span>
-          <span className="hidden sm:inline">{match.homeName ?? match.homeCode}</span>
-        </span>
-        <span className="px-0.5 text-sm font-semibold text-[var(--muted)]">–</span>
-        <TeamFlag code={match.awayCode} name={match.awayName} />
-        <span className="text-sm font-medium text-[var(--ink)] sm:text-base">
-          <span className="sm:hidden">{match.awayCode ?? match.awayName}</span>
-          <span className="hidden sm:inline">{match.awayName ?? match.awayCode}</span>
-        </span>
-        <span className="score-slot ml-auto">vs</span>
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-medium text-[#54657f]">
+          <CalendarDays aria-hidden="true" className="size-3.5" />
+          {formatAmsterdam(match.startsAt)}
+          {offset !== null ? (
+            <span title="Tijdverschil met Nederland">
+              ({offset === 0 ? "gelijk" : `${offset > 0 ? "+" : "−"}${Math.abs(offset)}u`})
+            </span>
+          ) : null}
+          {match.venue ? (
+            <span className="inline-flex items-center gap-1">
+              <MapPin aria-hidden="true" className="size-3.5" />
+              <span className="sm:hidden">{match.venue}</span>
+              <span className="hidden sm:inline">{venueLabel(match.venue)}</span>
+            </span>
+          ) : null}
+        </div>
+        <div className="grid gap-1">
+          <div className="flex items-center gap-2">
+            <TeamFlag code={match.homeCode} name={match.homeName} />
+            <span className="font-medium text-[var(--ink)]">
+              <span className="sm:hidden">{match.homeCode ?? match.homeName}</span>
+              <span className="hidden sm:inline">{match.homeName ?? match.homeCode}</span>
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <TeamFlag code={match.awayCode} name={match.awayName} />
+            <span className="font-medium text-[var(--ink)]">
+              <span className="sm:hidden">{match.awayCode ?? match.awayName}</span>
+              <span className="hidden sm:inline">{match.awayName ?? match.awayCode}</span>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

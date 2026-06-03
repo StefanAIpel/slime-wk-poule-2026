@@ -5,6 +5,7 @@ import { InAppHint } from "@/components/in-app-hint";
 import { PwaRegister } from "@/components/pwa-register";
 import { QuickMenu } from "@/components/quick-menu";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
 import { StatusBar } from "@/components/status-bar";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import "./globals.css";
@@ -103,6 +104,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <PwaRegister />
         <AuthLinkBridge />
         <StatusBar />
+        <SiteHeader />
         <InAppHint />
         <QuickMenu />
         {children}
