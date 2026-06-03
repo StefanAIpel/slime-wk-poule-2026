@@ -8,6 +8,7 @@ import { isAvatarKey } from "@/lib/avatars";
 import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
+import { kidEmail } from "@/lib/kid";
 import { logError } from "@/lib/log";
 import { rateLimit } from "@/lib/rate-limit";
 import { recalculateAllScores } from "@/lib/recalculate";
@@ -172,6 +173,54 @@ export async function adminSetResult(formData: FormData) {
   revalidatePath("/ranglijst");
   revalidatePath("/");
   redirect("/admin?ok=1");
+}
+
+function kidCode() {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = randomBytes(8);
+  return Array.from(bytes)
+    .slice(0, 8)
+    .map((byte) => alphabet[byte % alphabet.length])
+    .join("");
+}
+
+export async function createKidAccount(formData: FormData) {
+  const { user } = await requireUser();
+  if (!isAdminEmail(user.email)) redirect("/");
+
+  const admin = createAdminClient();
+  const nickname = cleanText(formData.get("nickname"), 24);
+  const teamName = cleanText(formData.get("team_name"), 28) || nickname;
+  if (nickname.length < 2) redirect("/admin?fout=kind-naam");
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const code = kidCode();
+    const { data: created, error } = await admin.auth.admin.createUser({
+      email: kidEmail(code),
+      password: code,
+      email_confirm: true,
+      user_metadata: { kid: true, nickname },
+    });
+    if (error || !created?.user) {
+      // Waarschijnlijk een dubbele code → opnieuw proberen.
+      if (attempt === 4) {
+        logError("createKidAccount", error ?? "geen gebruiker");
+        redirect("/admin?fout=kind");
+      }
+      continue;
+    }
+    const uid = created.user.id;
+    await admin.from("profiles").upsert({ id: uid, nickname, team_name: teamName });
+    await admin.from("kid_accounts").insert({ user_id: uid, code, nickname, created_by: user.email });
+    await admin.from("admin_audit_log").insert({
+      actor_email: user.email,
+      action: "create_kid",
+      detail: { nickname, code },
+    });
+    revalidatePath("/admin");
+    redirect(`/admin?kind=${code}`);
+  }
+  redirect("/admin?fout=kind");
 }
 
 export async function adminRecalculate() {

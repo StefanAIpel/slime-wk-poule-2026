@@ -1,7 +1,7 @@
-import { Activity, ClipboardList, RefreshCw, ShieldAlert, Users } from "lucide-react";
+import { Activity, ClipboardList, KeyRound, RefreshCw, ShieldAlert, Users } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { adminRecalculate, adminSetResult } from "@/app/actions";
+import { adminRecalculate, adminSetResult, createKidAccount } from "@/app/actions";
 import { Brand } from "@/components/brand";
 import { PendingButton } from "@/components/pending-button";
 import { TeamFlag } from "@/components/team-flag";
@@ -27,7 +27,9 @@ type MatchRow = {
 
 type AuditRow = { id: number; actor_email: string | null; action: string; detail: unknown; created_at: string };
 
-export default async function AdminPage({ searchParams }: { searchParams: Promise<{ ok?: string; fout?: string }> }) {
+type KidRow = { user_id: string; code: string; nickname: string | null; created_at: string };
+
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ ok?: string; fout?: string; kind?: string }> }) {
   const params = await searchParams;
   const supabase = await createClient();
   const {
@@ -56,6 +58,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     { data: lastScore },
     { data: matches },
     { data: audit },
+    { data: kids },
   ] = await Promise.all([
     admin.from("profiles").select("id", { count: "exact", head: true }),
     admin.from("predictions").select("user_id", { count: "exact", head: true }),
@@ -67,10 +70,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       .order("starts_at")
       .limit(120),
     admin.from("admin_audit_log").select("id,actor_email,action,detail,created_at").order("created_at", { ascending: false }).limit(15),
+    admin.from("kid_accounts").select("user_id,code,nickname,created_at").order("created_at", { ascending: false }),
   ]);
 
   const matchRows = (matches ?? []) as unknown as MatchRow[];
   const auditRows = (audit ?? []) as unknown as AuditRow[];
+  const kidRows = (kids ?? []) as unknown as KidRow[];
   const lastUpdate = (lastScore as { updated_at: string | null } | null)?.updated_at ?? null;
   const finishedCount = matchRows.filter((m) => m.status === "finished").length;
 
@@ -84,6 +89,11 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
       {params.ok ? <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-3 font-bold text-green-800">Opgeslagen en herberekend.</div> : null}
       {params.fout ? <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-3 font-bold text-red-800">Er ging iets mis ({params.fout}).</div> : null}
+      {params.kind ? (
+        <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-3 font-bold text-green-800">
+          Kind-account aangemaakt. Inlogcode: <span className="font-mono text-lg">{params.kind}</span> — geef deze aan het kind (login → “Inloggen met code”).
+        </div>
+      ) : null}
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Stat icon={<Users className="size-5" />} label="Spelers" value={userCount ?? 0} />
@@ -103,6 +113,41 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </PendingButton>
         </form>
       </div>
+
+      <section className="mt-4 panel p-4">
+        <div className="flex items-center gap-2">
+          <KeyRound aria-hidden="true" className="size-5 text-[#064ed6]" />
+          <h2 className="text-lg font-bold text-[#081634]">Kind-accounts (inloggen met code, geen e-mail)</h2>
+        </div>
+        <p className="mt-1 text-sm font-medium text-[#48617f]">
+          Maak een account voor een kind zonder e-mail. Het kind logt in met de code via “Inloggen met code”. Houd codes privé.
+        </p>
+        <form action={createKidAccount} className="mt-3 flex flex-wrap items-end gap-2">
+          <label className="grid gap-1 text-xs font-bold text-[#081634]">
+            Naam
+            <input className="field min-h-10" name="nickname" required minLength={2} maxLength={24} placeholder="Bijv. Tom" />
+          </label>
+          <label className="grid gap-1 text-xs font-bold text-[#081634]">
+            Teamnaam (optioneel)
+            <input className="field min-h-10" name="team_name" maxLength={28} placeholder="Bijv. Team Tom" />
+          </label>
+          <PendingButton className="button-primary min-h-10 px-4" pendingText="Aanmaken…">
+            Maak kind-account
+          </PendingButton>
+        </form>
+        {kidRows.length ? (
+          <div className="mt-3 overflow-hidden rounded-lg border border-slate-200">
+            {kidRows.map((k) => (
+              <div key={k.user_id} className="flex items-center justify-between gap-3 border-b border-slate-100 px-3 py-2 text-sm last:border-b-0">
+                <span className="font-bold text-[#081634]">{k.nickname ?? "Kind"}</span>
+                <span className="font-mono font-bold text-[var(--blue-2)]">{k.code}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-2 text-sm font-medium text-[#48617f]">Nog geen kind-accounts.</p>
+        )}
+      </section>
 
       <section className="mt-4 panel overflow-hidden">
         <div className="wc-header p-3 text-white">

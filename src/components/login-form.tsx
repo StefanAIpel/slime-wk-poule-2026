@@ -1,7 +1,8 @@
 "use client";
 
-import { Check, ExternalLink, Mail } from "lucide-react";
+import { Check, ExternalLink, KeyRound, Mail } from "lucide-react";
 import { useState } from "react";
+import { kidEmail } from "@/lib/kid";
 import { createClient } from "@/lib/supabase/browser";
 
 const webmail: { match: string[]; label: string; url: string }[] = [
@@ -18,9 +19,55 @@ function webmailFor(email: string) {
 }
 
 export function LoginForm() {
+  const [mode, setMode] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
+
+  async function onCodeSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setStatus("loading");
+    setMessage("");
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({ email: kidEmail(code), password: code.trim() });
+    if (error) {
+      setStatus("error");
+      setMessage("Die code klopt niet. Vraag je ouder/beheerder om de juiste code.");
+      return;
+    }
+    window.location.href = "/";
+  }
+
+  if (mode === "code") {
+    return (
+      <form onSubmit={onCodeSubmit} className="panel grid gap-3 p-4" aria-label="Inloggen met code">
+        <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
+          Inlogcode (voor kinderen zonder e-mail)
+          <input
+            className="field uppercase tracking-widest"
+            inputMode="text"
+            autoCapitalize="characters"
+            autoComplete="off"
+            required
+            value={code}
+            onChange={(event) => setCode(event.target.value.toUpperCase())}
+            placeholder="BIJV. ABCD2345"
+          />
+        </label>
+        <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
+          <KeyRound aria-hidden="true" className="size-5" />
+          {status === "loading" ? "Inloggen…" : "Inloggen met code"}
+        </button>
+        <p aria-live="polite" className={`text-sm font-medium ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
+          {message || "De code krijg je van de beheerder van je poule."}
+        </p>
+        <button type="button" className="text-sm font-bold text-[#0e7a44] underline" onClick={() => { setMode("email"); setStatus("idle"); setMessage(""); }}>
+          Terug naar inloggen met e-mail
+        </button>
+      </form>
+    );
+  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -96,6 +143,14 @@ export function LoginForm() {
           </>
         )}
       </p>
+      <button
+        type="button"
+        className="flex items-center justify-center gap-1.5 text-sm font-bold text-[#0e7a44]"
+        onClick={() => { setMode("code"); setStatus("idle"); setMessage(""); }}
+      >
+        <KeyRound aria-hidden="true" className="size-4" />
+        Kind zonder e-mail? Inloggen met code
+      </button>
     </form>
   );
 }
