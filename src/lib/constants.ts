@@ -75,6 +75,26 @@ export const hostCities = [
   "Vancouver",
 ];
 
+/** Tijdzone per speelstad (WK 2026), voor het tonen van het tijdverschil met NL. */
+export const cityTimeZone: Record<string, string> = {
+  Atlanta: "America/New_York",
+  Boston: "America/New_York",
+  Dallas: "America/Chicago",
+  Guadalajara: "America/Mexico_City",
+  Houston: "America/Chicago",
+  "Kansas City": "America/Chicago",
+  "Los Angeles": "America/Los_Angeles",
+  "Mexico City": "America/Mexico_City",
+  Miami: "America/New_York",
+  Monterrey: "America/Monterrey",
+  "New York New Jersey": "America/New_York",
+  Philadelphia: "America/New_York",
+  "San Francisco Bay Area": "America/Los_Angeles",
+  Seattle: "America/Los_Angeles",
+  Toronto: "America/Toronto",
+  Vancouver: "America/Vancouver",
+};
+
 /** Stadion per speelstad (WK 2026). Gebruikt om naast de stad het stadion te tonen. */
 export const stadiumByCity: Record<string, string> = {
   Atlanta: "Mercedes-Benz Stadium",

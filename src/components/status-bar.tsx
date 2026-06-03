@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarClock, ListChecks, Trophy } from "lucide-react";
+import { ArrowRight, CalendarClock, ListChecks, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ENTRY_DEADLINE_ISO } from "@/lib/constants";
@@ -53,8 +53,9 @@ export function StatusBar() {
             </Link>
           </span>
         ) : me && !me.loggedIn ? (
-          <Link href="/#login" className="status-chip status-chip-accent">
+          <Link href="/#login" className="status-cta">
             Gratis meedoen
+            <ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         ) : null}
       </div>

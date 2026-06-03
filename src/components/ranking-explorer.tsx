@@ -24,30 +24,18 @@ function matches(query: string, ...fields: (string | null | undefined)[]) {
 }
 
 export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pools: PoolRow[] }) {
-  const [query, setQuery] = useState("");
+  const [qWorld, setQWorld] = useState("");
+  const [qPools, setQPools] = useState("");
   const [view, setView] = useState<"wereld" | "subpoules">("wereld");
 
   const filteredPlayers = useMemo(
-    () => players.filter((p) => matches(query, p.nickname, p.teamName)),
-    [players, query],
+    () => players.filter((p) => matches(qWorld, p.nickname, p.teamName)),
+    [players, qWorld],
   );
-  const filteredPools = useMemo(() => pools.filter((p) => matches(query, p.name, p.code)), [pools, query]);
+  const filteredPools = useMemo(() => pools.filter((p) => matches(qPools, p.name, p.code)), [pools, qPools]);
 
   return (
     <div className="grid gap-4">
-      <div className="panel flex items-center gap-2 p-2">
-        <Search aria-hidden="true" className="ml-2 size-5 text-[#475670]" />
-        <input
-          className="w-full bg-transparent p-2 font-medium text-[#101a2b] outline-none"
-          type="search"
-          inputMode="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Zoek een speler, team of subpoule…"
-          aria-label="Zoek speler of subpoule"
-        />
-      </div>
-
       {/* Tabs alleen op mobiel; op desktop staan beide tabellen naast elkaar. */}
       <div className="flex gap-2 lg:hidden" role="tablist" aria-label="Kies ranglijst">
         <button
@@ -78,6 +66,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
             <Trophy aria-hidden="true" className="size-6" />
             <h2 className="text-xl font-bold">Wereldranglijst</h2>
           </div>
+          <TableSearch value={qWorld} onChange={setQWorld} placeholder="Zoek een speler of team…" />
           <div className="divide-y divide-slate-100">
             {filteredPlayers.length ? (
               filteredPlayers.map((row) => (
@@ -103,6 +92,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
             <Users aria-hidden="true" className="size-6" />
             <h2 className="text-xl font-bold">Subpoules</h2>
           </div>
+          <TableSearch value={qPools} onChange={setQPools} placeholder="Zoek een subpoule of code…" />
           <div className="divide-y divide-slate-100">
             {filteredPools.length ? (
               filteredPools.map((pool) => (
@@ -121,6 +111,23 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
           </div>
         </article>
       </section>
+    </div>
+  );
+}
+
+function TableSearch({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+  return (
+    <div className="flex items-center gap-2 border-b border-slate-100 bg-slate-50 px-3 py-2">
+      <Search aria-hidden="true" className="size-4 text-[#475670]" />
+      <input
+        className="w-full bg-transparent text-sm font-medium text-[#101a2b] outline-none"
+        type="search"
+        inputMode="search"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        aria-label={placeholder}
+      />
     </div>
   );
 }

@@ -204,12 +204,12 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             Gratis aanmelden met alleen je e-mail. In 10 minuten klaar voor het hele WK. Geen irritante advertenties,
             geen cookiegedoe.
           </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <a href="#login" className="button-primary">
+          <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
+            <a href="#login" className="button-primary w-full sm:w-auto">
               <Trophy aria-hidden="true" className="size-5" />
               Gratis meedoen
             </a>
-            <a href="#login" className="button-secondary">
+            <a href="#login" className="button-secondary w-full sm:w-auto">
               <Ticket aria-hidden="true" className="size-5" />
               Ik heb een poulecode
             </a>

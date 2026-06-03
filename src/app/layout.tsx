@@ -70,18 +70,28 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: SITE_NAME,
-  url: SITE_URL,
-  applicationCategory: "GameApplication",
-  operatingSystem: "Web, iOS, Android",
-  inLanguage: "nl-NL",
-  description,
-  offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
-  publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
-};
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: `${SITE_URL}/icon-512.png`,
+    image: `${SITE_URL}/icon-512.png`,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: SITE_NAME,
+    url: SITE_URL,
+    applicationCategory: "GameApplication",
+    operatingSystem: "Web, iOS, Android",
+    inLanguage: "nl-NL",
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+    publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon-512.png` },
+  },
+];
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

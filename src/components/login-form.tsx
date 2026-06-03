@@ -19,11 +19,17 @@ function webmailFor(email: string) {
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
+  const [agreed, setAgreed] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!agreed) {
+      setStatus("error");
+      setMessage("Vink eerst aan dat je akkoord gaat met de voorwaarden en het privacybeleid.");
+      return;
+    }
     setStatus("loading");
     setMessage("");
 
@@ -82,7 +88,22 @@ export function LoginForm() {
           placeholder="jij@example.nl"
         />
       </label>
-      <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
+      <label className="flex items-start gap-2 text-xs font-medium leading-5 text-[#475670]">
+        <input
+          type="checkbox"
+          className="mt-0.5 size-4 flex-none accent-[#0e7a44]"
+          checked={agreed}
+          onChange={(event) => setAgreed(event.target.checked)}
+          required
+        />
+        <span>
+          Ik ga akkoord met de{" "}
+          <a className="font-bold text-[#0e7a44]" href="/voorwaarden" target="_blank" rel="noopener noreferrer">voorwaarden</a>{" "}
+          en het{" "}
+          <a className="font-bold text-[#0e7a44]" href="/privacy" target="_blank" rel="noopener noreferrer">privacybeleid</a>.
+        </span>
+      </label>
+      <button className="button-primary w-full" type="submit" disabled={status === "loading" || !agreed}>
         <Mail aria-hidden="true" className="size-5" />
         {status === "loading" ? "Versturen…" : "Stuur inloglink"}
       </button>

@@ -1,9 +1,9 @@
 "use client";
 
-import { CalendarDays, MapPin, RotateCcw } from "lucide-react";
+import { CalendarDays, Clock, MapPin, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { TeamFlag } from "@/components/team-flag";
-import { formatAmsterdam, venueLabel } from "@/lib/format";
+import { formatAmsterdam, venueHourOffset, venueLabel } from "@/lib/format";
 
 export type ScheduleMatch = {
   id: number;
@@ -40,16 +40,31 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
     [matches],
   );
   const hasKnockout = useMemo(() => matches.some((m) => !m.group), [matches]);
+  // Teamlijst hangt af van de gekozen groep: kies je een groep, dan zie je alleen
+  // die teams.
   const teams = useMemo(() => {
     const map = new Map<string, string>();
     for (const m of matches) {
+      if (group !== "all" && (group === "ko" ? Boolean(m.group) : m.group !== group)) continue;
       if (m.homeCode) map.set(m.homeCode, m.homeName ?? m.homeCode);
       if (m.awayCode) map.set(m.awayCode, m.awayName ?? m.awayCode);
     }
     return Array.from(map.entries())
       .map(([code, name]) => ({ code, name }))
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [matches]);
+  }, [matches, group]);
+
+  function onGroupChange(value: string) {
+    setGroup(value);
+    // Reset team als die niet meer in de gekozen groep zit.
+    if (value !== "all" && team !== "all") {
+      const stillValid = matches.some(
+        (m) =>
+          (value === "ko" ? !m.group : m.group === value) && (m.homeCode === team || m.awayCode === team),
+      );
+      if (!stillValid) setTeam("all");
+    }
+  }
   const dates = useMemo(() => {
     const map = new Map<string, string>();
     for (const m of matches) {
@@ -73,10 +88,10 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
 
   return (
     <section className="grid gap-3">
-      <div className="panel grid gap-2 p-3 sm:grid-cols-3">
+      <div className="panel grid grid-cols-2 gap-2 p-3 sm:grid-cols-3">
         <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
           Groep
-          <select className="field" value={group} onChange={(e) => setGroup(e.target.value)}>
+          <select className="field" value={group} onChange={(e) => onGroupChange(e.target.value)}>
             <option value="all">Alle groepen</option>
             {groups.map((g) => (
               <option key={g} value={g}>
@@ -89,7 +104,7 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
         <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
           Team
           <select className="field" value={team} onChange={(e) => setTeam(e.target.value)}>
-            <option value="all">Alle teams</option>
+            <option value="all">{group === "all" ? "Alle teams" : "Alle teams in groep"}</option>
             {teams.map((t) => (
               <option key={t.code} value={t.code}>
                 {t.name}
@@ -97,7 +112,7 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
             ))}
           </select>
         </label>
-        <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+        <label className="col-span-2 grid gap-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)] sm:col-span-1">
           Datum
           <select className="field" value={date} onChange={(e) => setDate(e.target.value)}>
             <option value="all">Alle datums</option>
@@ -108,7 +123,7 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
             ))}
           </select>
         </label>
-        <div className="flex items-center justify-between gap-3 sm:col-span-3">
+        <div className="col-span-2 flex items-center justify-between gap-3 sm:col-span-3">
           <span className="text-sm font-medium text-[var(--muted)]">{filtered.length} wedstrijden</span>
           {hasFilter ? (
             <button
@@ -139,14 +154,21 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
 }
 
 function MatchRow({ match }: { match: ScheduleMatch }) {
+  const offset = venueHourOffset(match.startsAt, match.venue);
   return (
     <div className="px-3 py-2.5">
-      <div className="mb-1 flex items-center gap-2 text-xs font-medium text-[var(--muted)]">
+      <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-[var(--muted)]">
         <span className="grid size-5 place-items-center rounded-full bg-[#e7eef8] text-[10px] font-bold text-[var(--blue-2)]">
           {match.group ?? "KO"}
         </span>
         <CalendarDays aria-hidden="true" className="size-3.5" />
         {formatAmsterdam(match.startsAt)}
+        {offset !== null ? (
+          <span className="inline-flex items-center gap-1" title="Tijdverschil met Nederland">
+            <Clock aria-hidden="true" className="size-3.5" />
+            {offset === 0 ? "gelijk" : `${offset > 0 ? "+" : "−"}${Math.abs(offset)} u`}
+          </span>
+        ) : null}
         {match.venue ? (
           <span className="inline-flex items-center gap-1">
             <MapPin aria-hidden="true" className="size-3.5" />

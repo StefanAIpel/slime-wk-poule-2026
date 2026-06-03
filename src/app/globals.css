@@ -163,6 +163,25 @@ textarea {
   font-weight: 700;
 }
 
+.status-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffb347, var(--orange));
+  color: #fff;
+  padding: 4px 12px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(244, 102, 30, 0.32);
+}
+
+.status-cta:hover {
+  filter: brightness(1.04);
+}
+
 .status-me {
   display: inline-flex;
   align-items: center;
@@ -314,21 +333,24 @@ textarea {
 }
 
 .hero-content {
-  max-width: 70%;
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
 }
 
-/* Slime staat op het gras: verankerd op de onderrand, schaalt mee, blijft zichtbaar. */
+/* Slime staat op het gras: verankerd op de onderrand, in de hoek zodat tekst en
+   knoppen er niet achter verdwijnen. */
 .hero-mascot {
   position: absolute;
-  right: 6px;
+  right: 4px;
   bottom: 0;
-  z-index: 1;
   height: auto;
   width: auto;
-  max-height: 64%;
-  max-width: 50%;
+  max-height: 38%;
+  max-width: 40%;
   object-fit: contain;
-  object-position: bottom;
+  object-position: bottom right;
+  z-index: 1;
   pointer-events: none;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.38));
 }
@@ -650,10 +672,12 @@ textarea {
 }
 
 .button-secondary {
-  border: 1px solid rgba(8, 22, 52, 0.12);
-  background: #ffffff;
-  color: var(--blue-2);
-  box-shadow: 0 6px 16px rgba(8, 22, 52, 0.06);
+  border: 1px solid rgba(8, 40, 22, 0.22);
+  /* Mexico-groen i.p.v. wit. */
+  background: linear-gradient(135deg, #18a558, #0e7a44);
+  color: #ffffff;
+  text-shadow: 0 1px 1px rgba(0, 50, 25, 0.28);
+  box-shadow: 0 10px 22px rgba(15, 122, 68, 0.22);
 }
 
 .button-whatsapp {
