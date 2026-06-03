@@ -16,9 +16,13 @@ import { Brand } from "@/components/brand";
 import { HeroArt } from "@/components/hero-art";
 import { PendingButton } from "@/components/pending-button";
 import { PoolBanner } from "@/components/pool-banner";
+import { PoolMembers, type MatchLine, type PoolMember } from "@/components/pool-members";
+import { PoolTabs } from "@/components/pool-tabs";
 import { CopyButton, WhatsappShare } from "@/components/share-button";
-import { SITE_URL } from "@/lib/constants";
-import { displayName } from "@/lib/format";
+import { ENTRY_DEADLINE, SITE_URL } from "@/lib/constants";
+import { displayName, formatAmsterdam } from "@/lib/format";
+import { scoreMatchPrediction } from "@/lib/scoring";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -42,7 +46,7 @@ type MemberRow = {
   pool_id: string;
   user_id: string;
   role: "owner" | "moderator" | "member";
-  profiles: { nickname: string | null; team_name: string | null } | null;
+  profiles: { nickname: string | null; team_name: string | null; avatar_key: string | null } | null;
   pools: {
     id: string;
     name: string;
@@ -53,6 +57,18 @@ type MemberRow = {
     accent_color: string;
   } | null;
 };
+
+type MatchInfo = {
+  id: number;
+  startsAt: string | null;
+  status: string | null;
+  homeName: string;
+  awayName: string;
+  homeScore: number | null;
+  awayScore: number | null;
+};
+
+type PredictionRow = { user_id: string; match_id: number; home_score: number; away_score: number };
 
 type MessageRow = {
   id: string;
@@ -80,7 +96,7 @@ export default async function PoolsPage({
   const [{ data }, { data: messages }] = await Promise.all([
     supabase
       .from("pool_members")
-      .select("pool_id,user_id,role,profiles(nickname,team_name),pools(id,name,code,owner_id,description,badge_emoji,accent_color)")
+      .select("pool_id,user_id,role,profiles(nickname,team_name,avatar_key),pools(id,name,code,owner_id,description,badge_emoji,accent_color)")
       .order("joined_at"),
     supabase
       .from("pool_messages")
@@ -92,6 +108,62 @@ export default async function PoolsPage({
 
   const pools = groupMembers((data ?? []) as unknown as MemberRow[]);
   const messagesByPool = groupMessages((messages ?? []) as unknown as MessageRow[]);
+
+  // Stand + voorspellingen per subpoule. Voorspellingen van anderen worden pas
+  // na de invuldeadline onthuld; je eigen voorspellingen zie je altijd.
+  const memberIds = Array.from(new Set(pools.flatMap((pool) => pool.members.map((member) => member.user_id))));
+  const revealOthers = new Date() >= ENTRY_DEADLINE;
+  const admin = createAdminClient();
+  const matchInfoById = new Map<number, MatchInfo>();
+  const predictionsByUser = new Map<string, PredictionRow[]>();
+  const pointsByUser = new Map<string, number>();
+
+  if (memberIds.length) {
+    const [{ data: matchRows }, { data: predictionRows }, { data: scoreRows }] = await Promise.all([
+      admin
+        .from("matches")
+        .select("id,starts_at,status,home_score,away_score,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)")
+        .order("starts_at"),
+      admin.from("predictions").select("user_id,match_id,home_score,away_score").in("user_id", memberIds),
+      admin.from("scores").select("user_id,points").in("user_id", memberIds),
+    ]);
+
+    for (const row of (matchRows ?? []) as unknown as Array<{
+      id: number;
+      starts_at: string | null;
+      status: string | null;
+      home_score: number | null;
+      away_score: number | null;
+      home: { name_nl: string | null } | null;
+      away: { name_nl: string | null } | null;
+    }>) {
+      matchInfoById.set(row.id, {
+        id: row.id,
+        startsAt: row.starts_at,
+        status: row.status,
+        homeName: row.home?.name_nl ?? "?",
+        awayName: row.away?.name_nl ?? "?",
+        homeScore: row.home_score,
+        awayScore: row.away_score,
+      });
+    }
+    for (const row of (predictionRows ?? []) as PredictionRow[]) {
+      predictionsByUser.set(row.user_id, [...(predictionsByUser.get(row.user_id) ?? []), row]);
+    }
+    for (const row of (scoreRows ?? []) as Array<{ user_id: string; points: number }>) {
+      pointsByUser.set(row.user_id, row.points);
+    }
+  }
+
+  const poolMembersById = new Map<string, PoolMember[]>();
+  for (const pool of pools) {
+    poolMembersById.set(
+      pool.id,
+      buildPoolMembers(pool.members, user.id, revealOthers, matchInfoById, predictionsByUser, pointsByUser),
+    );
+  }
+
+  const tabs = pools.map((pool) => ({ id: pool.id, label: pool.name, emoji: pool.badgeEmoji }));
 
   return (
     <main className="page-shell">
@@ -154,9 +226,10 @@ export default async function PoolsPage({
         </form>
       </section>
 
-      <section className="mt-5 grid gap-4">
+      <section className="mt-5">
         {pools.length ? (
-          pools.map((pool) => {
+          <PoolTabs tabs={tabs}>
+          {pools.map((pool) => {
             const currentMember = pool.members.find((member) => member.user_id === user.id);
             const isOwner = currentMember?.role === "owner";
             const isManager = currentMember?.role === "owner" || currentMember?.role === "moderator";
@@ -272,11 +345,14 @@ export default async function PoolsPage({
                     ) : null}
                   </div>
                 </div>
-                <div className="divide-y divide-slate-200">
+                <PoolMembers members={poolMembersById.get(pool.id) ?? []} />
+                <div className="p-4">
+                  <h3 className="text-lg font-bold text-[#101a2b]">Leden beheren</h3>
+                  <div className="mt-3 divide-y divide-slate-200">
                   {pool.members.map((member) => (
-                    <div key={member.user_id} className="grid gap-3 p-4 md:grid-cols-[1fr_auto] md:items-center">
+                    <div key={member.user_id} className="grid gap-3 py-3 md:grid-cols-[1fr_auto] md:items-center">
                       <div className="flex items-center gap-3">
-                        <Avatar name={displayName(member.profiles)} />
+                        <Avatar name={displayName(member.profiles)} avatarKey={member.profiles?.avatar_key} />
                         <div className="min-w-0">
                           <div className="truncate font-bold text-[#081634]">{displayName(member.profiles)}</div>
                           <div className="text-sm font-semibold text-[#48617f]">{roleLabel(member.role)}</div>
@@ -307,10 +383,12 @@ export default async function PoolsPage({
                       </div>
                     </div>
                   ))}
+                  </div>
                 </div>
               </article>
             );
-          })
+          })}
+          </PoolTabs>
         ) : (
           <div className="panel p-5">
             <h2 className="text-2xl font-bold text-[#081634]">Nog geen poules</h2>
@@ -368,4 +446,69 @@ function roleLabel(role: MemberRow["role"]) {
   if (role === "owner") return "Beheerder";
   if (role === "moderator") return "Moderator";
   return "Deelnemer";
+}
+
+function buildPoolMembers(
+  members: MemberRow[],
+  currentUserId: string,
+  revealOthers: boolean,
+  matchInfoById: Map<number, MatchInfo>,
+  predictionsByUser: Map<string, PredictionRow[]>,
+  pointsByUser: Map<string, number>,
+): PoolMember[] {
+  const built = members.map((member) => {
+    const isYou = member.user_id === currentUserId;
+    const visible = isYou || revealOthers;
+    const past: MatchLine[] = [];
+    const upcoming: MatchLine[] = [];
+
+    if (visible) {
+      const predictions = (predictionsByUser.get(member.user_id) ?? [])
+        .map((prediction) => ({ prediction, match: matchInfoById.get(prediction.match_id) }))
+        .filter((entry): entry is { prediction: PredictionRow; match: MatchInfo } => Boolean(entry.match))
+        .sort((a, b) => (a.match.startsAt ?? "").localeCompare(b.match.startsAt ?? ""));
+
+      for (const { prediction, match } of predictions) {
+        const finished = match.status === "finished" && match.homeScore !== null && match.awayScore !== null;
+        const line: MatchLine = {
+          matchId: match.id,
+          when: formatAmsterdam(match.startsAt),
+          home: match.homeName,
+          away: match.awayName,
+          predHome: prediction.home_score,
+          predAway: prediction.away_score,
+          resultHome: match.homeScore,
+          resultAway: match.awayScore,
+          points: finished
+            ? scoreMatchPrediction({
+                predictedHome: prediction.home_score,
+                predictedAway: prediction.away_score,
+                actualHome: match.homeScore,
+                actualAway: match.awayScore,
+              }).points
+            : null,
+        };
+        if (finished) past.push(line);
+        else upcoming.push(line);
+      }
+      past.reverse();
+    }
+
+    return {
+      userId: member.user_id,
+      rank: 0,
+      name: member.profiles?.nickname ?? "Speler",
+      teamName: member.profiles?.team_name ?? null,
+      avatarKey: member.profiles?.avatar_key ?? null,
+      points: pointsByUser.get(member.user_id) ?? 0,
+      isYou,
+      locked: !visible,
+      past,
+      upcoming,
+    };
+  });
+
+  return built
+    .sort((a, b) => b.points - a.points || a.name.localeCompare(b.name))
+    .map((member, index) => ({ ...member, rank: index + 1 }));
 }
