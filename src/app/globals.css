@@ -32,11 +32,14 @@
 
 html {
   min-height: 100%;
+  overscroll-behavior-y: none;
 }
 
 body {
-  min-height: 100%;
+  min-height: 100dvh;
   margin: 0;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
   background:
     radial-gradient(circle at 8% -8%, rgba(30, 115, 184, 0.1), transparent 38%),
     radial-gradient(circle at 96% -4%, rgba(210, 58, 49, 0.05), transparent 36%),
@@ -1037,47 +1040,52 @@ textarea {
   padding: 0 14px;
 }
 
-.share-pill {
-  display: inline-grid;
-  width: 44px;
-  height: 44px;
-  place-items: center;
-  border-radius: 12px;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow: 0 8px 18px rgba(8, 22, 52, 0.16);
-  transition: transform 140ms ease, filter 140ms ease;
+.share-row {
+  display: grid;
+  gap: 6px;
 }
 
-.share-pill:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.share-pill-whatsapp {
-  background: linear-gradient(135deg, #2bb564, #1f9d57);
-}
-
-.share-pill-facebook {
-  background: linear-gradient(135deg, #2b7bf3, #1559c9);
-}
-
-.share-pill-x {
-  background: linear-gradient(135deg, #2a2a2a, #050505);
-}
-
-.share-pill-telegram {
-  background: linear-gradient(135deg, #36aee0, #1d8fc4);
-}
-
-.share-pill-email {
-  background: linear-gradient(135deg, #6b7894, #4a5670);
-}
-
-.share-pill-copy {
-  background: #ffffff;
+.share-link {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(8, 22, 52, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
   color: var(--blue-2);
-  border-color: rgba(8, 22, 52, 0.14);
+  cursor: pointer;
+  padding: 8px 11px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 6px 14px rgba(8, 22, 52, 0.06);
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.share-link:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+  border-color: rgba(8, 22, 52, 0.16);
+}
+
+.share-link-whatsapp {
+  color: #128f47;
+}
+
+.share-link-signal {
+  color: #2458d9;
+}
+
+.share-link-email,
+.share-link-copy {
+  color: #4a5670;
 }
 
 .slime-banner {
@@ -1292,19 +1300,28 @@ textarea {
   grid-template-columns: repeat(5, 1fr);
 }
 
-.bottom-nav a {
+.bottom-nav[data-count="7"] {
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.bottom-nav a,
+.bottom-nav button {
   display: grid;
   min-height: 56px;
   place-items: center;
   gap: 2px;
+  border: 0;
   border-radius: 12px;
+  background: transparent;
   color: var(--ink-soft);
+  cursor: pointer;
   font-size: 0.72rem;
   font-weight: 700;
   text-decoration: none;
 }
 
-.bottom-nav a:hover {
+.bottom-nav a:hover,
+.bottom-nav button:hover {
   background: #eef3fc;
   color: var(--blue-2);
 }
@@ -1337,6 +1354,8 @@ textarea {
   z-index: 60;
   display: grid;
   justify-items: end;
+  overflow: hidden;
+  overscroll-behavior: contain;
   background: rgba(8, 22, 52, 0.42);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
@@ -1344,11 +1363,26 @@ textarea {
 
 .quick-menu-panel {
   width: min(86vw, 360px);
-  min-height: 100%;
+  height: 100dvh;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 18px;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom));
   color: #0b1f4d;
   background: linear-gradient(170deg, #ffffff, #f6f9ff);
   box-shadow: -18px 0 50px rgba(8, 22, 52, 0.24);
+  -webkit-overflow-scrolling: touch;
+}
+
+.quick-menu-app-icon,
+.quick-menu-link-image {
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(8, 22, 52, 0.12);
+}
+
+.quick-menu-link-image {
+  flex: 0 0 auto;
 }
 
 .quick-menu-link {

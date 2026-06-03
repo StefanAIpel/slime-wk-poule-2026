@@ -1,6 +1,7 @@
 "use client";
 
-import { CalendarDays, ClipboardList, Gamepad2, Home, ListChecks, Menu, Trophy, UserCog, Users, X } from "lucide-react";
+import { CalendarDays, ClipboardList, Home, ListChecks, Menu, Trophy, UserCog, Users, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/browser";
@@ -23,6 +24,13 @@ export function QuickMenu() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
+    const handleOpenMenu = () => setOpen(true);
+    window.addEventListener("slimescore:open-menu", handleOpenMenu);
+
+    return () => window.removeEventListener("slimescore:open-menu", handleOpenMenu);
+  }, []);
+
+  useEffect(() => {
     const supabase = createClient();
     supabase.auth.getSession().then(({ data }) => {
       setLoggedIn(Boolean(data.session));
@@ -36,6 +44,26 @@ export function QuickMenu() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const previousOverscroll = document.body.style.overscrollBehaviorY;
+    document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehaviorY = "contain";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.overscrollBehaviorY = previousOverscroll;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
 
   const links = loggedIn ? [...publicLinks, ...privateLinks] : publicLinks;
 
@@ -54,9 +82,18 @@ export function QuickMenu() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between gap-3">
-              <div>
-                <div className="text-xl font-bold text-[#081634]">Menu</div>
-                <div className="text-sm font-bold text-[#128f47]">Slime Score WK 2026</div>
+              <div className="flex items-center gap-3">
+                <Image
+                  src="/icons/slimescore-app-icon-v2-192.png"
+                  alt=""
+                  width={44}
+                  height={44}
+                  className="quick-menu-app-icon"
+                />
+                <div>
+                  <div className="text-xl font-bold text-[#081634]">Menu</div>
+                  <div className="text-sm font-bold text-[#128f47]">Slime Score WK 2026</div>
+                </div>
               </div>
               <button className="button-secondary min-h-10 px-3" type="button" onClick={() => setOpen(false)}>
                 <X aria-hidden="true" className="size-5" />
@@ -79,9 +116,9 @@ export function QuickMenu() {
                   <span>Log in</span>
                 </Link>
               ) : null}
-              <Link className="quick-menu-link slime-link" href="/games" onClick={() => setOpen(false)}>
-                <Gamepad2 aria-hidden="true" className="size-5" />
-                <span>Spelletjes</span>
+              <Link className="quick-menu-link slime-link" href="/games?game=soccer" onClick={() => setOpen(false)}>
+                <Image src="/slime-soccer-icon.png" alt="" width={28} height={28} className="quick-menu-link-image" />
+                <span>Slime Soccer</span>
               </Link>
             </div>
           </nav>

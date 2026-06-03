@@ -62,7 +62,7 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                   </span>
                 ) : null}
               </div>
-              <div className="mt-1 grid gap-1 text-sm">
+              <div className="mt-1 flex items-center gap-2 text-sm sm:grid sm:gap-1">
                 <div className="flex items-center gap-2">
                   <TeamFlag code={m.home_code} name={m.home?.name_nl} />
                   <span className="font-medium text-[var(--ink)]">
@@ -70,6 +70,10 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                     <span className="hidden sm:inline">{m.home?.name_nl ?? m.home_code}</span>
                   </span>
                 </div>
+                <span aria-hidden="true" className="text-sm font-semibold text-[#8a98ac] sm:hidden">
+                  ·
+                </span>
+                <span className="sr-only">tegen</span>
                 <div className="flex items-center gap-2">
                   <TeamFlag code={m.away_code} name={m.away?.name_nl} />
                   <span className="font-medium text-[var(--ink)]">

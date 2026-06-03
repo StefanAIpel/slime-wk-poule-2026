@@ -7,7 +7,7 @@ type Variant = "primary" | "secondary";
 
 type GlyphProps = { className?: string };
 
-/** Merk-glyphs als inline SVG (lucide-react bevat geen merklogo's meer). */
+/** Merk-glyph als inline SVG (lucide-react bevat geen merklogo's meer). */
 function WhatsappGlyph({ className }: GlyphProps) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
@@ -16,33 +16,23 @@ function WhatsappGlyph({ className }: GlyphProps) {
   );
 }
 
-function FacebookGlyph({ className }: GlyphProps) {
+function SignalGlyph({ className }: GlyphProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M13.5 22v-8h2.7l.4-3.1h-3.1V8.9c0-.9.25-1.5 1.5-1.5h1.6V4.6c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.4H7.6V14h2.7v8h3.2z" />
-    </svg>
-  );
-}
-
-function XGlyph({ className }: GlyphProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
-    </svg>
-  );
-}
-
-function TelegramGlyph({ className }: GlyphProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
+      <path
+        d="M12 4.2c4.2 0 7.6 2.9 7.6 6.5S16.2 17.2 12 17.2c-.7 0-1.4-.08-2.05-.24L5.1 19.8l1.35-4.12c-1.28-1.18-2.05-2.73-2.05-4.98C4.4 7.1 7.8 4.2 12 4.2Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <path d="M8.8 10.8h6.4M8.8 13.2h4.4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
 
 /**
  * Deelknop met native Web Share API en een nette fallback
- * (kopiëren naar klembord). Alle links wijzen naar slimescore.nl.
+ * (kopiëren naar klembord).
  */
 export function ShareButton({
   url,
@@ -87,11 +77,7 @@ export function ShareButton({
   );
 }
 
-/**
- * Rij met deel-opties: systeem-delen + WhatsApp, Facebook, X, Telegram, e-mail
- * en kopieer-link. Instagram kent geen web-deel-URL, dus daarvoor gebruik je de
- * kopieerknop (plak de link in je verhaal of bio).
- */
+/** Subtiele deelrij met de belangrijkste gezins-/groepskanalen. */
 export function ShareRow({
   url,
   text,
@@ -102,8 +88,6 @@ export function ShareRow({
   title?: string;
 }) {
   const [copied, setCopied] = useState(false);
-  const encodedUrl = encodeURIComponent(url);
-  const encodedText = encodeURIComponent(text);
   const encodedBoth = encodeURIComponent(`${text} ${url}`.trim());
 
   const targets = [
@@ -112,35 +96,14 @@ export function ShareRow({
       label: "WhatsApp",
       href: `https://wa.me/?text=${encodedBoth}`,
       icon: WhatsappGlyph,
-      className: "share-pill share-pill-whatsapp",
-    },
-    {
-      key: "facebook",
-      label: "Facebook",
-      href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-      icon: FacebookGlyph,
-      className: "share-pill share-pill-facebook",
-    },
-    {
-      key: "x",
-      label: "X",
-      href: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
-      icon: XGlyph,
-      className: "share-pill share-pill-x",
-    },
-    {
-      key: "telegram",
-      label: "Telegram",
-      href: `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`,
-      icon: TelegramGlyph,
-      className: "share-pill share-pill-telegram",
+      className: "share-link share-link-whatsapp",
     },
     {
       key: "email",
-      label: "E-mail",
+      label: "Mail",
       href: `mailto:?subject=${encodeURIComponent(title)}&body=${encodedBoth}`,
       icon: Mail,
-      className: "share-pill share-pill-email",
+      className: "share-link share-link-email",
     },
   ];
 
@@ -154,7 +117,7 @@ export function ShareRow({
     }
   }
 
-  async function onNativeShare() {
+  async function onSignalShare() {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({ title, text, url });
@@ -167,12 +130,8 @@ export function ShareRow({
   }
 
   return (
-    <div className="grid gap-2">
-      <div className="flex flex-wrap items-center gap-2">
-        <button type="button" className={buttonClassFor("secondary")} onClick={onNativeShare}>
-          <Share2 aria-hidden="true" className="size-5" />
-          Delen
-        </button>
+    <div className="share-row">
+      <div className="share-actions">
         {targets.map((target) => {
           const Icon = target.icon;
           return (
@@ -186,31 +145,33 @@ export function ShareRow({
               title={`Delen via ${target.label}`}
             >
               <Icon aria-hidden="true" className="size-5" />
+              <span>{target.label}</span>
             </a>
           );
         })}
+        <button type="button" className="share-link share-link-signal" onClick={onSignalShare}>
+          <SignalGlyph className="size-5" />
+          <span>Signal</span>
+        </button>
         <button
           type="button"
-          className="share-pill share-pill-copy"
+          className="share-link share-link-copy"
           onClick={onCopy}
           aria-label="Link kopiëren"
-          title="Link kopiëren (ook voor Instagram)"
+          title="Link kopiëren"
         >
           {copied ? <Check aria-hidden="true" className="size-5" /> : <Link2 aria-hidden="true" className="size-5" />}
+          <span>{copied ? "Gekopieerd" : "Link"}</span>
         </button>
       </div>
       <p aria-live="polite" className="text-xs font-medium text-[#46566f]">
-        {copied ? "Link gekopieerd — plak hem in je app, story of bio." : "Kies een app of kopieer de link."}
+        {copied ? "Link gekopieerd." : "Deel via WhatsApp, Signal, mail of kopieer de link."}
       </p>
     </div>
   );
 }
 
-function buttonClassFor(variant: Variant) {
-  return variant === "primary" ? "button-primary" : "button-secondary";
-}
-
-/** Directe WhatsApp-deelknop met vooraf ingevulde tekst + slimescore.nl-link. */
+/** Directe WhatsApp-deelknop met vooraf ingevulde tekst + link. */
 export function WhatsappShare({
   text,
   url,

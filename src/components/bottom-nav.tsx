@@ -1,4 +1,6 @@
-import { CalendarDays, ClipboardList, Home, ListChecks, Trophy, Users } from "lucide-react";
+"use client";
+
+import { CalendarDays, ClipboardList, Home, ListChecks, Menu, Trophy, Users } from "lucide-react";
 
 const links = [
   { href: "/", label: "Home", icon: Home },
@@ -12,8 +14,12 @@ const links = [
 // Altijd alle bestemmingen tonen — ook uitgelogd. Privé-pagina's vragen zelf om
 // inloggen, zodat je vanaf b.v. het schema makkelijk bij de subpoules komt.
 export function BottomNav({ current = "/" }: { current?: string }) {
+  const openMenu = () => {
+    window.dispatchEvent(new Event("slimescore:open-menu"));
+  };
+
   return (
-    <nav className="bottom-nav" data-count={links.length} aria-label="Hoofdnavigatie">
+    <nav className="bottom-nav" data-count={links.length + 1} aria-label="Hoofdnavigatie">
       {links.map((link) => {
         const Icon = link.icon;
         return (
@@ -23,6 +29,10 @@ export function BottomNav({ current = "/" }: { current?: string }) {
           </a>
         );
       })}
+      <button type="button" onClick={openMenu}>
+        <Menu aria-hidden="true" className="size-5" />
+        <span>Menu</span>
+      </button>
     </nav>
   );
 }
