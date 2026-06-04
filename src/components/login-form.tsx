@@ -134,11 +134,13 @@ export function LoginForm({
     });
 
     if (error) {
-      setStatus("error");
       const errorMessage = error.message.toLowerCase();
       if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
-        setMessage("Je hebt net al een wachtwoordcode aangevraagd. Wacht ongeveer 1 minuut en probeer daarna opnieuw.");
+        rememberCurrentEmail();
+        setStatus("sent");
+        setMessage("Je hebt net al een wachtwoordcode aangevraagd. Gebruik de code uit die mail hieronder, of wacht ongeveer 1 minuut en stuur opnieuw.");
       } else {
+        setStatus("error");
         setMessage("Wachtwoordmail versturen lukte niet. Controleer je e-mailadres en probeer opnieuw.");
       }
       return;

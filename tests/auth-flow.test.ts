@@ -85,8 +85,9 @@ test("existing players can reset their password with a copyable email code inste
   assert.match(loginForm, /verifyOtp\(\{[\s\S]*type: \"recovery\"/);
   assert.match(loginForm, /Code uit de mail/);
   assert.match(loginForm, /Nieuw wachtwoord opslaan/);
+  assert.match(loginForm, /Je hebt net al een wachtwoordcode aangevraagd\. Gebruik de code uit die mail hieronder/);
   assert.match(authRecoveryTemplate, /{{ \.Token }}/);
-  assert.match(homePage, /PasswordResetForm/);
+  assert.match(authRecoveryTemplate, /Code uit de mail/);
 });
 
 test("recovery links remain accepted by the auth callback fallback", () => {
