@@ -267,7 +267,7 @@ export async function createPool(formData: FormData) {
       if (member.error) throw new Error(member.error.message);
       revalidatePath("/poules");
       revalidatePath("/");
-      redirect(`/poules?aangemaakt=${code}`);
+      redirect(`/poules?aangemaakt=${code}&pool=${data.id}`);
     }
 
     code = poolCode();

@@ -17,6 +17,7 @@ import { Brand } from "@/components/brand";
 import { PendingButton } from "@/components/pending-button";
 import { PoolBanner } from "@/components/pool-banner";
 import { PoolMembers, type MatchLine, type PoolMember } from "@/components/pool-members";
+import { PoolQr } from "@/components/pool-qr";
 import { PoolTabs } from "@/components/pool-tabs";
 import { CopyButton, ShareRow, WhatsappShare } from "@/components/share-button";
 import { ENTRY_DEADLINE, SITE_URL } from "@/lib/constants";
@@ -84,7 +85,7 @@ type MessageRow = {
 export default async function PoolsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ aangemaakt?: string; joined?: string; fout?: string; bijgewerkt?: string }>;
+  searchParams: Promise<{ aangemaakt?: string; joined?: string; fout?: string; bijgewerkt?: string; pool?: string }>;
 }) {
   const params = await searchParams;
   const supabase = await createClient();
@@ -122,6 +123,9 @@ export default async function PoolsPage({
   const matchInfoById = new Map<number, MatchInfo>();
   const predictionsByUser = new Map<string, PredictionRow[]>();
   const pointsByUser = new Map<string, number>();
+  // Wereldrang = positie in de algemene ranglijst (alle deelnemers), zodat je
+  // in een subpoule meteen ziet hoe iemand er landelijk voor staat.
+  const worldRankByUser = new Map<string, number>();
 
   if (memberIds.length) {
     const [{ data: matchRows }, { data: predictionRows }, { data: scoreRows }] = await Promise.all([
@@ -130,8 +134,19 @@ export default async function PoolsPage({
         .select("id,starts_at,status,home_score,away_score,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)")
         .order("starts_at"),
       admin.from("predictions").select("user_id,match_id,home_score,away_score").in("user_id", memberIds),
-      admin.from("scores").select("user_id,points").in("user_id", memberIds),
+      admin.from("scores").select("user_id,points").order("points", { ascending: false }),
     ]);
+
+    // Competition ranking (1,2,2,4): gelijke punten = gelijke wereldrang.
+    let lastPoints: number | null = null;
+    let lastRank = 0;
+    (scoreRows ?? []).forEach((row, index) => {
+      pointsByUser.set(row.user_id, row.points);
+      const rank = row.points === lastPoints ? lastRank : index + 1;
+      lastPoints = row.points;
+      lastRank = rank;
+      worldRankByUser.set(row.user_id, rank);
+    });
 
     for (const row of (matchRows ?? []) as unknown as Array<{
       id: number;
@@ -155,16 +170,13 @@ export default async function PoolsPage({
     for (const row of (predictionRows ?? []) as PredictionRow[]) {
       predictionsByUser.set(row.user_id, [...(predictionsByUser.get(row.user_id) ?? []), row]);
     }
-    for (const row of (scoreRows ?? []) as Array<{ user_id: string; points: number }>) {
-      pointsByUser.set(row.user_id, row.points);
-    }
   }
 
   const poolMembersById = new Map<string, PoolMember[]>();
   for (const pool of pools) {
     poolMembersById.set(
       pool.id,
-      buildPoolMembers(pool.members, user.id, revealOthers, matchInfoById, predictionsByUser, pointsByUser),
+      buildPoolMembers(pool.members, user.id, revealOthers, matchInfoById, predictionsByUser, pointsByUser, worldRankByUser),
     );
   }
 
@@ -203,7 +215,7 @@ export default async function PoolsPage({
 
       <section className="mt-1">
         {pools.length ? (
-          <PoolTabs tabs={tabs}>
+          <PoolTabs tabs={tabs} initialId={params.pool}>
           {pools.map((pool) => {
             const currentMember = pool.members.find((member) => member.user_id === user.id);
             const isOwner = currentMember?.role === "owner";
@@ -242,16 +254,14 @@ export default async function PoolsPage({
                     </a>
                     <ShareRow url={joinAssets.joinUrl} text={inviteText} title={`Doe mee met ${pool.name}`} compact />
                   </div>
-                  {joinAssets.qrDataUrl ? (
-                    <img className="pool-invite-qr" src={joinAssets.qrDataUrl} alt={`QR-code om mee te doen met ${pool.name}`} width={92} height={92} />
-                  ) : null}
+                  <PoolQr qrDataUrl={joinAssets.qrDataUrl} poolName={pool.name} joinUrl={joinAssets.joinUrl} />
                 </div>
                 {isManager ? (
-                  <details className="border-b border-slate-200 bg-slate-50">
+                  <details className="border-b border-slate-200 bg-slate-50" open={params.aangemaakt && params.pool === pool.id ? true : undefined}>
                     <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">
                       WK-poule-instellingen &amp; opmaak (beheer)
                     </summary>
-                  <div className="grid gap-4 p-4 pt-0 lg:grid-cols-2">
+                  <div className="grid items-start gap-4 p-4 pt-0 md:grid-cols-2">
                     <form action={updatePoolStyle} className="grid gap-3">
                       <input type="hidden" name="pool_id" value={pool.id} />
                       <div className="flex items-center gap-2 font-bold text-[#101a2b]">
@@ -468,6 +478,7 @@ function buildPoolMembers(
   matchInfoById: Map<number, MatchInfo>,
   predictionsByUser: Map<string, PredictionRow[]>,
   pointsByUser: Map<string, number>,
+  worldRankByUser: Map<string, number>,
 ): PoolMember[] {
   const built = members.map((member) => {
     const isYou = member.user_id === currentUserId;
@@ -510,6 +521,8 @@ function buildPoolMembers(
     return {
       userId: member.user_id,
       rank: 0,
+      worldRank: worldRankByUser.get(member.user_id) ?? null,
+      isOwner: member.role === "owner",
       name: member.profiles?.nickname ?? "Speler",
       teamName: member.profiles?.team_name ?? null,
       avatarKey: member.profiles?.avatar_key ?? null,
