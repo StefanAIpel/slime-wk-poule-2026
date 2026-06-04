@@ -261,7 +261,12 @@ export default async function PoolsPage({
                       <div className="grid gap-2 sm:grid-cols-[72px_110px_1fr]">
                         <label className="grid gap-1 text-xs font-bold text-[#101a2b]">
                           Emoji
-                          <input className="field" name="badge_emoji" defaultValue={pool.badgeEmoji} maxLength={8} />
+                          <input className="field" name="badge_emoji" defaultValue={pool.badgeEmoji} maxLength={8} list={`emoji-${pool.id}`} />
+                          <datalist id={`emoji-${pool.id}`}>
+                            {["🏆", "⚽", "🥅", "🧡", "🔥", "🐮", "🦁", "🎯", "🍻", "🎉", "🥇", "🇳🇱"].map((e) => (
+                              <option key={e} value={e} />
+                            ))}
+                          </datalist>
                         </label>
                         <label className="grid gap-1 text-xs font-bold text-[#101a2b]">
                           Kleur
@@ -291,6 +296,7 @@ export default async function PoolsPage({
                   </div>
                   </details>
                 ) : null}
+                <PoolMembers members={poolMembersById.get(pool.id) ?? []} />
                 <div className="border-b border-slate-200 p-4">
                   <h3 className="text-lg font-bold text-[#101a2b]">Prikbord</h3>
                   <form action={postPoolMessage} className="mt-3 grid gap-2">
@@ -311,7 +317,7 @@ export default async function PoolsPage({
                       ) : (
                         <span />
                       )}
-                      <PendingButton className="button-primary min-h-10 px-4" pendingText="Plaatsen…">
+                      <PendingButton className="button-primary min-h-9 px-3 text-sm" pendingText="Plaatsen…">
                         <Megaphone aria-hidden="true" className="size-4" />
                         Plaats
                       </PendingButton>
@@ -348,10 +354,10 @@ export default async function PoolsPage({
                     ) : null}
                   </div>
                 </div>
-                <PoolMembers members={poolMembersById.get(pool.id) ?? []} />
-                <div className="p-4">
-                  <h3 className="text-lg font-bold text-[#101a2b]">Leden beheren</h3>
-                  <div className="mt-3 divide-y divide-slate-200">
+                {isManager ? (
+                <details className="border-b border-slate-200 bg-slate-50">
+                  <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">Leden beheren (beheer)</summary>
+                  <div className="px-4 pb-4 divide-y divide-slate-200">
                   {pool.members.map((member) => (
                     <div key={member.user_id} className="grid gap-3 py-3 md:grid-cols-[1fr_auto] md:items-center">
                       <div className="flex items-center gap-3">
@@ -387,7 +393,8 @@ export default async function PoolsPage({
                     </div>
                   ))}
                   </div>
-                </div>
+                </details>
+                ) : null}
               </article>
             );
           })}
