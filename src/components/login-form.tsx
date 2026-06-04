@@ -91,9 +91,14 @@ export function LoginForm({
   const [teamName, setTeamName] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [code, setCode] = useState("");
+  const [resetCode, setResetCode] = useState("");
+  const [resetNewPassword, setResetNewPassword] = useState("");
+  const [resetPasswordConfirm, setResetPasswordConfirm] = useState("");
   const [rememberEmail, setRememberEmail] = useState(true);
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [resendSubmitting, setResendSubmitting] = useState(false);
+  const [resetSubmitting, setResetSubmitting] = useState(false);
   const surfaceClass = surface === "inline" ? "grid gap-3" : "panel grid gap-3 p-4";
 
   useEffect(() => {
@@ -116,6 +121,129 @@ export function LoginForm({
     } else {
       window.localStorage.removeItem(rememberedEmailKey);
     }
+  }
+
+  async function sendPasswordResetMail() {
+    setStatus("loading");
+    setMessage("");
+
+    const supabase = createClient();
+    const origin = window.location.origin;
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: buildEmailRedirectTo(origin, "/?reset=wachtwoord"),
+    });
+
+    if (error) {
+      setStatus("error");
+      const errorMessage = error.message.toLowerCase();
+      if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
+        setMessage("Je hebt net al een wachtwoordcode aangevraagd. Wacht ongeveer 1 minuut en probeer daarna opnieuw.");
+      } else {
+        setMessage("Wachtwoordmail versturen lukte niet. Controleer je e-mailadres en probeer opnieuw.");
+      }
+      return;
+    }
+
+    rememberCurrentEmail();
+    setStatus("sent");
+    setMessage("Wachtwoordcode verstuurd. Kopieer de code uit de mail, kies hieronder een nieuw wachtwoord en klaar.");
+  }
+
+  async function onResendSignupConfirmation() {
+    setResendSubmitting(true);
+    setMessage("");
+
+    const supabase = createClient();
+    const origin = window.location.origin;
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: email.trim(),
+      options: { emailRedirectTo: buildEmailRedirectTo(origin, next) },
+    });
+
+    setResendSubmitting(false);
+    if (error) {
+      const errorMessage = error.message.toLowerCase();
+      if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
+        setMessage("Je hebt net al een bevestigingsmail aangevraagd. Wacht ongeveer 1 minuut en probeer daarna opnieuw.");
+      } else {
+        setMessage("Opnieuw sturen lukte niet. Controleer je e-mailadres of probeer straks opnieuw.");
+      }
+      return;
+    }
+
+    setMessage("Nieuwe bevestigingsmail verstuurd. Check ook je spambox.");
+  }
+
+  async function onResendPasswordResetMail() {
+    setResetSubmitting(true);
+    setMessage("");
+
+    const supabase = createClient();
+    const origin = window.location.origin;
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: buildEmailRedirectTo(origin, "/?reset=wachtwoord"),
+    });
+
+    setResetSubmitting(false);
+    if (error) {
+      const errorMessage = error.message.toLowerCase();
+      if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
+        setMessage("Je hebt net al een wachtwoordcode aangevraagd. Wacht ongeveer 1 minuut en probeer daarna opnieuw.");
+      } else {
+        setMessage("Wachtwoordcode opnieuw sturen lukte niet. Controleer je e-mailadres of probeer straks opnieuw.");
+      }
+      return;
+    }
+
+    setMessage("Nieuwe wachtwoordcode verstuurd. Check ook je spambox.");
+  }
+
+  async function onResetCodeSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setResetSubmitting(true);
+    setMessage("Code wordt gecontroleerd…");
+
+    const normalizedCode = resetCode.trim().replace(/\s+/g, "");
+    if (normalizedCode.length < 6) {
+      setResetSubmitting(false);
+      setMessage("Vul de code uit de mail in.");
+      return;
+    }
+    if (resetNewPassword.length < 8) {
+      setResetSubmitting(false);
+      setMessage("Kies een nieuw wachtwoord van minstens 8 tekens.");
+      return;
+    }
+    if (resetNewPassword !== resetPasswordConfirm) {
+      setResetSubmitting(false);
+      setMessage("De twee wachtwoorden zijn niet hetzelfde.");
+      return;
+    }
+
+    const supabase = createClient();
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email: email.trim(),
+      token: normalizedCode,
+      type: "recovery",
+    });
+    if (verifyError) {
+      setResetSubmitting(false);
+      setMessage("Die code klopt niet of is verlopen. Vraag eventueel een nieuwe code aan.");
+      return;
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({ password: resetNewPassword });
+    if (updateError) {
+      setResetSubmitting(false);
+      setMessage("Wachtwoord opslaan lukte niet. Vraag een nieuwe code aan en probeer opnieuw.");
+      return;
+    }
+
+    setMessage("Wachtwoord opgeslagen. Je scorekaart wordt geopend.");
+    window.setTimeout(() => {
+      window.location.href = "/?login=wachtwoord";
+    }, 700);
   }
 
   async function onPasswordSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -212,29 +340,7 @@ export function LoginForm({
 
   async function onForgotSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus("loading");
-    setMessage("");
-
-    const supabase = createClient();
-    const origin = window.location.origin;
-    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: buildEmailRedirectTo(origin, "/?reset=wachtwoord"),
-    });
-
-    if (error) {
-      setStatus("error");
-      const errorMessage = error.message.toLowerCase();
-      if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
-        setMessage("Je hebt net al een wachtwoordlink aangevraagd. Wacht ongeveer 1 minuut en probeer daarna opnieuw.");
-      } else {
-        setMessage("Wachtwoordmail versturen lukte niet. Controleer je e-mailadres en probeer opnieuw.");
-      }
-      return;
-    }
-
-    rememberCurrentEmail();
-    setStatus("sent");
-    setMessage("Wachtwoordlink verstuurd. Open de mail en kies daarna je nieuwe wachtwoord.");
+    await sendPasswordResetMail();
   }
 
   async function onCodeSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -289,19 +395,74 @@ export function LoginForm({
       <div className={surfaceClass}>
         <div className="flex items-center gap-2 rounded-lg bg-green-50 p-3 font-bold text-[#0f7a39]">
           <Check aria-hidden="true" className="size-5" />
-          {isResetMail ? "Wachtwoordmail verstuurd naar je e-mail" : "Bevestigingsmail verstuurd naar je e-mail"}
+          {isResetMail ? "Wachtwoordcode verstuurd naar je e-mail" : "Bevestigingsmail verstuurd naar je e-mail"}
         </div>
         <p className="text-sm font-medium leading-6 text-[#0f5132]">
           {isResetMail
-            ? "Open de mail en kies meteen je nieuwe wachtwoord."
+            ? "Kopieer de code uit de mail en kies hieronder je nieuwe wachtwoord. De knop in de mail blijft als fallback bestaan."
             : "Open de mail en klik op ‘Bevestig registratie’. Daarna kun je inloggen met je e-mail en wachtwoord."}
         </p>
         <p aria-live="polite" className="text-sm font-medium leading-5 text-[#0f5132]">
           {message || "Mail niet ontvangen? Check je spambox of probeer opnieuw."}
         </p>
         {provider ? <WebmailButton provider={provider} /> : null}
-        <button className="button-secondary w-full" type="button" onClick={() => { setStatus("idle"); setMessage(""); }}>
-          Ander e-mailadres / opnieuw sturen
+
+        {isResetMail ? (
+          <form method="post" onSubmit={onResetCodeSubmit} className="grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label="Wachtwoord wijzigen met mailcode">
+            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+              Code uit de mail
+              <input
+                className="field text-center text-lg font-black tracking-[0.3em]"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                required
+                value={resetCode}
+                onChange={(event) => setResetCode(event.target.value)}
+                placeholder="123456"
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+              Nieuw wachtwoord
+              <input
+                className="field"
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                value={resetNewPassword}
+                onChange={(event) => setResetNewPassword(event.target.value)}
+                placeholder="Minstens 8 tekens"
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+              Nieuw wachtwoord nog een keer
+              <input
+                className="field"
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                value={resetPasswordConfirm}
+                onChange={(event) => setResetPasswordConfirm(event.target.value)}
+                placeholder="Nogmaals"
+              />
+            </label>
+            <button className="button-primary w-full" type="submit" disabled={resetSubmitting}>
+              <KeyRound aria-hidden="true" className="size-5" />
+              {resetSubmitting ? "Opslaan…" : "Nieuw wachtwoord opslaan"}
+            </button>
+            <button className="button-secondary w-full" type="button" onClick={onResendPasswordResetMail} disabled={resetSubmitting}>
+              Wachtwoordcode opnieuw sturen
+            </button>
+          </form>
+        ) : (
+          <button className="button-secondary w-full" type="button" onClick={onResendSignupConfirmation} disabled={resendSubmitting}>
+            {resendSubmitting ? "Opnieuw sturen…" : "Bevestigingsmail opnieuw sturen"}
+          </button>
+        )}
+
+        <button className="text-sm font-bold text-[#0e7a44] underline" type="button" onClick={() => { setStatus("idle"); setMessage(""); }}>
+          Ander e-mailadres
         </button>
       </div>
     );
@@ -347,10 +508,10 @@ export function LoginForm({
           </label>
           <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
             <Mail aria-hidden="true" className="size-5" />
-            {status === "loading" ? "Versturen…" : "Stuur wachtwoordlink"}
+            {status === "loading" ? "Versturen…" : "Stuur wachtwoordcode"}
           </button>
           <p aria-live="polite" className={`text-sm font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-            {message || "Nog nooit een wachtwoord gekozen of vergeten? Stuur jezelf een link en kies een nieuw wachtwoord."}
+            {message || "Nog nooit een wachtwoord gekozen of vergeten? Stuur jezelf een code en kies direct een nieuw wachtwoord."}
           </p>
           <button type="button" className="text-sm font-bold text-[#0e7a44] underline" onClick={() => resetMode("login")}>
             Terug naar inloggen

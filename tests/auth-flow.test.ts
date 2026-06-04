@@ -10,6 +10,7 @@ const finishAuth = await readFile(new URL("../src/lib/supabase/finish-auth.ts", 
 const callbackRoute = await readFile(new URL("../src/app/auth/callback/route.ts", import.meta.url), "utf8");
 const signupProfile = await readFile(new URL("../src/lib/supabase/signup-profile.ts", import.meta.url), "utf8");
 const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
+const authRecoveryTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
 
 test("FrontPage has email-password login as the primary returning-player flow", () => {
   assert.match(loginForm, /aria-label=\"Inloggen met mail en wachtwoord\"/);
@@ -72,14 +73,23 @@ test("homepage salvages verified signups that arrive already logged in without a
   assert.match(homePage, /signupProfile\.ok\) redirect\("\/"\)/);
 });
 
-test("existing players can request a password reset mail from the FrontPage", () => {
+test("unconfirmed players can explicitly resend the registration confirmation mail", () => {
+  assert.match(loginForm, /auth\.resend\(\{[\s\S]*type: \"signup\"/);
+  assert.match(loginForm, /Bevestigingsmail opnieuw sturen/);
+  assert.match(loginForm, /buildEmailRedirectTo\(origin, next\)/);
+});
+
+test("existing players can reset their password with a copyable email code instead of relying on mobile links", () => {
   assert.match(loginForm, /Wachtwoord vergeten\?/);
   assert.match(loginForm, /resetPasswordForEmail/);
-  assert.match(loginForm, /reset=wachtwoord/);
+  assert.match(loginForm, /verifyOtp\(\{[\s\S]*type: \"recovery\"/);
+  assert.match(loginForm, /Code uit de mail/);
+  assert.match(loginForm, /Nieuw wachtwoord opslaan/);
+  assert.match(authRecoveryTemplate, /{{ \.Token }}/);
   assert.match(homePage, /PasswordResetForm/);
 });
 
-test("recovery links are accepted by the auth callback fallback", () => {
+test("recovery links remain accepted by the auth callback fallback", () => {
   assert.match(finishAuth, /\"recovery\"/);
   assert.match(callbackRoute, /\"recovery\"/);
 });
