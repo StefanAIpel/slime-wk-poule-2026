@@ -299,7 +299,7 @@ export default async function PoolsPage({
                       </div>
                       <input className="field" type="file" name="image" accept="image/*" required />
                       <p className="text-xs font-medium text-[#4c5a70]">
-                        Wordt automatisch bijgesneden en geoptimaliseerd (WebP). Max 6 MB.
+                        Wordt automatisch bijgesneden en verkleind. Max 6 MB.
                       </p>
                       <PendingButton className="button-secondary w-fit" pendingText="Uploaden…">
                         Upload banner

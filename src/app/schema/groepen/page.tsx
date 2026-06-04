@@ -7,7 +7,7 @@ import { getScheduleMatches } from "@/lib/schedule-data";
 
 export const metadata: Metadata = {
   title: "WK 2026 groepen — wedstrijden en groepsstanden",
-  description: "Alle WK 2026 groepswedstrijden per groep of datum, met compacte mobiele regels en live groepsstanden.",
+  description: "Alle WK 2026 groepswedstrijden, per groep of per datum, met de groepsstanden erbij.",
   alternates: { canonical: "/schema/groepen" },
 };
 
@@ -22,7 +22,7 @@ export default async function ScheduleGroupsPage() {
         <Brand />
         <PageHero
           title="Groepen"
-          subtitle="Per groep alle poulewedstrijden naast de stand, of dezelfde groepsfase netjes per speeldatum."
+          subtitle="Alle groepswedstrijden per groep met de stand erbij, of overzichtelijk per speeldag."
           slime="/assets/hd-schema-orange-transparent-640.webp"
           mascotClassName="hero-mascot-field hero-mascot-schema"
         />

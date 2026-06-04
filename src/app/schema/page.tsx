@@ -23,7 +23,7 @@ export default async function SchedulePage() {
         <Brand />
         <PageHero
           title="Speelschema"
-          subtitle="Wedstrijden in strakke kolommen met altijd ruimte voor de uitslag — ook als de API-score nog leeg is."
+          subtitle="Alle WK-wedstrijden op een rij met datum, tijd en stadion. Geen account nodig — deel het schema gerust in je groepsapp."
           slime="/assets/hd-schema-orange-transparent-640.webp"
           mascotClassName="hero-mascot-field hero-mascot-schema"
         />
