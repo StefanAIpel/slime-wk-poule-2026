@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { SlimeImage } from "@/components/slime-image";
 
 /**
@@ -9,11 +10,13 @@ export function PageHero({
   subtitle,
   children,
   slime = "/assets/hd-ranglijst.webp",
+  mascotClassName,
 }: {
   title: string;
   subtitle?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
   slime?: string;
+  mascotClassName?: string;
 }) {
   return (
     <div className="hero-band hero-band-visual hero-band-page">
@@ -24,7 +27,7 @@ export function PageHero({
         ) : null}
         {children ? <div className="mt-3">{children}</div> : null}
       </div>
-      <SlimeImage candidates={[slime, "/assets/hd-coach.webp"]} className="hero-mascot" />
+      <SlimeImage candidates={[slime, "/assets/hd-coach.webp"]} className={["hero-mascot", mascotClassName].filter(Boolean).join(" ")} />
     </div>
   );
 }

@@ -263,6 +263,9 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
                 </p>
               </div>
               <a href="#login" className="button-primary w-full justify-center text-sm sm:w-auto sm:text-base">Start je WK-poule</a>
+              <p className="text-sm font-bold leading-6 text-blue-50">
+                Al een code? Meld je aan en doe mee met een bestaande WK 2026-poule.
+              </p>
             </div>
             <div className="share-panel-strip">
               <p className="share-panel-title text-sm font-black text-blue-50">Deel SlimeScore:</p>

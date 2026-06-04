@@ -1,4 +1,5 @@
 import { ImagePlus, Megaphone, Palette, RefreshCw, ShieldCheck, Trash2, Users } from "lucide-react";
+import QRCode from "qrcode";
 import { redirect } from "next/navigation";
 import {
   createPool,
@@ -19,7 +20,7 @@ import { PendingButton } from "@/components/pending-button";
 import { PoolBanner } from "@/components/pool-banner";
 import { PoolMembers, type MatchLine, type PoolMember } from "@/components/pool-members";
 import { PoolTabs } from "@/components/pool-tabs";
-import { CopyButton, WhatsappShare } from "@/components/share-button";
+import { CopyButton, ShareRow, WhatsappShare } from "@/components/share-button";
 import { ENTRY_DEADLINE, SITE_URL } from "@/lib/constants";
 import { displayName, formatAmsterdam } from "@/lib/format";
 import { scoreMatchPrediction } from "@/lib/scoring";
@@ -169,6 +170,20 @@ export default async function PoolsPage({
     );
   }
 
+  const poolJoinAssets = new Map<string, { joinUrl: string; qrDataUrl: string }>();
+  await Promise.all(
+    pools.map(async (pool) => {
+      const joinUrl = `${SITE_URL}/poules/join/${pool.code}`;
+      const qrDataUrl = await QRCode.toDataURL(joinUrl, {
+        errorCorrectionLevel: "M",
+        margin: 1,
+        width: 180,
+        color: { dark: "#081634", light: "#ffffff" },
+      });
+      poolJoinAssets.set(pool.id, { joinUrl, qrDataUrl });
+    }),
+  );
+
   const tabs = pools.map((pool) => ({ id: pool.id, label: pool.name, emoji: pool.badgeEmoji }));
 
   return (
@@ -205,6 +220,9 @@ export default async function PoolsPage({
             <ShieldCheck aria-hidden="true" className="size-7 text-[#064ed6]" />
             <h2 className="text-2xl font-bold text-[#081634]">Nieuwe WK-poule</h2>
           </div>
+          <p className="text-sm font-semibold leading-6 text-[#48617f]">
+            Start zelf een gratis WK 2026-poule en deel daarna één link, QR of code.
+          </p>
           <label className="grid gap-2 text-sm font-bold text-[#081634]">
             Naam van je WK-poule
             <input className="field" name="name" required minLength={2} maxLength={50} placeholder="Familie Dijkstra" />
@@ -217,8 +235,11 @@ export default async function PoolsPage({
         <form action={joinPool} className="panel grid gap-3 p-4">
           <div className="flex items-center gap-3">
             <Users aria-hidden="true" className="size-7 text-[#25a84a]" />
-            <h2 className="text-2xl font-bold text-[#081634]">Meedoen met code</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">Meedoen met bestaande WK-poule</h2>
           </div>
+          <p className="text-sm font-semibold leading-6 text-[#48617f]">
+            Heb je al een code of uitnodigingslink gekregen? Sluit hier aan bij die WK 2026-poule.
+          </p>
           <label className="grid gap-2 text-sm font-bold text-[#081634]">
             WK-poulecode
             <input className="field uppercase" name="code" required minLength={6} maxLength={10} placeholder="SLIME26" />
@@ -236,7 +257,8 @@ export default async function PoolsPage({
             const currentMember = pool.members.find((member) => member.user_id === user.id);
             const isOwner = currentMember?.role === "owner";
             const isManager = currentMember?.role === "owner" || currentMember?.role === "moderator";
-            const shareText = `Doe mee met onze gratis WK 2026-poule "${pool.name}"! Vul code ${pool.code} in op`;
+            const joinAssets = poolJoinAssets.get(pool.id) ?? { joinUrl: SITE_URL, qrDataUrl: "" };
+            const inviteText = `Doe mee met onze gratis WK 2026-poule "${pool.name}". Eén keer invullen, klaar.`;
             return (
               <article key={pool.id} className="panel overflow-hidden">
                 <PoolBanner src={poolBannerUrl(pool.id)} alt={`Banner van ${pool.name}`} />
@@ -247,7 +269,8 @@ export default async function PoolsPage({
                     {pool.description ? <p className="mt-2 max-w-2xl text-sm font-medium text-white/90">{pool.description}</p> : null}
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <WhatsappShare text={shareText} url={SITE_URL} label="Deel via WhatsApp" />
+                    <WhatsappShare text={inviteText} url={joinAssets.joinUrl} label="WhatsApp" />
+                    <CopyButton value={joinAssets.joinUrl} label="Kopieer link" />
                     <CopyButton value={pool.code} label={`Code ${pool.code}`} />
                     {isOwner ? (
                       <form action={resetPoolCode}>
@@ -259,6 +282,18 @@ export default async function PoolsPage({
                       </form>
                     ) : null}
                   </div>
+                </div>
+                <div className="pool-invite-strip">
+                  <div className="pool-invite-copy">
+                    <p className="pool-invite-kicker">Uitnodigingslink</p>
+                    <a className="pool-invite-url" href={joinAssets.joinUrl}>
+                      {joinAssets.joinUrl.replace(/^https?:\/\//, "")}
+                    </a>
+                    <ShareRow url={joinAssets.joinUrl} text={inviteText} title={`Doe mee met ${pool.name}`} compact />
+                  </div>
+                  {joinAssets.qrDataUrl ? (
+                    <img className="pool-invite-qr" src={joinAssets.qrDataUrl} alt={`QR-code om mee te doen met ${pool.name}`} width={92} height={92} />
+                  ) : null}
                 </div>
                 {isManager ? (
                   <details className="border-b border-slate-200 bg-slate-50">

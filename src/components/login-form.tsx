@@ -70,7 +70,7 @@ function WebmailButton({ provider }: { provider: WebmailProvider }) {
   );
 }
 
-export function LoginForm({ surface = "panel" }: { surface?: "panel" | "inline" }) {
+export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "inline"; next?: string }) {
   const [mode, setMode] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -90,7 +90,7 @@ export function LoginForm({ surface = "panel" }: { surface?: "panel" | "inline" 
       setMessage("Die code klopt niet. Vraag je ouder/beheerder om de juiste code.");
       return;
     }
-    window.location.href = "/";
+    window.location.href = next ?? "/";
   }
 
   if (mode === "code") {
@@ -132,7 +132,7 @@ export function LoginForm({ surface = "panel" }: { surface?: "panel" | "inline" 
     const origin = window.location.origin;
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: buildEmailRedirectTo(origin), shouldCreateUser: true },
+      options: { emailRedirectTo: buildEmailRedirectTo(origin, next), shouldCreateUser: true },
     });
 
     if (error) {
