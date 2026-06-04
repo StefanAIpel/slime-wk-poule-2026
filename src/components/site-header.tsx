@@ -45,7 +45,15 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="site-header-inner">
         <Link href="/" className="site-header-logo" aria-label="Slime Score home">
-          <Image src="/icon.png" width={96} height={96} alt="" aria-hidden="true" priority />
+          <Image
+            className="site-header-avatar header-slime-avatar"
+            src="/assets/transparant-avatar/trump_slime_700_transparant.webp"
+            width={96}
+            height={96}
+            alt=""
+            aria-hidden="true"
+            priority
+          />
           <span className="brand-wordmark">
             <span className="brand-wordmark-text">
               <span className="brand-wordmark-slime">Slime</span>
