@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import { AuthLinkBridge } from "@/components/auth-link-bridge";
 import { InAppHint } from "@/components/in-app-hint";
 import { PwaRegister } from "@/components/pwa-register";
+import { QuickMenu } from "@/components/quick-menu";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StatusBar } from "@/components/status-bar";
@@ -117,6 +118,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <AuthLinkBridge />
         <StatusBar />
         <SiteHeader />
+        <QuickMenu />
         <InAppHint />
         {children}
         <SiteFooter />
