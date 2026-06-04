@@ -2959,6 +2959,273 @@ textarea {
   box-shadow: 0 10px 22px rgba(8, 22, 52, 0.12);
 }
 
+/* Poule-pagina: mobiel compacter en prioriteit op ranglijst/deelnemers. */
+.pool-card-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+}
+
+.pool-card-title {
+  overflow: hidden;
+  font-size: clamp(1.25rem, 4.6vw, 1.7rem);
+  font-weight: 800;
+  line-height: 1.08;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pool-code-line {
+  margin-top: 5px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.pool-code-pill {
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+}
+
+.pool-card-description {
+  margin-top: 6px;
+  max-width: 42rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.pool-quick-share {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.pool-quick-share-button {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #0b1f4d;
+  box-shadow: 0 8px 18px rgba(7, 18, 46, 0.15);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.pool-quick-share-button:disabled {
+  opacity: 0.65;
+}
+
+.pool-quick-share-whatsapp {
+  color: #168f4a;
+}
+
+.pool-quick-share-mail {
+  color: #a85b00;
+}
+
+.pool-quick-share-qr {
+  color: #114b82;
+}
+
+.pool-members-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pool-members-count {
+  display: inline-grid;
+  min-width: 28px;
+  height: 24px;
+  place-items: center;
+  border-radius: 999px;
+  background: #e8f0fb;
+  color: #114b82;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.pool-share-details > summary,
+.pool-card details > summary {
+  list-style-position: inside;
+}
+
+.pool-invite-strip-hidden {
+  border-top: 1px solid rgba(8, 22, 52, 0.06);
+  border-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .poules-page-shell {
+    padding: 12px 10px calc(22px + env(safe-area-inset-bottom));
+  }
+
+  .poules-page-shell > header {
+    margin-bottom: 10px;
+  }
+
+  .poules-page-shell .pool-tabs {
+    gap: 6px;
+  }
+
+  .pool-card {
+    border-radius: 14px;
+  }
+
+  .pool-card .pool-banner {
+    max-height: 72px;
+  }
+
+  .pool-card-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 11px 12px;
+  }
+
+  .pool-card-title {
+    font-size: 1.18rem;
+    letter-spacing: -0.03em;
+  }
+
+  .pool-code-line {
+    margin-top: 3px;
+    font-size: 0.82rem;
+  }
+
+  .pool-card-description {
+    display: none;
+  }
+
+  .pool-quick-share {
+    justify-content: flex-start;
+    gap: 5px;
+  }
+
+  .pool-quick-share-button {
+    width: 34px;
+    height: 34px;
+    box-shadow: 0 5px 12px rgba(7, 18, 46, 0.12);
+  }
+
+  .pool-members-section,
+  .pool-board-section {
+    padding: 10px 11px;
+  }
+
+  .pool-members-title,
+  .pool-board-section h3 {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .pool-members-hint {
+    margin-top: 2px;
+    font-size: 0.72rem;
+  }
+
+  .pool-members-list {
+    margin-top: 8px;
+    gap: 6px;
+  }
+
+  .pool-member-card {
+    border-radius: 10px;
+  }
+
+  .pool-member-button {
+    gap: 7px;
+    min-height: 42px;
+    padding: 7px 8px;
+  }
+
+  .pool-member-rank {
+    width: 24px;
+    height: 24px;
+    font-size: 0.68rem;
+  }
+
+  .pool-member-name,
+  .pool-member-points {
+    font-size: 0.82rem;
+    line-height: 1.1;
+  }
+
+  .pool-member-main {
+    line-height: 1.1;
+  }
+
+  .pool-member-team {
+    display: none;
+  }
+
+  .pool-member-world {
+    font-size: 0.66rem;
+  }
+
+  .pool-member-points {
+    min-width: 44px;
+    text-align: right;
+  }
+
+  .pool-member-chevron {
+    width: 14px;
+    height: 14px;
+  }
+
+  .pool-member-card [aria-expanded="true"] + div {
+    padding: 9px;
+  }
+
+  .pool-board-textarea {
+    min-height: 64px;
+  }
+
+  .pool-board-message {
+    padding: 9px;
+  }
+
+  .pool-share-details > summary,
+  .pool-card details > summary {
+    padding: 10px 11px;
+    font-size: 0.78rem;
+  }
+
+  .pool-invite-strip {
+    gap: 10px;
+    padding: 10px 11px;
+  }
+
+  .pool-invite-url {
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .pool-quick-share-button {
+    width: 31px;
+    height: 31px;
+  }
+
+  .pool-card-title {
+    font-size: 1.08rem;
+  }
+
+  .pool-member-world {
+    display: none;
+  }
+}
+
 @media (max-width: 520px) {
   .pool-invite-strip {
     grid-template-columns: 1fr;

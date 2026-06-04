@@ -20,6 +20,9 @@ const scheduleExplorer = await readFile(new URL("../src/components/schedule-expl
 const schemaPage = await readFile(new URL("../src/app/schema/page.tsx", import.meta.url), "utf8");
 const schemaGroupsPage = await readFile(new URL("../src/app/schema/groepen/page.tsx", import.meta.url), "utf8");
 const schemaKnockoutPage = await readFile(new URL("../src/app/schema/knockout/page.tsx", import.meta.url), "utf8");
+const poulesPage = await readFile(new URL("../src/app/poules/page.tsx", import.meta.url), "utf8");
+const poolMembers = await readFile(new URL("../src/components/pool-members.tsx", import.meta.url), "utf8");
+const poolQuickShare = await readFile(new URL("../src/components/pool-quick-share.tsx", import.meta.url), "utf8");
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
@@ -118,6 +121,21 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(bottomNav, /return null;/);
   assert.doesNotMatch(bottomNav, /bottom-nav-emphasis/);
   assert.match(statusBar, /href=\"\/voorspellingen\" className=\"status-chip status-chip-countdown/);
+});
+
+test("mobile poule page prioritizes ranking and hides bulky share/admin controls", () => {
+  assert.match(poulesPage, /<PoolQuickShare joinUrl=\{joinAssets\.joinUrl\} qrDataUrl=\{joinAssets\.qrDataUrl\}/);
+  assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} \/>[\s\S]*Prikbord[\s\S]*Deelopties &amp; QR[\s\S]*WK-poule-instellingen &amp; opmaak \(beheer\)/);
+  assert.match(poolMembers, /Ranglijst &amp; deelnemers/);
+  assert.match(poolMembers, /pool-members-count/);
+  assert.match(poolQuickShare, /aria-label=\"Deel via WhatsApp\"/);
+  assert.match(poolQuickShare, /Kopieer link/);
+  assert.match(poolQuickShare, /aria-label=\"Deel via mail\"/);
+  assert.match(poolQuickShare, /aria-label=\"Deel QR-code\"/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\) auto;/);
+  assert.match(globalsCss, /@media \(max-width: 640px\) \{[\s\S]*\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);/);
+  assert.match(globalsCss, /\.pool-member-button \{[\s\S]*min-height: 42px;/);
+  assert.match(globalsCss, /\.pool-member-team \{\n    display: none;/);
 });
 
 test("small team columns use official 3-letter country abbreviations", () => {
