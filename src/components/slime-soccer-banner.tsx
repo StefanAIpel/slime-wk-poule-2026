@@ -13,8 +13,9 @@ const gameTiles = [
 
 const wkTile = { href: SITE_URL, img: "/slimes/slimescore-wk2026-friend-poule-banner.jpg", alt: "SlimeScore WK 2026 vriendenpoule" };
 
-export function SlimeSoccerBanner({ includeWk = false }: { includeWk?: boolean }) {
-  const tiles = includeWk ? [wkTile, ...gameTiles] : gameTiles;
+export function SlimeSoccerBanner({ includeWk = false, includeVolley = true }: { includeWk?: boolean; includeVolley?: boolean }) {
+  const games = includeVolley ? gameTiles : gameTiles.slice(0, 1);
+  const tiles = includeWk ? [wkTile, ...games] : games;
 
   return (
     <div className="slime-link-banners">

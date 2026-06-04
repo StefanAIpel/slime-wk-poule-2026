@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 function otpTypes(primary: string | null) {
-  return Array.from(new Set([primary, "email", "magiclink", "signup"].filter(Boolean))) as EmailOtpType[];
+  return Array.from(new Set([primary, "email", "magiclink", "signup", "recovery"].filter(Boolean))) as EmailOtpType[];
 }
 
 function redirectTo(request: NextRequest, path: string) {

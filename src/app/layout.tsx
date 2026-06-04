@@ -25,7 +25,7 @@ const appIcon = "/icons/slimescore-app-icon-v2-512.png";
 const appleTouchIcon = "/icons/slimescore-apple-touch-icon-v2-180.png";
 // Brede 1200x630-banner voor link-previews (WhatsApp/X/Facebook). Het vierkante
 // app-icon blijft alleen voor favicon/PWA — een grote banner klikt veel beter door.
-const ogBanner = "/og.png";
+const ogBanner = "/og-slimescore-wk2026-v2.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

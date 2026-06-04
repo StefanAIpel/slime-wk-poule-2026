@@ -4,12 +4,13 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import { LoginForm } from "@/components/login-form";
+import { PasswordResetForm } from "@/components/password-reset-form";
 import { ProfileForm } from "@/components/profile-form";
 import { ShareRow } from "@/components/share-button";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
 import { UpcomingMatches } from "@/components/upcoming-matches";
 import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
-import { DEMO_PLAYERS, hasPublicProfile } from "@/lib/demo-leaderboard";
+import { DEMO_PLAYERS, hasSafePublicProfile } from "@/lib/demo-leaderboard";
 import { displayName } from "@/lib/format";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -28,7 +29,7 @@ type HomeLeaderboardRow = {
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ auth?: string; login?: string; profiel?: string }>;
+  searchParams: Promise<{ auth?: string; login?: string; profiel?: string; reset?: string }>;
 }) {
   const params = await searchParams;
   const supabase = await createClient();
@@ -51,6 +52,15 @@ export default async function Home({
         authError={params.auth === "fout"}
         leaderboard={(publicLeaderboard ?? []) as unknown as HomeLeaderboardRow[]}
       />
+    );
+  }
+
+  if (params.reset === "wachtwoord") {
+    return (
+      <main className="page-shell grid min-h-[70vh] gap-5 md:max-w-xl md:content-center">
+        <Brand />
+        <PasswordResetForm />
+      </main>
     );
   }
 
@@ -197,7 +207,7 @@ export default async function Home({
 
 
 function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboard: HomeLeaderboardRow[] }) {
-  const realRows = leaderboard.filter((row) => hasPublicProfile(row.profiles));
+  const realRows = leaderboard.filter((row) => hasSafePublicProfile(row.profiles));
   const displayRows: HomeLeaderboardRow[] = [
     ...realRows,
     ...DEMO_PLAYERS.map((player) => ({
@@ -236,17 +246,17 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         </div>
         <div className="hero-bottom-links" aria-label="Snelle links">
           <a href="/schema" className="hero-bottom-link">
-            <CalendarDays aria-hidden="true" className="size-5" />
-            WK-schema
+            <CalendarDays aria-hidden="true" className="size-4" />
+            WK-speelschema
           </a>
           <a href="/regels" className="hero-bottom-link">
-            <ListChecks aria-hidden="true" className="size-5" />
+            <ListChecks aria-hidden="true" className="size-4" />
             Regels
           </a>
         </div>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-[1fr_minmax(320px,400px)] md:items-start">
+      <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_340px] md:items-start">
         <section className="grid gap-4">
           <UpcomingMatches />
 
@@ -264,10 +274,10 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
               <p className="text-sm font-bold leading-6 text-blue-50">
                 Al een code? Meld je aan en doe mee met een bestaande WK 2026-poule.
               </p>
-              <a href="/aanmelden" className="button-primary w-full justify-center text-sm sm:w-auto sm:text-base">Start je WK-poule</a>
+              <a href="/aanmelden" className="button-primary poule-primary-cta">Start je WK-poule</a>
             </div>
             <div className="share-panel-strip">
-              <p className="share-panel-title text-sm font-black text-blue-50">Deel SlimeScore:</p>
+              <p className="share-panel-title">Deel SlimeScore</p>
               <ShareRow
                 url={SITE_URL}
                 text="Doe je mee met de gratis Slime Score WK 2026-poule?"
@@ -284,28 +294,22 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
               Deze inloglink is verlopen. Vraag een nieuwe aan.
             </div>
           ) : null}
-          <div className="flex items-start gap-3">
+          <div className="flex items-center gap-3">
             <span className="public-login-icon" aria-hidden="true">
               <LogIn className="size-6" />
             </span>
             <div>
-              <h2 className="public-login-title text-2xl font-black text-[#101a2b]">FrontPage login</h2>
-              <p className="mt-1 text-sm font-semibold leading-6 text-[#38506d]">
-                Log terug in met mail en wachtwoord. Eerste keer? Vraag eerst een registratiemail aan.
-              </p>
+              <h2 className="public-login-title text-2xl font-black text-[#101a2b]">Aanmelden</h2>
             </div>
           </div>
           <LoginForm surface="inline" />
-          <p className="text-sm font-bold leading-6 text-[#7c2d12]">
-            Mobiel liever stap voor stap? Gebruik de aanmeldknoppen of het menu.
-          </p>
+          <SlimeSoccerBanner includeVolley={false} />
         </section>
 
         <a href="/ranglijst" className="panel public-score-card p-4 no-underline md:col-start-1 md:row-start-2">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-bold text-[#081634]">Ranglijst</h2>
-              {displayRows.some((row) => row.isDemo) ? <span className="demo-pill">voorbeeld</span> : null}
             </div>
             <span className="text-sm font-bold text-[#0866e8]">Bekijk alles</span>
           </div>
@@ -320,9 +324,6 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         </a>
       </div>
 
-      <section className="landing-bottom-banners" aria-label="Slime Score games">
-        <SlimeSoccerBanner />
-      </section>
     </main>
   );
 }

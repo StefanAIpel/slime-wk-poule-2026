@@ -6,13 +6,15 @@ const loginForm = await readFile(new URL("../src/components/login-form.tsx", imp
 const profileForm = await readFile(new URL("../src/components/profile-form.tsx", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
+const finishAuth = await readFile(new URL("../src/lib/supabase/finish-auth.ts", import.meta.url), "utf8");
+const callbackRoute = await readFile(new URL("../src/app/auth/callback/route.ts", import.meta.url), "utf8");
 
 test("FrontPage has email-password login as the primary returning-player flow", () => {
   assert.match(loginForm, /aria-label=\"Inloggen met mail en wachtwoord\"/);
   assert.match(loginForm, /type=\"password\"/);
   assert.match(loginForm, /autoComplete=\"current-password\"/);
   assert.match(loginForm, /signInWithPassword\(\{[\s\S]*email:/);
-  assert.match(homePage, /mail en wachtwoord/);
+  assert.match(loginForm, /mail en wachtwoord/);
 });
 
 test("new players register by mail link before profile completion", () => {
@@ -29,4 +31,16 @@ test("profile completion chooses password and records legal acceptance", () => {
   assert.match(actions, /auth\.updateUser\(\{ password \}\)/);
   assert.match(actions, /terms_accepted_at/);
   assert.match(actions, /privacy_accepted_at/);
+});
+
+test("existing players can request a password reset mail from the FrontPage", () => {
+  assert.match(loginForm, /Wachtwoord vergeten\?/);
+  assert.match(loginForm, /resetPasswordForEmail/);
+  assert.match(loginForm, /reset=wachtwoord/);
+  assert.match(homePage, /PasswordResetForm/);
+});
+
+test("recovery links are accepted by the auth callback fallback", () => {
+  assert.match(finishAuth, /\"recovery\"/);
+  assert.match(callbackRoute, /\"recovery\"/);
 });

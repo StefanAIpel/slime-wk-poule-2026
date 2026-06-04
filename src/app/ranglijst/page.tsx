@@ -2,7 +2,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
 import { RankingExplorer, type PlayerRow, type PoolRow } from "@/components/ranking-explorer";
-import { DEMO_PLAYERS, DEMO_POOLS, hasPublicProfile } from "@/lib/demo-leaderboard";
+import { DEMO_PLAYERS, DEMO_POOLS, hasSafePublicProfile } from "@/lib/demo-leaderboard";
 import { formatAmsterdam } from "@/lib/format";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
@@ -45,7 +45,7 @@ export default async function RankingPage() {
 
   const lastUpdate = (lastScore as { updated_at: string | null } | null)?.updated_at ?? null;
 
-  const rows = ((globalScores ?? []) as unknown as GlobalScoreRow[]).filter((row) => hasPublicProfile(row.profiles));
+  const rows = ((globalScores ?? []) as unknown as GlobalScoreRow[]).filter((row) => hasSafePublicProfile(row.profiles));
   const realPlayers = rows.map((row) => ({
     userId: row.user_id,
     nickname: row.profiles?.nickname ?? null,

@@ -23,46 +23,46 @@ export const DEMO_POOLS: DemoPool[] = [
 ];
 
 const nicknames = [
-  ["AppelBaas", "FC Slapple"],
-  ["PannaPiet", "De Laatste Man"],
-  ["VARnaald", "Buitenspel Bende"],
-  ["OranjeOpa", "Totaalvoetbal 2.0"],
-  ["TikkieTerug", "Balbezit Boys"],
-  ["SlimeSpits", "Doelpunt Dweilers"],
-  ["KruisingKoning", "Latje Trap"],
-  ["TurboTante", "Familie 4-3-3"],
-  ["NatteKrant", "Kansloos United"],
-  ["Mister90", "Blessuretijd BV"],
+  ["Joostinho_88", "FC LastMinute"],
+  ["milanVAR", "De Laatste Man"],
+  ["Nora_NoLook", "Buitenspel Bende"],
+  ["KeesKeeper", "Clean Sheet Crew"],
+  ["xPannaPietx", "Balbezit Boys"],
+  ["TikkieTerug", "Doelpunt Dweilers"],
+  ["Mila92", "Latje Trap"],
+  ["OranjeOpa", "Familie 4-3-3"],
+  ["Cas_Corner", "Kansloos United"],
+  ["Mister90plus", "Blessuretijd BV"],
   ["BanaanBal", "Gele Kaartjes"],
-  ["KeeperKees", "Handsvol"],
-  ["TikTokTactiek", "Swipe FC"],
+  ["Noah_Nacounter", "Handsvol"],
+  ["Tactical_Tess", "Swipe FC"],
   ["PolderPirlo", "Amersfoort Athletic"],
   ["SnackVAR", "Kroketten Crew"],
-  ["SambaSandra", "Dansende Defensie"],
-  ["FeddeFinta", "Schijnbeweging"],
-  ["LindeLinks", "Linkspoot Legends"],
-  ["RosieRabona", "Roze Raket"],
+  ["SaarSprint", "Dansende Defensie"],
+  ["FennaFluit", "Schijnbeweging"],
+  ["KoenKopbal", "Linkspoot Legends"],
+  ["BoBuitenkant", "Roze Raket"],
   ["OmeOffside", "Net Niet FC"],
-  ["DoelpuntDaan", "De Twaalfde Man"],
+  ["DaanDoelpunt", "De Twaalfde Man"],
   ["NoLookNora", "Blind Passes"],
   ["CornerCas", "Vlaggenstok FC"],
-  ["PenaltyPam", "Elf Meter"],
-  ["WisselWout", "Bankwarmers"],
+  ["PamPenalty", "Elf Meter"],
+  ["WoutWissel", "Bankwarmers"],
   ["NachoNiels", "Stadion Snacks"],
-  ["RodeDuivel", "Kaartclub"],
-  ["BuitenkantBo", "Trivela Town"],
+  ["RodeDuivel_10", "Kaartclub"],
+  ["TrivelaBo", "Trivela Town"],
   ["KnalKees", "Afstandsschot"],
-  ["PoulePuck", "Puntenpakkers"],
-  ["BierbuikBeckenbauer", "Derde Helft"],
-  ["SprintSaar", "Turbo Teens"],
-  ["KopbalKoen", "Luchtmacht"],
+  ["PuckPoule", "Puntenpakkers"],
+  ["BeckenBram", "Derde Helft"],
+  ["TurboSaar", "Turbo Teens"],
   ["HakjeHugo", "Sierlijke Slopers"],
-  ["LaptopLouis", "Data Dugout"],
-  ["FluitFenna", "Scheidslijn"],
-  ["TotoTess", "Gokje Goed"],
+  ["DataLouis", "Data Dugout"],
+  ["GokjeGoed", "Toto Tactiek"],
   ["BalOpDak", "Dakduiven FC"],
   ["GrasGijs", "Modderpoten"],
   ["MuurMila", "Verdedigingsmuur"],
+  ["JesseJoga", "Samba Selectie"],
+  ["Ravi_Raket", "Counter Kings"],
 ] as const;
 
 export const DEMO_PLAYERS: DemoPlayer[] = nicknames.map(([nickname, teamName], index) => ({
@@ -74,4 +74,12 @@ export const DEMO_PLAYERS: DemoPlayer[] = nicknames.map(([nickname, teamName], i
 
 export function hasPublicProfile(profile?: { nickname: string | null; team_name: string | null } | null) {
   return Boolean(profile?.nickname?.trim() || profile?.team_name?.trim());
+}
+
+const privateNameFragments = ["stefan", "fedde", "linde", "sandra", "appel"];
+
+export function hasSafePublicProfile(profile?: { nickname: string | null; team_name: string | null } | null) {
+  if (!hasPublicProfile(profile)) return false;
+  const text = `${profile?.nickname ?? ""} ${profile?.team_name ?? ""}`.toLowerCase();
+  return !privateNameFragments.some((fragment) => text.includes(fragment));
 }

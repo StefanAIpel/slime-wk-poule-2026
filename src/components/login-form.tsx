@@ -73,7 +73,7 @@ function WebmailButton({ provider }: { provider: WebmailProvider }) {
 }
 
 export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "inline"; next?: string }) {
-  const [mode, setMode] = useState<"login" | "register" | "code">("login");
+  const [mode, setMode] = useState<"login" | "register" | "code" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
@@ -90,7 +90,7 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
     return () => window.clearTimeout(timeoutId);
   }, []);
 
-  function resetMode(nextMode: "login" | "register" | "code") {
+  function resetMode(nextMode: "login" | "register" | "code" | "forgot") {
     setMode(nextMode);
     setStatus("idle");
     setMessage("");
@@ -118,7 +118,7 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
       setStatus("error");
       const errorMessage = error.message.toLowerCase();
       if (errorMessage.includes("invalid login") || errorMessage.includes("invalid credentials")) {
-        setMessage("Mail of wachtwoord klopt niet. Eerste keer? Kies ‘Nieuw account’. ");
+        setMessage("Mail of wachtwoord klopt niet. Nog nooit een wachtwoord gekozen? Gebruik ‘Wachtwoord vergeten?’.");
       } else if (errorMessage.includes("email not confirmed")) {
         setMessage("Open eerst de registratiemail. Daarna kies je je naam en wachtwoord.");
       } else {
@@ -158,6 +158,33 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
     rememberCurrentEmail();
     setStatus("sent");
     setMessage("Registratielink verstuurd. Open de mail; daarna kies je naam, teamnaam en wachtwoord.");
+  }
+
+  async function onForgotSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setStatus("loading");
+    setMessage("");
+
+    const supabase = createClient();
+    const origin = window.location.origin;
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: buildEmailRedirectTo(origin, "/?reset=wachtwoord"),
+    });
+
+    if (error) {
+      setStatus("error");
+      const errorMessage = error.message.toLowerCase();
+      if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
+        setMessage("Je hebt net al een wachtwoordlink aangevraagd. Wacht ongeveer 1 minuut en probeer daarna opnieuw.");
+      } else {
+        setMessage("Wachtwoordmail versturen lukte niet. Controleer je e-mailadres en probeer opnieuw.");
+      }
+      return;
+    }
+
+    rememberCurrentEmail();
+    setStatus("sent");
+    setMessage("Wachtwoordlink verstuurd. Open de mail en kies daarna je nieuwe wachtwoord.");
   }
 
   async function onCodeSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -207,14 +234,17 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
 
   if (status === "sent") {
     const provider = webmailFor(email);
+    const isResetMail = mode === "forgot";
     return (
       <div className={surfaceClass}>
         <div className="flex items-center gap-2 rounded-lg bg-green-50 p-3 font-bold text-[#0f7a39]">
           <Check aria-hidden="true" className="size-5" />
-          Registratiemail verstuurd
+          {isResetMail ? "Wachtwoordmail verstuurd" : "Registratiemail verstuurd"}
         </div>
         <p className="text-sm font-bold leading-6 text-[#0f5132]">
-          Open de inloglink in je mail. Daarna maak je je profiel af met naam, wachtwoord, voorwaarden en privacy.
+          {isResetMail
+            ? "Open de link in je mail. Daarna kies je meteen een nieuw wachtwoord."
+            : "Open de inloglink in je mail. Daarna maak je je profiel af met naam, wachtwoord, voorwaarden en privacy."}
         </p>
         <p aria-live="polite" className="text-sm font-bold leading-5 text-[#0f5132]">
           {message || "De link is tijdelijk geldig."}
@@ -250,7 +280,33 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
         </button>
       </div>
 
-      {mode === "login" ? (
+      {mode === "forgot" ? (
+        <form onSubmit={onForgotSubmit} className="grid gap-3" aria-label="Wachtwoord opnieuw aanvragen">
+          <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
+            E-mailadres
+            <input
+              className="field"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="jij@example.nl"
+            />
+          </label>
+          <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
+            <Mail aria-hidden="true" className="size-5" />
+            {status === "loading" ? "Versturen…" : "Stuur wachtwoordlink"}
+          </button>
+          <p aria-live="polite" className={`text-sm font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
+            {message || "Nog nooit een wachtwoord gekozen of vergeten? Stuur jezelf een link en kies een nieuw wachtwoord."}
+          </p>
+          <button type="button" className="text-sm font-bold text-[#0e7a44] underline" onClick={() => resetMode("login")}>
+            Terug naar inloggen
+          </button>
+        </form>
+      ) : mode === "login" ? (
         <form onSubmit={onPasswordSubmit} className="grid gap-3" aria-label="Inloggen met mail en wachtwoord">
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
             E-mailadres
@@ -291,7 +347,10 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
             <LogIn aria-hidden="true" className="size-5" />
             {status === "loading" ? "Inloggen…" : "Inloggen"}
           </button>
-          <p aria-live="polite" className={`text-sm font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
+          <button type="button" className="text-center text-xs font-semibold text-[#0e7a44] underline" onClick={() => resetMode("forgot")}>
+            Wachtwoord vergeten?
+          </button>
+          <p aria-live="polite" className={`text-center text-xs font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
             {message || "Al geregistreerd? Log direct in met mail en wachtwoord."}
           </p>
         </form>

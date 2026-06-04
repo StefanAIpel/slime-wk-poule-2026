@@ -73,7 +73,7 @@ export function SiteHeader() {
           ) : (
             <Link href="/aanmelden" className="site-header-cta site-header-cta-primary">
               <LogIn aria-hidden="true" className="size-4" />
-              Inloggen
+              Aanmelden
             </Link>
           )}
         </nav>

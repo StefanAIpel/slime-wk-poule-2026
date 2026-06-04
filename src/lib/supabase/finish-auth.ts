@@ -9,7 +9,7 @@ export type FinishAuthResult =
   | { ok: false; redirectTo: string; handled: boolean; error: string };
 
 function otpTypes(primary: string | null) {
-  return Array.from(new Set([primary, "email", "magiclink", "signup"].filter(Boolean))) as EmailOtpType[];
+  return Array.from(new Set([primary, "email", "magiclink", "signup", "recovery"].filter(Boolean))) as EmailOtpType[];
 }
 
 export function hasAuthCallbackPayload(url = new URL(window.location.href)) {
