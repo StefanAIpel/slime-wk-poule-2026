@@ -72,8 +72,18 @@ function WebmailButton({ provider }: { provider: WebmailProvider }) {
   );
 }
 
-export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "inline"; next?: string }) {
-  const [mode, setMode] = useState<"login" | "register" | "code" | "forgot">("login");
+type LoginMode = "login" | "register" | "code" | "forgot";
+
+export function LoginForm({
+  surface = "panel",
+  next,
+  initialMode = "login",
+}: {
+  surface?: "panel" | "inline";
+  next?: string;
+  initialMode?: Extract<LoginMode, "login" | "register">;
+}) {
+  const [mode, setMode] = useState<LoginMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
@@ -90,7 +100,7 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
     return () => window.clearTimeout(timeoutId);
   }, []);
 
-  function resetMode(nextMode: "login" | "register" | "code" | "forgot") {
+  function resetMode(nextMode: LoginMode) {
     setMode(nextMode);
     setStatus("idle");
     setMessage("");
@@ -374,7 +384,7 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
             {status === "loading" ? "Versturen…" : "Stuur registratiemail"}
           </button>
           <p aria-live="polite" className={`text-sm font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-            {message || "Eerste keer? Open de mail-link. Daarna kies je naam en wachtwoord."}
+            {message || "Eerste keer? Open de mail-link. Daarna kies je naam, teamnaam en wachtwoord."}
           </p>
         </form>
       )}

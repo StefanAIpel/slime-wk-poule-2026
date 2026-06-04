@@ -6,8 +6,10 @@ const loginForm = await readFile(new URL("../src/components/login-form.tsx", imp
 const profileForm = await readFile(new URL("../src/components/profile-form.tsx", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
+const aanmeldenPage = await readFile(new URL("../src/app/aanmelden/page.tsx", import.meta.url), "utf8");
 const finishAuth = await readFile(new URL("../src/lib/supabase/finish-auth.ts", import.meta.url), "utf8");
 const callbackRoute = await readFile(new URL("../src/app/auth/callback/route.ts", import.meta.url), "utf8");
+const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
 
 test("FrontPage has email-password login as the primary returning-player flow", () => {
   assert.match(loginForm, /aria-label=\"Inloggen met mail en wachtwoord\"/);
@@ -15,6 +17,21 @@ test("FrontPage has email-password login as the primary returning-player flow", 
   assert.match(loginForm, /autoComplete=\"current-password\"/);
   assert.match(loginForm, /signInWithPassword\(\{[\s\S]*email:/);
   assert.match(loginForm, /mail en wachtwoord/);
+});
+
+test("registration page is honest that a password is needed after the mail link", () => {
+  assert.doesNotMatch(aanmeldenPage, /geen wachtwoord nodig/i);
+  assert.doesNotMatch(aanmeldenPage, /korte code|plak de code/i);
+  assert.match(aanmeldenPage, /wachtwoord kiezen/i);
+  assert.match(aanmeldenPage, /registratiemail/i);
+  assert.match(aanmeldenPage, /initialMode=\"register\"/);
+});
+
+test("registration email template points to password onboarding, not passwordless code login", () => {
+  assert.doesNotMatch(authEmailTemplate, /inlogcode|Code uit je mail|zonder wachtwoordgedoe/i);
+  assert.match(authEmailTemplate, /registratielink/i);
+  assert.match(authEmailTemplate, /wachtwoord/i);
+  assert.match(authEmailTemplate, /{{ \.ConfirmationURL }}/);
 });
 
 test("new players register by mail link before profile completion", () => {

@@ -226,11 +226,11 @@ otp_expiry = 3600
 # - new email users may receive the confirmation template
 # - existing users receive the magic-link template
 [auth.email.template.confirmation]
-subject = "Je SlimeScore inlogcode"
+subject = "Je SlimeScore registratielink"
 content_path = "./supabase/templates/slimescore_auth.html"
 
 [auth.email.template.magic_link]
-subject = "Je SlimeScore inlogcode"
+subject = "Je SlimeScore registratielink"
 content_path = "./supabase/templates/slimescore_auth.html"
 
 # Uncomment to customize notification email template
