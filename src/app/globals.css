@@ -320,6 +320,17 @@ textarea {
     linear-gradient(152deg, #2379bd 0%, #12528a 50%, #0b2f5d 100%);
 }
 
+.poule-share-copy-text {
+  padding-left: 2.25rem;
+  padding-right: 0.45rem;
+}
+
+@media (min-width: 640px) {
+  .poule-share-copy-text {
+    padding-right: 0.85rem;
+  }
+}
+
 .auth-flow-shell {
   position: relative;
   display: grid;
@@ -552,7 +563,7 @@ textarea {
 
 /* Hero met geïntegreerde header: ruimte bovenin voor de balk (alleen mobiel). */
 .hero-band-topbar {
-  padding-top: 60px;
+  padding-top: 56px;
 }
 
 @media (min-width: 768px) {
@@ -571,7 +582,7 @@ textarea {
 /* Op mobiel ruimte onderaan zodat de ingebakken slime op het gras zichtbaar blijft. */
 @media (max-width: 759px) {
   .hero-home {
-    padding-bottom: 146px;
+    padding-bottom: 98px;
   }
 }
 
@@ -638,7 +649,7 @@ textarea {
 }
 
 .hero-home .hero-content {
-  padding-bottom: 88px;
+  padding-bottom: 46px;
 }
 
 .hero-primary-cta {
@@ -935,7 +946,7 @@ textarea {
   font-size: 0.62em;
   font-weight: 700;
   font-style: italic;
-  color: #5a6b82;
+  color: #15a35b;
 }
 
 .brand-wordmark-dark .brand-wordmark-slime {
@@ -949,7 +960,7 @@ textarea {
 }
 
 .brand-wordmark-dark .brand-wordmark-tld {
-  color: rgba(255, 255, 255, 0.85);
+  color: #36d65f;
   text-shadow: 0 1px 3px rgba(0, 18, 48, 0.45);
 }
 
@@ -962,7 +973,7 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 16px 14px 68px;
+  padding: 12px 72px 12px 16px;
 }
 
 @media (min-width: 768px) {
@@ -1344,9 +1355,25 @@ textarea {
 
 .upcoming-team-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
   align-items: center;
-  column-gap: 16px;
+  column-gap: 8px;
+}
+
+.upcoming-team-grid:not(:has(.match-result-score)) {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.match-result-score {
+  display: inline-flex;
+  min-width: 48px;
+  align-items: center;
+  justify-content: flex-end;
+  color: #0b1f4d;
+  font-size: 0.82rem;
+  font-weight: 950;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .upcoming-team-separator,
@@ -1368,8 +1395,13 @@ textarea {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  column-gap: 18px;
+  column-gap: 10px;
   color: #0b1f4d;
+}
+
+.schedule-team-grid-has-score {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+  column-gap: 8px;
 }
 
 .schedule-team-cell {
@@ -1938,8 +1970,8 @@ textarea {
 
 .quick-menu-button {
   position: fixed;
-  top: calc(66px + env(safe-area-inset-top));
-  right: max(22px, calc((100vw - min(100vw - 32px, 1100px)) / 2 + 22px));
+  top: calc(60px + env(safe-area-inset-top));
+  right: max(34px, calc((100vw - min(100vw - 32px, 1100px)) / 2 + 34px));
   z-index: 40;
   display: inline-grid;
   min-height: 46px;
@@ -2092,15 +2124,16 @@ textarea {
 
 .schedule-score {
   display: inline-flex;
-  min-width: 48px;
+  min-width: 50px;
   align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: #081634;
-  color: #fff;
-  padding: 5px 8px;
+  justify-content: flex-end;
+  border-radius: 0;
+  background: transparent;
+  color: #081634;
+  padding: 0;
   font-weight: 1000;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .schedule-team-winner .schedule-team-name {

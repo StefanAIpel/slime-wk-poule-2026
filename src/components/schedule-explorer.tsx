@@ -512,7 +512,7 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
             </span>
           ) : null}
         </div>
-        <div className="schedule-team-grid" aria-label={`${homeText(match)} tegen ${awayText(match)}`}>
+        <div className={`schedule-team-grid ${hasScore(match) ? "schedule-team-grid-has-score" : ""}`} aria-label={`${homeText(match)} tegen ${awayText(match)}`}>
           <div className={match.winnerCode === match.homeCode ? "schedule-team-cell schedule-team-winner" : "schedule-team-cell"}>
             <TeamFlag code={match.homeCode} name={match.homeName} />
             <span className="schedule-team-name">
@@ -520,13 +520,8 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
               <span className="hidden sm:inline">{homeText(match)}</span>
             </span>
           </div>
-          {hasScore(match) ? (
-            <span className="schedule-score" aria-label={`Uitslag ${match.homeScore}-${match.awayScore}`}>
-              {match.homeScore}-{match.awayScore}
-            </span>
-          ) : (
-            <span className="schedule-team-separator" aria-hidden="true">—</span>
-          )}
+          <span className="schedule-team-separator" aria-hidden="true">-</span>
+          <span className="sr-only">tegen</span>
           <div className={match.winnerCode === match.awayCode ? "schedule-team-cell schedule-team-winner" : "schedule-team-cell"}>
             <TeamFlag code={match.awayCode} name={match.awayName} />
             <span className="schedule-team-name">
@@ -534,6 +529,11 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
               <span className="hidden sm:inline">{awayText(match)}</span>
             </span>
           </div>
+          {hasScore(match) ? (
+            <span className="schedule-score" aria-label={`Uitslag ${match.homeScore}-${match.awayScore}`}>
+              {match.homeScore} - {match.awayScore}
+            </span>
+          ) : null}
         </div>
       </div>
     </div>

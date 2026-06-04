@@ -12,9 +12,16 @@ type Row = {
   away_code: string | null;
   home_label: string | null;
   away_label: string | null;
+  status: "scheduled" | "live" | "finished" | null;
+  home_score: number | null;
+  away_score: number | null;
   home: { name_nl: string | null } | null;
   away: { name_nl: string | null } | null;
 };
+
+function hasScore(match: Row) {
+  return match.home_score !== null && match.away_score !== null;
+}
 
 /** Compact lijstje met de eerstvolgende wedstrijden — ook nuttig zonder login. */
 export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
@@ -24,7 +31,7 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
   const { data } = await admin
     .from("matches")
     .select(
-      "id,starts_at,group_letter,venue,home_code,away_code,home_label,away_label,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)",
+      "id,starts_at,group_letter,venue,home_code,away_code,home_label,away_label,status,home_score,away_score,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)",
     )
     .gte("starts_at", new Date().toISOString())
     .order("starts_at", { ascending: true })
@@ -67,22 +74,27 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                 ) : null}
               </div>
               <div className="upcoming-team-grid mt-2 text-sm">
-                <div className="flex items-center gap-2">
+                <div className="flex min-w-0 items-center gap-2">
                   <TeamFlag code={m.home_code} name={m.home?.name_nl} />
-                  <span className="font-medium tracking-wide text-[var(--ink)]" title={m.home?.name_nl ?? m.home_label ?? m.home_code ?? undefined}>
+                  <span className="truncate font-medium tracking-wide text-[var(--ink)]" title={m.home?.name_nl ?? m.home_label ?? m.home_code ?? undefined}>
                     {teamAbbrev(m.home_code, m.home_label ?? m.home?.name_nl)}
                   </span>
                 </div>
                 <span aria-hidden="true" className="upcoming-team-separator">
-                  vs
+                  -
                 </span>
                 <span className="sr-only">tegen</span>
-                <div className="flex items-center gap-2">
+                <div className="flex min-w-0 items-center gap-2">
                   <TeamFlag code={m.away_code} name={m.away?.name_nl} />
-                  <span className="font-medium tracking-wide text-[var(--ink)]" title={m.away?.name_nl ?? m.away_label ?? m.away_code ?? undefined}>
+                  <span className="truncate font-medium tracking-wide text-[var(--ink)]" title={m.away?.name_nl ?? m.away_label ?? m.away_code ?? undefined}>
                     {teamAbbrev(m.away_code, m.away_label ?? m.away?.name_nl)}
                   </span>
                 </div>
+                {hasScore(m) ? (
+                  <span className="match-result-score" aria-label={`Uitslag ${m.home_score}-${m.away_score}`}>
+                    {m.home_score} - {m.away_score}
+                  </span>
+                ) : null}
               </div>
             </div>
           </div>

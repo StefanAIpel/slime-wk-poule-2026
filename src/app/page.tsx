@@ -232,7 +232,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             <span>Canada</span>
             <span>Mexico</span>
           </div>
-          <h1 className="mt-2 text-[1.42rem] font-bold leading-[1.15] text-white sm:text-[1.78rem] md:text-[2.25rem]">
+          <h1 className="mt-4 text-[1.42rem] font-bold leading-[1.15] text-white sm:text-[1.78rem] md:text-[2.25rem]">
             Gratis WK 2026-poule voor vrienden en familie
           </h1>
           <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-blue-50 sm:text-base md:text-lg">
@@ -263,17 +263,17 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           <UpcomingMatches />
 
           <div className="dark-panel poule-share-panel grid gap-4 p-5 sm:p-6">
-            <div className="grid gap-4">
+            <div className="grid gap-4 poule-share-copy">
               <div>
                 <h2 className="flex items-start gap-3 text-xl font-bold leading-tight text-white sm:text-2xl">
                   <Users aria-hidden="true" className="mt-0.5 size-6 flex-none text-white" />
                   Samen spelen: maak je WK-poule
                 </h2>
-                <p className="mt-3 text-sm font-semibold leading-6 text-blue-50 sm:text-base">
+                <p className="poule-share-copy-text mt-3 text-sm font-semibold leading-6 text-blue-50 sm:text-base">
                   Maak een poule voor familie, vrienden of collega&rsquo;s. Deel één code; iedereen vult zelf in.
                 </p>
               </div>
-              <p className="text-sm font-bold leading-6 text-blue-50">
+              <p className="poule-share-copy-text text-sm font-bold leading-6 text-blue-50">
                 Al een code? Meld je aan en doe mee met een bestaande WK 2026-poule.
               </p>
               <a href="/aanmelden" className="button-primary poule-primary-cta">Start je WK-poule</a>
