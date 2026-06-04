@@ -79,7 +79,7 @@ test("unconfirmed players can explicitly resend and code-confirm the registratio
   assert.match(loginForm, /auth\.resend\(\{[\s\S]*type: \"signup\"/);
   assert.match(loginForm, /Bevestigingsmail opnieuw sturen/);
   assert.match(loginForm, /buildEmailRedirectTo\(origin, next\)/);
-  assert.match(loginForm, /verifyOtp\(\{[\s\S]*type: \"signup\"/);
+  assert.match(loginForm, /verifyOtp\(\{[\s\S]*type: \"email\"/);
   assert.match(loginForm, /Registratie bevestigen met mailcode/);
   assert.match(loginForm, /Gebruik de bevestigingscode uit die mail hieronder/);
 });

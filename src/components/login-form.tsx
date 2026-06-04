@@ -266,7 +266,7 @@ export function LoginForm({
     const { error } = await supabase.auth.verifyOtp({
       email: email.trim(),
       token: normalizedCode,
-      type: "signup",
+      type: "email",
     });
     if (error) {
       setSignupSubmitting(false);
