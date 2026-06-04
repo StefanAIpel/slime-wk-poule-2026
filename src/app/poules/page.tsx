@@ -232,13 +232,13 @@ export default async function PoolsPage({
                     {pool.description ? <p className="mt-2 max-w-2xl text-sm font-medium text-white/90">{pool.description}</p> : null}
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <WhatsappShare text={inviteText} url={joinAssets.joinUrl} label="WhatsApp" />
-                    <CopyButton value={joinAssets.joinUrl} label="Kopieer link" />
-                    <CopyButton value={pool.code} label={`Code ${pool.code}`} />
+                    <WhatsappShare text={inviteText} url={joinAssets.joinUrl} label="WhatsApp" compact />
+                    <CopyButton value={joinAssets.joinUrl} label="Kopieer link" compact />
+                    <CopyButton value={pool.code} label={`Code ${pool.code}`} compact />
                     {isOwner ? (
                       <form action={resetPoolCode}>
                         <input type="hidden" name="pool_id" value={pool.id} />
-                        <button className="button-plain" type="submit" title="Maak een nieuwe deelcode (oude werkt dan niet meer)">
+                        <button className="button-plain button-compact" type="submit" title="Maak een nieuwe deelcode (oude werkt dan niet meer)">
                           <RefreshCw aria-hidden="true" className="size-4" />
                           Nieuwe code
                         </button>
