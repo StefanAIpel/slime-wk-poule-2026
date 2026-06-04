@@ -147,9 +147,9 @@ max_indexes = 5
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "https://slimescore.vercel.app"
+site_url = "https://slimescore.com"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["http://localhost:3000/**", "http://127.0.0.1:3000/**", "https://slimescore.vercel.app/**", "https://slime-wk-poule-2026.vercel.app/**", "https://*-stefans-projects-8630504a.vercel.app/**"]
+additional_redirect_urls = ["http://localhost:3000/**", "http://127.0.0.1:3000/**", "http://localhost:3017/**", "http://127.0.0.1:3017/**", "http://localhost:3108/**", "http://127.0.0.1:3108/**", "https://slimescore.com/**", "https://www.slimescore.com/**", "https://slimescore.app/**", "https://www.slimescore.app/**", "https://soccer.slimescore.app/**", "https://soccer.slimescore.com/**", "https://slimescore.vercel.app/**", "https://slime-wk-poule-2026.vercel.app/**", "https://slime-wk2026.netlify.app/**", "https://*-stefans-projects-8630504a.vercel.app/**"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to the local API URL (http://127.0.0.1:<port>/auth/v1).
@@ -222,10 +222,16 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Branded SlimeScore Auth emails. Keep confirmation and magic_link aligned:
+# - new email users may receive the confirmation template
+# - existing users receive the magic-link template
+[auth.email.template.confirmation]
+subject = "Je SlimeScore inlogcode"
+content_path = "./supabase/templates/slimescore_auth.html"
+
+[auth.email.template.magic_link]
+subject = "Je SlimeScore inlogcode"
+content_path = "./supabase/templates/slimescore_auth.html"
 
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]

@@ -1876,7 +1876,7 @@ textarea {
 .quick-menu-button {
   position: fixed;
   top: calc(54px + env(safe-area-inset-top));
-  right: 14px;
+  left: 14px;
   z-index: 40;
   display: inline-grid;
   min-height: 42px;
@@ -1894,7 +1894,7 @@ textarea {
   inset: 0;
   z-index: 60;
   display: grid;
-  justify-items: end;
+  justify-items: start;
   overflow: hidden;
   overscroll-behavior: contain;
   background: rgba(8, 22, 52, 0.42);
@@ -1912,7 +1912,7 @@ textarea {
   padding-bottom: calc(18px + env(safe-area-inset-bottom));
   color: #0b1f4d;
   background: linear-gradient(170deg, #ffffff, #f6f9ff);
-  box-shadow: -18px 0 50px rgba(8, 22, 52, 0.24);
+  box-shadow: 18px 0 50px rgba(8, 22, 52, 0.24);
   -webkit-overflow-scrolling: touch;
 }
 

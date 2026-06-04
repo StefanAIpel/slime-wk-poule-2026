@@ -116,7 +116,7 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
           {status === "loading" ? "Inloggen…" : "Inloggen met code"}
         </button>
         <p aria-live="polite" className={`text-sm font-medium ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-          {message || "Deze code krijg je alleen als je poulebeheerder die heeft aangemaakt."}
+          {message || "Deze vaste inlogcode krijg je van de beheerder. Je hebt hiervoor geen e-mail nodig."}
         </p>
         <button type="button" className="text-sm font-bold text-[#0e7a44] underline" onClick={() => { setMode("email"); setStatus("idle"); setMessage(""); }}>
           Terug naar inloggen met e-mail
@@ -266,7 +266,7 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
         onClick={() => { setMode("code"); setStatus("idle"); setMessage(""); }}
       >
         <KeyRound aria-hidden="true" className="size-4" />
-        Ik heb een poulecode
+        Ik heb een vaste code zonder e-mail
       </button>
     </form>
   );
