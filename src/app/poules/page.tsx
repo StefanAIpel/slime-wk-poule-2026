@@ -1,10 +1,9 @@
-import { ImagePlus, Megaphone, Palette, RefreshCw, ShieldCheck, Trash2, Users } from "lucide-react";
+import { ImagePlus, Megaphone, Palette, RefreshCw, Trash2 } from "lucide-react";
 import QRCode from "qrcode";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  createPool,
   deletePoolMessage,
-  joinPool,
   postPoolMessage,
   removeMember,
   resetPoolCode,
@@ -15,7 +14,6 @@ import {
 import { Avatar } from "@/components/avatar";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
-import { HeroArt } from "@/components/hero-art";
 import { PendingButton } from "@/components/pending-button";
 import { PoolBanner } from "@/components/pool-banner";
 import { PoolMembers, type MatchLine, type PoolMember } from "@/components/pool-members";
@@ -36,7 +34,7 @@ const poolErrors: Record<string, string> = {
   code: "Die WK-poulecode klopt niet. Controleer de code.",
   rechten: "Je hebt hier geen rechten voor.",
   naam: "Kies een geldige WK-poulenaam (min. 2 tekens).",
-  limiet: "Je hebt het maximum aantal eigen WK-poules bereikt.",
+  limiet: "Je zit al aan het maximum aantal WK-poules (20).",
   kleur: "Kies een geldige kleur.",
   rol: "Die rol kan niet worden ingesteld.",
   "bericht-kort": "Je bericht is te kort (minimaal 10 tekens).",
@@ -190,17 +188,6 @@ export default async function PoolsPage({
     <main className="page-shell">
       <header className="mb-5 grid gap-4">
         <Brand />
-        <div className="hero-band hero-band-visual">
-          <div className="hero-content">
-            <h1 className="text-2xl font-bold leading-tight text-white md:text-3xl">
-              Speel samen — maak of join je WK-poule
-            </h1>
-            <p className="mt-1 text-sm font-medium leading-6 text-blue-50 md:text-base">
-              Daag vrienden, familie of collega&rsquo;s uit in je WK 2026-poule en strijd om de eerste plek.
-            </p>
-          </div>
-          <HeroArt src="/assets/slime-05-ikea.png" />
-        </div>
       </header>
 
       {params.aangemaakt || params.joined || params.bijgewerkt ? (
@@ -214,43 +201,7 @@ export default async function PoolsPage({
         </div>
       ) : null}
 
-      <section className="grid gap-4 md:grid-cols-2">
-        <form action={createPool} className="panel grid gap-3 p-4">
-          <div className="flex items-center gap-3">
-            <ShieldCheck aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-bold text-[#081634]">Nieuwe WK-poule</h2>
-          </div>
-          <p className="text-sm font-semibold leading-6 text-[#48617f]">
-            Start zelf een gratis WK 2026-poule en deel daarna één link, QR of code.
-          </p>
-          <label className="grid gap-2 text-sm font-bold text-[#081634]">
-            Naam van je WK-poule
-            <input className="field" name="name" required minLength={2} maxLength={50} placeholder="Familie Dijkstra" />
-          </label>
-          <button className="button-primary" type="submit">
-            WK-poule maken
-          </button>
-        </form>
-
-        <form action={joinPool} className="panel grid gap-3 p-4">
-          <div className="flex items-center gap-3">
-            <Users aria-hidden="true" className="size-7 text-[#25a84a]" />
-            <h2 className="text-2xl font-bold text-[#081634]">Meedoen met bestaande WK-poule</h2>
-          </div>
-          <p className="text-sm font-semibold leading-6 text-[#48617f]">
-            Heb je al een code of uitnodigingslink gekregen? Sluit hier aan bij die WK 2026-poule.
-          </p>
-          <label className="grid gap-2 text-sm font-bold text-[#081634]">
-            WK-poulecode
-            <input className="field uppercase" name="code" required minLength={6} maxLength={10} placeholder="SLIME26" />
-          </label>
-          <button className="button-primary" type="submit">
-            Aansluiten
-          </button>
-        </form>
-      </section>
-
-      <section className="mt-5">
+      <section className="mt-1">
         {pools.length ? (
           <PoolTabs tabs={tabs}>
           {pools.map((pool) => {
@@ -444,7 +395,10 @@ export default async function PoolsPage({
         ) : (
           <div className="panel p-5">
             <h2 className="text-2xl font-bold text-[#081634]">Nog geen WK-poules</h2>
-            <p className="mt-2 font-medium text-[#48617f]">Maak een WK 2026-poule aan of vraag een code aan je groep.</p>
+            <p className="mt-2 font-medium text-[#48617f]">
+              Maak er een aan of sluit aan met een code op de{" "}
+              <Link className="font-bold text-[#064ed6]" href="/">startpagina</Link>.
+            </p>
           </div>
         )}
       </section>

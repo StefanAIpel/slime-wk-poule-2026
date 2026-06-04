@@ -1,6 +1,7 @@
-import { CalendarDays, ListChecks, LogIn, Trophy, Users } from "lucide-react";
+import { CalendarDays, KeyRound, ListChecks, LogIn, PlusCircle, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { createPool, joinPool } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
@@ -19,7 +20,7 @@ import { persistSignupProfileFromMetadata, type SignupProfileClient } from "@/li
 
 type HomeMembership = {
   role: string;
-  pools: { id: string; name: string; code: string } | null;
+  pools: { id: string; name: string; code: string; badge_emoji: string | null } | null;
 };
 
 type HomeLeaderboardRow = {
@@ -69,7 +70,7 @@ export default async function Home({
   const [{ data: profile }, { count: predictionCount }, { data: memberships }, { data: score }] = await Promise.all([
     supabase.from("profiles").select("id,nickname,team_name").eq("id", user.id).single(),
     supabase.from("predictions").select("match_id", { count: "exact", head: true }).eq("user_id", user.id),
-    supabase.from("pool_members").select("role,pools(id,name,code)").eq("user_id", user.id).limit(3),
+    supabase.from("pool_members").select("role,pools(id,name,code,badge_emoji)").eq("user_id", user.id).limit(3),
     supabase.from("scores").select("points, exact_scores, correct_results").eq("user_id", user.id).single(),
   ]);
 
@@ -110,6 +111,21 @@ export default async function Home({
 
   const progress = Math.round(((predictionCount ?? 0) / 72) * 100);
   const homeMemberships = (memberships ?? []) as unknown as HomeMembership[];
+  const myPoints = score?.points ?? 0;
+  const remaining = 72 - (predictionCount ?? 0);
+  const deadlineLabel = new Intl.DateTimeFormat("nl-NL", {
+    timeZone: "Europe/Amsterdam",
+    dateStyle: "long",
+    timeStyle: "short",
+  }).format(new Date(ENTRY_DEADLINE_ISO));
+
+  // Jouw plek op de wereldranglijst (aantal spelers met meer punten + 1).
+  const admin = createOptionalAdminClient();
+  let myRank: number | null = null;
+  if (admin) {
+    const { count } = await admin.from("scores").select("user_id", { count: "exact", head: true }).gt("points", myPoints);
+    myRank = (count ?? 0) + 1;
+  }
 
   return (
     <main className="page-shell">
@@ -117,45 +133,85 @@ export default async function Home({
         <Brand />
       </header>
 
-      <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="dark-panel p-5 text-white">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold leading-tight md:text-5xl">Jouw Slime Score in een helder overzicht.</h1>
-              <p className="mt-2 max-w-xl text-base font-medium text-blue-100">
-                Vul je scores en rondekeuzes op één plek in. Je kunt alles aanpassen tot de aftrap op{" "}
-                {new Intl.DateTimeFormat("nl-NL", {
-                  timeZone: "Europe/Amsterdam",
-                  dateStyle: "long",
-                  timeStyle: "short",
-                }).format(new Date(ENTRY_DEADLINE_ISO))}
-                .
-              </p>
-            </div>
-            <div className="hidden rounded-lg bg-white/10 p-3 md:block">
-              <Trophy aria-hidden="true" className="size-10 text-[#ffd44d]" />
-            </div>
-          </div>
-          <div className="mt-6 rounded-lg bg-[#061b47] p-4">
-            <div className="flex items-end justify-between gap-3">
+      <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
+        <div className="grid gap-4">
+          <div className="dark-panel p-5 text-white">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-bold uppercase tracking-normal text-blue-100">Voortgang</p>
-                <p className="text-4xl font-bold">{progress}%</p>
+                <h1 className="text-2xl font-bold leading-tight md:text-4xl">Jouw Slime Score, alles op één plek.</h1>
+                <p className="mt-2 max-w-xl text-base font-medium text-blue-100">
+                  Vul je wedstrijden en knock-outkeuzes in. Aanpassen kan tot de aftrap op{" "}
+                  <strong className="font-bold text-white">{deadlineLabel}</strong> — daarna staat alles vast.
+                </p>
               </div>
-              <p className="text-right text-sm font-semibold text-blue-100">{predictionCount ?? 0} van 72 uitslagen</p>
+              <div className="hidden rounded-lg bg-white/10 p-3 md:block">
+                <Trophy aria-hidden="true" className="size-10 text-[#ffd44d]" />
+              </div>
             </div>
-            <div className="mt-3 h-4 overflow-hidden rounded-full bg-black/32">
-              <div className="h-full rounded-full bg-[#25a84a]" style={{ width: `${Math.min(progress, 100)}%` }} />
+            <div className="mt-5 rounded-lg bg-[#061b47] p-4">
+              <div className="flex items-end justify-between gap-3">
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-normal text-blue-100">Voortgang</p>
+                  <p className="text-4xl font-bold">{progress}%</p>
+                </div>
+                <p className="text-right text-sm font-semibold text-blue-100">{predictionCount ?? 0} van 72 uitslagen</p>
+              </div>
+              <div className="mt-3 h-4 overflow-hidden rounded-full bg-black/32">
+                <div className="h-full rounded-full bg-[#25a84a]" style={{ width: `${Math.min(progress, 100)}%` }} />
+              </div>
+              <p className="mt-2 text-sm font-semibold text-blue-100">
+                {remaining > 0 ? `Nog ${remaining} wedstrijden in te vullen.` : "Alle wedstrijden ingevuld — top!"}
+              </p>
+              <a href="/voorspellingen" className="button-primary mt-3 w-full justify-center">
+                {remaining > 0 ? "Verder invullen" : "Voorspellingen bekijken"}
+              </a>
             </div>
-            <p className="mt-2 text-sm font-semibold text-blue-100">
-              {72 - (predictionCount ?? 0) > 0
-                ? `Nog ${72 - (predictionCount ?? 0)} wedstrijden in te vullen.`
-                : "Alle wedstrijden ingevuld — top!"}
-            </p>
-            <a href="/voorspellingen" className="button-secondary mt-3 w-full">
-              Verder invullen
-            </a>
           </div>
+
+          <form action={joinPool} className="panel grid gap-3 p-5">
+            <div className="flex items-center gap-2">
+              <KeyRound aria-hidden="true" className="size-5 flex-none text-[#064ed6]" />
+              <h2 className="text-lg font-bold text-[#081634]">Meedoen met een WK-poule</h2>
+            </div>
+            <p className="text-sm font-medium leading-6 text-[#48617f]">
+              Code of uitnodigingslink gekregen? Vul de code in en je zit er meteen bij.
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <input
+                name="code"
+                required
+                maxLength={10}
+                placeholder="POULECODE"
+                autoComplete="off"
+                autoCapitalize="characters"
+                className="field flex-1 uppercase tracking-wide"
+                aria-label="WK-poulecode"
+              />
+              <button type="submit" className="button-primary justify-center px-5">Aansluiten</button>
+            </div>
+          </form>
+
+          <form action={createPool} className="panel grid gap-3 p-5">
+            <div className="flex items-center gap-2">
+              <PlusCircle aria-hidden="true" className="size-5 flex-none text-[#15a35b]" />
+              <h2 className="text-lg font-bold text-[#081634]">Maak je eigen WK-poule</h2>
+            </div>
+            <p className="text-sm font-medium leading-6 text-[#48617f]">
+              Start een gratis poule voor vrienden, familie of collega&rsquo;s en nodig ze uit met je poule-link.
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <input
+                name="name"
+                required
+                minLength={2}
+                maxLength={50}
+                placeholder="Bijv. Familie Dijkstra"
+                className="field flex-1"
+                aria-label="Naam van je WK-poule"
+              />
+              <button type="submit" className="button-primary justify-center px-5">Maken</button>
+            </div>
+          </form>
         </div>
 
         <div className="grid gap-4">
@@ -168,7 +224,9 @@ export default async function Home({
             {homeMemberships.length ? (
               homeMemberships.map((membership) => membership.pools && (
                 <div key={membership.pools.id} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-[#f7faff] px-3 py-2">
-                  <span aria-hidden="true" className="wc-header size-7 flex-none rounded-full" />
+                  <span aria-hidden="true" className="grid size-7 flex-none place-items-center rounded-full bg-[#eef3fc] text-base leading-none">
+                    {membership.pools.badge_emoji ?? "🏆"}
+                  </span>
                   <span className="truncate font-bold text-[#081634]">{membership.pools.name}</span>
                   <span className="ml-auto rounded-full bg-[#e7eef8] px-2 py-0.5 text-xs font-bold tracking-wide text-[var(--blue-2)]">
                     {membership.pools.code}
@@ -185,7 +243,15 @@ export default async function Home({
               <Trophy aria-hidden="true" className="size-6 text-[var(--blue)]" />
               <div>
                 <div className="font-bold text-[#081634]">Wereldranglijst</div>
-                <div className="text-sm font-medium text-[#48617f]">Jij: {score?.points ?? 0} pt</div>
+                <div className="text-sm font-medium text-[#48617f]">
+                  {myRank ? (
+                    <>
+                      Jij: <strong className="text-[#081634]">#{myRank}</strong> · {myPoints} pt
+                    </>
+                  ) : (
+                    <>Jij: {myPoints} pt</>
+                  )}
+                </div>
               </div>
             </div>
             <span className="font-bold text-[#064ed6]">Bekijk →</span>

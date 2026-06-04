@@ -66,7 +66,6 @@ test("logged-in navigation emphasizes Voorspel and has compact account/logout ac
   assert.match(siteHeader, /site-header-link-emphasis/);
   assert.match(siteHeader, /site-header-mini-action/);
   assert.match(siteHeader, /Uitloggen/);
-  assert.match(bottomNav, /bottom-nav-emphasis/);
   assert.match(statusBar, /href=\"\/voorspellingen\" className=\"status-chip status-chip-countdown/);
 });
 

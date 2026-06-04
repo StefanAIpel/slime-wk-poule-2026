@@ -284,6 +284,13 @@ export async function joinPool(formData: FormData) {
   // Rate limit: max 15 join-pogingen per 10 min (tegen het raden van codes).
   if (!(await rateLimit(admin, `pool_join:${user.id}`, 15, 600))) redirect("/poules?fout=te-snel");
 
+  // Zachte limiet: aan maximaal 20 WK-poules tegelijk meedoen (tegen datavervuiling).
+  const { count: joinedCount } = await admin
+    .from("pool_members")
+    .select("pool_id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+  if ((joinedCount ?? 0) >= 20) redirect("/poules?fout=limiet");
+
   const { data: pool, error } = await admin.from("pools").select("id").eq("code", code).single();
   if (error || !pool) redirect("/poules?fout=code");
 
