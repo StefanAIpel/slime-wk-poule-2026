@@ -718,6 +718,18 @@ textarea {
       linear-gradient(102deg, rgba(7, 18, 46, 0.82) 0%, rgba(7, 18, 46, 0.34) 50%, rgba(7, 18, 46, 0.02) 100%),
       url("/assets/hero-home-landscape.webp");
   }
+
+  /* Desktop: hero 70px hoger en de twee onderknoppen niet breder dan de
+     "Gratis meedoen"-knop (links onder de CTA). */
+  .hero-home {
+    min-height: 340px;
+  }
+
+  .hero-home .hero-bottom-links {
+    width: min(calc(100% - 40px), 260px);
+    left: 20px;
+    right: auto;
+  }
 }
 
 /* Compactere stadion-kop voor binnenpagina's. */

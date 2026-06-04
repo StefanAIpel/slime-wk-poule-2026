@@ -100,7 +100,9 @@ test("small team columns use official 3-letter country abbreviations", () => {
   assert.match(formatLib, /teamAbbrev/);
   assert.match(upcomingMatches, /teamAbbrev\(m\.home_code/);
   assert.match(groupPredictionCard, /teamAbbrev\(match\.home_code/);
-  assert.doesNotMatch(upcomingMatches, /hidden sm:inline">\{m\.away\?\.name_nl/);
+  // Eerstvolgende wedstrijden: afgekort op mobiel, volledige landnaam op desktop.
+  assert.match(upcomingMatches, /sm:hidden">\{teamAbbrev\(m\.home_code/);
+  assert.match(upcomingMatches, /hidden sm:inline">\{m\.home_label \?\? m\.home\?\.name_nl/);
 });
 
 test("match rows always reserve right-side API score boxes", () => {
