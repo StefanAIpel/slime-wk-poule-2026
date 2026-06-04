@@ -558,7 +558,7 @@ textarea {
 
 /* Visual hero: stadion-achtergrond met gras onderaan (slimes staan erop). */
 .hero-band-visual {
-  min-height: 300px;
+  min-height: 270px;
 }
 
 .hero-band-visual::after {
@@ -585,7 +585,7 @@ textarea {
 
 /* Hero met geïntegreerde header: ruimte bovenin voor de balk (alleen mobiel). */
 .hero-band-topbar {
-  padding-top: 56px;
+  padding-top: 40px;
 }
 
 @media (min-width: 768px) {
@@ -604,7 +604,7 @@ textarea {
 /* Op mobiel ruimte onderaan zodat de ingebakken slime op het gras zichtbaar blijft. */
 @media (max-width: 759px) {
   .hero-home {
-    padding-bottom: 98px;
+    padding-bottom: 76px;
   }
 }
 
@@ -671,7 +671,7 @@ textarea {
 }
 
 .hero-home .hero-content {
-  padding-bottom: 46px;
+  padding-bottom: 28px;
 }
 
 .hero-primary-cta {
@@ -1996,7 +1996,8 @@ textarea {
 .quick-menu-button {
   position: fixed;
   top: calc(60px + env(safe-area-inset-top));
-  right: max(34px, calc((100vw - min(100vw - 32px, 1100px)) / 2 + 34px));
+  /* Lijn de hamburger uit met de rechterrand van de content-blokken (page-shell-padding). */
+  right: 16px;
   z-index: 40;
   display: inline-grid;
   min-height: 46px;
@@ -2372,5 +2373,21 @@ textarea {
 
   .hero-mascot-schema {
     right: 18px;
+  }
+}
+
+/* Regels: koe-mascotte op het veld, iets compacter dan het speelschema. */
+.hero-mascot-regels {
+  right: -6px;
+  max-height: 46%;
+  max-width: 46%;
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.42));
+}
+
+@media (min-width: 800px) {
+  .hero-mascot-regels {
+    right: 14px;
+    max-height: 90%;
+    max-width: 42%;
   }
 }
