@@ -57,10 +57,14 @@ export async function saveProfile(formData: FormData) {
   const teamName = cleanText(formData.get("team_name"), 28);
   const avatarKeyRaw = cleanText(formData.get("avatar_key"), 40);
   const avatarKey = isAvatarKey(avatarKeyRaw) ? avatarKeyRaw : null;
+  const password = String(formData.get("password") ?? "");
   const termsAccepted = formData.get("terms_accepted") === "yes";
 
   if (!termsAccepted) {
     redirect("/?profiel=akkoord");
+  }
+  if (password.length < 8) {
+    redirect("/?profiel=wachtwoord");
   }
 
   if (nickname.length < 4 || teamName.length < 4) {
@@ -81,14 +85,34 @@ export async function saveProfile(formData: FormData) {
     redirect("/?profiel=bezet");
   }
 
-  const { error } = await supabase.from("profiles").upsert({
+  const { error: passwordError } = await supabase.auth.updateUser({ password });
+  if (passwordError) {
+    redirect("/?profiel=wachtwoord");
+  }
+
+  const acceptedAt = new Date().toISOString();
+  const profilePayload = {
     id: user.id,
     nickname,
     team_name: teamName,
     avatar_key: avatarKey,
-  });
+    terms_accepted_at: acceptedAt,
+    privacy_accepted_at: acceptedAt,
+  };
+  const { error } = await supabase.from("profiles").upsert(profilePayload);
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    const missingLegalColumns = error.message.includes("terms_accepted_at") || error.message.includes("privacy_accepted_at");
+    if (!missingLegalColumns) throw new Error(error.message);
+
+    const { error: fallbackError } = await supabase.from("profiles").upsert({
+      id: user.id,
+      nickname,
+      team_name: teamName,
+      avatar_key: avatarKey,
+    });
+    if (fallbackError) throw new Error(fallbackError.message);
+  }
   revalidatePath("/");
   redirect("/");
 }

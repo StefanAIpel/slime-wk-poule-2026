@@ -289,9 +289,9 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
               <LogIn className="size-6" />
             </span>
             <div>
-              <h2 className="public-login-title text-2xl font-black text-[#101a2b]">Direct inloggen</h2>
+              <h2 className="public-login-title text-2xl font-black text-[#101a2b]">FrontPage login</h2>
               <p className="mt-1 text-sm font-semibold leading-6 text-[#38506d]">
-                Kies hier meteen: e-mail-link/mailcode óf een vaste code zonder e-mail.
+                Log terug in met mail en wachtwoord. Eerste keer? Vraag eerst een registratiemail aan.
               </p>
             </div>
           </div>
