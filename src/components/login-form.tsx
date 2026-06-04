@@ -254,7 +254,7 @@ export function LoginForm({
         <p className="text-sm font-bold leading-6 text-[#0f5132]">
           {isResetMail
             ? "Open de link in je mail. Daarna kies je meteen een nieuw wachtwoord."
-            : "Open de inloglink in je mail. Daarna maak je je profiel af met naam, wachtwoord, voorwaarden en privacy."}
+            : "Open de registratielink in je mail. Daarna maak je je profiel af met naam, teamnaam, wachtwoord, voorwaarden en privacy."}
         </p>
         <p aria-live="polite" className="text-sm font-bold leading-5 text-[#0f5132]">
           {message || "De link is tijdelijk geldig."}
