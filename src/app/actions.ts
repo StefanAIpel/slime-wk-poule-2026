@@ -55,6 +55,8 @@ export async function saveProfile(formData: FormData) {
   const admin = createAdminClient();
   const nickname = cleanText(formData.get("nickname"), 24);
   const teamName = cleanText(formData.get("team_name"), 28);
+  const avatarKeyRaw = cleanText(formData.get("avatar_key"), 40);
+  const avatarKey = isAvatarKey(avatarKeyRaw) ? avatarKeyRaw : null;
   const termsAccepted = formData.get("terms_accepted") === "yes";
 
   if (!termsAccepted) {
@@ -83,6 +85,7 @@ export async function saveProfile(formData: FormData) {
     id: user.id,
     nickname,
     team_name: teamName,
+    avatar_key: avatarKey,
   });
 
   if (error) throw new Error(error.message);

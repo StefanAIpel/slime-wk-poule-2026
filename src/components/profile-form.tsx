@@ -1,4 +1,5 @@
 import { saveProfile } from "@/app/actions";
+import { AvatarPicker } from "@/components/avatar-picker";
 
 const errors: Record<string, string> = {
   "te-kort": "Vul allebei minstens 4 tekens in.",
@@ -32,6 +33,10 @@ export function ProfileForm({ error }: { error?: string }) {
         Teamnaam
         <input className="field" name="team_name" required minLength={4} maxLength={28} placeholder="VARschrikkelijk goed" />
       </label>
+      <div className="grid gap-2 text-sm font-bold text-[#081634]">
+        Kies je Slime
+        <AvatarPicker name="Speler" />
+      </div>
       <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3 text-sm font-semibold leading-5 text-[#48617f]">
         <input className="mt-1 size-4 accent-[#0e7a44]" type="checkbox" name="terms_accepted" value="yes" required />
         <span>
