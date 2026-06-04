@@ -17,6 +17,7 @@ const brandWordmark = await readFile(new URL("../src/components/brand-wordmark.t
 const bottomNav = await readFile(new URL("../src/components/bottom-nav.tsx", import.meta.url), "utf8");
 const upcomingMatches = await readFile(new URL("../src/components/upcoming-matches.tsx", import.meta.url), "utf8");
 const scheduleExplorer = await readFile(new URL("../src/components/schedule-explorer.tsx", import.meta.url), "utf8");
+const schemaPage = await readFile(new URL("../src/app/schema/page.tsx", import.meta.url), "utf8");
 const schemaGroupsPage = await readFile(new URL("../src/app/schema/groepen/page.tsx", import.meta.url), "utf8");
 const schemaKnockoutPage = await readFile(new URL("../src/app/schema/knockout/page.tsx", import.meta.url), "utf8");
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
@@ -129,17 +130,42 @@ test("small team columns use official 3-letter country abbreviations", () => {
 test("match rows always reserve right-side API score boxes", () => {
   assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} \/>/);
   assert.match(scheduleExplorer, /<ResultBoxes match=\{match\} \/>/);
-  assert.match(globalsCss, /grid-template-columns: minmax\(0, 1fr\) minmax\(0, 1fr\) 62px;/);
+  assert.match(globalsCss, /grid-template-columns: minmax\(0, auto\) auto minmax\(0, 1fr\) 62px;/);
   assert.match(globalsCss, /\.score-box \{/);
   assert.doesNotMatch(scheduleExplorer, /schedule-team-grid-has-score/);
 });
 
-test("schema has separate groups and knockout pages with compact subtabs", () => {
-  assert.match(schemaGroupsPage, /initialView=\"groups\"/);
-  assert.match(schemaKnockoutPage, /initialView=\"knockout\"/);
-  assert.match(scheduleExplorer, /href: \"\/schema\/groepen\"/);
-  assert.match(scheduleExplorer, /href: \"\/schema\/knockout\"/);
+test("schema defaults to groups, keeps knockout separate, and removes the all-matches tab", () => {
+  assert.match(schemaPage, /initialView="groups"/);
+  assert.match(schemaGroupsPage, /initialView="groups"/);
+  assert.match(schemaKnockoutPage, /initialView="knockout"/);
+  assert.match(scheduleExplorer, /href: "\/schema"/);
+  assert.match(scheduleExplorer, /href: "\/schema\/knockout"/);
+  assert.doesNotMatch(scheduleExplorer, /view: "matches"/);
+  assert.doesNotMatch(scheduleExplorer, /label: "Wedstrijden"/);
   assert.match(scheduleExplorer, /knockoutStageTabs/);
   assert.match(scheduleExplorer, /Per groep/);
   assert.match(scheduleExplorer, /Per datum/);
+});
+
+test("schema copy is public-facing and group filters can search team, group, or date", () => {
+  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Alle WK-wedstrijden op een rij met datum, tijd en stadion/);
+  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Geen account nodig — deel het schema gerust in je groepsapp/);
+  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /<ShareButton url=\{scheduleShareUrl\} text=\{scheduleIntro\} title="WK 2026 speelschema" label="Deel schema" \/>/);
+  assert.doesNotMatch(schemaPage + schemaGroupsPage + schemaKnockoutPage, /AI-score|API-score|feedback|pagina staat/i);
+  assert.match(scheduleExplorer, /Zoek groep, land of datum/);
+  assert.match(scheduleExplorer, /Nederland - Oranje/);
+  assert.match(scheduleExplorer, /normalizeScheduleQuery/);
+  assert.match(scheduleExplorer, /query/);
+  assert.match(scheduleExplorer, /filteredMatchesByGroup/);
+});
+
+test("desktop schedule cards are compact and match rows use a visible team separator", () => {
+  assert.match(globalsCss, /\.hero-band-page \{[\s\S]*max-height: 220px;/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-band-visual \{\n    min-height: 200px;\n  \}/);
+  assert.match(globalsCss, /\.schedule-team-grid \{[\s\S]*minmax\(0, auto\) auto minmax\(0, 1fr\) 62px;/);
+  assert.match(scheduleExplorer, /schedule-team-separator/);
+  assert.match(globalsCss, /\.group-phase-body \{[\s\S]*minmax\(0, 1fr\) 320px/);
+  assert.match(scheduleExplorer, /teamAbbrev\(row\.code, row\.name\)/);
+  assert.doesNotMatch(scheduleExplorer, /dark-panel rounded-2xl/);
 });

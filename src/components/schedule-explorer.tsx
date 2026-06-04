@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Crown, MapPin, RotateCcw, Table2, Trophy } from "lucide-react";
+import { CalendarDays, Crown, MapPin, Search, Table2, Trophy } from "lucide-react";
 import { useMemo, useState } from "react";
 import { TeamFlag } from "@/components/team-flag";
 import { formatAmsterdam, teamAbbrev, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
@@ -80,6 +80,38 @@ function dateLabel(iso: string | null) {
   );
 }
 
+function normalizeSearch(value: string | null | undefined) {
+  return (value ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function matchSearchHaystack(match: ScheduleMatch) {
+  return normalizeSearch(
+    [
+      match.group ? `groep ${match.group}` : "",
+      match.homeCode,
+      match.homeName,
+      match.homeLabel,
+      match.awayCode,
+      match.awayName,
+      match.awayLabel,
+      dateKey(match.startsAt),
+      dateLabel(match.startsAt),
+      formatAmsterdam(match.startsAt),
+      match.venue,
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+}
+
+function normalizeScheduleQuery(value: string) {
+  const normalized = normalizeSearch(value).trim();
+  return normalized === "oranje" ? "nederland" : normalized;
+}
+
 function hasScore(match: ScheduleMatch) {
   return match.homeScore !== null && match.awayScore !== null;
 }
@@ -89,11 +121,10 @@ function stageLabel(stage: string | null, group: string | null) {
   return stageLabels[stage ?? ""] ?? "Knock-out";
 }
 
-export type ScheduleView = "matches" | "groups" | "knockout";
+export type ScheduleView = "groups" | "knockout";
 
-const viewLinks: { view: ScheduleView; href: string; label: string; icon: "calendar" | "table" | "trophy" }[] = [
-  { view: "matches", href: "/schema", label: "Wedstrijden", icon: "calendar" },
-  { view: "groups", href: "/schema/groepen", label: "Groepen", icon: "table" },
+const viewLinks: { view: ScheduleView; href: string; label: string; icon: "table" | "trophy" }[] = [
+  { view: "groups", href: "/schema", label: "Groepen", icon: "table" },
   { view: "knockout", href: "/schema/knockout", label: "Knock-out", icon: "trophy" },
 ];
 
@@ -219,16 +250,7 @@ function buildGroupStandings(matches: ScheduleMatch[]) {
     .map(([group, rows]) => ({ group, rows: Array.from(rows.values()).sort(compareStandingRows) }));
 }
 
-export function ScheduleExplorer({ matches, initialView = "matches" }: { matches: ScheduleMatch[]; initialView?: ScheduleView }) {
-  const [group, setGroup] = useState("all");
-  const [team, setTeam] = useState("all");
-  const [date, setDate] = useState("all");
-
-  const groups = useMemo(
-    () => Array.from(new Set(matches.map((m) => m.group).filter(Boolean) as string[])).sort(),
-    [matches],
-  );
-  const hasKnockout = useMemo(() => matches.some((m) => !m.group || (m.stage && m.stage !== "group")), [matches]);
+export function ScheduleExplorer({ matches, initialView = "groups" }: { matches: ScheduleMatch[]; initialView?: ScheduleView }) {
   const standings = useMemo(() => buildGroupStandings(matches), [matches]);
   const knockoutMatches = useMemo(
     () => matches.filter((m) => !m.group || (m.stage && m.stage !== "group")).sort((a, b) => (a.startsAt ?? "").localeCompare(b.startsAt ?? "") || a.id - b.id),
@@ -236,57 +258,11 @@ export function ScheduleExplorer({ matches, initialView = "matches" }: { matches
   );
   const completedGroupMatches = useMemo(() => matches.filter((m) => m.group && hasScore(m)).length, [matches]);
 
-  // Teamlijst hangt af van de gekozen groep: kies je een groep, dan zie je alleen
-  // die teams.
-  const teams = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const m of matches) {
-      if (group !== "all" && (group === "ko" ? Boolean(m.group) && (!m.stage || m.stage === "group") : m.group !== group)) continue;
-      if (m.homeCode) map.set(m.homeCode, m.homeName ?? m.homeCode);
-      if (m.awayCode) map.set(m.awayCode, m.awayName ?? m.awayCode);
-    }
-    return Array.from(map.entries())
-      .map(([code, name]) => ({ code, name }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [matches, group]);
-
-  function onGroupChange(value: string) {
-    setGroup(value);
-    // Reset team als die niet meer in de gekozen groep zit.
-    if (value !== "all" && team !== "all") {
-      const stillValid = matches.some(
-        (m) =>
-          (value === "ko" ? !m.group || (m.stage && m.stage !== "group") : m.group === value) && (m.homeCode === team || m.awayCode === team),
-      );
-      if (!stillValid) setTeam("all");
-    }
-  }
-  const dates = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const m of matches) {
-      const key = dateKey(m.startsAt);
-      if (key && !map.has(key)) map.set(key, m.startsAt as string);
-    }
-    return Array.from(map.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, iso]) => ({ key, label: dateLabel(iso) }));
-  }, [matches]);
-
-  const filtered = useMemo(() => {
-    return matches
-      .filter((m) => (group === "all" ? true : group === "ko" ? !m.group || (m.stage && m.stage !== "group") : m.group === group))
-      .filter((m) => team === "all" || m.homeCode === team || m.awayCode === team)
-      .filter((m) => date === "all" || dateKey(m.startsAt) === date)
-      .sort((a, b) => (a.startsAt ?? "").localeCompare(b.startsAt ?? "") || a.id - b.id);
-  }, [matches, group, team, date]);
-
-  const hasFilter = group !== "all" || team !== "all" || date !== "all";
-
   return (
     <section className="schedule-explorer grid gap-3">
       <nav className="schedule-tabs" aria-label="Speelschema onderdelen">
         {viewLinks.map((item) => {
-          const Icon = item.icon === "calendar" ? CalendarDays : item.icon === "table" ? Table2 : Trophy;
+          const Icon = item.icon === "table" ? Table2 : Trophy;
           return (
             <a key={item.view} className={initialView === item.view ? "schedule-tab schedule-tab-active" : "schedule-tab"} href={item.href} aria-current={initialView === item.view ? "page" : undefined}>
               <Icon aria-hidden="true" className="size-4" />
@@ -296,29 +272,8 @@ export function ScheduleExplorer({ matches, initialView = "matches" }: { matches
         })}
       </nav>
 
-      {initialView === "matches" ? (
-        <section id="wedstrijden" className="schedule-section-anchor grid gap-3">
-          <h2 className="sr-only">Wedstrijden</h2>
-          <MatchesPanel
-            dates={dates}
-            filtered={filtered}
-            group={group}
-            groups={groups}
-            hasFilter={hasFilter}
-            hasKnockout={hasKnockout}
-            onGroupChange={onGroupChange}
-            setDate={setDate}
-            setGroup={setGroup}
-            setTeam={setTeam}
-            team={team}
-            teams={teams}
-            date={date}
-          />
-        </section>
-      ) : null}
-
       {initialView === "groups" ? (
-        <section id="groepsstanden" className="schedule-section-anchor">
+        <section id="groepen" className="schedule-section-anchor">
           <StandingsPanel completedGroupMatches={completedGroupMatches} matches={matches.filter((m) => m.group)} standings={standings} />
         </section>
       ) : null}
@@ -329,102 +284,6 @@ export function ScheduleExplorer({ matches, initialView = "matches" }: { matches
         </section>
       ) : null}
     </section>
-  );
-}
-
-function MatchesPanel({
-  dates,
-  filtered,
-  group,
-  groups,
-  hasFilter,
-  hasKnockout,
-  onGroupChange,
-  setDate,
-  setGroup,
-  setTeam,
-  team,
-  teams,
-  date,
-}: {
-  dates: { key: string; label: string }[];
-  filtered: ScheduleMatch[];
-  group: string;
-  groups: string[];
-  hasFilter: boolean;
-  hasKnockout: boolean;
-  onGroupChange: (value: string) => void;
-  setDate: (value: string) => void;
-  setGroup: (value: string) => void;
-  setTeam: (value: string) => void;
-  team: string;
-  teams: { code: string; name: string }[];
-  date: string;
-}) {
-  return (
-    <>
-      <div className="panel grid grid-cols-2 gap-2 p-3 sm:grid-cols-3">
-        <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[#0b1f4d]">
-          Groep
-          <select className="field" value={group} onChange={(e) => onGroupChange(e.target.value)}>
-            <option value="all">Alle groepen</option>
-            {groups.map((g) => (
-              <option key={g} value={g}>
-                Groep {g}
-              </option>
-            ))}
-            {hasKnockout ? <option value="ko">Knock-out</option> : null}
-          </select>
-        </label>
-        <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[#0b1f4d]">
-          Team
-          <select className="field" value={team} onChange={(e) => setTeam(e.target.value)}>
-            <option value="all">{group === "all" ? "Alle teams" : "Alle teams in groep"}</option>
-            {teams.map((t) => (
-              <option key={t.code} value={t.code}>
-                {t.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="col-span-2 grid gap-1 text-xs font-semibold uppercase tracking-wide text-[#0b1f4d] sm:col-span-1">
-          Datum
-          <select className="field" value={date} onChange={(e) => setDate(e.target.value)}>
-            <option value="all">Alle datums</option>
-            {dates.map((d) => (
-              <option key={d.key} value={d.key}>
-                {d.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div className="col-span-2 flex items-center justify-between gap-3 sm:col-span-3">
-          <span className="text-sm font-semibold text-[#0b1f4d]">{filtered.length} wedstrijden</span>
-          {hasFilter ? (
-            <button
-              type="button"
-              className="button-secondary min-h-9 px-3 text-sm"
-              onClick={() => {
-                setGroup("all");
-                setTeam("all");
-                setDate("all");
-              }}
-            >
-              <RotateCcw aria-hidden="true" className="size-4" />
-              Wis filters
-            </button>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="panel divide-y divide-slate-200">
-        {filtered.length ? (
-          filtered.map((match) => <MatchRow key={match.id} match={match} />)
-        ) : (
-          <p className="p-4 text-sm font-semibold text-[#0b1f4d]">Geen wedstrijden voor deze filters.</p>
-        )}
-      </div>
-    </>
   );
 }
 
@@ -443,8 +302,7 @@ function StandingTable({ group, rows }: { group: string; rows: StandingRow[] }) 
           <span>{index + 1}</span>
           <span className="standing-team">
             <TeamFlag code={row.code} name={row.name} size="sm" />
-            <span className="hidden min-w-0 truncate sm:inline">{row.name}</span>
-            <span className="sm:hidden">{row.code}</span>
+            <span>{teamAbbrev(row.code, row.name)}</span>
           </span>
           <span>{row.played}</span>
           <span>{row.points}</span>
@@ -457,6 +315,9 @@ function StandingTable({ group, rows }: { group: string; rows: StandingRow[] }) 
 
 function StandingsPanel({ completedGroupMatches, matches, standings }: { completedGroupMatches: number; matches: ScheduleMatch[]; standings: { group: string; rows: StandingRow[] }[] }) {
   const [display, setDisplay] = useState<"groups" | "dates">("groups");
+  const [query, setQuery] = useState("");
+  const normalizedQuery = normalizeScheduleQuery(query);
+  const isNetherlandsQuery = normalizedQuery === "nederland";
   const matchesByGroup = useMemo(() => {
     const map = new Map<string, ScheduleMatch[]>();
     for (const match of matches) {
@@ -465,38 +326,55 @@ function StandingsPanel({ completedGroupMatches, matches, standings }: { complet
     }
     return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
   }, [matches]);
+  const filteredMatchesByGroup = useMemo(() => {
+    if (!normalizedQuery) return matchesByGroup;
+    return matchesByGroup.filter(([group, groupMatches]) => {
+      const groupLabel = normalizeSearch(`groep ${group} group ${group}`);
+      return groupLabel.includes(normalizedQuery) || groupMatches.some((match) => matchSearchHaystack(match).includes(normalizedQuery));
+    });
+  }, [matchesByGroup, normalizedQuery]);
   const matchesByDate = useMemo(() => {
     const map = new Map<string, ScheduleMatch[]>();
     for (const match of matches) {
+      if (normalizedQuery && !matchSearchHaystack(match).includes(normalizedQuery)) continue;
       const key = dateKey(match.startsAt) || "unknown";
       map.set(key, [...(map.get(key) ?? []), match]);
     }
     return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
-  }, [matches]);
+  }, [matches, normalizedQuery]);
   const standingsByGroup = new Map(standings.map((item) => [item.group, item.rows]));
+  const visibleMatchCount = display === "groups" ? filteredMatchesByGroup.reduce((total, [, groupMatches]) => total + groupMatches.length, 0) : matchesByDate.reduce((total, [, dateMatches]) => total + dateMatches.length, 0);
 
   return (
     <div className="grid gap-3">
-      <div className="dark-panel rounded-2xl p-4">
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-orange-100">Live groepsfase</p>
-        <h2 className="mt-1 text-2xl font-black text-white">Groepen</h2>
-        <p className="mt-2 text-sm font-semibold leading-6 text-blue-100">
-          Wissel tussen groepsweergave met alle wedstrijden + stand en datumweergave. Tiebreak: punten, doelsaldo, goals voor, goals tegen en daarna land.
-        </p>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <p className="inline-flex rounded-full bg-white/12 px-3 py-1 text-xs font-black text-white">
-            {completedGroupMatches} van 72 groepsduels met score
-          </p>
-          <div className="schedule-subtabs" role="tablist" aria-label="Groepsfase weergave">
+      <div className="schedule-section-tools">
+        <div className="schedule-section-titlebar">
+          <div>
+            <p className="schedule-section-kicker">Live groepsfase</p>
+            <h2>Groepen</h2>
+          </div>
+          <p className="schedule-count-pill">{completedGroupMatches} van 72 groepsduels met score</p>
+        </div>
+        <div className="schedule-groups-controls">
+          <label className="schedule-search-field">
+            <Search aria-hidden="true" className="size-4" />
+            <span className="sr-only">Zoek op groep, land of datum</span>
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Zoek groep, land of datum" />
+          </label>
+          <button type="button" className={isNetherlandsQuery ? "schedule-orange-chip schedule-orange-chip-active" : "schedule-orange-chip"} onClick={() => setQuery("Nederland")}>
+            Nederland - Oranje
+          </button>
+          <div className="schedule-subtabs schedule-subtabs-light" role="tablist" aria-label="Groepsfase weergave">
             <button type="button" className={display === "groups" ? "schedule-subtab schedule-subtab-active" : "schedule-subtab"} onClick={() => setDisplay("groups")}>Per groep</button>
             <button type="button" className={display === "dates" ? "schedule-subtab schedule-subtab-active" : "schedule-subtab"} onClick={() => setDisplay("dates")}>Per datum</button>
           </div>
         </div>
+        <p className="schedule-filter-help">Zoek bijvoorbeeld op “Nederland - Oranje”, “Duitsland”, “Groep A” of “11 juni”. Je krijgt dan direct de bijbehorende poule of speeldag.</p>
       </div>
 
       {display === "groups" ? (
         <div className="group-phase-grid">
-          {matchesByGroup.map(([group, groupMatches]) => (
+          {filteredMatchesByGroup.length ? filteredMatchesByGroup.map(([group, groupMatches]) => (
             <article key={group} className="panel group-phase-card overflow-hidden">
               <header className="standing-card-header">
                 <span>Groep {group}</span>
@@ -511,11 +389,13 @@ function StandingsPanel({ completedGroupMatches, matches, standings }: { complet
                 </aside>
               </div>
             </article>
-          ))}
+          )) : (
+            <p className="panel p-4 text-sm font-bold text-[#48617f]">Geen groep gevonden voor “{query}”.</p>
+          )}
         </div>
       ) : (
         <div className="grid gap-3">
-          {matchesByDate.map(([key, dateMatches]) => (
+          {matchesByDate.length ? matchesByDate.map(([key, dateMatches]) => (
             <article key={key} className="panel overflow-hidden">
               <header className="standing-card-header">
                 <span>{key === "unknown" ? "Datum volgt" : dateLabel(dateMatches[0]?.startsAt ?? null)}</span>
@@ -525,9 +405,12 @@ function StandingsPanel({ completedGroupMatches, matches, standings }: { complet
                 {dateMatches.map((match) => <MatchRow key={match.id} match={match} compactMeta />)}
               </div>
             </article>
-          ))}
+          )) : (
+            <p className="panel p-4 text-sm font-bold text-[#48617f]">Geen wedstrijden gevonden voor “{query}”.</p>
+          )}
         </div>
       )}
+      <p className="schedule-result-count">{visibleMatchCount} wedstrijden in beeld.</p>
     </div>
   );
 }
@@ -544,15 +427,18 @@ function KnockoutPanel({ matches }: { matches: ScheduleMatch[] }) {
 
   return (
     <div className="grid gap-3">
-      <div className="dark-panel rounded-2xl p-4">
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-orange-100">Route naar de beker</p>
-        <h2 className="mt-1 flex items-center gap-2 text-2xl font-black text-white">
-          <Crown aria-hidden="true" className="size-6 text-[#ffd44d]" />
-          Knock-outfase
-        </h2>
-        <p className="mt-2 text-sm font-semibold leading-6 text-blue-100">
-          Datum, tijd en stadion staan al vast; de landen verschijnen zodra de groepsfase en knock-outduels gespeeld zijn.
-        </p>
+      <div className="schedule-section-tools">
+        <div className="schedule-section-titlebar">
+          <div>
+            <p className="schedule-section-kicker">Route naar de beker</p>
+            <h2 className="inline-flex items-center gap-2">
+              <Crown aria-hidden="true" className="size-5 text-[#d98600]" />
+              Knock-outfase
+            </h2>
+          </div>
+          <p className="schedule-count-pill">Laatste 32 tot finale</p>
+        </div>
+        <p className="schedule-filter-help">Datum, tijd en stadion staan al vast; de landen verschijnen zodra de groepsfase en knock-outduels gespeeld zijn.</p>
       </div>
 
       {matchesByStage.length ? (
@@ -629,6 +515,7 @@ function MatchRow({ match, compactMeta = false, knockout = false }: { match: Sch
               <span className="hidden sm:inline">{teamText(match, "home")}</span>
             </span>
           </div>
+          <span className="schedule-team-separator" aria-hidden="true">•</span>
           <span className="sr-only">tegen</span>
           <div className={match.winnerCode === match.awayCode ? "schedule-team-cell schedule-team-winner" : "schedule-team-cell"} title={teamText(match, "away")}>
             <TeamFlag code={match.awayCode} name={match.awayName ?? match.awayLabel} />

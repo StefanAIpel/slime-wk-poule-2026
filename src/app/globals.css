@@ -736,13 +736,22 @@ textarea {
 
 /* Compactere stadion-kop voor binnenpagina's. */
 .hero-band-page {
-  min-height: 200px;
+  min-height: 180px;
+  max-height: 220px;
 }
 
 @media (min-width: 800px) {
   .hero-band-page {
-    min-height: 220px;
+    min-height: 200px;
+    max-height: 220px;
   }
+}
+
+.hero-band-page .button-primary {
+  min-height: 42px;
+  padding: 8px 14px;
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 6px 18px rgba(220, 85, 16, 0.28);
 }
 
 .hero-content {
@@ -863,6 +872,10 @@ textarea {
   .hero-band-visual {
     grid-template-columns: 1fr;
     min-height: 320px;
+  }
+
+  .hero-band-page.hero-band-visual {
+    min-height: 200px;
   }
 
   .hero-content {
@@ -1561,7 +1574,8 @@ textarea {
 
 .schedule-team-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 62px;
+  /* Thuisland links onder de datum, subtiel bolletje ertussen, uitland ernaast en score rechts. */
+  grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 62px;
   align-items: center;
   column-gap: 7px;
   color: #0b1f4d;
@@ -2373,8 +2387,8 @@ textarea {
 /* Speelschema tabs + standings/knock-out overview. */
 .schedule-tabs {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
   position: sticky;
   top: calc(8px + env(safe-area-inset-top));
   z-index: 20;
@@ -2405,6 +2419,119 @@ textarea {
   background: linear-gradient(135deg, #ff9800, #f26a1b);
   color: #fff;
   box-shadow: 0 8px 18px rgba(242, 106, 27, 0.28);
+}
+
+.schedule-section-tools {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(8, 22, 52, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 14px;
+  box-shadow: 0 10px 26px rgba(8, 22, 52, 0.07);
+}
+
+.schedule-section-titlebar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.schedule-section-kicker {
+  color: #48617f;
+  font-size: 0.7rem;
+  font-weight: 1000;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.schedule-section-titlebar h2 {
+  margin-top: 2px;
+  color: #081634;
+  font-size: clamp(1.35rem, 2vw, 1.85rem);
+  font-weight: 1000;
+  letter-spacing: -0.03em;
+}
+
+.schedule-count-pill {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: #1c3a66;
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  font-weight: 1000;
+}
+
+.schedule-groups-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+@media (min-width: 760px) {
+  .schedule-groups-controls {
+    grid-template-columns: minmax(260px, 1fr) auto auto;
+    align-items: center;
+  }
+}
+
+.schedule-search-field {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 13px;
+  background: #fff;
+  padding: 0 12px;
+  color: #48617f;
+}
+
+.schedule-search-field input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #081634;
+  font-size: 0.9rem;
+  font-weight: 800;
+  outline: 0;
+}
+
+.schedule-orange-chip {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(242, 106, 27, 0.24);
+  border-radius: 13px;
+  background: #fff7ed;
+  color: #c44b07;
+  padding: 0 14px;
+  font-size: 0.88rem;
+  font-weight: 1000;
+}
+
+.schedule-orange-chip-active,
+.schedule-orange-chip:hover {
+  background: linear-gradient(135deg, #ff9800, #f26a1b);
+  color: #fff;
+  box-shadow: 0 8px 16px rgba(242, 106, 27, 0.22);
+}
+
+.schedule-filter-help,
+.schedule-result-count {
+  color: #48617f;
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.schedule-result-count {
+  margin-top: -2px;
+  padding-inline: 4px;
 }
 
 .match-status {
@@ -2598,6 +2725,10 @@ textarea {
   padding: 4px;
 }
 
+.schedule-subtabs-light {
+  background: #eef4ff;
+}
+
 .schedule-subtab {
   display: inline-flex;
   min-height: 30px;
@@ -2638,7 +2769,7 @@ textarea {
 
 @media (min-width: 940px) {
   .group-phase-body {
-    grid-template-columns: minmax(0, 1fr) 270px;
+    grid-template-columns: minmax(0, 1fr) 320px;
   }
 
   .group-phase-standing {
@@ -2682,7 +2813,7 @@ textarea {
 
   .schedule-team-grid,
   .upcoming-team-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 58px;
+    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 58px;
     column-gap: 5px;
   }
 
@@ -2732,7 +2863,7 @@ textarea {
 @media (min-width: 640px) {
   .schedule-team-grid,
   .upcoming-team-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 70px;
+    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 70px;
     column-gap: 10px;
   }
 
