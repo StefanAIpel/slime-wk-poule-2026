@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, ClipboardList, Gamepad2, Home, ListChecks, LogIn, Trophy, UserCog, Users } from "lucide-react";
+import { CalendarDays, ClipboardList, Gamepad2, Home, ListChecks, LogIn, LogOut, Trophy, UserCog, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,7 +15,7 @@ const publicTail = [
   { href: "/regels", label: "Regels", icon: ListChecks },
 ];
 const privateLinks = [
-  { href: "/voorspellingen", label: "Voorspel", icon: ClipboardList },
+  { href: "/voorspellingen", label: "Voorspel", icon: ClipboardList, emphasis: true },
   { href: "/poules", label: "WK-poules", icon: Users },
 ];
 
@@ -58,18 +58,32 @@ export function SiteHeader() {
           {links.map((link) => {
             const Icon = link.icon;
             const active = pathname === link.href;
+            const emphasized = "emphasis" in link && link.emphasis;
             return (
-              <Link key={link.href} href={link.href} className={`site-header-link ${active ? "is-active" : ""}`} aria-current={active ? "page" : undefined}>
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`site-header-link ${emphasized ? "site-header-link-emphasis" : ""} ${active ? "is-active" : ""}`}
+                aria-current={active ? "page" : undefined}
+              >
                 <Icon aria-hidden="true" className="size-4" />
                 {link.label}
               </Link>
             );
           })}
           {loggedIn ? (
-            <Link href="/account" className="site-header-cta">
-              <UserCog aria-hidden="true" className="size-4" />
-              Account
-            </Link>
+            <>
+              <Link href="/account" className="site-header-mini-action">
+                <UserCog aria-hidden="true" className="size-3.5" />
+                Account
+              </Link>
+              <form action="/logout" method="post">
+                <button className="site-header-mini-action" type="submit">
+                  <LogOut aria-hidden="true" className="size-3.5" />
+                  Uitloggen
+                </button>
+              </form>
+            </>
           ) : (
             <Link href="/aanmelden" className="site-header-cta site-header-cta-primary">
               <LogIn aria-hidden="true" className="size-4" />

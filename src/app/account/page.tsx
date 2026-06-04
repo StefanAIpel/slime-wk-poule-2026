@@ -1,10 +1,11 @@
 import { AtSign, LifeBuoy, ShieldCheck, Trash2, Trophy, UserCog } from "lucide-react";
+import Image from "next/image";
 import { redirect } from "next/navigation";
-import { deleteAccount, updateAccount } from "@/app/actions";
-import { AvatarPicker } from "@/components/avatar-picker";
+import { deleteAccount } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
+import { resolveAvatarSrc } from "@/lib/avatars";
 import { APP_VERSION, CONTACT_EMAIL } from "@/lib/constants";
 import { formatAmsterdam } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
@@ -58,27 +59,33 @@ export default async function AccountPage({
       ) : null}
 
       <section className="grid gap-4 lg:grid-cols-[1fr_0.8fr] lg:items-start">
-        <form action={updateAccount} className="panel grid gap-4 p-5">
+        <div className="panel grid gap-4 p-5">
           <div className="flex items-center gap-3">
             <UserCog aria-hidden="true" className="size-7 text-[#064ed6]" />
             <h2 className="text-2xl font-bold text-[#081634]">Profiel</h2>
           </div>
-          <label className="grid gap-2 text-sm font-bold text-[#081634]">
-            Naam of bijnaam
-            <input className="field" name="nickname" required minLength={4} maxLength={24} defaultValue={nickname} placeholder="Stefan" />
-          </label>
-          <label className="grid gap-2 text-sm font-bold text-[#081634]">
-            Teamnaam
-            <input className="field" name="team_name" required minLength={4} maxLength={28} defaultValue={teamName} placeholder="VARschrikkelijk goed" />
-          </label>
-          <div className="grid gap-2 text-sm font-bold text-[#081634]">
-            Avatar
-            <AvatarPicker initialKey={profile?.avatar_key} name={nickname || "Speler"} />
+          <p className="text-sm font-medium leading-6 text-[#48617f]">
+            Je naam en teamnaam staan vast na aanmelding. Zo blijft de ranglijst herkenbaar en voorkom je chaos in poules.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <ReadOnlyProfileField label="Naam of bijnaam" value={nickname || "Speler"} />
+            <ReadOnlyProfileField label="Teamnaam" value={teamName || "—"} />
           </div>
-          <button className="button-primary w-fit" type="submit">
-            Opslaan
-          </button>
-        </form>
+          <div className="rounded-xl border border-slate-200 bg-[#f7faff] p-3">
+            <div className="mb-2 text-sm font-bold text-[#081634]">Avatar</div>
+            <div className="flex items-center gap-3">
+              <Image
+                className="avatar-img"
+                src={resolveAvatarSrc(nickname || "Speler")}
+                alt=""
+                aria-hidden="true"
+                width={56}
+                height={56}
+              />
+              <p className="text-sm font-medium text-[#48617f]">Automatisch gekozen op basis van je naam.</p>
+            </div>
+          </div>
+        </div>
 
         <div className="grid gap-4">
           <div className="panel grid gap-3 p-5">
@@ -154,6 +161,15 @@ export default async function AccountPage({
 
       <BottomNav current="/account" />
     </main>
+  );
+}
+
+function ReadOnlyProfileField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="text-xs font-bold uppercase tracking-wide text-[#48617f]">{label}</div>
+      <div className="mt-1 break-words text-base font-bold text-[#081634]">{value}</div>
+    </div>
   );
 }
 

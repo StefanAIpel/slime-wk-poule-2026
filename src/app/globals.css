@@ -276,6 +276,7 @@ textarea {
   background: linear-gradient(135deg, var(--orange-2), var(--orange));
   padding: 3px 10px;
   color: #fff;
+  text-decoration: none;
 }
 
 .status-chip-countdown strong {
@@ -1041,6 +1042,39 @@ textarea {
   .site-header-link.is-active {
     background: linear-gradient(135deg, var(--blue), var(--blue-2));
     color: #fff;
+  }
+
+  .site-header-link-emphasis:not(.is-active) {
+    background: #fff3e7;
+    color: var(--orange);
+  }
+
+  .site-header-link-emphasis:not(.is-active):hover {
+    background: #ffe2c2;
+    color: #d94d0a;
+  }
+
+  .site-header-mini-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 4px;
+    padding: 5px 9px;
+    min-height: 30px;
+    border-radius: 999px;
+    border: 1px solid rgba(8, 22, 52, 0.12);
+    background: #f7faff;
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .site-header-mini-action:hover {
+    background: #eef3fc;
+    color: var(--blue-2);
   }
 
   .site-header-cta {
@@ -1894,6 +1928,11 @@ textarea {
   background: linear-gradient(135deg, var(--blue), var(--blue-2));
   color: #fff;
   box-shadow: 0 6px 14px rgba(17, 75, 130, 0.28);
+}
+
+.bottom-nav a.bottom-nav-emphasis:not([aria-current="page"]) {
+  background: #fff3e7;
+  color: var(--orange);
 }
 
 .quick-menu-button {

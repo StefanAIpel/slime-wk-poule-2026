@@ -1,6 +1,6 @@
 import { CalendarDays, MapPin } from "lucide-react";
 import { TeamFlag } from "@/components/team-flag";
-import { formatAmsterdam, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
+import { formatAmsterdam, teamAbbrev, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
 type Row = {
@@ -69,9 +69,8 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
               <div className="upcoming-team-grid mt-2 text-sm">
                 <div className="flex items-center gap-2">
                   <TeamFlag code={m.home_code} name={m.home?.name_nl} />
-                  <span className="font-medium text-[var(--ink)]">
-                    <span className="sm:hidden">{m.home_code ?? m.home_label ?? m.home?.name_nl}</span>
-                    <span className="hidden sm:inline">{m.home?.name_nl ?? m.home_label ?? m.home_code}</span>
+                  <span className="font-medium tracking-wide text-[var(--ink)]" title={m.home?.name_nl ?? m.home_label ?? m.home_code ?? undefined}>
+                    {teamAbbrev(m.home_code, m.home_label ?? m.home?.name_nl)}
                   </span>
                 </div>
                 <span aria-hidden="true" className="upcoming-team-separator">
@@ -80,9 +79,8 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                 <span className="sr-only">tegen</span>
                 <div className="flex items-center gap-2">
                   <TeamFlag code={m.away_code} name={m.away?.name_nl} />
-                  <span className="font-medium text-[var(--ink)]">
-                    <span className="sm:hidden">{m.away_code ?? m.away_label ?? m.away?.name_nl}</span>
-                    <span className="hidden sm:inline">{m.away?.name_nl ?? m.away_label ?? m.away_code}</span>
+                  <span className="font-medium tracking-wide text-[var(--ink)]" title={m.away?.name_nl ?? m.away_label ?? m.away_code ?? undefined}>
+                    {teamAbbrev(m.away_code, m.away_label ?? m.away?.name_nl)}
                   </span>
                 </div>
               </div>

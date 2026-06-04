@@ -167,7 +167,7 @@ export function LoginForm({
     }
     rememberCurrentEmail();
     setStatus("sent");
-    setMessage("Registratielink verstuurd. Open de mail; daarna kies je naam, teamnaam en wachtwoord.");
+    setMessage("");
   }
 
   async function onForgotSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -249,15 +249,15 @@ export function LoginForm({
       <div className={surfaceClass}>
         <div className="flex items-center gap-2 rounded-lg bg-green-50 p-3 font-bold text-[#0f7a39]">
           <Check aria-hidden="true" className="size-5" />
-          {isResetMail ? "Wachtwoordmail verstuurd" : "Registratiemail verstuurd"}
+          {isResetMail ? "Wachtwoordmail verstuurd naar je e-mail" : "Registratielink verstuurd naar je e-mail"}
         </div>
-        <p className="text-sm font-bold leading-6 text-[#0f5132]">
+        <p className="text-sm font-medium leading-6 text-[#0f5132]">
           {isResetMail
-            ? "Open de link in je mail. Daarna kies je meteen een nieuw wachtwoord."
-            : "Open de registratielink in je mail. Daarna maak je je profiel af met naam, teamnaam, wachtwoord, voorwaarden en privacy."}
+            ? "Open de mail en kies meteen je nieuwe wachtwoord."
+            : "Open de mail en volg de stappen voor je registratie."}
         </p>
-        <p aria-live="polite" className="text-sm font-bold leading-5 text-[#0f5132]">
-          {message || "De link is tijdelijk geldig."}
+        <p aria-live="polite" className="text-sm font-medium leading-5 text-[#0f5132]">
+          {message || "Mail niet ontvangen? Check je spambox of probeer opnieuw."}
         </p>
         {provider ? <WebmailButton provider={provider} /> : null}
         <button className="button-secondary w-full" type="button" onClick={() => { setStatus("idle"); setMessage(""); }}>

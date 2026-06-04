@@ -4,7 +4,6 @@ import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isAdminEmail } from "@/lib/admin";
-import { isAvatarKey } from "@/lib/avatars";
 import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
@@ -55,8 +54,6 @@ export async function saveProfile(formData: FormData) {
   const admin = createAdminClient();
   const nickname = cleanText(formData.get("nickname"), 24);
   const teamName = cleanText(formData.get("team_name"), 28);
-  const avatarKeyRaw = cleanText(formData.get("avatar_key"), 40);
-  const avatarKey = isAvatarKey(avatarKeyRaw) ? avatarKeyRaw : null;
   const password = String(formData.get("password") ?? "");
   const termsAccepted = formData.get("terms_accepted") === "yes";
 
@@ -95,7 +92,7 @@ export async function saveProfile(formData: FormData) {
     id: user.id,
     nickname,
     team_name: teamName,
-    avatar_key: avatarKey,
+    avatar_key: null,
     terms_accepted_at: acceptedAt,
     privacy_accepted_at: acceptedAt,
   };
@@ -109,7 +106,7 @@ export async function saveProfile(formData: FormData) {
       id: user.id,
       nickname,
       team_name: teamName,
-      avatar_key: avatarKey,
+      avatar_key: null,
     });
     if (fallbackError) throw new Error(fallbackError.message);
   }
@@ -117,40 +114,10 @@ export async function saveProfile(formData: FormData) {
   redirect("/");
 }
 
-export async function updateAccount(formData: FormData) {
-  const { supabase, user } = await requireUser();
-  const admin = createAdminClient();
-  const nickname = cleanText(formData.get("nickname"), 24);
-  const teamName = cleanText(formData.get("team_name"), 28);
-  const avatarKeyRaw = cleanText(formData.get("avatar_key"), 40);
-  const avatarKey = isAvatarKey(avatarKeyRaw) ? avatarKeyRaw : null;
-
-  if (nickname.length < 4 || teamName.length < 4) {
-    redirect("/account?fout=te-kort");
-  }
-  if (reservedNames.includes(nickname.toLowerCase())) {
-    redirect("/account?fout=gereserveerd");
-  }
-
-  const { data: taken } = await admin
-    .from("profiles")
-    .select("id")
-    .ilike("nickname", nickname)
-    .neq("id", user.id)
-    .maybeSingle();
-  if (taken) {
-    redirect("/account?fout=bezet");
-  }
-
-  const { error } = await supabase
-    .from("profiles")
-    .update({ nickname, team_name: teamName, avatar_key: avatarKey })
-    .eq("id", user.id);
-
-  if (error) throw new Error(error.message);
-  revalidatePath("/account");
-  revalidatePath("/");
-  redirect("/account?opgeslagen=1");
+export async function updateAccount() {
+  await requireUser();
+  // Naam, teamnaam en avatar blijven na onboarding vast om ranglijsten en poules netjes te houden.
+  redirect("/account");
 }
 
 export async function deleteAccount(formData: FormData) {

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { TeamFlag } from "@/components/team-flag";
-import { formatAmsterdam, venueLabel } from "@/lib/format";
+import { formatAmsterdam, teamAbbrev, venueLabel } from "@/lib/format";
 import {
   calculateGroupStandings,
   compareStandingRows,
@@ -86,7 +86,7 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
                 >
                   <legend className="sr-only">Voorspel {homeName} vs {awayName}</legend>
                   <div className="flex min-w-0 items-center justify-end gap-2">
-                    <span className="truncate font-medium text-[var(--ink-soft)]">{homeName}</span>
+                    <span className="font-medium tracking-wide text-[var(--ink-soft)]" title={homeName}>{teamAbbrev(match.home_code, homeName)}</span>
                     <TeamFlag code={match.home_code} name={homeName} />
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -118,7 +118,7 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
                   </div>
                   <div className="flex min-w-0 items-center justify-start gap-2">
                     <TeamFlag code={match.away_code} name={awayName} />
-                    <span className="truncate font-medium text-[var(--ink-soft)]">{awayName}</span>
+                    <span className="font-medium tracking-wide text-[var(--ink-soft)]" title={awayName}>{teamAbbrev(match.away_code, awayName)}</span>
                   </div>
                 </fieldset>
               </div>

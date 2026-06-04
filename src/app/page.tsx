@@ -182,22 +182,16 @@ export default async function Home({
             </div>
             <span className="font-bold text-[#064ed6]">Bekijk →</span>
           </a>
+
+          <SlimeSoccerBanner includeVolley={false} />
         </div>
       </section>
 
-      <section className="mt-4">
-        <SlimeSoccerBanner />
-      </section>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-medium text-[#46566f]">
           Gratis · één keer invullen · geen onnodige data · jouw voorspellingen blijven privé.
         </p>
-        <form action="/logout" method="post">
-          <button className="button-plain" type="submit">
-            Uitloggen
-          </button>
-        </form>
       </div>
 
       <BottomNav current="/" />

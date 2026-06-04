@@ -5,7 +5,7 @@ import { CalendarDays, ClipboardList, Home, ListChecks, Trophy, Users } from "lu
 const links = [
   { href: "/", label: "Home", icon: Home },
   { href: "/schema", label: "Schema", icon: CalendarDays },
-  { href: "/voorspellingen", label: "Voorspel", icon: ClipboardList },
+  { href: "/voorspellingen", label: "Voorspel", icon: ClipboardList, emphasis: true },
   { href: "/poules", label: "WK-poules", icon: Users },
   { href: "/ranglijst", label: "Ranglijst", icon: Trophy },
   { href: "/regels", label: "Regels", icon: ListChecks },
@@ -18,8 +18,14 @@ export function BottomNav({ current = "/", className = "" }: { current?: string;
     <nav className={["bottom-nav", className].filter(Boolean).join(" ")} data-count={links.length} aria-label="Hoofdnavigatie">
       {links.map((link) => {
         const Icon = link.icon;
+        const emphasized = "emphasis" in link && link.emphasis;
         return (
-          <a key={link.href} href={link.href} aria-current={current === link.href ? "page" : undefined}>
+          <a
+            key={link.href}
+            href={link.href}
+            className={emphasized ? "bottom-nav-emphasis" : undefined}
+            aria-current={current === link.href ? "page" : undefined}
+          >
             <Icon aria-hidden="true" className="size-5" />
             <span>{link.label}</span>
           </a>

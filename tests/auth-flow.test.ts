@@ -37,7 +37,8 @@ test("registration email template points to password onboarding, not passwordles
 test("new players register by mail link before profile completion", () => {
   assert.match(loginForm, /Registreren via mail-link/);
   assert.doesNotMatch(loginForm, /Open de inloglink/i);
-  assert.match(loginForm, /Open de registratielink/i);
+  assert.match(loginForm, /Registratielink verstuurd naar je e-mail/);
+  assert.match(loginForm, /Open de mail en volg de stappen voor je registratie/);
   assert.match(loginForm, /signInWithOtp/);
   assert.match(loginForm, /shouldCreateUser: true/);
   assert.match(loginForm, /emailRedirectTo: buildEmailRedirectTo/);

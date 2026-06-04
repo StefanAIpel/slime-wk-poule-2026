@@ -69,6 +69,12 @@ export function venueShortLabel(city: string | null | undefined) {
   return shortVenueByCity[city] ?? city;
 }
 
+export function teamAbbrev(code: string | null | undefined, label?: string | null) {
+  if (code) return code.toUpperCase();
+  const cleaned = (label ?? "TBD").replace(/[^\p{L}\p{N}]/gu, "").toUpperCase();
+  return cleaned.slice(0, 3) || "TBD";
+}
+
 export function clampInt(value: FormDataEntryValue | null, fallback = 0, min = 0, max = 20) {
   const parsed = Number.parseInt(String(value ?? ""), 10);
   if (!Number.isFinite(parsed)) return fallback;
