@@ -10,6 +10,7 @@ import { useState } from "react";
 export function GameFrames({ soccerUrl, volleyUrl, initial = "soccer" }: { soccerUrl: string; volleyUrl: string; initial?: string }) {
   const [game, setGame] = useState<"soccer" | "volley">(initial === "volley" ? "volley" : "soccer");
   const url = game === "soccer" ? soccerUrl : volleyUrl;
+  const gameName = game === "soccer" ? "Slime Soccer" : "Slime Volley";
 
   return (
     <div className="grid gap-3">
@@ -22,21 +23,24 @@ export function GameFrames({ soccerUrl, volleyUrl, initial = "soccer" }: { socce
           <Volleyball aria-hidden="true" className="size-4" />
           <span>Volley</span>
         </button>
-        <a className="game-open-link" href={url} target="_blank" rel="noopener noreferrer">
+        <a className="game-open-link" href={url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${gameName} in nieuw tabblad`}>
           <ExternalLink aria-hidden="true" className="size-4" />
-          <span>Nieuw tabblad</span>
+          <span>Open spel in nieuw tabblad</span>
         </a>
       </div>
+      <p className="game-mobile-note">
+        Mobiel speelt dit het best schermvullend in een eigen tabblad of app-weergave.
+      </p>
       <div className="game-frame">
         <iframe
           key={game}
           src={url}
-          title={game === "soccer" ? "Slime Soccer" : "Slime Volley"}
+          title={gameName}
           allow="fullscreen; autoplay; gamepad"
           loading="lazy"
         />
       </div>
-      <p className="text-xs font-medium text-[#54657f]">
+      <p className="game-embed-note text-xs font-medium text-[#54657f]">
         Laadt het spel niet? Open het in een nieuw tabblad — de game-site moet inbedden toestaan.
       </p>
     </div>

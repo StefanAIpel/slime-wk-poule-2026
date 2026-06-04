@@ -17,6 +17,7 @@ const brandWordmark = await readFile(new URL("../src/components/brand-wordmark.t
 const bottomNav = await readFile(new URL("../src/components/bottom-nav.tsx", import.meta.url), "utf8");
 const upcomingMatches = await readFile(new URL("../src/components/upcoming-matches.tsx", import.meta.url), "utf8");
 const scheduleExplorer = await readFile(new URL("../src/components/schedule-explorer.tsx", import.meta.url), "utf8");
+const gameFrames = await readFile(new URL("../src/components/game-frames.tsx", import.meta.url), "utf8");
 const schemaPage = await readFile(new URL("../src/app/schema/page.tsx", import.meta.url), "utf8");
 const schemaGroupsPage = await readFile(new URL("../src/app/schema/groepen/page.tsx", import.meta.url), "utf8");
 const schemaKnockoutPage = await readFile(new URL("../src/app/schema/knockout/page.tsx", import.meta.url), "utf8");
@@ -168,4 +169,13 @@ test("desktop schedule cards are compact and match rows use a visible team separ
   assert.match(globalsCss, /\.group-phase-body \{[\s\S]*minmax\(0, 1fr\) 320px/);
   assert.match(scheduleExplorer, /teamAbbrev\(row\.code, row\.name\)/);
   assert.doesNotMatch(scheduleExplorer, /dark-panel rounded-2xl/);
+});
+
+test("game embed is smaller on desktop and mobile defaults to new-tab play", () => {
+  assert.match(gameFrames, /Open spel in nieuw tabblad/);
+  assert.match(gameFrames, /Mobiel speelt dit het best schermvullend/);
+  assert.doesNotMatch(gameFrames, />Nieuw tabblad</);
+  assert.match(globalsCss, /\.game-frame \{[\s\S]*max-width: 920px;[\s\S]*aspect-ratio: 16 \/ 9;[\s\S]*max-height: min\(66vh, 620px\);/);
+  assert.match(globalsCss, /@media \(max-width: 639px\) \{[\s\S]*\.game-frame,\n  \.game-embed-note \{\n    display: none;/);
+  assert.match(globalsCss, /\.game-open-link \{[\s\S]*linear-gradient\(135deg, #19b85d, #0e8a49 62%, #0a6b38\)/);
 });

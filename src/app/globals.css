@@ -335,17 +335,30 @@ textarea {
   position: relative;
   display: grid;
   overflow: hidden;
-  background: #0b1733;
+  background: #0b4f9f;
 }
 
 .auth-flow-bg {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(7, 13, 31, 0.3), rgba(7, 13, 31, 0.86)),
-    radial-gradient(circle at 80% 12%, rgba(255, 122, 24, 0.42), transparent 35%),
-    radial-gradient(circle at 18% 82%, rgba(30, 115, 184, 0.44), transparent 34%),
-    linear-gradient(135deg, #101a2b, #6f2605 58%, #0b1733);
+    linear-gradient(180deg, rgba(7, 33, 87, 0.1), rgba(5, 18, 54, 0.58)),
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.22), transparent 36%),
+    url("/assets/auth/wk-stadium-auth-bg.webp"),
+    linear-gradient(135deg, #0b4f9f 0%, #1e73b8 48%, #0b2f5d 100%);
+  background-position: center, center, center, center;
+  background-repeat: no-repeat;
+  background-size: cover, cover, cover, cover;
+}
+
+.auth-flow-bg::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(3, 14, 40, 0.26), rgba(3, 14, 40, 0.02) 34%, rgba(3, 14, 40, 0.26)),
+    linear-gradient(180deg, rgba(3, 14, 40, 0), rgba(3, 14, 40, 0.18));
+  pointer-events: none;
 }
 
 .auth-flow-panel {
@@ -1763,7 +1776,7 @@ textarea {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   width: 100%;
-  max-width: calc(100vw - 32px);
+  max-width: 100%;
   gap: 10px;
 }
 
@@ -1809,9 +1822,10 @@ textarea {
 
 .game-open-link {
   grid-column: 1 / -1;
-  border-color: rgba(14, 122, 68, 0.22);
-  background: #ecfdf3;
-  color: #0b6f3b;
+  border-color: transparent;
+  background: linear-gradient(135deg, #19b85d, #0e8a49 62%, #0a6b38);
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(14, 138, 73, 0.26);
 }
 
 .game-tab-pill:hover,
@@ -1828,6 +1842,10 @@ textarea {
   }
 }
 
+.game-mobile-note {
+  display: none;
+}
+
 @media (min-width: 640px) {
   .game-toolbar {
     grid-template-columns: repeat(3, minmax(0, auto));
@@ -1842,7 +1860,10 @@ textarea {
 .game-frame {
   position: relative;
   width: 100%;
-  height: min(78vh, 860px);
+  max-width: 920px;
+  aspect-ratio: 16 / 9;
+  max-height: min(66vh, 620px);
+  margin-inline: auto;
   overflow: hidden;
   border-radius: 16px;
   border: 1px solid rgba(8, 22, 52, 0.12);
@@ -1855,6 +1876,33 @@ textarea {
   height: 100%;
   border: 0;
   display: block;
+}
+
+@media (max-width: 639px) {
+  .game-open-link {
+    order: -1;
+    min-height: 54px;
+    font-size: 0.94rem;
+  }
+
+  .game-mobile-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: #eff6ff;
+    padding: 10px 12px;
+    color: #174176;
+    font-size: 0.84rem;
+    font-weight: 800;
+    line-height: 1.35;
+    text-align: center;
+  }
+
+  .game-frame,
+  .game-embed-note {
+    display: none;
+  }
 }
 
 .score-slot {

@@ -525,12 +525,16 @@ export function LoginForm({
 
   return (
     <div className={surfaceClass} aria-label="Inloggen of registreren">
-      <div className="grid grid-cols-2 gap-2 rounded-xl bg-[#eaf1ff] p-1" role="tablist" aria-label="Account keuze">
+      <div className="grid grid-cols-2 gap-2 rounded-xl bg-[#dbeafe] p-1 shadow-inner ring-1 ring-[#1e73b8]/25" role="tablist" aria-label="Account keuze">
         <button
           type="button"
           role="tab"
           aria-selected={mode === "login"}
-          className={`rounded-lg px-3 py-2 text-sm font-bold ${mode === "login" ? "bg-white text-[#101a2b] shadow" : "text-[#174176]"}`}
+          className={`rounded-lg px-3 py-2 text-sm font-extrabold transition ${
+            mode === "login"
+              ? "bg-gradient-to-r from-[#114b82] to-[#1e73b8] text-white shadow-[0_8px_18px_rgba(30,115,184,0.32)]"
+              : "text-[#0e2a47] hover:bg-white/70 hover:text-[#114b82]"
+          }`}
           onClick={() => resetMode("login")}
         >
           Inloggen
@@ -539,7 +543,11 @@ export function LoginForm({
           type="button"
           role="tab"
           aria-selected={mode === "register"}
-          className={`rounded-lg px-3 py-2 text-sm font-bold ${mode === "register" ? "bg-white text-[#101a2b] shadow" : "text-[#174176]"}`}
+          className={`rounded-lg px-3 py-2 text-sm font-extrabold transition ${
+            mode === "register"
+              ? "bg-gradient-to-r from-[#114b82] to-[#1e73b8] text-white shadow-[0_8px_18px_rgba(30,115,184,0.32)]"
+              : "text-[#0e2a47] hover:bg-white/70 hover:text-[#114b82]"
+          }`}
           onClick={() => resetMode("register")}
         >
           Nieuw account
