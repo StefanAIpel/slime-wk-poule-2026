@@ -46,10 +46,10 @@ export default function NotFound() {
             <div className="absolute inset-x-8 bottom-2 h-12 rounded-full bg-black/22 blur-2xl" />
             <Image
               className="relative z-10 h-auto w-full drop-shadow-2xl"
-              src="/slimes/ikea-maintenance-slime.png"
+              src="/slimes/ikea-maintenance-slime-404.webp"
               alt="Zweedse Slime met een stapelbed-bouwpakket"
-              width={1161}
-              height={1355}
+              width={720}
+              height={720}
               priority
             />
           </div>

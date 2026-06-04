@@ -11,6 +11,14 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
   return (
     <html lang="nl">
       <body style={{ fontFamily: "system-ui, sans-serif", margin: 0, padding: "10vh 20px", textAlign: "center", background: "#f5f7fb", color: "#0e2a47" }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/slimes/ikea-maintenance-slime-404.webp"
+          alt="Zweedse Slime met een stapelbed-bouwpakket"
+          width="240"
+          height="240"
+          style={{ width: "min(240px, 82vw)", height: "auto", borderRadius: 24, boxShadow: "0 16px 40px rgba(8, 22, 52, 0.18)", marginBottom: 18 }}
+        />
         <h1 style={{ fontSize: "1.5rem", fontWeight: 700 }}>Er ging iets mis</h1>
         <p style={{ color: "#48617f", maxWidth: 460, margin: "8px auto 16px" }}>
           Vernieuw de pagina of probeer het later opnieuw.
