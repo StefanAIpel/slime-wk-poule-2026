@@ -101,7 +101,7 @@ export function LoginForm({
   const [resendSubmitting, setResendSubmitting] = useState(false);
   const [signupSubmitting, setSignupSubmitting] = useState(false);
   const [resetSubmitting, setResetSubmitting] = useState(false);
-  const surfaceClass = surface === "inline" ? "grid gap-3" : "panel grid gap-3 p-4";
+  const surfaceClass = surface === "inline" ? "login-form-inline grid gap-3" : "panel grid gap-3 p-4";
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {

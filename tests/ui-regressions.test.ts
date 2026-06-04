@@ -19,17 +19,35 @@ const groupPredictionCard = await readFile(new URL("../src/components/group-pred
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
 
-test("hero primary Gratis meedoen button is capped at 260px and responsive", () => {
+test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
   const heroPrimaryBlock = globalsCss.match(/\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";
+  const mobileHeroBlock = globalsCss.match(/@media \(max-width: 759px\) \{[\s\S]*?\.hero-primary-cta \{[\s\S]*?\}\n\}/)?.[0] ?? "";
   assert.match(heroPrimaryBlock, /width: min\(100%, 260px\);/);
   assert.match(heroPrimaryBlock, /justify-content: center;/);
+  assert.match(heroPrimaryBlock, /border-color: rgba\(255, 255, 255, 0\.62\);/);
+  assert.match(mobileHeroBlock, /width: min\(100%, 180px\);/);
+  assert.match(mobileHeroBlock, /min-height: 44px;/);
   assert.doesNotMatch(heroPrimaryBlock, /width: auto;/);
+});
+
+test("mobile landing hero offsets title block up and world-cup pills down", () => {
+  assert.match(homePage, /className=\"hero-home-title-block\"/);
+  assert.match(globalsCss, /\.hero-home \.world-cup-kicker \{\n    transform: translateY\(20px\);/);
+  assert.match(globalsCss, /\.hero-home-title-block \{\n    transform: translateY\(-20px\);/);
 });
 
 test("hero quick-link buttons stay compact but responsive", () => {
   assert.match(globalsCss, /\.hero-bottom-links \{/);
   assert.match(globalsCss, /width: min\(calc\(100% - 40px\), 370px\);/);
   assert.match(globalsCss, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+});
+
+test("public login panel is compact on mobile", () => {
+  assert.match(homePage, /public-login-panel grid gap-3 p-3 sm:gap-4 sm:p-5/);
+  assert.match(loginForm, /login-form-inline grid gap-3/);
+  assert.match(globalsCss, /\.public-login-title \{\n    font-size: 1\.36rem;\n    line-height: 1\.12;/);
+  assert.match(globalsCss, /\.login-form-inline label \{\n    gap: 6px;\n    font-size: 0\.86rem;\n    line-height: 1\.18;/);
+  assert.match(globalsCss, /\.login-form-inline \.field \{\n    min-height: 44px;/);
 });
 
 test("signup sent state has one clear success headline plus normal-weight next steps and spam hint", () => {
@@ -61,12 +79,13 @@ test("logged-in dashboard only shows SlimeSoccer in the right column and no Slim
   assert.doesNotMatch(homePage, /<SlimeSoccerBanner \/>/);
 });
 
-test("logged-in navigation emphasizes Voorspel and has compact account/logout actions", () => {
+test("logged-in navigation emphasizes Voorspel, keeps compact account/logout actions, and uses no mobile tabbar", () => {
   assert.match(siteHeader, /emphasis: true/);
   assert.match(siteHeader, /site-header-link-emphasis/);
   assert.match(siteHeader, /site-header-mini-action/);
   assert.match(siteHeader, /Uitloggen/);
-  assert.match(bottomNav, /bottom-nav-emphasis/);
+  assert.match(bottomNav, /return null;/);
+  assert.doesNotMatch(bottomNav, /bottom-nav-emphasis/);
   assert.match(statusBar, /href=\"\/voorspellingen\" className=\"status-chip status-chip-countdown/);
 });
 
