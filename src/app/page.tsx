@@ -1,5 +1,6 @@
 import { CalendarDays, ListChecks, LogIn, Trophy, Users } from "lucide-react";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
@@ -14,6 +15,7 @@ import { DEMO_PLAYERS, hasSafePublicProfile } from "@/lib/demo-leaderboard";
 import { displayName } from "@/lib/format";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { persistSignupProfileFromMetadata, type SignupProfileClient } from "@/lib/supabase/signup-profile";
 
 type HomeMembership = {
   role: string;
@@ -72,6 +74,12 @@ export default async function Home({
   ]);
 
   if (!profile?.nickname || !profile.team_name) {
+    const admin = createOptionalAdminClient();
+    if (admin) {
+      const signupProfile = await persistSignupProfileFromMetadata(admin as unknown as SignupProfileClient, user);
+      if (signupProfile.ok) redirect("/");
+    }
+
     return (
       <main className="page-shell grid min-h-screen gap-6 md:grid-cols-[0.85fr_1fr] md:content-center md:items-center">
         <section className="grid gap-5">

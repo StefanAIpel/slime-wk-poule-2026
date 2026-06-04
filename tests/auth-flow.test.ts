@@ -8,6 +8,7 @@ const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url),
 const aanmeldenPage = await readFile(new URL("../src/app/aanmelden/page.tsx", import.meta.url), "utf8");
 const finishAuth = await readFile(new URL("../src/lib/supabase/finish-auth.ts", import.meta.url), "utf8");
 const callbackRoute = await readFile(new URL("../src/app/auth/callback/route.ts", import.meta.url), "utf8");
+const signupProfile = await readFile(new URL("../src/lib/supabase/signup-profile.ts", import.meta.url), "utf8");
 const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
 
 test("FrontPage has email-password login as the primary returning-player flow", () => {
@@ -48,10 +49,16 @@ test("new players enter profile, password and legal acceptance before confirmati
 
 test("verified signup profile data is persisted after email confirmation", () => {
   assert.match(callbackRoute, /persistVerifiedSignupProfile/);
-  assert.match(callbackRoute, /user_metadata/);
-  assert.match(callbackRoute, /terms_accepted_at/);
-  assert.match(callbackRoute, /privacy_accepted_at/);
+  assert.match(callbackRoute, /persistSignupProfileFromMetadata/);
+  assert.match(signupProfile, /user_metadata/);
+  assert.match(signupProfile, /terms_accepted_at/);
+  assert.match(signupProfile, /privacy_accepted_at/);
   assert.doesNotMatch(actions, /auth\.updateUser\(\{ password \}\)/);
+});
+
+test("homepage salvages verified signups that arrive already logged in without a profile", () => {
+  assert.match(homePage, /persistSignupProfileFromMetadata/);
+  assert.match(homePage, /signupProfile\.ok\) redirect\("\/"\)/);
 });
 
 test("existing players can request a password reset mail from the FrontPage", () => {

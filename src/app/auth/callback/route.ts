@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { safeRedirectTarget } from "@/lib/supabase/auth-redirect";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { persistSignupProfileFromMetadata, type SignupProfileClient } from "@/lib/supabase/signup-profile";
 
 export const dynamic = "force-dynamic";
 
@@ -14,41 +15,15 @@ function redirectTo(request: NextRequest, path: string) {
   return NextResponse.redirect(new URL(path, request.url));
 }
 
-function signupText(value: unknown, max: number) {
-  return typeof value === "string" ? value.trim().replace(/\s+/g, " ").slice(0, max) : "";
-}
-
 async function persistVerifiedSignupProfile(user: User) {
-  const metadata = user.user_metadata ?? {};
-  if (metadata.signup_flow !== "profile_password_confirm") return "/";
-
-  const nickname = signupText(metadata.nickname, 24);
-  const teamName = signupText(metadata.team_name, 28);
-  const termsAcceptedAt = signupText(metadata.terms_accepted_at, 40) || new Date().toISOString();
-  const privacyAcceptedAt = signupText(metadata.privacy_accepted_at, 40) || termsAcceptedAt;
-
-  if (nickname.length < 4 || teamName.length < 4) return "/?profiel=te-kort";
-
+  if (!user) return "/";
   const admin = createOptionalAdminClient();
   if (!admin) return "/";
 
-  const { data: taken } = await admin
-    .from("profiles")
-    .select("id")
-    .ilike("nickname", nickname)
-    .neq("id", user.id)
-    .maybeSingle();
-  if (taken) return "/?profiel=bezet";
-
-  const { error } = await admin.from("profiles").upsert({
-    id: user.id,
-    nickname,
-    team_name: teamName,
-    avatar_key: null,
-    terms_accepted_at: termsAcceptedAt,
-    privacy_accepted_at: privacyAcceptedAt,
-  });
-  if (error) return "/?profiel=fout";
+  const result = await persistSignupProfileFromMetadata(admin as unknown as SignupProfileClient, user);
+  if (result.ok) return "/";
+  if (result.reason === "nickname-taken") return "/?profiel=bezet";
+  if (result.reason === "upsert-error") return "/?profiel=fout";
   return "/";
 }
 
