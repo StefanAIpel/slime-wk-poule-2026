@@ -33,6 +33,7 @@ docs               productdocumentatie + werklijsten
 
 ## Belangrijke documenten
 - `docs/feedback-status.md` — **genummerde feedback met prioriteit + status** (begin hier voor "wat moet er nog").
+- `docs/audit-2026-06.md` — deepdive AVG/compliance + veiligheid/bots + SEO (wat is gefixt, wat is extern open).
 - `docs/ui-review-todo.md` — werklijst per ronde.
 - `docs/api-en-techniek.md` — uitslagen-API, puntentelling, push, SEO/ads, dataverkeer-sanity.
 - `docs/operatie-launch.md` — auth-URLs, SMTP, back-up/restore, deploy + smoke-test (externe stappen).

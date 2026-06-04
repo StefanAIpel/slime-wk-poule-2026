@@ -10,6 +10,8 @@ type Row = {
   venue: string | null;
   home_code: string | null;
   away_code: string | null;
+  home_label: string | null;
+  away_label: string | null;
   home: { name_nl: string | null } | null;
   away: { name_nl: string | null } | null;
 };
@@ -22,7 +24,7 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
   const { data } = await admin
     .from("matches")
     .select(
-      "id,starts_at,group_letter,venue,home_code,away_code,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)",
+      "id,starts_at,group_letter,venue,home_code,away_code,home_label,away_label,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)",
     )
     .gte("starts_at", new Date().toISOString())
     .order("starts_at", { ascending: true })
@@ -68,8 +70,8 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                 <div className="flex items-center gap-2">
                   <TeamFlag code={m.home_code} name={m.home?.name_nl} />
                   <span className="font-medium text-[var(--ink)]">
-                    <span className="sm:hidden">{m.home_code ?? m.home?.name_nl}</span>
-                    <span className="hidden sm:inline">{m.home?.name_nl ?? m.home_code}</span>
+                    <span className="sm:hidden">{m.home_code ?? m.home_label ?? m.home?.name_nl}</span>
+                    <span className="hidden sm:inline">{m.home?.name_nl ?? m.home_label ?? m.home_code}</span>
                   </span>
                 </div>
                 <span aria-hidden="true" className="upcoming-team-separator">
@@ -79,8 +81,8 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                 <div className="flex items-center gap-2">
                   <TeamFlag code={m.away_code} name={m.away?.name_nl} />
                   <span className="font-medium text-[var(--ink)]">
-                    <span className="sm:hidden">{m.away_code ?? m.away?.name_nl}</span>
-                    <span className="hidden sm:inline">{m.away?.name_nl ?? m.away_code}</span>
+                    <span className="sm:hidden">{m.away_code ?? m.away_label ?? m.away?.name_nl}</span>
+                    <span className="hidden sm:inline">{m.away?.name_nl ?? m.away_label ?? m.away_code}</span>
                   </span>
                 </div>
               </div>

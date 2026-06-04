@@ -8,6 +8,7 @@ import { CONTACT_EMAIL } from "@/lib/constants";
 export const metadata: Metadata = {
   title: "Voorwaarden",
   description: "De spelregels voor het gebruik van Slime Score: gratis, eerlijk en voor de lol.",
+  alternates: { canonical: "/voorwaarden" },
 };
 
 export default function TermsPage() {

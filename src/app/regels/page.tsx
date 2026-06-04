@@ -5,6 +5,13 @@ import { PageHero } from "@/components/page-hero";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
 import { ENTRY_DEADLINE_ISO, POST_GROUP_DEADLINE_ISO, scoringRules } from "@/lib/constants";
 
+export const metadata = {
+  title: "Spelregels & uitleg — zo werkt de gratis WK 2026-poule",
+  description:
+    "Hoe werkt een WK-poule? Punten verdienen met exacte uitslagen, knock-outvoorspellingen en bonusvragen. Lees de spelregels en veelgestelde vragen.",
+  alternates: { canonical: "/regels" },
+};
+
 const faq: { q: string; a: string }[] = [
   { q: "Is meedoen gratis?", a: "Ja, helemaal gratis. Geen advertenties en geen tracking-cookies." },
   { q: "Heb ik een wachtwoord nodig?", a: "Nee. Je logt in met een eenmalige link die we naar je e-mailadres sturen." },

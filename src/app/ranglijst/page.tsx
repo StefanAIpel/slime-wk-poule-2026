@@ -6,6 +6,13 @@ import { DEMO_PLAYERS, DEMO_POOLS, hasPublicProfile } from "@/lib/demo-leaderboa
 import { formatAmsterdam } from "@/lib/format";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
+export const metadata = {
+  title: "WK 2026-poule ranglijst — wie staat er bovenaan?",
+  description:
+    "De algemene ranglijst van de gratis WK 2026-poule. Volg live wie de meeste punten scoort met voorspellingen en bekijk de stand per WK-poule.",
+  alternates: { canonical: "/ranglijst" },
+};
+
 export const revalidate = 30;
 
 type GlobalScoreRow = {

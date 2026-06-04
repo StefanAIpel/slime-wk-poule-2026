@@ -40,6 +40,7 @@ Prioriteit: **P1** launch-blocker · **P2** belangrijk · **P3** later/nice-to-h
 | 20 | Groep+team op één regel + team gefilterd op groep | P2 | ✅ | |
 | 21 | Tijdverschil (−6 u) achter de tijd | P3 | ✅ | |
 | 22 | Rare regelafbrekingen desktop | P2 | ✅ | text-wrap pretty |
+| 89 | Knock-outwedstrijden in speelschema (73–104), teams onbekend maar datum/tijd/stadion vast | P2 | ✅ | officieel FIFA-schema geseed via migratie; slot-labels "Winnaar Groep A" / "Winnaar W73"; datumfilter loopt nu t/m 19 juli (finale). **DB-migratie moet toegepast worden bij de deploy (zie opmerking onder).** |
 
 ## Voorspellen / scores
 | # | Punt | Prio | Status | Opmerking |
@@ -115,6 +116,24 @@ Prioriteit: **P1** launch-blocker · **P2** belangrijk · **P3** later/nice-to-h
 | 73 | Push-notificaties wedstrijden | P3 | ⬜ | vereist VAPID+cron; **.ics-alternatief** aangeboden |
 | 74 | Sanity 1000 users/dag | P2 | ✅ | doc; **e-mailplan** is het schaalpunt |
 | 75 | **Branch → productie mergen** | **P1** | 🟡 | klaar (schone fast-forward); GitHub-MCP down → via git of jij in GitHub |
+
+## Compliance / security / SEO-audit (juni 2026)
+Drie deepdives op de live code (zie **`docs/audit-2026-06.md`** voor het volledige rapport).
+Leidend principe: **minimaal voldoen, gebruiksgemak voorop** — geen cookiebanner, geen CAPTCHA-frictie.
+| # | Punt | Prio | Status | Opmerking |
+|--|--|--|--|--|
+| 79 | Vlaggen self-hosted (`public/assets/flags/`) i.p.v. flagcdn | P2 | ✅ | geen IP/UA-lek naar derde + sneller; emoji-fallback blijft |
+| 80 | Brede OG-banner 1200×630 + `summary_large_image` hersteld | P2 | ✅ | grote WhatsApp/X-preview i.p.v. klein vierkant icoon |
+| 81 | Eigen `metadata` + self-canonical op /schema, /ranglijst, /regels (+ /voorwaarden, /games) | P2 | ✅ | beste SEO-pagina's erfden eerst de homepage-titel |
+| 82 | Privacyverklaring AVG-compleet | P1 | ✅ | verantwoordelijke, grondslag, bewaartermijn, verwerkers (Supabase/Vercel/mail), kinderen (art. 8), rechten + klachtrecht AP, VS-doorgifte |
+| 83 | Kind-code min. 8 tekens (bearer-secret, anti-brute-force) | P2 | ✅ | admin-form + server-validatie |
+| 84 | Content-Security-Policy (report-only) | P2 | ✅ | defense-in-depth; afdwingen na observatieperiode (#86) |
+| 85 | `sharp` expliciet in `package.json` | P3 | ✅ | banner-upload niet langer afhankelijk van transitieve dep |
+| 86 | CSP van report-only → afdwingen | P3 | ⬜ | na console-observatie op productie |
+| 87 | **Supabase Auth bot-bescherming aanzetten** (onzichtbare Turnstile/hCaptcha) | P2 | ⬜ | **extern (jij)** — sluit magic-link e-mailbombing + massa-fake-accounts, onzichtbaar voor echte gezinnen; daarna `captchaToken` meesturen in `signInWithOtp` |
+| 88 | `slimescore.app` 301-redirect → `.com` | P3 | ⬜ | extern (DNS/Vercel); voorkomt duplicate content |
+
+> #49 (Search Console aanmelden + sitemap indienen) blijft **open en is nu het belangrijkste externe SEO-actiepunt** gezien het korte WK-seizoen.
 
 ## WhatsApp / in-app-browser (deepdive)
 De meeste mensen openen de link in de **in-app browser** van WhatsApp.

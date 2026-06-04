@@ -22,6 +22,9 @@ const description =
 
 const appIcon = "/icons/slimescore-app-icon-v2-512.png";
 const appleTouchIcon = "/icons/slimescore-apple-touch-icon-v2-180.png";
+// Brede 1200x630-banner voor link-previews (WhatsApp/X/Facebook). Het vierkante
+// app-icon blijft alleen voor favicon/PWA — een grote banner klikt veel beter door.
+const ogBanner = "/og.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -64,13 +67,13 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: "Slime Score · Gratis WK 2026-poule",
     description,
-    images: [{ url: appIcon, width: 512, height: 512, alt: "Slime Score app icon" }],
+    images: [{ url: ogBanner, width: 1200, height: 630, alt: "Slime Score · Gratis WK 2026-poule" }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Slime Score · Gratis WK 2026-poule",
     description,
-    images: [appIcon],
+    images: [ogBanner],
   },
 };
 
@@ -100,7 +103,7 @@ const structuredData = [
     inLanguage: "nl-NL",
     description,
     offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
-    publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon-512.png` },
+    publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}${appIcon}` },
   },
 ];
 

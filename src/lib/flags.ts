@@ -52,7 +52,9 @@ export const flagIsoByTeamCode: Record<string, string> = {
 export function flagUrl(teamCode: string | null | undefined) {
   if (!teamCode) return null;
   const iso = flagIsoByTeamCode[teamCode.toUpperCase()];
-  return iso ? `https://flagcdn.com/w80/${iso}.png` : null;
+  // Self-gehost in public/assets/flags zodat we geen IP/UA naar een derde (flagcdn) lekken
+  // en de vlaggen sneller laden. Emoji-fallback in TeamFlag dekt eventuele ontbrekende bestanden.
+  return iso ? `/assets/flags/${iso}.png` : null;
 }
 
 const fallbackFlagByTeamCode: Record<string, string> = {

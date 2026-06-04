@@ -202,7 +202,8 @@ export async function createKidAccount(formData: FormData) {
 
   // Eigen code mag, anders automatisch genereren. Code is hoofdletter-ongevoelig.
   const customCode = cleanText(formData.get("code"), 16).replace(/[^A-Za-z0-9]/g, "");
-  if (customCode && customCode.length < 4) redirect("/admin?fout=kind-code");
+  // Codes zijn bearer-secrets (de code = wachtwoord). Minimaal 8 tekens tegen raden/brute-force.
+  if (customCode && customCode.length < 8) redirect("/admin?fout=kind-code");
   const candidates = customCode ? [customCode] : Array.from({ length: 5 }, () => kidCode());
 
   for (const code of candidates) {
