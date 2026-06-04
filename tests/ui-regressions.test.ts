@@ -9,6 +9,7 @@ const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url)
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
+const quickMenu = await readFile(new URL("../src/components/quick-menu.tsx", import.meta.url), "utf8");
 const statusBar = await readFile(new URL("../src/components/status-bar.tsx", import.meta.url), "utf8");
 const bottomNav = await readFile(new URL("../src/components/bottom-nav.tsx", import.meta.url), "utf8");
 const upcomingMatches = await readFile(new URL("../src/components/upcoming-matches.tsx", import.meta.url), "utf8");
@@ -84,6 +85,12 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(siteHeader, /site-header-link-emphasis/);
   assert.match(siteHeader, /site-header-mini-action/);
   assert.match(siteHeader, /Uitloggen/);
+  assert.match(quickMenu, /label: \"Voorspellen\"/);
+  assert.doesNotMatch(quickMenu, /WK-poule invullen \/ wijzigen/);
+  assert.match(quickMenu, /\[publicLinks\[0\], privateLinks\[0\], \.\.\.publicLinks\.slice\(1\), \.\.\.privateLinks\.slice\(1\)\]/);
+  assert.match(quickMenu, /<form className=\"quick-menu-form\" action=\"\/logout\" method=\"post\">/);
+  assert.match(quickMenu, /<span>Uitloggen<\/span>/);
+  assert.match(globalsCss, /\.quick-menu-logout \{/);
   assert.match(bottomNav, /return null;/);
   assert.doesNotMatch(bottomNav, /bottom-nav-emphasis/);
   assert.match(statusBar, /href=\"\/voorspellingen\" className=\"status-chip status-chip-countdown/);

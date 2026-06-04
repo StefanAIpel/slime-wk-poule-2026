@@ -2145,6 +2145,7 @@ textarea {
 
 .quick-menu-link {
   display: flex;
+  width: 100%;
   min-height: 52px;
   align-items: center;
   gap: 12px;
@@ -2153,12 +2154,28 @@ textarea {
   background: #ffffff;
   padding: 12px;
   color: #0b1f4d;
+  font: inherit;
   font-weight: 700;
+  text-align: left;
   text-decoration: none;
+  cursor: pointer;
+}
+
+.quick-menu-form {
+  margin: 0;
+}
+
+.quick-menu-logout {
+  border-color: rgba(210, 58, 49, 0.18);
+  background: #fff8f7;
 }
 
 .quick-menu-link svg {
   color: #0866e8;
+}
+
+.quick-menu-logout svg {
+  color: #d23a31;
 }
 
 .quick-menu-link.slime-link {
