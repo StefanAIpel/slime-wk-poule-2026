@@ -54,14 +54,10 @@ export async function saveProfile(formData: FormData) {
   const admin = createAdminClient();
   const nickname = cleanText(formData.get("nickname"), 24);
   const teamName = cleanText(formData.get("team_name"), 28);
-  const password = String(formData.get("password") ?? "");
   const termsAccepted = formData.get("terms_accepted") === "yes";
 
   if (!termsAccepted) {
     redirect("/?profiel=akkoord");
-  }
-  if (password.length < 8) {
-    redirect("/?profiel=wachtwoord");
   }
 
   if (nickname.length < 4 || teamName.length < 4) {
@@ -80,11 +76,6 @@ export async function saveProfile(formData: FormData) {
     .maybeSingle();
   if (taken) {
     redirect("/?profiel=bezet");
-  }
-
-  const { error: passwordError } = await supabase.auth.updateUser({ password });
-  if (passwordError) {
-    redirect("/?profiel=wachtwoord");
   }
 
   const acceptedAt = new Date().toISOString();

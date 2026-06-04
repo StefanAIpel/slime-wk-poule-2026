@@ -5,7 +5,6 @@ const errors: Record<string, string> = {
   akkoord: "Vink aan dat je akkoord gaat met de voorwaarden en het privacybeleid.",
   bezet: "Die naam is al bezet. Kies een andere.",
   gereserveerd: "Kies een echte naam of bijnaam (niet ‘anoniem’).",
-  wachtwoord: "Kies een wachtwoord van minstens 8 tekens.",
 };
 
 export function ProfileForm({ error }: { error?: string }) {
@@ -15,12 +14,12 @@ export function ProfileForm({ error }: { error?: string }) {
     <form action={saveProfile} className="panel grid gap-3 p-4">
       <div>
         <div className="mb-3 inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-bold text-[#0f7a39]">
-          Inloggen gelukt
+          E-mail bevestigd
         </div>
         <h2 className="text-2xl font-bold text-[#081634]">Maak je WK-scorekaart af</h2>
         <p className="mt-1 text-sm font-medium leading-6 text-[#48617f]">
-          Je naam staat bovenaan in de WK 2026-ranglijst, je teamnaam eronder. Kies ook meteen je wachtwoord;
-          daarna log je op de FrontPage in met mail en wachtwoord.
+          Kies je naam en teamnaam voor de WK 2026-ranglijst. Bij normale registratie is dit al ingevuld; dit scherm is
+          vooral voor vaste codes of als je gekozen naam al bezet was.
         </p>
       </div>
       {message ? (
@@ -35,18 +34,6 @@ export function ProfileForm({ error }: { error?: string }) {
         <input className="field" name="team_name" required minLength={4} maxLength={28} placeholder="VARschrikkelijk goed" />
       </label>
       <input type="hidden" name="avatar_key" value="" />
-      <label className="grid gap-2 text-sm font-bold text-[#081634]">
-        Wachtwoord
-        <input
-          className="field"
-          type="password"
-          name="password"
-          required
-          minLength={8}
-          autoComplete="new-password"
-          placeholder="Minstens 8 tekens"
-        />
-      </label>
       <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3 text-sm font-semibold leading-5 text-[#48617f]">
         <input className="mt-1 size-4 accent-[#0e7a44]" type="checkbox" name="terms_accepted" value="yes" required />
         <span>
@@ -58,7 +45,7 @@ export function ProfileForm({ error }: { error?: string }) {
         </span>
       </label>
       <button className="button-primary" type="submit">
-        Start mijn WK-poule
+        Aanmelden
       </button>
     </form>
   );

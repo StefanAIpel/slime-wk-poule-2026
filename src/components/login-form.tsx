@@ -86,6 +86,10 @@ export function LoginForm({
   const [mode, setMode] = useState<LoginMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [teamName, setTeamName] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [code, setCode] = useState("");
   const [rememberEmail, setRememberEmail] = useState(true);
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "success" | "error">("idle");
@@ -130,7 +134,7 @@ export function LoginForm({
       if (errorMessage.includes("invalid login") || errorMessage.includes("invalid credentials")) {
         setMessage("Mail of wachtwoord klopt niet. Nog nooit een wachtwoord gekozen? Gebruik ‘Wachtwoord vergeten?’.");
       } else if (errorMessage.includes("email not confirmed")) {
-        setMessage("Open eerst de registratiemail. Daarna kies je je naam en wachtwoord.");
+        setMessage("Open eerst de bevestigingsmail. Daarna kun je inloggen met je e-mail en wachtwoord.");
       } else {
         setMessage("Inloggen lukte niet. Controleer je gegevens en probeer het opnieuw.");
       }
@@ -148,20 +152,56 @@ export function LoginForm({
     setStatus("loading");
     setMessage("");
 
+    const cleanNickname = nickname.trim().replace(/\s+/g, " ").slice(0, 24);
+    const cleanTeamName = teamName.trim().replace(/\s+/g, " ").slice(0, 28);
+    if (cleanNickname.length < 4 || cleanTeamName.length < 4) {
+      setStatus("error");
+      setMessage("Vul je naam en teamnaam allebei met minstens 4 tekens in.");
+      return;
+    }
+    if (password.length < 8) {
+      setStatus("error");
+      setMessage("Kies een wachtwoord van minstens 8 tekens.");
+      return;
+    }
+    if (password !== passwordConfirm) {
+      setStatus("error");
+      setMessage("De twee wachtwoorden zijn niet hetzelfde.");
+      return;
+    }
+    if (!termsAccepted) {
+      setStatus("error");
+      setMessage("Vink aan dat je akkoord gaat met de voorwaarden en het privacybeleid.");
+      return;
+    }
+
+    const acceptedAt = new Date().toISOString();
     const supabase = createClient();
     const origin = window.location.origin;
-    const { error } = await supabase.auth.signInWithOtp({
+    const { error } = await supabase.auth.signUp({
       email: email.trim(),
-      options: { emailRedirectTo: buildEmailRedirectTo(origin, next), shouldCreateUser: true },
+      password,
+      options: {
+        emailRedirectTo: buildEmailRedirectTo(origin, next),
+        data: {
+          signup_flow: "profile_password_confirm",
+          nickname: cleanNickname,
+          team_name: cleanTeamName,
+          terms_accepted_at: acceptedAt,
+          privacy_accepted_at: acceptedAt,
+        },
+      },
     });
 
     if (error) {
       setStatus("error");
       const errorMessage = error.message.toLowerCase();
       if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
-        setMessage("Je hebt net al een registratiemail aangevraagd. Wacht ongeveer 1 minuut en probeer het daarna opnieuw.");
+        setMessage("Je hebt net al een bevestigingsmail aangevraagd. Wacht ongeveer 1 minuut en probeer het daarna opnieuw.");
+      } else if (errorMessage.includes("already registered") || errorMessage.includes("already exists") || errorMessage.includes("user already")) {
+        setMessage("Dit e-mailadres bestaat al. Log in of gebruik ‘Wachtwoord vergeten?’. ");
       } else {
-        setMessage("Het versturen van de registratiemail lukte niet. Controleer je e-mailadres en probeer het opnieuw.");
+        setMessage("Account maken lukte niet. Controleer je gegevens en probeer het opnieuw.");
       }
       return;
     }
@@ -249,12 +289,12 @@ export function LoginForm({
       <div className={surfaceClass}>
         <div className="flex items-center gap-2 rounded-lg bg-green-50 p-3 font-bold text-[#0f7a39]">
           <Check aria-hidden="true" className="size-5" />
-          {isResetMail ? "Wachtwoordmail verstuurd naar je e-mail" : "Registratielink verstuurd naar je e-mail"}
+          {isResetMail ? "Wachtwoordmail verstuurd naar je e-mail" : "Bevestigingsmail verstuurd naar je e-mail"}
         </div>
         <p className="text-sm font-medium leading-6 text-[#0f5132]">
           {isResetMail
             ? "Open de mail en kies meteen je nieuwe wachtwoord."
-            : "Open de mail en volg de stappen voor je registratie."}
+            : "Open de mail en klik op ‘Bevestig registratie’. Daarna kun je inloggen met je e-mail en wachtwoord."}
         </p>
         <p aria-live="polite" className="text-sm font-medium leading-5 text-[#0f5132]">
           {message || "Mail niet ontvangen? Check je spambox of probeer opnieuw."}
@@ -365,12 +405,13 @@ export function LoginForm({
           </p>
         </form>
       ) : (
-        <form onSubmit={onRegisterSubmit} className="grid gap-3" aria-label="Registreren via mail-link">
+        <form onSubmit={onRegisterSubmit} className="grid gap-3" aria-label="Nieuw SlimeScore-account maken">
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
             E-mailadres
             <input
               className="field"
               type="email"
+              name="email"
               inputMode="email"
               autoComplete="email"
               required
@@ -379,12 +420,84 @@ export function LoginForm({
               placeholder="jij@example.nl"
             />
           </label>
+          <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
+            Naam of bijnaam
+            <input
+              className="field"
+              name="nickname"
+              autoComplete="name"
+              required
+              minLength={4}
+              maxLength={24}
+              value={nickname}
+              onChange={(event) => setNickname(event.target.value)}
+              placeholder="Stefan"
+            />
+          </label>
+          <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
+            Teamnaam
+            <input
+              className="field"
+              name="team_name"
+              required
+              minLength={4}
+              maxLength={28}
+              value={teamName}
+              onChange={(event) => setTeamName(event.target.value)}
+              placeholder="VARschrikkelijk goed"
+            />
+          </label>
+          <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
+            Wachtwoord
+            <input
+              className="field"
+              type="password"
+              name="password"
+              autoComplete="new-password"
+              required
+              minLength={8}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Minstens 8 tekens"
+            />
+          </label>
+          <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
+            Wachtwoord nog een keer
+            <input
+              className="field"
+              type="password"
+              name="password_confirm"
+              autoComplete="new-password"
+              required
+              minLength={8}
+              value={passwordConfirm}
+              onChange={(event) => setPasswordConfirm(event.target.value)}
+              placeholder="Nogmaals je wachtwoord"
+            />
+          </label>
+          <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3 text-sm font-semibold leading-5 text-[#48617f]">
+            <input
+              className="mt-1 size-4 accent-[#0e7a44]"
+              type="checkbox"
+              name="terms_accepted"
+              value="yes"
+              required
+              checked={termsAccepted}
+              onChange={(event) => setTermsAccepted(event.target.checked)}
+            />
+            <span>
+              Ik ga akkoord met de{" "}
+              <a className="font-bold text-[#064ed6]" href="/voorwaarden" target="_blank" rel="noopener noreferrer">voorwaarden</a>{" "}
+              en het{" "}
+              <a className="font-bold text-[#064ed6]" href="/privacy" target="_blank" rel="noopener noreferrer">privacybeleid</a>.
+            </span>
+          </label>
           <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
             <Mail aria-hidden="true" className="size-5" />
-            {status === "loading" ? "Versturen…" : "Stuur registratiemail"}
+            {status === "loading" ? "Account maken…" : "Aanmelden"}
           </button>
           <p aria-live="polite" className={`text-sm font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-            {message || "Eerste keer? Open de mail-link. Daarna kies je naam, teamnaam en wachtwoord."}
+            {message || "We sturen één bevestigingsmail. Na bevestiging log je in met je e-mail en wachtwoord."}
           </p>
         </form>
       )}

@@ -30,11 +30,10 @@ test("hero quick-link buttons stay compact but responsive", () => {
 });
 
 test("signup sent state has one clear success headline plus normal-weight next steps and spam hint", () => {
-  assert.match(loginForm, /Registratielink verstuurd naar je e-mail/);
-  assert.match(loginForm, /Open de mail en volg de stappen voor je registratie\./);
+  assert.match(loginForm, /Bevestigingsmail verstuurd naar je e-mail/);
+  assert.match(loginForm, /Open de mail en klik op ‘Bevestig registratie’/);
   assert.match(loginForm, /Mail niet ontvangen\? Check je spambox of probeer opnieuw\./);
-  assert.doesNotMatch(loginForm, /Open de inloglink/i);
-  assert.doesNotMatch(loginForm, /Registratielink verstuurd\. Open de mail/i);
+  assert.doesNotMatch(loginForm, /Open de inloglink|Registratielink verstuurd/i);
 });
 
 test("profile can only be set at onboarding; account page cannot edit name/team/avatar afterwards", () => {

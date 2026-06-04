@@ -285,7 +285,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         <section id="login" className="public-login-panel grid gap-4 p-4 sm:p-5 md:sticky md:top-4">
           {authError ? (
             <div className="rounded-xl border border-red-200 bg-red-50 p-4 font-bold text-red-800">
-              Deze inloglink is verlopen. Vraag een nieuwe aan.
+              Deze bevestigingslink is verlopen. Vraag een nieuwe aan.
             </div>
           ) : null}
           <div className="flex items-center gap-3">

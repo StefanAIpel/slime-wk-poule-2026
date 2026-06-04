@@ -34,18 +34,18 @@ export default async function AanmeldenPage({
         <div className="grid gap-2">
           <p className="inline-flex w-fit items-center gap-2 rounded-full bg-orange-500/18 px-3 py-1 text-xs font-black uppercase tracking-wide text-orange-100">
             <ShieldCheck aria-hidden="true" className="size-4" />
-            Gratis · wachtwoord kiezen na mail
+            Gratis · e-mail bevestigen
           </p>
           <h1 className="text-4xl font-black leading-tight text-white">Aanmelden</h1>
           <p className="max-w-md text-base font-bold leading-7 text-orange-50">
-            Vul je e-mail in. Je krijgt een registratiemail. Open de link en kies daarna je naam, teamnaam en wachtwoord.
+            Vul je e-mail, naam, teamnaam en wachtwoord in. Daarna krijg je één registratiemail om je account te bevestigen.
           </p>
         </div>
 
         <div className="auth-flow-card">
           {params.auth === "fout" ? (
             <div className="mb-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-800">
-              Deze registratielink is verlopen. Vraag hieronder een nieuwe registratiemail aan.
+              Deze bevestigingslink is verlopen. Maak hieronder opnieuw een account aan of vraag een nieuwe bevestigingsmail aan.
             </div>
           ) : null}
           <div className="mb-3 flex items-center gap-2 text-sm font-black text-[#7c2d12]">

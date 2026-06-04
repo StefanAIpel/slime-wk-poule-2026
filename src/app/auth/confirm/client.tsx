@@ -6,7 +6,7 @@ import { finishSupabaseAuth } from "@/lib/supabase/finish-auth";
 import { serverAuthCallbackPath } from "@/lib/supabase/auth-redirect";
 
 export function AuthConfirmClient() {
-  const [message, setMessage] = useState("Je inloglink wordt gecontroleerd.");
+  const [message, setMessage] = useState("Je bevestigingslink wordt gecontroleerd.");
 
   useEffect(() => {
     let cancelled = false;
@@ -31,7 +31,7 @@ export function AuthConfirmClient() {
 
     finishLogin().catch(() => {
       if (!cancelled) {
-        setMessage("Deze link is verlopen of al gebruikt. Vraag een nieuwe inloglink aan.");
+        setMessage("Deze link is verlopen of al gebruikt. Vraag een nieuwe bevestigingsmail aan.");
         window.location.replace("/?auth=fout");
       }
     });

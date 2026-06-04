@@ -222,16 +222,18 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Branded SlimeScore Auth emails. Keep confirmation and magic_link aligned:
-# - new email users may receive the confirmation template
-# - existing users receive the magic-link template
+# Branded SlimeScore Auth emails. Normal signup uses confirmation via signUp(email,password).
 [auth.email.template.confirmation]
-subject = "Je SlimeScore registratielink"
+subject = "Bevestig je SlimeScore-account"
 content_path = "./supabase/templates/slimescore_auth.html"
 
 [auth.email.template.magic_link]
-subject = "Je SlimeScore registratielink"
+subject = "Je SlimeScore-link"
 content_path = "./supabase/templates/slimescore_auth.html"
+
+[auth.email.template.recovery]
+subject = "Kies een nieuw SlimeScore-wachtwoord"
+content_path = "./supabase/templates/slimescore_recovery.html"
 
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
