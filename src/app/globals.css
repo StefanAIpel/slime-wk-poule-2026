@@ -84,7 +84,7 @@ textarea {
 .page-shell {
   width: min(1100px, 100%);
   margin: 0 auto;
-  padding: 20px 16px calc(110px + env(safe-area-inset-bottom));
+  padding: 20px 16px calc(32px + env(safe-area-inset-bottom));
 }
 
 /* Landing: net genoeg lucht onder menu/statusbalk, daarna meteen hero. */
@@ -101,7 +101,7 @@ textarea {
 .site-footer {
   width: min(1100px, 100%);
   margin: 0 auto;
-  padding: 8px 8px 112px;
+  padding: 8px 8px calc(32px + env(safe-area-inset-bottom));
   text-align: center;
   border-top: 1px solid rgba(148, 163, 184, 0.2);
 }
