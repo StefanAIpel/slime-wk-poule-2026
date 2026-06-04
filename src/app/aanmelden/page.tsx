@@ -36,8 +36,8 @@ export default async function AanmeldenPage({
             <ShieldCheck aria-hidden="true" className="size-4" />
             Gratis · e-mail bevestigen
           </p>
-          <h1 className="text-4xl font-black leading-tight text-white">Aanmelden</h1>
-          <p className="max-w-md text-base font-bold leading-7 text-orange-50">
+          <h1 className="text-3xl font-black leading-tight text-white sm:text-4xl">Aanmelden</h1>
+          <p className="max-w-md text-sm font-semibold leading-6 text-orange-50 sm:text-base">
             Vul je e-mail, naam, teamnaam en wachtwoord in. Daarna krijg je één registratiemail om je account te bevestigen.
           </p>
         </div>

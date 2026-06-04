@@ -397,7 +397,7 @@ textarea {
 .auth-flow-card {
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.96);
-  padding: 18px;
+  padding: 20px;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
 }
 
@@ -409,8 +409,8 @@ textarea {
   padding: 12px 14px;
   background: rgba(255, 255, 255, 0.14);
   color: #fff;
-  font-size: 0.95rem;
-  font-weight: 800;
+  font-size: 0.875rem;
+  font-weight: 700;
 }
 
 .share-panel-strip {
@@ -1525,7 +1525,9 @@ textarea {
 
 .upcoming-team-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 62px;
+  /* Thuisland links uitgelijnd (gelijk met de datum erboven), dan de scheidings-
+     pill, dan het uitland, en rechts de scoreboxjes. */
+  grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 62px;
   align-items: center;
   column-gap: 7px;
 }
@@ -2569,6 +2571,10 @@ textarea {
     column-gap: 5px;
   }
 
+  .upcoming-team-grid {
+    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 58px;
+  }
+
   .upcoming-team-separator,
   .schedule-team-separator {
     min-width: 20px;
@@ -2613,6 +2619,10 @@ textarea {
   .upcoming-team-grid {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 70px;
     column-gap: 10px;
+  }
+
+  .upcoming-team-grid {
+    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 70px;
   }
 
   .match-score-boxes {
