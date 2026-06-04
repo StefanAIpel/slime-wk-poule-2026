@@ -32,7 +32,7 @@ export function signupProfileFromMetadata(user: User) {
     id: user.id,
     nickname,
     team_name: teamName,
-    avatar_key: null,
+    avatar_key: "",
     terms_accepted_at: termsAcceptedAt,
     privacy_accepted_at: privacyAcceptedAt,
   };

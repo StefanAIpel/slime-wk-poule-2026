@@ -62,6 +62,8 @@ test("verified signup profile data is persisted after email confirmation", () =>
   assert.match(signupProfile, /user_metadata/);
   assert.match(signupProfile, /terms_accepted_at/);
   assert.match(signupProfile, /privacy_accepted_at/);
+  assert.match(signupProfile, /avatar_key: \"\"/);
+  assert.match(actions, /avatar_key: \"\"/);
   assert.doesNotMatch(actions, /auth\.updateUser\(\{ password \}\)/);
 });
 

@@ -83,7 +83,7 @@ export async function saveProfile(formData: FormData) {
     id: user.id,
     nickname,
     team_name: teamName,
-    avatar_key: null,
+    avatar_key: "",
     terms_accepted_at: acceptedAt,
     privacy_accepted_at: acceptedAt,
   };
@@ -97,7 +97,7 @@ export async function saveProfile(formData: FormData) {
       id: user.id,
       nickname,
       team_name: teamName,
-      avatar_key: null,
+      avatar_key: "",
     });
     if (fallbackError) throw new Error(fallbackError.message);
   }
