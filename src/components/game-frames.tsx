@@ -13,18 +13,18 @@ export function GameFrames({ soccerUrl, volleyUrl, initial = "soccer" }: { socce
 
   return (
     <div className="grid gap-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <button type="button" className={`tab-pill ${game === "soccer" ? "is-active" : ""}`} onClick={() => setGame("soccer")}>
+      <div className="game-toolbar" role="toolbar" aria-label="Kies spel">
+        <button type="button" aria-label="Slime Soccer" className={`game-tab-pill ${game === "soccer" ? "is-active" : ""}`} onClick={() => setGame("soccer")}>
           <Gamepad2 aria-hidden="true" className="size-4" />
-          Slime Soccer
+          <span>Soccer</span>
         </button>
-        <button type="button" className={`tab-pill ${game === "volley" ? "is-active" : ""}`} onClick={() => setGame("volley")}>
+        <button type="button" aria-label="Slime Volley" className={`game-tab-pill ${game === "volley" ? "is-active" : ""}`} onClick={() => setGame("volley")}>
           <Volleyball aria-hidden="true" className="size-4" />
-          Slime Volley
+          <span>Volley</span>
         </button>
-        <a className="button-secondary ml-auto min-h-10 px-3 text-sm" href={url} target="_blank" rel="noopener noreferrer">
+        <a className="game-open-link" href={url} target="_blank" rel="noopener noreferrer">
           <ExternalLink aria-hidden="true" className="size-4" />
-          Nieuw tabblad
+          <span>Nieuw tabblad</span>
         </a>
       </div>
       <div className="game-frame">

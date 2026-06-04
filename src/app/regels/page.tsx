@@ -2,6 +2,7 @@ import { BookOpen, CalendarClock, Database, HelpCircle, ShieldCheck } from "luci
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
+import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
 import { ENTRY_DEADLINE_ISO, POST_GROUP_DEADLINE_ISO, scoringRules } from "@/lib/constants";
 
 const faq: { q: string; a: string }[] = [
@@ -165,6 +166,10 @@ export default function RulesPage() {
             </div>
           </article>
         </div>
+      </section>
+
+      <section className="mt-5">
+        <SlimeSoccerBanner includeWk />
       </section>
 
       <BottomNav current="/regels" />

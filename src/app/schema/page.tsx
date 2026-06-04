@@ -47,7 +47,7 @@ export default async function SchedulePage() {
 
       <ScheduleExplorer matches={scheduleMatches} />
 
-      <BottomNav current="/schema" />
+      <BottomNav current="/schema" className="bottom-nav-hide-mobile" />
     </main>
   );
 }

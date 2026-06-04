@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ExternalLink, KeyRound, Mail } from "lucide-react";
+import { Check, ClipboardPaste, ExternalLink, KeyRound, Mail } from "lucide-react";
 import { useState } from "react";
 import { kidEmail } from "@/lib/kid";
 import { buildEmailRedirectTo } from "@/lib/supabase/auth-redirect";
@@ -74,6 +74,8 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
   const [mode, setMode] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
+  const [emailOtp, setEmailOtp] = useState("");
+  const [isVerifyingEmailOtp, setIsVerifyingEmailOtp] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
   const surfaceClass = surface === "inline" ? "grid gap-3" : "panel grid gap-3 p-4";
@@ -97,7 +99,7 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
     return (
       <form onSubmit={onCodeSubmit} className={surfaceClass} aria-label="Inloggen met code">
         <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
-          Inlogcode (voor kinderen zonder e-mail)
+          Pincode van je poule
           <input
             className="field uppercase tracking-widest"
             inputMode="text"
@@ -114,7 +116,7 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
           {status === "loading" ? "Inloggen…" : "Inloggen met code"}
         </button>
         <p aria-live="polite" className={`text-sm font-medium ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-          {message || "De code krijg je van de beheerder van je WK-poule."}
+          {message || "Deze code krijg je alleen als je poulebeheerder die heeft aangemaakt."}
         </p>
         <button type="button" className="text-sm font-bold text-[#0e7a44] underline" onClick={() => { setMode("email"); setStatus("idle"); setMessage(""); }}>
           Terug naar inloggen met e-mail
@@ -126,6 +128,7 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("loading");
+    setIsVerifyingEmailOtp(false);
     setMessage("");
 
     const supabase = createClient();
@@ -141,21 +144,94 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
       return;
     }
     setStatus("sent");
+    setMessage("Code of link verstuurd.");
+  }
+
+  async function onEmailOtpSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const token = emailOtp.replace(/\D/g, "");
+    if (!email || token.length < 6) {
+      setStatus("sent");
+      setMessage("Vul de code uit je mail in.");
+      return;
+    }
+
+    setIsVerifyingEmailOtp(true);
+    setStatus("sent");
+    setMessage("Code controleren…");
+    const supabase = createClient();
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
+    if (error) {
+      setIsVerifyingEmailOtp(false);
+      setStatus("sent");
+      setMessage("Code klopt niet of is verlopen. Probeer opnieuw of stuur een nieuwe mail.");
+      return;
+    }
+
+    window.location.href = next ?? "/voorspellingen";
+  }
+
+  async function pasteEmailOtp() {
+    if (!navigator.clipboard?.readText) {
+      setMessage("Kopieer de code uit je mail en plak hem in het veld.");
+      return;
+    }
+    try {
+      const pasted = (await navigator.clipboard.readText()).replace(/\D/g, "").slice(0, 8);
+      if (!pasted) {
+        setMessage("Geen code gevonden op je klembord.");
+        return;
+      }
+      setEmailOtp(pasted);
+      setMessage("Code geplakt. Tik op inloggen.");
+    } catch {
+      setMessage("Plakken lukte niet automatisch. Houd het veld ingedrukt en kies Plak.");
+    }
   }
 
   if (status === "sent") {
     const provider = webmailFor(email);
     return (
       <div className={surfaceClass}>
-        <div className="flex items-center gap-2 rounded-lg bg-green-50 p-3 font-bold text-[#0f7a39]">
+        <div className="flex items-center gap-2 rounded-lg bg-orange-50 p-3 font-bold text-[#c2410c]">
           <Check aria-hidden="true" className="size-5" />
-          Inloglink verstuurd!
+          Link en code verstuurd
         </div>
-        <p className="text-sm font-medium leading-6 text-[#475670]">
-          Check <strong className="text-[#101a2b]">{email}</strong>. De link is 1 uur geldig en werkt één keer.
+        <p className="text-sm font-bold leading-6 text-[#9a3412]">
+          Kies wat handig is: open de link in je mail, of kopieer de code en plak hem hieronder.
+        </p>
+        <form onSubmit={onEmailOtpSubmit} className="grid gap-2">
+          <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
+            Code uit je mail
+            <div className="flex gap-2">
+              <input
+                className="field min-w-0 flex-1 text-center text-xl font-black tracking-[0.28em]"
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                enterKeyHint="go"
+                aria-describedby="mail-code-help"
+                value={emailOtp}
+                onChange={(event) => setEmailOtp(event.target.value.replace(/\D/g, "").slice(0, 8))}
+                placeholder="123456"
+              />
+              <button className="button-secondary min-h-12 px-3" type="button" onClick={pasteEmailOtp}>
+                <ClipboardPaste aria-hidden="true" className="size-5" />
+                <span className="sr-only">Code plakken</span>
+              </button>
+            </div>
+            <span id="mail-code-help" className="text-xs font-bold text-[#9a3412]">Kopieer de code uit je mail; plak-knop mag ook.</span>
+          </label>
+          <button className="button-primary w-full" type="submit" disabled={isVerifyingEmailOtp}>
+            <KeyRound aria-hidden="true" className="size-5" />
+            {isVerifyingEmailOtp ? "Controleren…" : "Inloggen met code"}
+          </button>
+        </form>
+        <p aria-live="polite" className="text-sm font-bold leading-5 text-[#c2410c]">
+          {message || "Code of link 1 uur geldig."}
         </p>
         {provider ? <WebmailButton provider={provider} /> : null}
-        <button className="button-secondary w-full" type="button" onClick={() => setStatus("idle")}>
+        <button className="button-secondary w-full" type="button" onClick={() => { setStatus("idle"); setEmailOtp(""); setMessage(""); }}>
           Ander e-mailadres / opnieuw sturen
         </button>
       </div>
@@ -179,10 +255,10 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
       </label>
       <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
         <Mail aria-hidden="true" className="size-5" />
-        {status === "loading" ? "Versturen…" : "Aanmelden"}
+        {status === "loading" ? "Versturen…" : "Mail link en code"}
       </button>
       <p aria-live="polite" className={`text-sm font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-        {message || "Eenmalige link (1 uur geldig)"}
+        {message || "Je krijgt een link én een code. Beide 1 uur geldig."}
       </p>
       <button
         type="button"
@@ -190,7 +266,7 @@ export function LoginForm({ surface = "panel", next }: { surface?: "panel" | "in
         onClick={() => { setMode("code"); setStatus("idle"); setMessage(""); }}
       >
         <KeyRound aria-hidden="true" className="size-4" />
-        Inloggen met code
+        Ik heb een poulecode
       </button>
     </form>
   );

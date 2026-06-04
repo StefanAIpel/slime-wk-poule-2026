@@ -53,7 +53,7 @@ export function StatusBar() {
             </Link>
           </span>
         ) : me && !me.loggedIn ? (
-          <Link href="/#login" className="status-cta">
+          <Link href="/aanmelden" className="status-cta">
             Gratis meedoen
             <ArrowRight aria-hidden="true" className="size-4" />
           </Link>

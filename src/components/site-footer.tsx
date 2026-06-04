@@ -14,7 +14,7 @@ export function SiteFooter() {
         <span className="site-footer-beta">bèta {APP_VERSION}</span>
         <span aria-hidden="true">·</span>
         <a href={COMPANY_URL} target="_blank" rel="noopener noreferrer">
-          (c) {COMPANY_NAME}
+          © {COMPANY_NAME}
         </a>
       </span>
     </footer>

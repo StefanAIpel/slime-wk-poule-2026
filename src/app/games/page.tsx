@@ -16,9 +16,6 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
           <Gamepad2 aria-hidden="true" className="size-6 text-[#064ed6]" />
           <h1 className="text-2xl font-bold text-[#081634]">Slime-spelletjes</h1>
         </div>
-        <p className="text-sm font-medium text-[#54657f]">
-          Even opwarmen? Speel Slime Soccer of Slime Volley — gewoon hier in Slime Score.
-        </p>
       </header>
 
       <GameFrames soccerUrl={SLIME_GAME_URL} volleyUrl={SLIME_VOLLEY_URL} initial={params.game ?? "soccer"} />

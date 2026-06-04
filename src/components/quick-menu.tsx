@@ -111,7 +111,7 @@ export function QuickMenu() {
                 );
               })}
               {!loggedIn ? (
-                <Link className="quick-menu-link" href="/#login" onClick={() => setOpen(false)}>
+                <Link className="quick-menu-link" href="/aanmelden" onClick={() => setOpen(false)}>
                   <Users aria-hidden="true" className="size-5" />
                   <span>Log in</span>
                 </Link>

@@ -3,8 +3,6 @@ import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
-import { InstallAppCard } from "@/components/install-app-card";
-import { LoginForm } from "@/components/login-form";
 import { ProfileForm } from "@/components/profile-form";
 import { ShareRow } from "@/components/share-button";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
@@ -229,7 +227,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             Eén keer invullen, geen advertenties, geen cookiegedoe.
           </p>
           <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
-            <a href="#login" className="button-primary hero-primary-cta">
+            <a href="/aanmelden" className="button-primary hero-primary-cta">
               <Trophy aria-hidden="true" className="size-5" />
               Gratis meedoen
             </a>
@@ -262,7 +260,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
                   Maak een poule voor familie, vrienden of collega&rsquo;s. Deel één code; iedereen vult zelf in.
                 </p>
               </div>
-              <a href="#login" className="button-primary w-full justify-center text-sm sm:w-auto sm:text-base">Start je WK-poule</a>
+              <a href="/aanmelden" className="button-primary w-full justify-center text-sm sm:w-auto sm:text-base">Start je WK-poule</a>
               <p className="text-sm font-bold leading-6 text-blue-50">
                 Al een code? Meld je aan en doe mee met een bestaande WK 2026-poule.
               </p>
@@ -292,12 +290,17 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             <div>
               <h2 className="public-login-title text-2xl font-black text-[#101a2b]">Aanmelden</h2>
               <p className="mt-1 text-sm font-semibold leading-6 text-[#38506d]">
-                E-mailadres erin. Link klikken. Meedoen.
+                Met e-mail: link openen óf code plakken. Zonder gedoe.
               </p>
             </div>
           </div>
-          <LoginForm surface="inline" />
-          <InstallAppCard />
+          <a href="/aanmelden" className="button-primary w-full">
+            <LogIn aria-hidden="true" className="size-5" />
+            Naar aanmelden
+          </a>
+          <p className="text-sm font-bold leading-6 text-[#7c2d12]">
+            Mobiel? De code uit de mail werkt ook direct in de app.
+          </p>
         </section>
 
         <a href="/ranglijst" className="panel public-score-card p-4 no-underline md:col-start-1 md:row-start-2">
