@@ -1743,3 +1743,184 @@ textarea {
     display: none;
   }
 }
+
+
+/* Speelschema tabs + standings/knock-out overview. */
+.schedule-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  position: sticky;
+  top: calc(8px + env(safe-area-inset-top));
+  z-index: 20;
+  border: 1px solid rgba(8, 22, 52, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 6px;
+  box-shadow: 0 10px 26px rgba(8, 22, 52, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.schedule-tab {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: #48617f;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.schedule-tab-active {
+  background: linear-gradient(135deg, #ff9800, #f26a1b);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(242, 106, 27, 0.28);
+}
+
+.match-status {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #eef4ff;
+  padding: 2px 7px;
+  color: #1c3a66;
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.match-status-live {
+  background: #e7f8ee;
+  color: #0e7a44;
+}
+
+.schedule-score {
+  display: inline-flex;
+  min-width: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #081634;
+  color: #fff;
+  padding: 5px 8px;
+  font-weight: 1000;
+  letter-spacing: 0.02em;
+}
+
+.schedule-team-winner .schedule-team-name {
+  color: #0e7a44;
+  font-weight: 1000;
+}
+
+.schedule-standings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 720px) {
+  .schedule-standings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .schedule-standings-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.standing-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid rgba(8, 22, 52, 0.08);
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.14), rgba(30, 115, 184, 0.08));
+  padding: 12px 14px;
+  color: #081634;
+  font-size: 0.95rem;
+  font-weight: 1000;
+}
+
+.standing-table {
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+}
+
+.standing-row {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) 32px 32px 42px;
+  align-items: center;
+  gap: 6px;
+  border-radius: 11px;
+  padding: 8px 7px;
+  color: #48617f;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.standing-row-head {
+  color: #8a98ac;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.standing-row-direct {
+  background: #eef8f1;
+  color: #0e7a44;
+}
+
+.standing-row-third {
+  background: #fff7df;
+  color: #8a5a00;
+}
+
+.standing-team {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
+}
+
+.knockout-roadmap {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 760px) {
+  .knockout-roadmap {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.knockout-roadmap-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (min-width: 760px) {
+  .knockout-roadmap-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.knockout-step {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff9800, #f26a1b);
+  color: #fff;
+  font-weight: 1000;
+  box-shadow: 0 8px 18px rgba(242, 106, 27, 0.24);
+}
