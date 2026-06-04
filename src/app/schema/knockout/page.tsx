@@ -7,7 +7,7 @@ import { getScheduleMatches } from "@/lib/schedule-data";
 
 export const metadata: Metadata = {
   title: "WK 2026 knock-out — route naar de finale",
-  description: "De WK 2026 knock-out rondes met compacte subtabs voor 1/16, 1/8, 1/4, halve finales en finale.",
+  description: "Alle knock-outwedstrijden van het WK 2026, van de laatste 32 tot en met de finale, met datum, tijd en stadion.",
   alternates: { canonical: "/schema/knockout" },
 };
 
@@ -22,7 +22,7 @@ export default async function ScheduleKnockoutPage() {
         <Brand />
         <PageHero
           title="Knock-out"
-          subtitle="Aparte knock-outpagina met subtabs per ronde en korte slotlabels zoals winnaar X en 2e Y."
+          subtitle="De hele knock-outfase per ronde, van de laatste 32 tot de finale, met datum, tijd en stadion."
           slime="/assets/hd-schema-orange-transparent-640.webp"
           mascotClassName="hero-mascot-field hero-mascot-schema"
         />
