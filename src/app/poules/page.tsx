@@ -221,7 +221,8 @@ export default async function PoolsPage({
             const isOwner = currentMember?.role === "owner";
             const isManager = currentMember?.role === "owner" || currentMember?.role === "moderator";
             const joinAssets = poolJoinAssets.get(pool.id) ?? { joinUrl: SITE_URL, qrDataUrl: "" };
-            const inviteText = `Doe mee met onze gratis WK 2026-poule "${pool.name}". Eén keer invullen, klaar.`;
+            const inviteText = `Doe je mee met onze gratis WK 2026-poule "${pool.name}"? 1 keer ~10 minuten invullen en je strijdt het hele WK mee. 👇`;
+            const reminderText = `⏰ Vul je voorspellingen in voor onze WK-poule "${pool.name}"! 1 keer invullen (±10 min) en je doet het hele WK mee — laatkomers nog welkom. 👇`;
             return (
               <article key={pool.id} className="panel overflow-hidden">
                 <PoolBanner src={poolBannerUrl(pool.id)} alt={`Banner van ${pool.name}`} />
@@ -232,7 +233,8 @@ export default async function PoolsPage({
                     {pool.description ? <p className="mt-2 max-w-2xl text-sm font-medium text-white/90">{pool.description}</p> : null}
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <WhatsappShare text={inviteText} url={joinAssets.joinUrl} label="WhatsApp" compact />
+                    <WhatsappShare text={inviteText} url={joinAssets.joinUrl} label="Uitnodigen" compact />
+                    <WhatsappShare text={reminderText} url={joinAssets.joinUrl} label="Herinnering" compact />
                     <CopyButton value={joinAssets.joinUrl} label="Kopieer link" compact />
                     <CopyButton value={pool.code} label={`Code ${pool.code}`} compact />
                     {isOwner ? (
