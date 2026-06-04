@@ -1875,15 +1875,15 @@ textarea {
 
 .quick-menu-button {
   position: fixed;
-  top: calc(54px + env(safe-area-inset-top));
-  left: 14px;
+  top: calc(66px + env(safe-area-inset-top));
+  left: 22px;
   z-index: 40;
   display: inline-grid;
-  min-height: 42px;
-  min-width: 42px;
+  min-height: 46px;
+  min-width: 46px;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  border-radius: 16px;
   background: linear-gradient(135deg, #ff9a2f, #f26a1b 58%, #d94b09);
   color: white;
   box-shadow: 0 14px 28px rgba(210, 82, 11, 0.34);
