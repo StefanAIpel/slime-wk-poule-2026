@@ -270,11 +270,12 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
                   Samen spelen: maak je WK-poule
                 </h2>
                 <p className="poule-share-copy-text mt-3 text-sm font-semibold leading-6 text-blue-50 sm:text-base">
-                  Maak een poule voor familie, vrienden of collega&rsquo;s. Deel één code; iedereen vult zelf in.
+                  Beleef het WK nóg intenser: maak je eigen poule voor vrienden, familie of collega&rsquo;s en deel je
+                  eigen poule-link.
                 </p>
               </div>
               <p className="poule-share-copy-text text-sm font-bold leading-6 text-blue-50">
-                Al een code? Meld je aan en doe mee met een bestaande WK 2026-poule.
+                Link ontvangen? Meld je aan en doe mee met je subpoule. Succes!
               </p>
               <a href="/aanmelden" className="button-primary poule-primary-cta">Start je WK-poule</a>
             </div>
@@ -311,15 +312,19 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         <a href="/ranglijst" className="panel public-score-card p-4 no-underline md:col-start-1 md:row-start-2">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-[#081634]">Ranglijst</h2>
+              <Trophy aria-hidden="true" className="size-5 flex-none text-[#efa820]" />
+              <h2 className="text-base font-bold text-[#081634]">Ranglijst</h2>
             </div>
             <span className="text-sm font-bold text-[#0866e8]">Bekijk alles</span>
           </div>
-          <div className="mt-3 grid gap-2">
+          <div className="mt-3 grid gap-1.5">
             {displayRows.map((row, index) => (
               <div key={`${index}-${displayName(row.profiles)}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
-                <span className="truncate font-medium">{index + 1}. {displayName(row.profiles)}</span>
-                <span className="font-bold">{row.points} pt</span>
+                <span className="flex min-w-0 items-center gap-2">
+                  <span className="w-4 flex-none text-right font-bold tabular-nums text-[#475670]">{index + 1}</span>
+                  <span className="truncate font-medium">{displayName(row.profiles)}</span>
+                </span>
+                <span className="flex-none font-bold tabular-nums">{row.points} pt</span>
               </div>
             ))}
           </div>

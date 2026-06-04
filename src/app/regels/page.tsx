@@ -46,13 +46,12 @@ export default function RulesPage() {
           title="Regels en uitleg"
           subtitle="Kort, duidelijk en net precies genoeg voor discussie in de groepsapp."
           slime="/assets/regels-koe-slime-transparent-640.webp"
+          mascotClassName="hero-mascot-field hero-mascot-regels"
         />
       </header>
 
-      <p className="mb-4 rounded-xl border border-[#f3dcc0] bg-[#fff7ec] px-4 py-2.5 text-sm leading-6 text-[#7a5a2a]">
-        <strong className="font-bold text-[#8a5712]">Regels in uitvoering:</strong> we kunnen de spelregels vóór en tijdens het
-        toernooi nog bijschaven — een poule is tenslotte nooit helemaal af. Iets belangrijks? Dan melden we het netjes in je
-        WK-poule.
+      <p className="mb-4 rounded-xl border border-[#f3dcc0] bg-[#fff7ec] px-4 py-2.5 text-sm leading-6 text-balance text-[#7a5a2a]">
+        <strong className="font-bold text-[#8a5712]">Regels in uitvoering:</strong> we kunnen de spelregels vóór en tijdens het toernooi nog bijschaven — een poule is tenslotte nooit helemaal af. Iets belangrijks? Dan melden we het netjes in je WK-poule.
       </p>
 
       <section className="grid gap-4 lg:grid-cols-2 lg:items-start">
@@ -80,13 +79,17 @@ export default function RulesPage() {
               <ShieldCheck aria-hidden="true" className="size-7 text-[#064ed6]" />
               <h2 className="text-2xl font-bold text-[#081634]">WK-poules</h2>
             </div>
-            <ul className="mt-4 grid gap-2 text-sm leading-6 text-[#2f3d57]">
-              <li>Iedereen doet mee in de algemene WK 2026-ranglijst.</li>
-              <li>Je kunt in meerdere WK-poules zitten (familie, vrienden, collega&rsquo;s).</li>
-              <li>Een WK-poule heeft een beheerder en een geheime deelcode.</li>
-              <li>Beheerders kunnen leden verwijderen en moderators aanwijzen.</li>
-              <li>Beheerders en moderators kunnen de WK-poule aankleden en berichten plaatsen.</li>
-              <li>WK-poules krijgen een ranglijst op de score van hun beste 4 spelers.</li>
+            <p className="mt-3 text-sm leading-6 text-[#2f3d57]">
+              Naast de algemene ranglijst kun je <strong className="text-[#081634]">subpoules</strong> maken of eraan
+              meedoen — je eigen onderlinge strijd met familie, vrienden of collega&rsquo;s.
+            </p>
+            <ul className="mt-3 grid gap-2 text-sm leading-6 text-[#2f3d57]">
+              <li><strong className="text-[#081634]">Altijd erbij:</strong> iedereen staat sowieso in de algemene WK 2026-ranglijst.</li>
+              <li><strong className="text-[#081634]">Meerdere tegelijk:</strong> zit gerust in meer dan één subpoule (familie, vrienden, collega&rsquo;s).</li>
+              <li><strong className="text-[#081634]">Eigen deelcode:</strong> elke subpoule heeft een beheerder en een geheime code/link om aan te sluiten.</li>
+              <li><strong className="text-[#081634]">Beheer:</strong> de beheerder verwijdert leden en wijst moderators aan.</li>
+              <li><strong className="text-[#081634]">Aankleden:</strong> beheerders en moderators kleden de subpoule aan en plaatsen berichten.</li>
+              <li><strong className="text-[#081634]">Ranglijst:</strong> een subpoule scoort op de punten van z&rsquo;n beste 4 spelers.</li>
             </ul>
           </article>
 
