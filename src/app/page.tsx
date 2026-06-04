@@ -307,7 +307,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             </h1>
             <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-blue-50 sm:text-base md:text-lg">
               In tien minuten vul je je voorspellingen in. Daarna doe je het hele WK mee, in zoveel groepen als je wilt.
-              Geen advertenties, geen cookiegedoe.
+              Gratis, en zo gedeeld in je groepsapp.
             </p>
             <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
               <a href="/aanmelden" className="button-primary hero-primary-cta">
