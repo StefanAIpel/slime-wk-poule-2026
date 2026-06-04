@@ -4,6 +4,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { GroupPredictionCard } from "@/components/group-prediction-card";
 import { PageHero } from "@/components/page-hero";
+import { PredictionsComplete } from "@/components/predictions-complete";
 import { ENTRY_DEADLINE, groupLetters, POST_GROUP_DEADLINE } from "@/lib/constants";
 import { oranjeStageLabels, oranjeStageOrder } from "@/lib/scoring";
 import { createClient } from "@/lib/supabase/server";
@@ -99,6 +100,8 @@ export default async function PredictionsPage({
             Bijgewerkt na opslaan. Volledig invullen levert de meeste punten op.
           </p>
         </div>
+
+        {groupProgress === 100 ? <PredictionsComplete /> : null}
 
         <nav className="group-jump" aria-label="Spring naar groep">
           <span className="group-jump-label">Selecteer groep</span>

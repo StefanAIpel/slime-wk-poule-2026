@@ -422,6 +422,14 @@ export default async function PoolsPage({
         )}
       </section>
 
+      <Link href="/games?game=soccer" className="poule-soccer-mini">
+        <span aria-hidden="true" className="poule-soccer-mini-ball">⚽</span>
+        <span className="poule-soccer-mini-text">
+          <strong>Even pauze?</strong> Speel een potje Slime Soccer tegen de computer of je vrienden.
+        </span>
+        <span className="poule-soccer-mini-cta">Spelen →</span>
+      </Link>
+
       <BottomNav current="/poules" />
     </main>
   );

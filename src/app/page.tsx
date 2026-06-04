@@ -7,6 +7,7 @@ import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import { LoginForm } from "@/components/login-form";
 import { PasswordResetForm } from "@/components/password-reset-form";
+import { PredictionsComplete } from "@/components/predictions-complete";
 import { ProfileForm } from "@/components/profile-form";
 import { ShareRow } from "@/components/share-button";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
@@ -167,6 +168,8 @@ export default async function Home({
               </a>
             </div>
           </div>
+
+          {remaining === 0 ? <PredictionsComplete /> : null}
 
           <form action={joinPool} className="panel grid gap-3 p-5">
             <div className="flex items-center gap-2">

@@ -1606,6 +1606,121 @@ textarea {
   transition: transform 140ms ease, box-shadow 140ms ease;
 }
 
+/* Easter egg bij volledig ingevulde voorspellingen. */
+.celebration-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 14px;
+  border-radius: 16px;
+  border: 1px solid #bce8c8;
+  background: linear-gradient(135deg, #eafaf0, #f4fbf0);
+  padding: 16px;
+}
+
+.celebration-slime {
+  font-size: 2rem;
+  line-height: 1;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.celebration-copy h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0e7a44;
+}
+
+.celebration-copy p {
+  margin-top: 2px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2f5a43;
+  line-height: 1.45;
+}
+
+.celebration-relax {
+  margin-top: 6px;
+}
+
+.celebration-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.celebration-confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.celebration-confetti span {
+  position: absolute;
+  top: -8%;
+  font-size: 1.1rem;
+  animation: celebration-fall 1.2s ease-in forwards;
+}
+
+@keyframes celebration-fall {
+  to {
+    transform: translateY(220px) rotate(300deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celebration-confetti span {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* Subtiele kleine Slime Soccer-verleider onderaan de poule-pagina. */
+.poule-soccer-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(8, 22, 52, 0.1);
+  background: #f7faff;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: var(--panel-ink);
+  font-size: 0.85rem;
+}
+
+.poule-soccer-mini:hover {
+  border-color: rgba(14, 122, 68, 0.35);
+}
+
+.poule-soccer-mini-ball {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.poule-soccer-mini-text {
+  flex: 1;
+  font-weight: 600;
+  color: #48617f;
+}
+
+.poule-soccer-mini-text strong {
+  color: #081634;
+}
+
+.poule-soccer-mini-cta {
+  font-weight: 800;
+  color: #0e7a44;
+  white-space: nowrap;
+}
+
 .slime-link-banners {
   display: grid;
   width: min(700px, 100%);
