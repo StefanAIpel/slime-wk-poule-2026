@@ -35,6 +35,8 @@ test("registration email template is SlimeScore-branded and supports code-first 
   assert.match(authEmailTemplate, /{{ \.Token }}/);
   assert.match(authEmailTemplate, /{{ \.ConfirmationURL }}/);
   assert.match(authEmailTemplate, /Code uit de mail/);
+  assert.match(authEmailTemplate, /Voorspel\. Deel\. Win de poule\./);
+  assert.match(authEmailTemplate, /WK 2026 vriendenpoule/);
 });
 
 test("new players enter profile, password and legal acceptance before confirmation mail", () => {
@@ -66,7 +68,7 @@ test("verified signup profile data is persisted after email confirmation", () =>
   assert.match(signupProfile, /terms_accepted_at/);
   assert.match(signupProfile, /privacy_accepted_at/);
   assert.match(signupProfile, /avatar_key: \"wk2026-international\"/);
-  assert.match(actions, /avatar_key: \"wk2026-international\"/);
+  assert.match(actions, /avatar_key: isAvatarKey\(avatarKey\) \? avatarKey : null/);
   assert.doesNotMatch(actions, /auth\.updateUser\(\{ password \}\)/);
 });
 
@@ -93,6 +95,8 @@ test("existing players can reset their password with a copyable email code inste
   assert.match(loginForm, /Je hebt net al een wachtwoordcode aangevraagd\. Gebruik de code uit die mail hieronder/);
   assert.match(authRecoveryTemplate, /{{ \.Token }}/);
   assert.match(authRecoveryTemplate, /Code uit de mail/);
+  assert.match(authRecoveryTemplate, /Voorspel\. Deel\. Win de poule\./);
+  assert.match(authRecoveryTemplate, /WK 2026 vriendenpoule/);
 });
 
 test("recovery links remain accepted by the auth callback fallback", () => {

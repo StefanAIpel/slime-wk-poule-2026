@@ -5,12 +5,15 @@ import { test } from "node:test";
 const loginForm = await readFile(new URL("../src/components/login-form.tsx", import.meta.url), "utf8");
 const profileForm = await readFile(new URL("../src/components/profile-form.tsx", import.meta.url), "utf8");
 const accountPage = await readFile(new URL("../src/app/account/page.tsx", import.meta.url), "utf8");
+const passwordChangeForm = await readFile(new URL("../src/components/password-change-form.tsx", import.meta.url), "utf8");
+const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
 const quickMenu = await readFile(new URL("../src/components/quick-menu.tsx", import.meta.url), "utf8");
 const statusBar = await readFile(new URL("../src/components/status-bar.tsx", import.meta.url), "utf8");
+const brandWordmark = await readFile(new URL("../src/components/brand-wordmark.tsx", import.meta.url), "utf8");
 const bottomNav = await readFile(new URL("../src/components/bottom-nav.tsx", import.meta.url), "utf8");
 const upcomingMatches = await readFile(new URL("../src/components/upcoming-matches.tsx", import.meta.url), "utf8");
 const scheduleExplorer = await readFile(new URL("../src/components/schedule-explorer.tsx", import.meta.url), "utf8");
@@ -31,15 +34,17 @@ test("hero primary Gratis meedoen button is compact on mobile with a light empha
   assert.doesNotMatch(heroPrimaryBlock, /width: auto;/);
 });
 
-test("mobile landing hero offsets title block up and world-cup pills down", () => {
+test("mobile landing hero keeps the WK pills and title separated", () => {
   assert.match(homePage, /className=\"hero-home-title-block\"/);
-  assert.match(globalsCss, /\.hero-home \.world-cup-kicker \{\n    transform: translateY\(20px\);/);
-  assert.match(globalsCss, /\.hero-home-title-block \{\n    transform: translateY\(-20px\);/);
+  assert.match(globalsCss, /\.hero-home \.world-cup-kicker \{\n    transform: translateY\(8px\);/);
+  assert.match(globalsCss, /\.hero-home-title-block \{\n    max-width: min\(100%, 305px\);\n    transform: translateY\(-4px\);/);
 });
 
-test("hero quick-link buttons stay compact but responsive", () => {
+test("hero quick-link buttons stay inside the mobile hero card", () => {
   assert.match(globalsCss, /\.hero-bottom-links \{/);
-  assert.match(globalsCss, /width: min\(calc\(100% - 40px\), 370px\);/);
+  assert.match(globalsCss, /left: 20px;/);
+  assert.match(globalsCss, /right: 20px;/);
+  assert.match(globalsCss, /width: auto;/);
   assert.match(globalsCss, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
 });
 
@@ -59,19 +64,37 @@ test("signup sent state has one clear success headline plus normal-weight next s
   assert.doesNotMatch(loginForm, /Open de inloglink|Registratielink verstuurd/i);
 });
 
-test("profile can only be set at onboarding; account page cannot edit name/team/avatar afterwards", () => {
+test("account page keeps name/team fixed but lets players change avatar and password safely", () => {
   assert.match(profileForm, /name=\"nickname\"/);
   assert.match(profileForm, /name=\"team_name\"/);
-  assert.doesNotMatch(profileForm, /AvatarPicker/);
   assert.match(profileForm, /avatar_key/);
-  assert.doesNotMatch(accountPage, /name=\"nickname\"|name=\"team_name\"|AvatarPicker|Opslaan/);
-  assert.doesNotMatch(actions, /update\(\{ nickname, team_name: teamName, avatar_key: avatarKey \}\)/);
+  assert.doesNotMatch(accountPage, /name=\"nickname\"|name=\"team_name\"/);
+  assert.match(accountPage, /<form action=\{updateAccount\}/);
+  assert.match(accountPage, /<AvatarPicker initialKey=\{profile\?\.avatar_key\} name=\{nickname \|\| \"Speler\"\}/);
+  assert.match(accountPage, /Avatar opslaan/);
+  assert.match(accountPage, /<PasswordChangeForm \/>/);
+  assert.match(accountPage, /<details className=\"panel p-5\">[\s\S]*E-mail/);
+  assert.match(accountPage, /<details className=\"panel border-red-200 p-5\">[\s\S]*Account verwijderen/);
+  assert.match(actions, /avatar_key: isAvatarKey\(avatarKey\) \? avatarKey : null/);
+  assert.match(actions, /from\(\"profiles\"\)\.update\(avatarPayload\)\.eq\(\"id\", user\.id\)/);
+  assert.match(avatarPicker, /name=\"avatar_key\"/);
+  assert.match(passwordChangeForm, /supabase\.auth\.getSession\(\)/);
+  assert.match(passwordChangeForm, /supabase\.auth\.updateUser\(\{ password \}\)/);
+  assert.match(passwordChangeForm, /autoComplete=\"new-password\"/);
 });
 
 test("shared SlimeScore links use the app icon instead of the wide banner", () => {
   assert.match(layout, /const ogImage = appIcon/);
   assert.match(layout, /width: 512, height: 512/);
   assert.doesNotMatch(layout, /og-slimescore-wk2026-v2\.png/);
+});
+
+test("SlimeScore brand wordmark uses the neutral WK slime and a richer pill lockup", () => {
+  assert.match(brandWordmark, /wk_slime_700_transparant\.webp/);
+  assert.match(siteHeader, /wk_slime_700_transparant\.webp/);
+  assert.doesNotMatch(`${brandWordmark}\n${siteHeader}`, /trump_slime_700_transparant\.webp/);
+  assert.match(globalsCss, /\.brand-wordmark-text \{[\s\S]*border-radius: 999px;[\s\S]*linear-gradient\(135deg, #061a3c/);
+  assert.match(globalsCss, /\.brand-wordmark-score \{\n  color: #60f47c;/);
 });
 
 test("logged-in dashboard only shows SlimeSoccer in the right column and no SlimeVolley", () => {

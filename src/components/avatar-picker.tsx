@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
-import { avatarOptions, avatarSrcForKey, isAvatarKey } from "@/lib/avatars";
+import { avatarOptions, avatarSrcForKey, isAvatarKey, resolveAvatarSrc } from "@/lib/avatars";
 
 /**
  * Kies je eigen slime-avatar. Schrijft de gekozen sleutel naar een verborgen
@@ -17,7 +17,7 @@ export function AvatarPicker({ initialKey, name }: { initialKey?: string | null;
       <div className="flex items-center gap-3">
         <img
           className="avatar-img"
-          src={selected ? avatarSrcForKey(selected) : avatarSrcForKey(avatarOptions[0].key)}
+          src={selected ? avatarSrcForKey(selected) : resolveAvatarSrc(name)}
           alt=""
           aria-hidden="true"
           width={56}

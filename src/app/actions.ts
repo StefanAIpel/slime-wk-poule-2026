@@ -4,6 +4,7 @@ import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isAdminEmail } from "@/lib/admin";
+import { isAvatarKey } from "@/lib/avatars";
 import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
@@ -55,6 +56,7 @@ export async function saveProfile(formData: FormData) {
   const nickname = cleanText(formData.get("nickname"), 24);
   const teamName = cleanText(formData.get("team_name"), 28);
   const termsAccepted = formData.get("terms_accepted") === "yes";
+  const avatarKey = cleanText(formData.get("avatar_key"), 64);
 
   if (!termsAccepted) {
     redirect("/?profiel=akkoord");
@@ -83,7 +85,7 @@ export async function saveProfile(formData: FormData) {
     id: user.id,
     nickname,
     team_name: teamName,
-    avatar_key: "wk2026-international",
+    avatar_key: isAvatarKey(avatarKey) ? avatarKey : null,
     terms_accepted_at: acceptedAt,
     privacy_accepted_at: acceptedAt,
   };
@@ -97,7 +99,7 @@ export async function saveProfile(formData: FormData) {
       id: user.id,
       nickname,
       team_name: teamName,
-      avatar_key: "wk2026-international",
+      avatar_key: isAvatarKey(avatarKey) ? avatarKey : null,
     });
     if (fallbackError) throw new Error(fallbackError.message);
   }
@@ -105,10 +107,19 @@ export async function saveProfile(formData: FormData) {
   redirect("/");
 }
 
-export async function updateAccount() {
-  await requireUser();
-  // Naam, teamnaam en avatar blijven na onboarding vast om ranglijsten en poules netjes te houden.
-  redirect("/account");
+export async function updateAccount(formData: FormData) {
+  const { supabase, user } = await requireUser();
+  const avatarKey = cleanText(formData.get("avatar_key"), 64);
+  const avatarPayload = { avatar_key: isAvatarKey(avatarKey) ? avatarKey : null };
+
+  // Naam en teamnaam blijven vast; avatar mag de speler zelf aanpassen.
+  const { error } = await supabase.from("profiles").update(avatarPayload).eq("id", user.id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/account");
+  revalidatePath("/ranglijst");
+  revalidatePath("/poules");
+  redirect("/account?opgeslagen=avatar");
 }
 
 export async function deleteAccount(formData: FormData) {

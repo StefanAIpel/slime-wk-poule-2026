@@ -1,6 +1,5 @@
-// Slime-avatars uit /public/avatars. Spelers krijgen automatisch een vaste
-// slime op basis van hun naam, zodat ranglijsten herkenbaar blijven zonder
-// handmatig avatarbeheer.
+// Slime-avatars uit /public/avatars. Spelers kunnen zelf kiezen; zonder keuze
+// krijgen ze automatisch een vaste slime op basis van hun naam.
 
 export type AvatarOption = { key: string; label: string };
 
@@ -52,8 +51,7 @@ export function avatarKeyForName(name: string) {
   return avatarKeys[hash % avatarKeys.length];
 }
 
-/** Kies de avatar-bron automatisch op naam. `avatarKey` blijft alleen voor oude data compatibel. */
-export function resolveAvatarSrc(name: string, legacyAvatarKey?: string | null) {
-  void legacyAvatarKey;
-  return avatarSrcForKey(avatarKeyForName(name));
+/** Kies de expliciet gekozen avatar, of val terug op de vaste naam-avatar. */
+export function resolveAvatarSrc(name: string, avatarKey?: string | null) {
+  return avatarSrcForKey(isAvatarKey(avatarKey) ? avatarKey : avatarKeyForName(name));
 }
