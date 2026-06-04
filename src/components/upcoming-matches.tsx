@@ -19,8 +19,15 @@ type Row = {
   away: { name_nl: string | null } | null;
 };
 
-function hasScore(match: Row) {
-  return match.home_score !== null && match.away_score !== null;
+function ResultBoxes({ home, away }: { home: number | null; away: number | null }) {
+  const complete = home !== null && away !== null;
+  return (
+    <span className="match-score-boxes" aria-label={complete ? `Uitslag ${home}-${away}` : "Uitslag nog niet bekend"}>
+      <span className={complete ? "score-box score-box-filled" : "score-box"}>{home ?? ""}</span>
+      <span className="score-dash" aria-hidden="true">-</span>
+      <span className={complete ? "score-box score-box-filled" : "score-box"}>{away ?? ""}</span>
+    </span>
+  );
 }
 
 /** Compact lijstje met de eerstvolgende wedstrijden — ook nuttig zonder login. */
@@ -74,15 +81,12 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                 ) : null}
               </div>
               <div className="upcoming-team-grid mt-2 text-sm">
-                <div className="flex min-w-0 items-center gap-2">
+                <div className="flex min-w-0 items-center justify-end gap-2">
                   <TeamFlag code={m.home_code} name={m.home?.name_nl} />
                   <span className="truncate font-medium tracking-wide text-[var(--ink)]" title={m.home?.name_nl ?? m.home_label ?? m.home_code ?? undefined}>
                     {teamAbbrev(m.home_code, m.home_label ?? m.home?.name_nl)}
                   </span>
                 </div>
-                <span aria-hidden="true" className="upcoming-team-separator">
-                  -
-                </span>
                 <span className="sr-only">tegen</span>
                 <div className="flex min-w-0 items-center gap-2">
                   <TeamFlag code={m.away_code} name={m.away?.name_nl} />
@@ -90,11 +94,7 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                     {teamAbbrev(m.away_code, m.away_label ?? m.away?.name_nl)}
                   </span>
                 </div>
-                {hasScore(m) ? (
-                  <span className="match-result-score" aria-label={`Uitslag ${m.home_score}-${m.away_score}`}>
-                    {m.home_score} - {m.away_score}
-                  </span>
-                ) : null}
+                <ResultBoxes home={m.home_score} away={m.away_score} />
               </div>
             </div>
           </div>

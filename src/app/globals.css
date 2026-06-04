@@ -1288,8 +1288,17 @@ textarea {
 .schedule-match-row {
   display: flex;
   align-items: stretch;
-  gap: 12px;
+  gap: 10px;
   padding: 12px;
+}
+
+.schedule-match-row-compact {
+  padding: 10px 12px;
+}
+
+.match-row-main {
+  min-width: 0;
+  flex: 1;
 }
 
 .schedule-match-meta {
@@ -1380,13 +1389,9 @@ textarea {
 
 .upcoming-team-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 62px;
   align-items: center;
-  column-gap: 8px;
-}
-
-.upcoming-team-grid:not(:has(.match-result-score)) {
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  column-gap: 7px;
 }
 
 .match-result-score {
@@ -1418,15 +1423,14 @@ textarea {
 
 .schedule-team-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 62px;
   align-items: center;
-  column-gap: 10px;
+  column-gap: 7px;
   color: #0b1f4d;
 }
 
-.schedule-team-grid-has-score {
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
-  column-gap: 8px;
+.schedule-team-grid-knockout {
+  font-size: 0.82rem;
 }
 
 .schedule-team-cell {
@@ -2275,6 +2279,198 @@ textarea {
   color: #fff;
   font-weight: 1000;
   box-shadow: 0 8px 18px rgba(242, 106, 27, 0.24);
+}
+
+.match-score-boxes {
+  display: inline-grid;
+  grid-template-columns: 24px 10px 24px;
+  align-items: center;
+  justify-content: end;
+  justify-self: end;
+  gap: 2px;
+  min-width: 60px;
+}
+
+.score-box {
+  display: inline-grid;
+  width: 24px;
+  height: 26px;
+  place-items: center;
+  border: 1px solid rgba(8, 22, 52, 0.32);
+  border-radius: 7px;
+  background: #f8fbff;
+  color: #081634;
+  font-size: 0.82rem;
+  font-weight: 1000;
+  line-height: 1;
+  box-shadow: inset 0 1px 2px rgba(8, 22, 52, 0.06);
+}
+
+.score-box-filled {
+  border-color: rgba(14, 122, 68, 0.26);
+  background: #eef8f1;
+  color: #0e7a44;
+}
+
+.score-dash {
+  text-align: center;
+  color: #48617f;
+  font-size: 0.74rem;
+  font-weight: 1000;
+}
+
+.schedule-subtabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 4px;
+}
+
+.schedule-subtab {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #0b1f4d;
+  padding: 0 10px;
+  font-size: 0.74rem;
+  font-weight: 1000;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.schedule-subtab-active,
+.schedule-subtab:hover {
+  background: #ff9800;
+  color: #fff;
+}
+
+.group-phase-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.group-phase-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.group-phase-standing {
+  border-top: 1px solid rgba(8, 22, 52, 0.08);
+  background: #f6fbf8;
+}
+
+@media (min-width: 940px) {
+  .group-phase-body {
+    grid-template-columns: minmax(0, 1fr) 270px;
+  }
+
+  .group-phase-standing {
+    border-top: 0;
+    border-left: 1px solid rgba(8, 22, 52, 0.08);
+  }
+}
+
+.knockout-stage-tabs {
+  border: 1px solid rgba(8, 22, 52, 0.08);
+  background: #fff;
+  padding: 6px;
+  box-shadow: 0 8px 18px rgba(8, 22, 52, 0.06);
+}
+
+.knockout-stage-header {
+  align-items: flex-start;
+}
+
+.knockout-stage-meta {
+  max-width: 46%;
+  color: #48617f;
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1.15;
+  text-align: right;
+}
+
+@media (max-width: 460px) {
+  .match-group {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    font-size: 0.8rem;
+  }
+
+  .schedule-match-row {
+    gap: 7px;
+    padding: 10px 8px;
+  }
+
+  .schedule-team-grid,
+  .upcoming-team-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 58px;
+    column-gap: 5px;
+  }
+
+  .upcoming-team-separator,
+  .schedule-team-separator {
+    min-width: 20px;
+    width: 20px;
+    height: 24px;
+  }
+
+  .schedule-team-cell,
+  .upcoming-team-grid .flex {
+    gap: 5px;
+  }
+
+  .schedule-team-cell img,
+  .upcoming-team-grid img {
+    width: 28px;
+  }
+
+  .schedule-team-name {
+    font-size: 0.82rem;
+    letter-spacing: -0.01em;
+  }
+
+  .match-location {
+    max-width: 30%;
+  }
+
+  .match-score-boxes {
+    grid-template-columns: 22px 8px 22px;
+    min-width: 54px;
+  }
+
+  .score-box {
+    width: 22px;
+    height: 25px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .schedule-team-grid,
+  .upcoming-team-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 70px;
+    column-gap: 10px;
+  }
+
+  .match-score-boxes {
+    grid-template-columns: 28px 12px 28px;
+    min-width: 68px;
+  }
+
+  .score-box {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 

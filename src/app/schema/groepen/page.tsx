@@ -6,15 +6,14 @@ import { ScheduleExplorer } from "@/components/schedule-explorer";
 import { getScheduleMatches } from "@/lib/schedule-data";
 
 export const metadata: Metadata = {
-  title: "WK 2026 speelschema — alle wedstrijden met Nederlandse tijden",
-  description:
-    "Compleet WK 2026 speelschema: alle wedstrijden, groepsstanden en de knock-out route t/m de finale op 19 juli — met de aftrap omgerekend naar Nederlandse tijd. Filter op groep, team of datum.",
-  alternates: { canonical: "/schema" },
+  title: "WK 2026 groepen — wedstrijden en groepsstanden",
+  description: "Alle WK 2026 groepswedstrijden per groep of datum, met compacte mobiele regels en live groepsstanden.",
+  alternates: { canonical: "/schema/groepen" },
 };
 
 export const revalidate = 3600;
 
-export default async function SchedulePage() {
+export default async function ScheduleGroupsPage() {
   const scheduleMatches = await getScheduleMatches();
 
   return (
@@ -22,14 +21,14 @@ export default async function SchedulePage() {
       <header className="mb-5 grid gap-4">
         <Brand />
         <PageHero
-          title="Speelschema"
-          subtitle="Wedstrijden in strakke kolommen met altijd ruimte voor de uitslag — ook als de API-score nog leeg is."
+          title="Groepen"
+          subtitle="Per groep alle poulewedstrijden naast de stand, of dezelfde groepsfase netjes per speeldatum."
           slime="/assets/hd-schema-orange-transparent-640.webp"
           mascotClassName="hero-mascot-field hero-mascot-schema"
         />
       </header>
 
-      <ScheduleExplorer matches={scheduleMatches} initialView="matches" />
+      <ScheduleExplorer matches={scheduleMatches} initialView="groups" />
 
       <BottomNav current="/schema" className="bottom-nav-hide-mobile" />
     </main>

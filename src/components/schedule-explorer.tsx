@@ -3,7 +3,7 @@
 import { CalendarDays, Crown, MapPin, RotateCcw, Table2, Trophy } from "lucide-react";
 import { useMemo, useState } from "react";
 import { TeamFlag } from "@/components/team-flag";
-import { formatAmsterdam, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
+import { formatAmsterdam, teamAbbrev, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
 
 export type ScheduleMatch = {
   id: number;
@@ -57,6 +57,15 @@ const knockoutRoadmap = [
   { label: "Finale", meta: "2 finalisten · 1 wereldkampioen" },
 ];
 
+const knockoutStageTabs: Record<string, string> = {
+  round32: "1/16",
+  round16: "1/8",
+  quarterfinal: "1/4",
+  semifinal: "1/2",
+  third_place: "3e",
+  final: "Finale",
+};
+
 function dateKey(iso: string | null) {
   if (!iso) return "";
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Amsterdam", year: "numeric", month: "2-digit", day: "2-digit" }).format(
@@ -75,21 +84,54 @@ function hasScore(match: ScheduleMatch) {
   return match.homeScore !== null && match.awayScore !== null;
 }
 
-// Tekst voor een team: echte naam/code als die bekend is, anders het knock-out-slotlabel
-// ("Winnaar Groep A", "Winnaar W73"), met een laatste terugval.
-function homeText(match: ScheduleMatch, short = false) {
-  if (short) return match.homeCode ?? match.homeLabel ?? match.homeName ?? "TBD";
-  return match.homeName ?? match.homeLabel ?? match.homeCode ?? "Nog onbekend";
-}
-
-function awayText(match: ScheduleMatch, short = false) {
-  if (short) return match.awayCode ?? match.awayLabel ?? match.awayName ?? "TBD";
-  return match.awayName ?? match.awayLabel ?? match.awayCode ?? "Nog onbekend";
-}
-
 function stageLabel(stage: string | null, group: string | null) {
   if (group) return `Groep ${group}`;
   return stageLabels[stage ?? ""] ?? "Knock-out";
+}
+
+export type ScheduleView = "matches" | "groups" | "knockout";
+
+const viewLinks: { view: ScheduleView; href: string; label: string; icon: "calendar" | "table" | "trophy" }[] = [
+  { view: "matches", href: "/schema", label: "Wedstrijden", icon: "calendar" },
+  { view: "groups", href: "/schema/groepen", label: "Groepen", icon: "table" },
+  { view: "knockout", href: "/schema/knockout", label: "Knock-out", icon: "trophy" },
+];
+
+function compactSlotLabel(value: string | null | undefined) {
+  const text = value?.trim();
+  if (!text) return "TBD";
+  return text
+    .replace(/Winnaar\s+Groep\s+/gi, "W ")
+    .replace(/Tweede\s+Groep\s+/gi, "2e ")
+    .replace(/Runner-up\s+Group\s+/gi, "2e ")
+    .replace(/Winner\s+Group\s+/gi, "W ")
+    .replace(/Winnaar\s+/gi, "W ")
+    .replace(/Winner\s+/gi, "W ")
+    .replace(/Wedstrijd\s+/gi, "W")
+    .replace(/Match\s+/gi, "W")
+    .replace(/Groep\s+/gi, "G")
+    .replace(/Group\s+/gi, "G")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function teamText(match: ScheduleMatch, side: "home" | "away", short = false) {
+  const code = side === "home" ? match.homeCode : match.awayCode;
+  const label = side === "home" ? match.homeLabel : match.awayLabel;
+  const name = side === "home" ? match.homeName : match.awayName;
+  if (short) return code ? teamAbbrev(code, name ?? label) : compactSlotLabel(label ?? name);
+  return name ?? label ?? code ?? "Nog onbekend";
+}
+
+function ResultBoxes({ match }: { match: ScheduleMatch }) {
+  const complete = hasScore(match);
+  return (
+    <span className="match-score-boxes" aria-label={complete ? `Uitslag ${match.homeScore}-${match.awayScore}` : "Uitslag nog niet bekend"}>
+      <span className={complete ? "score-box score-box-filled" : "score-box"}>{match.homeScore ?? ""}</span>
+      <span className="score-dash" aria-hidden="true">-</span>
+      <span className={complete ? "score-box score-box-filled" : "score-box"}>{match.awayScore ?? ""}</span>
+    </span>
+  );
 }
 
 function createStanding(code: string, name: string, group: string): StandingRow {
@@ -177,7 +219,7 @@ function buildGroupStandings(matches: ScheduleMatch[]) {
     .map(([group, rows]) => ({ group, rows: Array.from(rows.values()).sort(compareStandingRows) }));
 }
 
-export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
+export function ScheduleExplorer({ matches, initialView = "matches" }: { matches: ScheduleMatch[]; initialView?: ScheduleView }) {
   const [group, setGroup] = useState("all");
   const [team, setTeam] = useState("all");
   const [date, setDate] = useState("all");
@@ -243,46 +285,49 @@ export function ScheduleExplorer({ matches }: { matches: ScheduleMatch[] }) {
   return (
     <section className="schedule-explorer grid gap-3">
       <nav className="schedule-tabs" aria-label="Speelschema onderdelen">
-        <a className="schedule-tab schedule-tab-active" href="#wedstrijden">
-          <CalendarDays aria-hidden="true" className="size-4" />
-          Wedstrijden
-        </a>
-        <a className="schedule-tab" href="#groepsstanden">
-          <Table2 aria-hidden="true" className="size-4" />
-          Groepsstanden
-        </a>
-        <a className="schedule-tab" href="#knockout">
-          <Trophy aria-hidden="true" className="size-4" />
-          Knock-out
-        </a>
+        {viewLinks.map((item) => {
+          const Icon = item.icon === "calendar" ? CalendarDays : item.icon === "table" ? Table2 : Trophy;
+          return (
+            <a key={item.view} className={initialView === item.view ? "schedule-tab schedule-tab-active" : "schedule-tab"} href={item.href} aria-current={initialView === item.view ? "page" : undefined}>
+              <Icon aria-hidden="true" className="size-4" />
+              {item.label}
+            </a>
+          );
+        })}
       </nav>
 
-      <section id="wedstrijden" className="schedule-section-anchor grid gap-3">
-        <h2 className="sr-only">Wedstrijden</h2>
-        <MatchesPanel
-          dates={dates}
-          filtered={filtered}
-          group={group}
-          groups={groups}
-          hasFilter={hasFilter}
-          hasKnockout={hasKnockout}
-          onGroupChange={onGroupChange}
-          setDate={setDate}
-          setGroup={setGroup}
-          setTeam={setTeam}
-          team={team}
-          teams={teams}
-          date={date}
-        />
-      </section>
+      {initialView === "matches" ? (
+        <section id="wedstrijden" className="schedule-section-anchor grid gap-3">
+          <h2 className="sr-only">Wedstrijden</h2>
+          <MatchesPanel
+            dates={dates}
+            filtered={filtered}
+            group={group}
+            groups={groups}
+            hasFilter={hasFilter}
+            hasKnockout={hasKnockout}
+            onGroupChange={onGroupChange}
+            setDate={setDate}
+            setGroup={setGroup}
+            setTeam={setTeam}
+            team={team}
+            teams={teams}
+            date={date}
+          />
+        </section>
+      ) : null}
 
-      <section id="groepsstanden" className="schedule-section-anchor">
-        <StandingsPanel completedGroupMatches={completedGroupMatches} standings={standings} />
-      </section>
+      {initialView === "groups" ? (
+        <section id="groepsstanden" className="schedule-section-anchor">
+          <StandingsPanel completedGroupMatches={completedGroupMatches} matches={matches.filter((m) => m.group)} standings={standings} />
+        </section>
+      ) : null}
 
-      <section id="knockout" className="schedule-section-anchor">
-        <KnockoutPanel matches={knockoutMatches} />
-      </section>
+      {initialView === "knockout" ? (
+        <section id="knockout" className="schedule-section-anchor">
+          <KnockoutPanel matches={knockoutMatches} />
+        </section>
+      ) : null}
     </section>
   );
 }
@@ -383,52 +428,106 @@ function MatchesPanel({
   );
 }
 
-function StandingsPanel({ completedGroupMatches, standings }: { completedGroupMatches: number; standings: { group: string; rows: StandingRow[] }[] }) {
+function StandingTable({ group, rows }: { group: string; rows: StandingRow[] }) {
+  return (
+    <div className="standing-table" role="table" aria-label={`Groepsstand groep ${group}`}>
+      <div className="standing-row standing-row-head" role="row">
+        <span>#</span>
+        <span>Land</span>
+        <span>W</span>
+        <span>P</span>
+        <span>DS</span>
+      </div>
+      {rows.map((row, index) => (
+        <div key={row.code} className={index < 2 ? "standing-row standing-row-direct" : index === 2 ? "standing-row standing-row-third" : "standing-row"} role="row">
+          <span>{index + 1}</span>
+          <span className="standing-team">
+            <TeamFlag code={row.code} name={row.name} size="sm" />
+            <span className="hidden min-w-0 truncate sm:inline">{row.name}</span>
+            <span className="sm:hidden">{row.code}</span>
+          </span>
+          <span>{row.played}</span>
+          <span>{row.points}</span>
+          <span>{row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function StandingsPanel({ completedGroupMatches, matches, standings }: { completedGroupMatches: number; matches: ScheduleMatch[]; standings: { group: string; rows: StandingRow[] }[] }) {
+  const [display, setDisplay] = useState<"groups" | "dates">("groups");
+  const matchesByGroup = useMemo(() => {
+    const map = new Map<string, ScheduleMatch[]>();
+    for (const match of matches) {
+      if (!match.group) continue;
+      map.set(match.group, [...(map.get(match.group) ?? []), match]);
+    }
+    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
+  }, [matches]);
+  const matchesByDate = useMemo(() => {
+    const map = new Map<string, ScheduleMatch[]>();
+    for (const match of matches) {
+      const key = dateKey(match.startsAt) || "unknown";
+      map.set(key, [...(map.get(key) ?? []), match]);
+    }
+    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
+  }, [matches]);
+  const standingsByGroup = new Map(standings.map((item) => [item.group, item.rows]));
+
   return (
     <div className="grid gap-3">
       <div className="dark-panel rounded-2xl p-4">
         <p className="text-xs font-black uppercase tracking-[0.16em] text-orange-100">Live groepsfase</p>
-        <h2 className="mt-1 text-2xl font-black text-white">Groepsstanden</h2>
+        <h2 className="mt-1 text-2xl font-black text-white">Groepen</h2>
         <p className="mt-2 text-sm font-semibold leading-6 text-blue-100">
-          Gebaseerd op ingevulde uitslagen. Tiebreak: punten, doelsaldo, goals voor, goals tegen en daarna land.
+          Wissel tussen groepsweergave met alle wedstrijden + stand en datumweergave. Tiebreak: punten, doelsaldo, goals voor, goals tegen en daarna land.
         </p>
-        <p className="mt-3 inline-flex rounded-full bg-white/12 px-3 py-1 text-xs font-black text-white">
-          {completedGroupMatches} van 72 groepsduels met score
-        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <p className="inline-flex rounded-full bg-white/12 px-3 py-1 text-xs font-black text-white">
+            {completedGroupMatches} van 72 groepsduels met score
+          </p>
+          <div className="schedule-subtabs" role="tablist" aria-label="Groepsfase weergave">
+            <button type="button" className={display === "groups" ? "schedule-subtab schedule-subtab-active" : "schedule-subtab"} onClick={() => setDisplay("groups")}>Per groep</button>
+            <button type="button" className={display === "dates" ? "schedule-subtab schedule-subtab-active" : "schedule-subtab"} onClick={() => setDisplay("dates")}>Per datum</button>
+          </div>
+        </div>
       </div>
 
-      <div className="schedule-standings-grid">
-        {standings.map(({ group, rows }) => (
-          <article key={group} className="panel overflow-hidden">
-            <header className="standing-card-header">
-              <span>Groep {group}</span>
-              <span className="text-xs font-bold text-[#48617f]">Top 2 + beste nummers 3 door</span>
-            </header>
-            <div className="standing-table" role="table" aria-label={`Groepsstand groep ${group}`}>
-              <div className="standing-row standing-row-head" role="row">
-                <span>#</span>
-                <span>Land</span>
-                <span>W</span>
-                <span>P</span>
-                <span>DS</span>
-              </div>
-              {rows.map((row, index) => (
-                <div key={row.code} className={index < 2 ? "standing-row standing-row-direct" : index === 2 ? "standing-row standing-row-third" : "standing-row"} role="row">
-                  <span>{index + 1}</span>
-                  <span className="standing-team">
-                    <TeamFlag code={row.code} name={row.name} size="sm" />
-                    <span className="hidden min-w-0 truncate sm:inline">{row.name}</span>
-                    <span className="sm:hidden">{row.code}</span>
-                  </span>
-                  <span>{row.played}</span>
-                  <span>{row.points}</span>
-                  <span>{row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference}</span>
+      {display === "groups" ? (
+        <div className="group-phase-grid">
+          {matchesByGroup.map(([group, groupMatches]) => (
+            <article key={group} className="panel group-phase-card overflow-hidden">
+              <header className="standing-card-header">
+                <span>Groep {group}</span>
+                <span className="text-xs font-bold text-[#48617f]">Wedstrijden + stand</span>
+              </header>
+              <div className="group-phase-body">
+                <div className="divide-y divide-slate-200">
+                  {groupMatches.map((match) => <MatchRow key={match.id} match={match} compactMeta />)}
                 </div>
-              ))}
-            </div>
-          </article>
-        ))}
-      </div>
+                <aside className="group-phase-standing">
+                  <StandingTable group={group} rows={standingsByGroup.get(group) ?? []} />
+                </aside>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-3">
+          {matchesByDate.map(([key, dateMatches]) => (
+            <article key={key} className="panel overflow-hidden">
+              <header className="standing-card-header">
+                <span>{key === "unknown" ? "Datum volgt" : dateLabel(dateMatches[0]?.startsAt ?? null)}</span>
+                <span className="text-xs font-bold text-[#48617f]">{dateMatches.length} wedstrijden</span>
+              </header>
+              <div className="divide-y divide-slate-200">
+                {dateMatches.map((match) => <MatchRow key={match.id} match={match} compactMeta />)}
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -457,14 +556,24 @@ function KnockoutPanel({ matches }: { matches: ScheduleMatch[] }) {
       </div>
 
       {matchesByStage.length ? (
+        <nav className="schedule-subtabs knockout-stage-tabs" aria-label="Knock-out rondes">
+          {matchesByStage.map(([stage]) => (
+            <a key={stage} className="schedule-subtab" href={`#ko-${stage}`}>
+              {knockoutStageTabs[stage] ?? stageLabels[stage] ?? "KO"}
+            </a>
+          ))}
+        </nav>
+      ) : null}
+
+      {matchesByStage.length ? (
         matchesByStage.map(([stage, stageMatches]) => (
-          <article key={stage} className="panel overflow-hidden">
-            <header className="standing-card-header">
-              <span>{stageLabels[stage] ?? "Knock-out"}</span>
-              <span className="text-xs font-bold text-[#48617f]">{stageMatches.length} wedstrijden</span>
+          <article key={stage} id={`ko-${stage}`} className="panel scroll-mt-24 overflow-hidden">
+            <header className="standing-card-header knockout-stage-header">
+              <span>{knockoutStageTabs[stage] ? `${knockoutStageTabs[stage]} · ${stageLabels[stage] ?? "Knock-out"}` : stageLabels[stage] ?? "Knock-out"}</span>
+              <span className="knockout-stage-meta">winnaar X · 2e Y · {stageMatches.length} {stageMatches.length === 1 ? "wedstrijd" : "wedstrijden"}</span>
             </header>
-            <div className="divide-y divide-slate-200">
-              {stageMatches.map((match) => <MatchRow key={match.id} match={match} />)}
+            <div className="divide-y divide-slate-200 knockout-match-list">
+              {stageMatches.map((match) => <MatchRow key={match.id} match={match} knockout />)}
             </div>
           </article>
         ))
@@ -485,15 +594,15 @@ function KnockoutPanel({ matches }: { matches: ScheduleMatch[] }) {
   );
 }
 
-function MatchRow({ match }: { match: ScheduleMatch }) {
+function MatchRow({ match, compactMeta = false, knockout = false }: { match: ScheduleMatch; compactMeta?: boolean; knockout?: boolean }) {
   const offset = venueHourOffset(match.startsAt, match.venue);
   return (
-    <div className="schedule-match-row">
+    <div className={compactMeta ? "schedule-match-row schedule-match-row-compact" : "schedule-match-row"}>
       <div className="flex items-center">
         <span className="match-group">{match.group ?? "KO"}</span>
       </div>
-      <div className="min-w-0 flex-1">
-        <div className="schedule-match-meta match-meta">
+      <div className="match-row-main">
+        <div className={compactMeta ? "schedule-match-meta match-meta match-meta-compact" : "schedule-match-meta match-meta"}>
           <CalendarDays aria-hidden="true" className="size-3.5" />
           <span className="match-time">{formatAmsterdam(match.startsAt)}</span>
           <span className={match.status === "live" ? "match-status match-status-live" : "match-status"}>
@@ -512,28 +621,23 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
             </span>
           ) : null}
         </div>
-        <div className={`schedule-team-grid ${hasScore(match) ? "schedule-team-grid-has-score" : ""}`} aria-label={`${homeText(match)} tegen ${awayText(match)}`}>
-          <div className={match.winnerCode === match.homeCode ? "schedule-team-cell schedule-team-winner" : "schedule-team-cell"}>
-            <TeamFlag code={match.homeCode} name={match.homeName} />
+        <div className={`schedule-team-grid ${knockout ? "schedule-team-grid-knockout" : ""}`} aria-label={`${teamText(match, "home")} tegen ${teamText(match, "away")}`}>
+          <div className={match.winnerCode === match.homeCode ? "schedule-team-cell schedule-team-winner schedule-team-cell-home" : "schedule-team-cell schedule-team-cell-home"} title={teamText(match, "home")}>
+            <TeamFlag code={match.homeCode} name={match.homeName ?? match.homeLabel} />
             <span className="schedule-team-name">
-              <span className="sm:hidden">{homeText(match, true)}</span>
-              <span className="hidden sm:inline">{homeText(match)}</span>
+              <span className="sm:hidden">{teamText(match, "home", true)}</span>
+              <span className="hidden sm:inline">{teamText(match, "home")}</span>
             </span>
           </div>
-          <span className="schedule-team-separator" aria-hidden="true">-</span>
           <span className="sr-only">tegen</span>
-          <div className={match.winnerCode === match.awayCode ? "schedule-team-cell schedule-team-winner" : "schedule-team-cell"}>
-            <TeamFlag code={match.awayCode} name={match.awayName} />
+          <div className={match.winnerCode === match.awayCode ? "schedule-team-cell schedule-team-winner" : "schedule-team-cell"} title={teamText(match, "away")}>
+            <TeamFlag code={match.awayCode} name={match.awayName ?? match.awayLabel} />
             <span className="schedule-team-name">
-              <span className="sm:hidden">{awayText(match, true)}</span>
-              <span className="hidden sm:inline">{awayText(match)}</span>
+              <span className="sm:hidden">{teamText(match, "away", true)}</span>
+              <span className="hidden sm:inline">{teamText(match, "away")}</span>
             </span>
           </div>
-          {hasScore(match) ? (
-            <span className="schedule-score" aria-label={`Uitslag ${match.homeScore}-${match.awayScore}`}>
-              {match.homeScore} - {match.awayScore}
-            </span>
-          ) : null}
+          <ResultBoxes match={match} />
         </div>
       </div>
     </div>

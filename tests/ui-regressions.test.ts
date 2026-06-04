@@ -12,6 +12,9 @@ const siteHeader = await readFile(new URL("../src/components/site-header.tsx", i
 const statusBar = await readFile(new URL("../src/components/status-bar.tsx", import.meta.url), "utf8");
 const bottomNav = await readFile(new URL("../src/components/bottom-nav.tsx", import.meta.url), "utf8");
 const upcomingMatches = await readFile(new URL("../src/components/upcoming-matches.tsx", import.meta.url), "utf8");
+const scheduleExplorer = await readFile(new URL("../src/components/schedule-explorer.tsx", import.meta.url), "utf8");
+const schemaGroupsPage = await readFile(new URL("../src/app/schema/groepen/page.tsx", import.meta.url), "utf8");
+const schemaKnockoutPage = await readFile(new URL("../src/app/schema/knockout/page.tsx", import.meta.url), "utf8");
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
@@ -72,4 +75,22 @@ test("small team columns use official 3-letter country abbreviations", () => {
   assert.match(upcomingMatches, /teamAbbrev\(m\.home_code/);
   assert.match(groupPredictionCard, /teamAbbrev\(match\.home_code/);
   assert.doesNotMatch(upcomingMatches, /hidden sm:inline">\{m\.away\?\.name_nl/);
+});
+
+test("match rows always reserve right-side API score boxes", () => {
+  assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} \/>/);
+  assert.match(scheduleExplorer, /<ResultBoxes match=\{match\} \/>/);
+  assert.match(globalsCss, /grid-template-columns: minmax\(0, 1fr\) minmax\(0, 1fr\) 62px;/);
+  assert.match(globalsCss, /\.score-box \{/);
+  assert.doesNotMatch(scheduleExplorer, /schedule-team-grid-has-score/);
+});
+
+test("schema has separate groups and knockout pages with compact subtabs", () => {
+  assert.match(schemaGroupsPage, /initialView=\"groups\"/);
+  assert.match(schemaKnockoutPage, /initialView=\"knockout\"/);
+  assert.match(scheduleExplorer, /href: \"\/schema\/groepen\"/);
+  assert.match(scheduleExplorer, /href: \"\/schema\/knockout\"/);
+  assert.match(scheduleExplorer, /knockoutStageTabs/);
+  assert.match(scheduleExplorer, /Per groep/);
+  assert.match(scheduleExplorer, /Per datum/);
 });
