@@ -45,9 +45,19 @@ export default async function PredictionsPage({
   const mainOpen = now < ENTRY_DEADLINE;
   const lateOpen = now < POST_GROUP_DEADLINE;
   const groupMatchTotal = (matches ?? []).length;
-  const filledGroupMatches = predictionByMatch.size;
+  const isMatchFilled = (id: number) => {
+    const prediction = predictionByMatch.get(id);
+    return Boolean(prediction && prediction.home_score !== null && prediction.away_score !== null);
+  };
+  const filledGroupMatches = (matches ?? []).filter((match) => isMatchFilled(match.id)).length;
   const groupIncomplete = filledGroupMatches < groupMatchTotal;
+  const groupProgress = groupMatchTotal ? Math.round((filledGroupMatches / groupMatchTotal) * 100) : 0;
   const groupedMatches = groupBy(matches as MatchWithTeams[] | null, (match) => match.group_letter ?? "?");
+  const groupDone = new Map<string, boolean>();
+  for (const group of groupLetters) {
+    const groupMatches = groupedMatches.get(group) ?? [];
+    groupDone.set(group, groupMatches.length > 0 && groupMatches.every((match) => isMatchFilled(match.id)));
+  }
   const typedTeams = (teams ?? []) as Team[];
 
   return (
@@ -77,12 +87,30 @@ export default async function PredictionsPage({
           </p>
         </section>
 
+        <div className="panel p-4">
+          <div className="flex items-center justify-between text-sm font-bold text-[#081634]">
+            <span>Voortgang groepswedstrijden</span>
+            <span className="tabular-nums">{filledGroupMatches}/{groupMatchTotal} ingevuld · {groupProgress}%</span>
+          </div>
+          <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-slate-200">
+            <div className="h-full rounded-full bg-[var(--green)] transition-all" style={{ width: `${groupProgress}%` }} />
+          </div>
+          <p className="mt-1 text-xs font-medium text-[#48617f]">
+            Bijgewerkt na opslaan. Volledig invullen levert de meeste punten op.
+          </p>
+        </div>
+
         <nav className="group-jump" aria-label="Spring naar groep">
           <span className="group-jump-label">Selecteer groep</span>
           {groupLetters.map((group) =>
             groupedMatches.get(group)?.length ? (
-              <a key={group} href={`#groep-${group}`}>
+              <a
+                key={group}
+                href={`#groep-${group}`}
+                style={groupDone.get(group) ? { background: "#dcfce7", borderColor: "#86efac", color: "#137c35" } : undefined}
+              >
                 {group}
+                {groupDone.get(group) ? " ✓" : ""}
               </a>
             ) : null,
           )}

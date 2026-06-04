@@ -1,5 +1,6 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { TeamFlag } from "@/components/team-flag";
 import { formatAmsterdam, teamAbbrev, venueLabel } from "@/lib/format";
@@ -63,10 +64,30 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled }:
     }));
   }
 
+  const filledCount = matches.filter((match) => {
+    const score = scores[match.id];
+    return score && score.home !== null && score.away !== null;
+  }).length;
+  const complete = matches.length > 0 && filledCount === matches.length;
+
   return (
     <section id={`groep-${group}`} className="panel scroll-mt-24 overflow-hidden">
-      <div className="wc-header px-4 py-3 text-white">
+      <div
+        className="wc-header flex items-center justify-between px-4 py-3 text-white"
+        style={complete ? { background: "var(--green)" } : undefined}
+      >
         <h2 className="text-lg font-bold">Groep {group}</h2>
+        <span className="flex items-center gap-1 text-sm font-bold">
+          {complete ? (
+            <>
+              <Check aria-hidden="true" className="size-4" /> Compleet
+            </>
+          ) : (
+            <span className="tabular-nums text-white/85">
+              {filledCount}/{matches.length}
+            </span>
+          )}
+        </span>
       </div>
       <div className="grid gap-0 lg:grid-cols-[1fr_300px]">
         <div className="divide-y divide-slate-200">
