@@ -1876,7 +1876,7 @@ textarea {
 .quick-menu-button {
   position: fixed;
   top: calc(66px + env(safe-area-inset-top));
-  left: 22px;
+  right: max(22px, calc((100vw - min(100vw - 32px, 1100px)) / 2 + 22px));
   z-index: 40;
   display: inline-grid;
   min-height: 46px;
