@@ -88,7 +88,7 @@ export default async function RankingPage() {
         <PageHero
           title="Ranglijsten"
           subtitle="Zoek een speler op naam of team, of vind je WK-poule. Meedoen kan na login."
-          slime="/assets/hd-ranglijst.webp"
+          slime="/assets/transparant-avatar/wk_slime_700_transparant.webp"
         />
         {lastUpdate ? (
           <p className="text-xs font-semibold text-[var(--muted)]">
