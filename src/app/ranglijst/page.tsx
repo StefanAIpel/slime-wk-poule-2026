@@ -4,7 +4,7 @@ import { PageHero } from "@/components/page-hero";
 import { RankingExplorer, type PlayerRow, type PoolRow } from "@/components/ranking-explorer";
 import { DEMO_PLAYERS, DEMO_POOLS, hasPublicProfile } from "@/lib/demo-leaderboard";
 import { formatAmsterdam } from "@/lib/format";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
 export const revalidate = 30;
 
@@ -18,19 +18,23 @@ type GlobalScoreRow = {
 };
 
 export default async function RankingPage() {
-  const admin = createAdminClient();
-  const [{ data: globalScores }, { data: pools }, { data: members }, { data: allScores }, { data: lastScore }] =
-    await Promise.all([
-      admin
-        .from("scores")
-        .select("user_id,points,exact_scores,correct_results,bonus_points,profiles(nickname,team_name,avatar_key)")
-        .order("points", { ascending: false })
-        .limit(100),
-      admin.from("pools").select("id,name,code"),
-      admin.from("pool_members").select("pool_id,user_id"),
-      admin.from("scores").select("user_id,points"),
-      admin.from("scores").select("updated_at").order("updated_at", { ascending: false }).limit(1).maybeSingle(),
-    ]);
+  const admin = createOptionalAdminClient();
+  const [{ data: globalScores }, { data: pools }, { data: members }, { data: allScores }, { data: lastScore }] = admin
+    ? await Promise.all([
+        admin
+          .from("scores")
+          .select("user_id,points,exact_scores,correct_results,bonus_points,profiles(nickname,team_name,avatar_key)")
+          .order("points", { ascending: false })
+          .order("exact_scores", { ascending: false })
+          .order("correct_results", { ascending: false })
+          .order("bonus_points", { ascending: false })
+          .limit(100),
+        admin.from("pools").select("id,name,code"),
+        admin.from("pool_members").select("pool_id,user_id"),
+        admin.from("scores").select("user_id,points"),
+        admin.from("scores").select("updated_at").order("updated_at", { ascending: false }).limit(1).maybeSingle(),
+      ])
+    : [{ data: [] }, { data: [] }, { data: [] }, { data: [] }, { data: null }];
 
   const lastUpdate = (lastScore as { updated_at: string | null } | null)?.updated_at ?? null;
 

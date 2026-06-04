@@ -596,10 +596,11 @@ export async function savePredictions(formData: FormData) {
     }
 
     let champion: string | null = null;
+    let finalists: string[] = [];
     if (canEditLate) {
       // Wijzigbaar t/m 28 juni 21:00.
       champion = cleanText(formData.get("champion_code"), 3).toUpperCase() || null;
-      const finalists = Array.from(new Set(formData.getAll("finalists").map(String).filter(Boolean))).slice(0, 2);
+      finalists = Array.from(new Set(formData.getAll("finalists").map(String).filter(Boolean))).slice(0, 2);
       special.champion_code = champion;
       special.finalists = finalists;
       special.penalty_shootouts_ko = clampInt(formData.get("penalty_shootouts_ko"), 4, 0, 20);
@@ -612,11 +613,18 @@ export async function savePredictions(formData: FormData) {
     const { error } = await supabase.from("special_predictions").upsert(special);
     if (error) throw new Error(error.message);
 
-    if (canEditLate && champion) {
+    if (canEditLate) {
+      const { error: finalistsError } = await supabase.from("bracket_predictions").upsert({
+        user_id: user.id,
+        stage_key: "finalists",
+        team_codes: finalists,
+      });
+      if (finalistsError) throw new Error(finalistsError.message);
+
       const { error: championError } = await supabase.from("bracket_predictions").upsert({
         user_id: user.id,
         stage_key: "champion",
-        team_codes: [champion],
+        team_codes: champion ? [champion] : [],
       });
       if (championError) throw new Error(championError.message);
     }

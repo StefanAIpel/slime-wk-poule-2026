@@ -12,7 +12,7 @@ import { UpcomingMatches } from "@/components/upcoming-matches";
 import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
 import { DEMO_PLAYERS, hasPublicProfile } from "@/lib/demo-leaderboard";
 import { displayName } from "@/lib/format";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createOptionalAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 type HomeMembership = {
@@ -38,12 +38,14 @@ export default async function Home({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const admin = createAdminClient();
-    const { data: publicLeaderboard } = await admin
-      .from("scores")
-      .select("points,profiles(nickname,team_name)")
-      .order("points", { ascending: false })
-      .limit(3);
+    const admin = createOptionalAdminClient();
+    const { data: publicLeaderboard } = admin
+      ? await admin
+          .from("scores")
+          .select("points,profiles(nickname,team_name)")
+          .order("points", { ascending: false })
+          .limit(3)
+      : { data: [] };
 
     return (
       <PublicHome

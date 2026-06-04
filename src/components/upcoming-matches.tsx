@@ -1,7 +1,7 @@
 import { CalendarDays, MapPin } from "lucide-react";
 import { TeamFlag } from "@/components/team-flag";
 import { formatAmsterdam, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
 type Row = {
   id: number;
@@ -16,7 +16,9 @@ type Row = {
 
 /** Compact lijstje met de eerstvolgende wedstrijden — ook nuttig zonder login. */
 export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
-  const admin = createAdminClient();
+  const admin = createOptionalAdminClient();
+  if (!admin) return null;
+
   const { data } = await admin
     .from("matches")
     .select(
