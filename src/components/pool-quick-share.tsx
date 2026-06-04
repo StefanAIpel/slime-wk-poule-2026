@@ -3,6 +3,8 @@
 import { Check, Link as LinkIcon, Mail, QrCode, Send } from "lucide-react";
 import { useState } from "react";
 
+import { AppFirstShareLink } from "@/components/app-first-share-link";
+
 /**
  * Compacte icon-only deelrij voor de poule-header. Houdt mobiel alleen de code
  * zichtbaar; de lange link/QR-download zitten in een ingeklapt details-blok.
@@ -62,16 +64,15 @@ export function PoolQuickShare({
 
   return (
     <div className="pool-quick-share" aria-label="Poule delen">
-      <a
+      <AppFirstShareLink
         className="pool-quick-share-button pool-quick-share-whatsapp"
-        href={`https://wa.me/?text=${encodedMessage}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Deel via WhatsApp"
+        appHref={`whatsapp://send?text=${encodedMessage}`}
+        webHref={`https://wa.me/?text=${encodedMessage}`}
+        label="Deel via WhatsApp"
         title="Deel via WhatsApp"
       >
         <Send aria-hidden="true" className="size-4" />
-      </a>
+      </AppFirstShareLink>
       <button
         className="pool-quick-share-button pool-quick-share-copy"
         type="button"
