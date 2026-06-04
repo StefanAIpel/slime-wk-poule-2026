@@ -21,18 +21,20 @@ test("FrontPage has email-password login as the primary returning-player flow", 
 });
 
 test("registration page is honest that account details are chosen before email confirmation", () => {
-  assert.doesNotMatch(aanmeldenPage, /geen wachtwoord nodig|korte code|plak de code/i);
+  assert.doesNotMatch(aanmeldenPage, /geen wachtwoord nodig|zonder wachtwoordgedoe/i);
   assert.match(aanmeldenPage, /naam, teamnaam en wachtwoord/i);
   assert.match(aanmeldenPage, /registratiemail/i);
   assert.match(aanmeldenPage, /initialMode=\"register\"/);
 });
 
-test("registration email template is SlimeScore-branded confirmation, not a login link", () => {
-  assert.doesNotMatch(authEmailTemplate, /inlogcode|Code uit je mail|zonder wachtwoordgedoe|Open SlimeScore|inloglink/i);
+test("registration email template is SlimeScore-branded and supports code-first confirmation on every device", () => {
+  assert.doesNotMatch(authEmailTemplate, /inlogcode|zonder wachtwoordgedoe|Open SlimeScore|inloglink/i);
   assert.match(authEmailTemplate, /SlimeScore\.com/);
   assert.match(authEmailTemplate, /Bevestig je registratie/);
   assert.match(authEmailTemplate, /WK 2026-poule/);
+  assert.match(authEmailTemplate, /{{ \.Token }}/);
   assert.match(authEmailTemplate, /{{ \.ConfirmationURL }}/);
+  assert.match(authEmailTemplate, /Code uit de mail/);
 });
 
 test("new players enter profile, password and legal acceptance before confirmation mail", () => {
@@ -73,10 +75,13 @@ test("homepage salvages verified signups that arrive already logged in without a
   assert.match(homePage, /signupProfile\.ok\) redirect\("\/"\)/);
 });
 
-test("unconfirmed players can explicitly resend the registration confirmation mail", () => {
+test("unconfirmed players can explicitly resend and code-confirm the registration mail", () => {
   assert.match(loginForm, /auth\.resend\(\{[\s\S]*type: \"signup\"/);
   assert.match(loginForm, /Bevestigingsmail opnieuw sturen/);
   assert.match(loginForm, /buildEmailRedirectTo\(origin, next\)/);
+  assert.match(loginForm, /verifyOtp\(\{[\s\S]*type: \"signup\"/);
+  assert.match(loginForm, /Registratie bevestigen met mailcode/);
+  assert.match(loginForm, /Gebruik de bevestigingscode uit die mail hieronder/);
 });
 
 test("existing players can reset their password with a copyable email code instead of relying on mobile links", () => {

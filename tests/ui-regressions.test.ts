@@ -31,7 +31,8 @@ test("hero quick-link buttons stay compact but responsive", () => {
 
 test("signup sent state has one clear success headline plus normal-weight next steps and spam hint", () => {
   assert.match(loginForm, /Bevestigingsmail verstuurd naar je e-mail/);
-  assert.match(loginForm, /Open de mail en klik op ‘Bevestig registratie’/);
+  assert.match(loginForm, /Kopieer de bevestigingscode uit de mail en plak die hieronder/);
+  assert.match(loginForm, /Registratie bevestigen met mailcode/);
   assert.match(loginForm, /Mail niet ontvangen\? Check je spambox of probeer opnieuw\./);
   assert.doesNotMatch(loginForm, /Open de inloglink|Registratielink verstuurd/i);
 });

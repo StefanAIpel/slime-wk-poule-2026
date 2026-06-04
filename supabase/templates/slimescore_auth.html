@@ -29,12 +29,22 @@
                   Bevestig je registratie ⚽
                 </h1>
                 <p style="margin:0 0 16px;color:#d8efff;font-size:16px;line-height:1.6;font-weight:700;">
-                  Je account staat klaar. Klik op de knop hieronder om je e-mailadres te bevestigen. Daarna kun je inloggen met je e-mail en wachtwoord en meteen je WK-voorspellingen invullen.
+                  Je account staat klaar. Gebruik de code hieronder in SlimeScore om je e-mailadres te bevestigen. De knop blijft als fallback bestaan.
+                </p>
+
+                <p style="margin:18px 0 8px;color:#b9d8ff;font-size:13px;line-height:1.5;font-weight:900;text-align:center;text-transform:uppercase;letter-spacing:0.08em;">
+                  Code uit de mail
+                </p>
+                <p style="margin:0 auto 22px;max-width:260px;background:#ffffff;color:#081634;border:3px solid #15a35b;border-radius:18px;padding:16px 20px;text-align:center;font-size:34px;line-height:1;font-weight:900;letter-spacing:0.18em;">
+                  {{ .Token }}
+                </p>
+                <p style="margin:0 0 16px;color:#d8efff;font-size:14px;line-height:1.55;font-weight:700;text-align:center;">
+                  Kopieer/plak deze code in de app. Dit werkt stabiel op mobiel, desktop, tablets en in-app browsers.
                 </p>
 
                 <p style="margin:26px 0;text-align:center;">
                   <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#f26a1b;color:#ffffff;text-decoration:none;font-weight:900;font-size:18px;padding:16px 28px;border-radius:999px;box-shadow:0 10px 22px rgba(242,106,27,0.35);">
-                    Bevestig registratie
+                    Bevestig via link
                   </a>
                 </p>
 

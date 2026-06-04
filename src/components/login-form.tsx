@@ -91,6 +91,7 @@ export function LoginForm({
   const [teamName, setTeamName] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [code, setCode] = useState("");
+  const [signupCode, setSignupCode] = useState("");
   const [resetCode, setResetCode] = useState("");
   const [resetNewPassword, setResetNewPassword] = useState("");
   const [resetPasswordConfirm, setResetPasswordConfirm] = useState("");
@@ -98,6 +99,7 @@ export function LoginForm({
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const [resendSubmitting, setResendSubmitting] = useState(false);
+  const [signupSubmitting, setSignupSubmitting] = useState(false);
   const [resetSubmitting, setResetSubmitting] = useState(false);
   const surfaceClass = surface === "inline" ? "grid gap-3" : "panel grid gap-3 p-4";
 
@@ -167,7 +169,7 @@ export function LoginForm({
     if (error) {
       const errorMessage = error.message.toLowerCase();
       if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
-        setMessage("Je hebt net al een bevestigingsmail aangevraagd. Wacht ongeveer 1 minuut en probeer daarna opnieuw.");
+        setMessage("Je hebt net al een bevestigingsmail aangevraagd. Gebruik de bevestigingscode uit die mail hieronder, of wacht ongeveer 1 minuut en stuur opnieuw.");
       } else {
         setMessage("Opnieuw sturen lukte niet. Controleer je e-mailadres of probeer straks opnieuw.");
       }
@@ -245,6 +247,37 @@ export function LoginForm({
     setMessage("Wachtwoord opgeslagen. Je scorekaart wordt geopend.");
     window.setTimeout(() => {
       window.location.href = "/?login=wachtwoord";
+    }, 700);
+  }
+
+  async function onSignupCodeSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSignupSubmitting(true);
+    setMessage("Bevestigingscode wordt gecontroleerd…");
+
+    const normalizedCode = signupCode.trim().replace(/\s+/g, "");
+    if (normalizedCode.length < 6) {
+      setSignupSubmitting(false);
+      setMessage("Vul de bevestigingscode uit de mail in.");
+      return;
+    }
+
+    const supabase = createClient();
+    const { error } = await supabase.auth.verifyOtp({
+      email: email.trim(),
+      token: normalizedCode,
+      type: "signup",
+    });
+    if (error) {
+      setSignupSubmitting(false);
+      setMessage("Die bevestigingscode klopt niet of is verlopen. Stuur eventueel een nieuwe bevestigingsmail.");
+      return;
+    }
+
+    rememberCurrentEmail();
+    setMessage("Registratie bevestigd. Je scorekaart wordt geopend.");
+    window.setTimeout(() => {
+      window.location.href = "/?login=registratie";
     }, 700);
   }
 
@@ -327,7 +360,9 @@ export function LoginForm({
       setStatus("error");
       const errorMessage = error.message.toLowerCase();
       if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
-        setMessage("Je hebt net al een bevestigingsmail aangevraagd. Wacht ongeveer 1 minuut en probeer het daarna opnieuw.");
+        rememberCurrentEmail();
+        setStatus("sent");
+        setMessage("Je hebt net al een bevestigingsmail aangevraagd. Gebruik de bevestigingscode uit die mail hieronder, of wacht ongeveer 1 minuut en stuur opnieuw.");
       } else if (errorMessage.includes("already registered") || errorMessage.includes("already exists") || errorMessage.includes("user already")) {
         setMessage("Dit e-mailadres bestaat al. Log in of gebruik ‘Wachtwoord vergeten?’. ");
       } else {
@@ -402,7 +437,7 @@ export function LoginForm({
         <p className="text-sm font-medium leading-6 text-[#0f5132]">
           {isResetMail
             ? "Kopieer de code uit de mail en kies hieronder je nieuwe wachtwoord. De knop in de mail blijft als fallback bestaan."
-            : "Open de mail en klik op ‘Bevestig registratie’. Daarna kun je inloggen met je e-mail en wachtwoord."}
+            : "Kopieer de bevestigingscode uit de mail en plak die hieronder. De knop in de mail blijft als fallback bestaan."}
         </p>
         <p aria-live="polite" className="text-sm font-medium leading-5 text-[#0f5132]">
           {message || "Mail niet ontvangen? Check je spambox of probeer opnieuw."}
@@ -458,9 +493,27 @@ export function LoginForm({
             </button>
           </form>
         ) : (
-          <button className="button-secondary w-full" type="button" onClick={onResendSignupConfirmation} disabled={resendSubmitting}>
-            {resendSubmitting ? "Opnieuw sturen…" : "Bevestigingsmail opnieuw sturen"}
-          </button>
+          <form method="post" onSubmit={onSignupCodeSubmit} className="grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label="Registratie bevestigen met mailcode">
+            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+              Code uit de mail
+              <input
+                className="field text-center text-lg font-black tracking-[0.3em]"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                required
+                value={signupCode}
+                onChange={(event) => setSignupCode(event.target.value)}
+                placeholder="123456"
+              />
+            </label>
+            <button className="button-primary w-full" type="submit" disabled={signupSubmitting}>
+              <Check aria-hidden="true" className="size-5" />
+              {signupSubmitting ? "Bevestigen…" : "Registratie bevestigen"}
+            </button>
+            <button className="button-secondary w-full" type="button" onClick={onResendSignupConfirmation} disabled={resendSubmitting || signupSubmitting}>
+              {resendSubmitting ? "Opnieuw sturen…" : "Bevestigingsmail opnieuw sturen"}
+            </button>
+          </form>
         )}
 
         <button className="text-sm font-bold text-[#0e7a44] underline" type="button" onClick={() => { setStatus("idle"); setMessage(""); }}>
