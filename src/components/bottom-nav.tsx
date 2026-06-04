@@ -6,6 +6,7 @@ type BottomNavProps = {
   className?: string;
 };
 
-export function BottomNav(_props: BottomNavProps) {
+export function BottomNav(props: BottomNavProps) {
+  void props;
   return null;
 }

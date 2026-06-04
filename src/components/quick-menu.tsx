@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, ClipboardList, Home, ListChecks, Menu, Trophy, UserCog, Users, X } from "lucide-react";
+import { CalendarDays, ClipboardList, Home, ListChecks, LogOut, Menu, Trophy, UserCog, Users, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -14,7 +14,7 @@ const publicLinks = [
 ];
 
 const privateLinks = [
-  { href: "/voorspellingen", label: "WK-poule invullen / wijzigen", icon: ClipboardList },
+  { href: "/voorspellingen", label: "Voorspellen", icon: ClipboardList },
   { href: "/poules", label: "WK-poules", icon: Users },
   { href: "/account", label: "Mijn account", icon: UserCog },
 ];
@@ -65,7 +65,7 @@ export function QuickMenu() {
     };
   }, [open]);
 
-  const links = loggedIn ? [...publicLinks, ...privateLinks] : publicLinks;
+  const links = loggedIn ? [publicLinks[0], privateLinks[0], ...publicLinks.slice(1), ...privateLinks.slice(1)] : publicLinks;
 
   return (
     <>
@@ -110,6 +110,14 @@ export function QuickMenu() {
                   </Link>
                 );
               })}
+              {loggedIn ? (
+                <form className="quick-menu-form" action="/logout" method="post">
+                  <button className="quick-menu-link quick-menu-logout" type="submit">
+                    <LogOut aria-hidden="true" className="size-5" />
+                    <span>Uitloggen</span>
+                  </button>
+                </form>
+              ) : null}
               {!loggedIn ? (
                 <Link className="quick-menu-link" href="/aanmelden" onClick={() => setOpen(false)}>
                   <Users aria-hidden="true" className="size-5" />

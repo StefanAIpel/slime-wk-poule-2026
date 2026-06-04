@@ -298,18 +298,20 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             <span>Canada</span>
             <span>Mexico</span>
           </div>
-          <h1 className="mt-4 text-[1.42rem] font-bold leading-[1.15] text-white sm:text-[1.78rem] md:text-[2.25rem]">
-            Gratis WK 2026-poule voor vrienden en familie
-          </h1>
-          <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-blue-50 sm:text-base md:text-lg">
-            Voorspel alle WK 2026-wedstrijden, maak je eigen WK-poule en volg live wie er wint.
-            Eén keer invullen, geen advertenties, geen cookiegedoe.
-          </p>
-          <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
-            <a href="/aanmelden" className="button-primary hero-primary-cta">
-              <Trophy aria-hidden="true" className="size-5" />
-              Gratis meedoen
-            </a>
+          <div className="hero-home-title-block">
+            <h1 className="mt-4 text-[1.42rem] font-bold leading-[1.15] text-white sm:text-[1.78rem] md:text-[2.25rem]">
+              Gratis WK 2026-poule voor vrienden en familie
+            </h1>
+            <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-blue-50 sm:text-base md:text-lg">
+              Voorspel alle WK 2026-wedstrijden, maak je eigen WK-poule en volg live wie er wint.
+              Eén keer invullen, geen advertenties, geen cookiegedoe.
+            </p>
+            <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
+              <a href="/aanmelden" className="button-primary hero-primary-cta">
+                <Trophy aria-hidden="true" className="size-5" />
+                Gratis meedoen
+              </a>
+            </div>
           </div>
         </div>
         <div className="hero-bottom-links" aria-label="Snelle links">
@@ -357,7 +359,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           </div>
         </section>
 
-        <section id="login" className="public-login-panel grid gap-4 p-4 sm:p-5 md:sticky md:top-4">
+        <section id="login" className="public-login-panel grid gap-3 p-3 sm:gap-4 sm:p-5 md:sticky md:top-4">
           {authError ? (
             <div className="rounded-xl border border-red-200 bg-red-50 p-4 font-bold text-red-800">
               Deze bevestigingslink is verlopen. Vraag een nieuwe aan.
