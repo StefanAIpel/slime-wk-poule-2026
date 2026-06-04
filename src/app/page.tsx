@@ -1,4 +1,4 @@
-import { CalendarDays, ClipboardList, ListChecks, Mail, MousePointerClick, Trophy, Users } from "lucide-react";
+import { CalendarDays, ClipboardList, KeyRound, ListChecks, Mail, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
@@ -209,9 +209,9 @@ export default async function Home({
 }
 
 const howItWorks = [
-  { icon: Mail, title: "Vul je e-mail in", text: "Geen wachtwoord nodig." },
-  { icon: MousePointerClick, title: "Open de mail-link", text: "Je bent meteen ingelogd." },
-  { icon: ClipboardList, title: "Voorspel in één keer", text: "Daarna geen dagelijks gedoe." },
+  { icon: Mail, title: "Registreer via mail-link", text: "Eerst veilig je e-mail bevestigen." },
+  { icon: KeyRound, title: "Kies naam en wachtwoord", text: "Akkoord met voorwaarden en privacy." },
+  { icon: ClipboardList, title: "Daarna direct inloggen", text: "Op de FrontPage met mail en wachtwoord." },
 ];
 
 function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboard: HomeLeaderboardRow[] }) {
@@ -328,7 +328,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             <div className="relative z-[1]">
               <p className="text-2xl font-black leading-tight text-[#081634]">Maak je scorekaart.</p>
               <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
-                E-mailadres invullen, link openen, naam en teamnaam kiezen.
+                Registreren via mail-link, daarna naam en wachtwoord kiezen. Terugkomen doe je hier met mail + wachtwoord.
               </p>
             </div>
             <div className="score-podium relative z-[1]" aria-hidden="true">

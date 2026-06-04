@@ -590,18 +590,18 @@ textarea {
 
 .quick-menu-button {
   position: fixed;
-  top: 16px;
+  top: max(24px, calc(env(safe-area-inset-top) + 10px));
   right: 14px;
   z-index: 40;
   display: inline-grid;
   min-height: 46px;
   min-width: 46px;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(255, 176, 0, 0.98), rgba(255, 122, 0, 0.98) 58%, rgba(225, 38, 47, 0.98));
+  background: linear-gradient(135deg, #2bc35f 0%, var(--green) 58%, #006847 100%);
   color: white;
-  box-shadow: 0 14px 28px rgba(255, 122, 0, 0.32);
+  box-shadow: 0 14px 28px rgba(18, 143, 71, 0.34);
 }
 
 .quick-menu-backdrop {

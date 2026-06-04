@@ -4,9 +4,19 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { GroupPredictionCard } from "@/components/group-prediction-card";
 import { PageHero } from "@/components/page-hero";
-import { ENTRY_DEADLINE, groupLetters, hostCities, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
+import { ENTRY_DEADLINE, groupLetters, hostCities, POST_GROUP_DEADLINE } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 import type { MatchWithTeams, Team } from "@/lib/types";
+
+const oranjeStageOptions = [
+  { value: "group", label: "Groepsfase" },
+  { value: "round32", label: "Laatste 32" },
+  { value: "round16", label: "Achtste finale" },
+  { value: "quarterfinal", label: "Kwartfinale" },
+  { value: "semifinal", label: "Halve finale" },
+  { value: "finalists", label: "Finale" },
+  { value: "champion", label: "Wereldkampioen" },
+];
 
 export default async function PredictionsPage({
   searchParams,
@@ -38,7 +48,7 @@ export default async function PredictionsPage({
   const bracketByStage = new Map((bracket ?? []).map((row) => [row.stage_key, new Set(row.team_codes as string[])]));
   const now = new Date();
   const mainOpen = now < ENTRY_DEADLINE;
-  const postGroupOpen = now >= POST_GROUP_WINDOW_START && now < POST_GROUP_DEADLINE;
+  const postGroupOpen = now < POST_GROUP_DEADLINE;
   const groupedMatches = groupBy(matches as MatchWithTeams[] | null, (match) => match.group_letter ?? "?");
   const typedTeams = (teams ?? []) as Team[];
 
@@ -190,7 +200,7 @@ export default async function PredictionsPage({
         <section className="panel p-4">
           <h2 className="text-2xl font-black text-[#081634]">Optionele update na de groepsfase</h2>
           <p className="mt-1 text-sm font-semibold text-[#48617f]">
-            Open van 28 juni 00:00 tot 28 juni 21:00 Nederlandse tijd. Vooraf invullen mag nu al.
+            Aanpasbaar tot en met 28 juni 21:00 Nederlandse tijd. Je mag deze alvast invullen en later bijwerken.
           </p>
           <fieldset className="mt-4 grid gap-3 md:grid-cols-3" disabled={!mainOpen && !postGroupOpen}>
             <NumberField name="penalty_shootouts_ko" label="Penaltyseries in knock-outfase" value={special?.penalty_shootouts_ko ?? 4} min={0} max={20} />
@@ -202,6 +212,28 @@ export default async function PredictionsPage({
                 {typedTeams.map((team) => (
                   <option key={team.code} value={team.code}>
                     {team.name_nl}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-2 text-sm font-black text-[#081634]">
+              Land met meeste goals
+              <select className="field" name="team_most_goals_code" defaultValue={special?.team_most_goals_code ?? ""}>
+                <option value="">Kies land</option>
+                {typedTeams.map((team) => (
+                  <option key={team.code} value={team.code}>
+                    {team.name_nl}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-2 text-sm font-black text-[#081634]">
+              Hoe ver komt Oranje?
+              <select className="field" name="oranje_stage" defaultValue={special?.oranje_stage ?? ""}>
+                <option value="">Kies ronde</option>
+                {oranjeStageOptions.map((stage) => (
+                  <option key={stage.value} value={stage.value}>
+                    {stage.label}
                   </option>
                 ))}
               </select>

@@ -16,8 +16,8 @@ export const SITE_URL = "https://slimescore.com";
 export const SITE_URL_APP = "https://slimescore.app";
 export const SITE_NAME = "Slime Score";
 
-/** Afzender van de inlog-/systeemmails (Cloudflare Email Routing). */
-export const MAIL_FROM = "noreply@slimesports.com";
+/** Afzender van de inlog-/systeemmails. */
+export const MAIL_FROM = "noreply@slimescore.com";
 /** Contactadres voor vragen, privacy en account-verzoeken. */
 export const CONTACT_EMAIL = "hallo@slimescore.com";
 
@@ -35,6 +35,8 @@ export const scoringRules = [
   { label: "Topscorer goed", points: specialScoring.topScorer, note: "Gedeeld telt ook" },
   { label: "Totaal goals exact", points: specialScoring.totalGoalsExact, note: "Dichtbij levert minder op" },
   { label: "Bonusstat exact", points: specialScoring.exactStat, note: "Dichtbij levert minder op" },
+  { label: "Land met meeste goals goed", points: specialScoring.exactStat, note: "Tot 28 juni aanpasbaar" },
+  { label: "Oranje-ronde goed", points: specialScoring.exactStat, note: "Tot 28 juni aanpasbaar" },
 ];
 
 export const stageLabels: Record<string, string> = {

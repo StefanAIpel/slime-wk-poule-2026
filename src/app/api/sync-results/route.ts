@@ -34,6 +34,8 @@ type FactUpdate = {
   penalty_shootouts_ko?: number;
   own_goals_ko?: number;
   cards_ko_team_code?: string;
+  team_most_goals_code?: string;
+  oranje_stage?: string;
 };
 
 type SyncBody = {
@@ -70,6 +72,8 @@ type SpecialPrediction = {
   penalty_shootouts_ko: number | null;
   own_goals_ko: number | null;
   cards_ko_team_code: string | null;
+  team_most_goals_code: string | null;
+  oranje_stage: string | null;
 };
 
 type TournamentFacts = {
@@ -83,6 +87,8 @@ type TournamentFacts = {
   penalty_shootouts_ko: number | null;
   own_goals_ko: number | null;
   cards_ko_team_code: string | null;
+  team_most_goals_code: string | null;
+  oranje_stage: string | null;
 };
 
 type ScoreTotal = {
@@ -162,6 +168,8 @@ export async function POST(request: NextRequest) {
       penalty_shootouts_ko?: number;
       own_goals_ko?: number;
       cards_ko_team_code?: string;
+      team_most_goals_code?: string;
+      oranje_stage?: string;
     } = { id: true };
 
     if (topScorers) factRow.top_scorers = topScorers.filter(Boolean);
@@ -174,6 +182,8 @@ export async function POST(request: NextRequest) {
     if (body.facts.penalty_shootouts_ko !== undefined) factRow.penalty_shootouts_ko = body.facts.penalty_shootouts_ko;
     if (body.facts.own_goals_ko !== undefined) factRow.own_goals_ko = body.facts.own_goals_ko;
     if (body.facts.cards_ko_team_code !== undefined) factRow.cards_ko_team_code = body.facts.cards_ko_team_code.toUpperCase();
+    if (body.facts.team_most_goals_code !== undefined) factRow.team_most_goals_code = body.facts.team_most_goals_code.toUpperCase();
+    if (body.facts.oranje_stage !== undefined) factRow.oranje_stage = body.facts.oranje_stage;
 
     const { error } = await admin.from("tournament_facts").upsert(factRow);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -229,7 +239,7 @@ async function recalculateScores() {
       admin.from("stage_results").select("stage_key,team_codes"),
       admin
         .from("special_predictions")
-        .select("user_id,top_scorer,total_goals,group_zero_zero_count,total_red_cards,total_corners,fastest_goal_minute,host_city_most_goals,penalty_shootouts_ko,own_goals_ko,cards_ko_team_code"),
+        .select("user_id,top_scorer,total_goals,group_zero_zero_count,total_red_cards,total_corners,fastest_goal_minute,host_city_most_goals,penalty_shootouts_ko,own_goals_ko,cards_ko_team_code,team_most_goals_code,oranje_stage"),
       admin.from("tournament_facts").select("*").eq("id", true).maybeSingle(),
     ]);
 
@@ -263,6 +273,8 @@ async function recalculateScores() {
       addBonus(current, scoreCloseNumber(prediction.penalty_shootouts_ko, actualFacts.penalty_shootouts_ko));
       addBonus(current, scoreCloseNumber(prediction.own_goals_ko, actualFacts.own_goals_ko));
       addBonus(current, scoreTextPrediction(prediction.cards_ko_team_code, actualFacts.cards_ko_team_code ? [actualFacts.cards_ko_team_code] : [], specialScoring.exactStat));
+      addBonus(current, scoreTextPrediction(prediction.team_most_goals_code, actualFacts.team_most_goals_code ? [actualFacts.team_most_goals_code] : [], specialScoring.exactStat));
+      addBonus(current, scoreTextPrediction(prediction.oranje_stage, actualFacts.oranje_stage ? [actualFacts.oranje_stage] : [], specialScoring.exactStat));
       totals.set(prediction.user_id, current);
     }
   }

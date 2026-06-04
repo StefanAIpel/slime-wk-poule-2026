@@ -12,14 +12,22 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#ff7a00",
     icons: [
       {
-        src: "/icon.png",
+        src: "/icons/slimescore-app-icon-v2-512.png",
         sizes: "512x512",
         type: "image/png",
+        purpose: "any",
       },
       {
-        src: "/apple-icon.png",
+        src: "/icons/slimescore-app-icon-v2-192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/slimescore-apple-touch-icon-v2-180.png",
         sizes: "180x180",
         type: "image/png",
+        purpose: "any",
       },
     ],
   };

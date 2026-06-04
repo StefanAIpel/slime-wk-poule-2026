@@ -3,7 +3,7 @@
 import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
+import { ENTRY_DEADLINE, POST_GROUP_DEADLINE } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -49,9 +49,21 @@ export async function saveProfile(formData: FormData) {
   const admin = createAdminClient();
   const nickname = cleanText(formData.get("nickname"), 24);
   const teamName = cleanText(formData.get("team_name"), 28);
+  const password = String(formData.get("password") ?? "");
+  const passwordConfirm = String(formData.get("password_confirm") ?? "");
+  const acceptedTerms = formData.get("terms") === "on";
 
   if (nickname.length < 2 || teamName.length < 2) {
     redirect("/?profiel=te-kort");
+  }
+  if (password.length < 8) {
+    redirect("/?profiel=wachtwoord");
+  }
+  if (password !== passwordConfirm) {
+    redirect("/?profiel=wachtwoord-match");
+  }
+  if (!acceptedTerms) {
+    redirect("/?profiel=akkoord");
   }
   if (reservedNames.includes(nickname.toLowerCase())) {
     redirect("/?profiel=gereserveerd");
@@ -68,10 +80,18 @@ export async function saveProfile(formData: FormData) {
     redirect("/?profiel=bezet");
   }
 
+  const { error: passwordError } = await supabase.auth.updateUser({ password });
+  if (passwordError) {
+    redirect("/?profiel=wachtwoord");
+  }
+
+  const acceptedAt = new Date().toISOString();
   const { error } = await supabase.from("profiles").upsert({
     id: user.id,
     nickname,
     team_name: teamName,
+    terms_accepted_at: acceptedAt,
+    privacy_accepted_at: acceptedAt,
   });
 
   if (error) throw new Error(error.message);
@@ -252,7 +272,7 @@ export async function savePredictions(formData: FormData) {
   const { supabase, user } = await requireUser();
   const now = new Date();
   const canEditMain = now < ENTRY_DEADLINE;
-  const canEditPostGroup = now >= POST_GROUP_WINDOW_START && now < POST_GROUP_DEADLINE;
+  const canEditPostGroup = now < POST_GROUP_DEADLINE;
 
   const { data: matches, error: matchError } = await supabase
     .from("matches")
@@ -329,6 +349,8 @@ export async function savePredictions(formData: FormData) {
       penalty_shootouts_ko: clampInt(formData.get("penalty_shootouts_ko"), 4, 0, 20),
       own_goals_ko: clampInt(formData.get("own_goals_ko"), 2, 0, 20),
       cards_ko_team_code: cleanText(formData.get("cards_ko_team_code"), 3).toUpperCase() || null,
+      team_most_goals_code: cleanText(formData.get("team_most_goals_code"), 3).toUpperCase() || null,
+      oranje_stage: cleanText(formData.get("oranje_stage"), 20) || null,
       post_group_updated_at: canEditPostGroup ? new Date().toISOString() : null,
     };
 

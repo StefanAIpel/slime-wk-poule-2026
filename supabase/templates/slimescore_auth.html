@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Je Slime Score inloglink</title>
+  </head>
+  <body style="margin:0;background:#e9f6ff;font-family:Inter,Arial,sans-serif;color:#081634;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">
+      Open je eenmalige Slime Score inloglink. Geen wachtwoord nodig.
+    </div>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#e9f6ff;padding:24px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#ffffff;border:3px solid #081634;border-radius:28px;box-shadow:0 10px 0 #081634;overflow:hidden;">
+            <tr>
+              <td style="background:#7cf26d;padding:22px 24px;border-bottom:3px solid #081634;">
+                <div style="font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#064ed6;">Slime Score</div>
+                <h1 style="margin:8px 0 0;font-size:28px;line-height:1.1;color:#081634;">Je inloglink staat klaar ⚽</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:26px 24px 8px;">
+                <p style="margin:0 0 16px;font-size:16px;line-height:1.55;">Klik op de knop hieronder om in te loggen bij Slime Score. De link is eenmalig en verloopt automatisch.</p>
+                <p style="margin:24px 0;text-align:center;">
+                  <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#064ed6;color:#ffffff;text-decoration:none;font-weight:900;font-size:17px;padding:15px 24px;border-radius:999px;border:3px solid #081634;box-shadow:0 5px 0 #081634;">Inloggen bij Slime Score</a>
+                </p>
+                <p style="margin:0 0 16px;font-size:14px;line-height:1.55;color:#174176;">Werkt de knop niet? Kopieer deze link naar je browser:</p>
+                <p style="word-break:break-all;background:#f3f8ff;border:2px solid #d5e8ff;border-radius:14px;padding:12px;font-size:12px;line-height:1.45;color:#174176;">{{ .ConfirmationURL }}</p>
+                <p style="margin:18px 0 0;font-size:14px;line-height:1.55;color:#174176;">Je kunt ook deze code gebruiken als de app daarom vraagt: <strong style="color:#081634;">{{ .Token }}</strong></p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:14px 24px 24px;">
+                <p style="margin:0;font-size:13px;line-height:1.5;color:#52627a;">Heb jij dit niet aangevraagd? Dan kun je deze mail negeren. Je account blijft veilig.</p>
+              </td>
+            </tr>
+          </table>
+          <p style="max-width:560px;margin:18px auto 0;font-size:12px;line-height:1.5;color:#52627a;text-align:center;">Slime Score · WK-poule zonder wachtwoordgedoe · <a href="https://slimescore.com" style="color:#064ed6;">slimescore.com</a></p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

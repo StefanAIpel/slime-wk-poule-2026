@@ -19,6 +19,9 @@ const geistMono = Geist_Mono({
 const description =
   "Gratis Nederlandse WK 2026-poule. Eén keer invullen, maak een poule met vrienden en familie en zie wie er wint. Jouw data privé.";
 
+const appIcon = "/icons/slimescore-app-icon-v2-512.png";
+const appleTouchIcon = "/icons/slimescore-apple-touch-icon-v2-180.png";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -32,6 +35,13 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: SITE_NAME,
   },
+  icons: {
+    icon: [
+      { url: appIcon, sizes: "512x512", type: "image/png" },
+      { url: "/icons/slimescore-app-icon-v2-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: appleTouchIcon, sizes: "180x180", type: "image/png" }],
+  },
   manifest: "/manifest.webmanifest",
   alternates: {
     canonical: SITE_URL,
@@ -43,13 +53,13 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: "Slime Score · Gratis WK 2026-poule",
     description,
-    images: [{ url: "/icon.png", width: 512, height: 512, alt: "Slime Score" }],
+    images: [{ url: appIcon, width: 512, height: 512, alt: "Slime Score app icon" }],
   },
   twitter: {
     card: "summary",
     title: "Slime Score · Gratis WK 2026-poule",
     description,
-    images: ["/icon.png"],
+    images: [appIcon],
   },
 };
 
