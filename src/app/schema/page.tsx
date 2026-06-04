@@ -19,6 +19,7 @@ export default async function SchedulePage() {
   const matches = (data ?? []) as MatchWithTeams[];
   const scheduleMatches: ScheduleMatch[] = matches.map((match) => ({
     id: match.id,
+    stage: match.stage ?? null,
     group: match.group_letter ?? null,
     homeCode: match.home_code,
     homeName: match.home?.name_nl ?? null,
@@ -26,6 +27,10 @@ export default async function SchedulePage() {
     awayName: match.away?.name_nl ?? null,
     startsAt: match.starts_at ?? null,
     venue: match.venue ?? null,
+    status: match.status ?? "scheduled",
+    homeScore: match.home_score ?? null,
+    awayScore: match.away_score ?? null,
+    winnerCode: match.winner_code ?? null,
   }));
 
   return (
@@ -34,7 +39,7 @@ export default async function SchedulePage() {
         <Brand />
         <PageHero
           title="Speelschema"
-          subtitle="Filter op groep, team of datum en vind elke wedstrijd in seconden — met Nederlandse tijden."
+          subtitle="Wedstrijden, groepsstanden en knock-out route in één mobiel overzicht — met Nederlandse tijden."
           slime="/assets/hd-schema.webp"
         />
       </header>

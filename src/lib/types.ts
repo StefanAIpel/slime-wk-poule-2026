@@ -7,6 +7,7 @@ export type Team = {
 
 export type MatchWithTeams = {
   id: number;
+  stage: string;
   group_letter: string | null;
   starts_at: string | null;
   venue: string;
@@ -15,6 +16,7 @@ export type MatchWithTeams = {
   status: "scheduled" | "live" | "finished";
   home_score: number | null;
   away_score: number | null;
+  winner_code: string | null;
   home?: Team | null;
   away?: Team | null;
 };
