@@ -30,16 +30,38 @@ export function PasswordChangeForm() {
 
     setBusy(true);
     const supabase = createClient();
+
+    // Wijzigen kan alleen met een geldige sessie; zonder sessie stuurt Supabase
+    // de update weg met een vage fout, dus checken we het zelf eerst.
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      setBusy(false);
+      setMessage({ tone: "error", text: "Je sessie is verlopen. Log opnieuw in en probeer het dan nog eens." });
+      return;
+    }
+
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(false);
 
     if (error) {
-      setMessage({ tone: "error", text: "Wijzigen lukte niet. Log eventueel opnieuw in en probeer het nog eens." });
+      // Supabase-foutcodes vertalen naar begrijpelijke meldingen.
+      const raw = `${error.code ?? ""} ${error.message ?? ""}`.toLowerCase();
+      let text = "Wijzigen lukte niet. Probeer het zo nog eens.";
+      if (raw.includes("different") || raw.includes("same_password")) {
+        text = "Je nieuwe wachtwoord moet anders zijn dan je huidige wachtwoord.";
+      } else if (raw.includes("reauthentication") || raw.includes("session")) {
+        text = "Voor de zekerheid is opnieuw inloggen nodig. Log uit en weer in, en wijzig daarna je wachtwoord.";
+      } else if (raw.includes("weak") || raw.includes("at least")) {
+        text = "Kies een sterker wachtwoord (minstens 8 tekens).";
+      }
+      setMessage({ tone: "error", text });
       return;
     }
     setPassword("");
     setConfirm("");
-    setMessage({ tone: "ok", text: "Je wachtwoord is gewijzigd." });
+    setMessage({ tone: "ok", text: "Je wachtwoord is gewijzigd. Je kunt voortaan met dit nieuwe wachtwoord inloggen." });
   }
 
   return (
