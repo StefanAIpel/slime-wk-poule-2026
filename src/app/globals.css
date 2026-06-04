@@ -462,6 +462,28 @@ textarea {
   background: linear-gradient(90deg, var(--blue), var(--green) 52%, var(--red));
 }
 
+.ranking-pager-btn {
+  display: inline-grid;
+  min-height: 34px;
+  min-width: 40px;
+  place-items: center;
+  border: 1px solid rgba(8, 22, 52, 0.1);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--blue-2);
+  cursor: pointer;
+}
+
+.ranking-pager-btn:hover:not(:disabled) {
+  background: #eef3fc;
+}
+
+.ranking-pager-btn:disabled {
+  color: #aeb8c7;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .world-cup-kicker {
   display: flex;
   width: fit-content;
