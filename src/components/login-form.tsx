@@ -48,27 +48,28 @@ function GmailIcon({ className = "size-5" }: { className?: string }) {
 }
 
 function WebmailButton({ provider }: { provider: WebmailProvider }) {
-  function openMail() {
-    if (!provider.appUrl) {
-      window.open(provider.url, "_blank", "noopener,noreferrer");
-      return;
-    }
+  const primaryClass = provider.kind === "gmail" ? "gmail-open-button w-full" : "button-primary w-full";
 
-    const openedAt = Date.now();
-    window.location.href = provider.appUrl;
-
-    window.setTimeout(() => {
-      if (Date.now() - openedAt < 1800) {
-        window.location.href = provider.url;
-      }
-    }, 900);
+  if (provider.appUrl) {
+    return (
+      <div className="grid gap-2">
+        <a className={primaryClass} href={provider.appUrl} target="_blank" rel="noopener noreferrer">
+          {provider.kind === "gmail" ? <GmailIcon /> : <ExternalLink aria-hidden="true" className="size-5" />}
+          {provider.kind === "gmail" ? "Open Gmail-app" : provider.label}
+        </a>
+        <a className="button-secondary w-full" href={provider.url} target="_blank" rel="noopener noreferrer">
+          <ExternalLink aria-hidden="true" className="size-5" />
+          {provider.kind === "gmail" ? "Gmail in browser" : `${provider.label} in browser`}
+        </a>
+      </div>
+    );
   }
 
   return (
-    <button className={provider.kind === "gmail" ? "gmail-open-button w-full" : "button-primary w-full"} type="button" onClick={openMail}>
+    <a className={primaryClass} href={provider.url} target="_blank" rel="noopener noreferrer">
       {provider.kind === "gmail" ? <GmailIcon /> : <ExternalLink aria-hidden="true" className="size-5" />}
       {provider.label}
-    </button>
+    </a>
   );
 }
 
@@ -95,6 +96,7 @@ export function LoginForm({
   const [resetCode, setResetCode] = useState("");
   const [resetNewPassword, setResetNewPassword] = useState("");
   const [resetPasswordConfirm, setResetPasswordConfirm] = useState("");
+  const [resetCodeEntry, setResetCodeEntry] = useState(false);
   const [rememberEmail, setRememberEmail] = useState(true);
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -114,6 +116,7 @@ export function LoginForm({
   function resetMode(nextMode: LoginMode) {
     setMode(nextMode);
     setStatus("idle");
+    setResetCodeEntry(false);
     setMessage("");
   }
 
@@ -127,6 +130,7 @@ export function LoginForm({
 
   async function sendPasswordResetMail() {
     setStatus("loading");
+    setResetCodeEntry(false);
     setMessage("");
 
     const supabase = createClient();
@@ -140,6 +144,7 @@ export function LoginForm({
       if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
         rememberCurrentEmail();
         setStatus("sent");
+        setResetCodeEntry(true);
         setMessage("Je hebt net al een wachtwoordcode aangevraagd. Gebruik de code uit die mail hieronder, of wacht ongeveer 1 minuut en stuur opnieuw.");
       } else {
         setStatus("error");
@@ -150,6 +155,7 @@ export function LoginForm({
 
     rememberCurrentEmail();
     setStatus("sent");
+    setResetCodeEntry(true);
     setMessage("");
   }
 
@@ -193,6 +199,7 @@ export function LoginForm({
     if (error) {
       const errorMessage = error.message.toLowerCase();
       if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
+        setResetCodeEntry(true);
         setMessage("Je hebt net al een wachtwoordcode aangevraagd. Wacht ongeveer 1 minuut en probeer daarna opnieuw.");
       } else {
         setMessage("Wachtwoordcode opnieuw sturen lukte niet. Controleer je e-mailadres of probeer straks opnieuw.");
@@ -200,6 +207,7 @@ export function LoginForm({
       return;
     }
 
+    setResetCodeEntry(true);
     setMessage("Nieuwe wachtwoordcode verstuurd. Check ook je spambox.");
   }
 
@@ -209,6 +217,11 @@ export function LoginForm({
     setMessage("Code wordt gecontroleerd…");
 
     const normalizedCode = resetCode.trim().replace(/\s+/g, "");
+    if (!email.trim()) {
+      setResetSubmitting(false);
+      setMessage("Vul ook het e-mailadres in waarop je de code kreeg.");
+      return;
+    }
     if (normalizedCode.length < 6) {
       setResetSubmitting(false);
       setMessage("Vul de code uit de mail in.");
@@ -425,14 +438,18 @@ export function LoginForm({
     );
   }
 
-  if (status === "sent") {
+  if (status === "sent" || resetCodeEntry) {
     const provider = webmailFor(email);
     const isResetMail = mode === "forgot";
     return (
       <div className={surfaceClass}>
         <div className="flex items-center gap-2 rounded-lg bg-green-50 p-3 font-bold text-[#0f7a39]">
           <Check aria-hidden="true" className="size-5" />
-          {isResetMail ? "Wachtwoordcode verstuurd naar je e-mail" : "Bevestigingsmail verstuurd naar je e-mail"}
+          {isResetMail
+            ? status === "sent"
+              ? "Wachtwoordcode verstuurd naar je e-mail"
+              : "Wachtwoordcode invullen"
+            : "Bevestigingsmail verstuurd naar je e-mail"}
         </div>
         {message ? (
           <p aria-live="polite" className="text-sm font-medium leading-5 text-[#0f5132]">
@@ -443,6 +460,23 @@ export function LoginForm({
 
         {isResetMail ? (
           <form method="post" onSubmit={onResetCodeSubmit} className="grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label="Wachtwoord wijzigen met mailcode">
+            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+              E-mailadres
+              <input
+                aria-label="E-mailadres voor wachtwoordcode"
+                className="field"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="jij@example.nl"
+              />
+            </label>
+            <p className="rounded-lg bg-[#eef6ff] p-2 text-xs font-bold leading-5 text-[#305074]">
+              Je hoeft de mailsessie niet open te houden. Open SlimeScore opnieuw, tik “Ik heb al een wachtwoordcode” en plak deze code.
+            </p>
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
               Code uit de mail
               <input
@@ -513,7 +547,7 @@ export function LoginForm({
           </form>
         )}
 
-        <button className="text-sm font-bold text-[#0e7a44] underline" type="button" onClick={() => { setStatus("idle"); setMessage(""); }}>
+        <button className="text-sm font-bold text-[#0e7a44] underline" type="button" onClick={() => { setStatus("idle"); setResetCodeEntry(false); setMessage(""); }}>
           Ander e-mailadres
         </button>
       </div>
@@ -563,6 +597,18 @@ export function LoginForm({
           <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
             <Mail aria-hidden="true" className="size-5" />
             {status === "loading" ? "Versturen…" : "Stuur wachtwoordcode"}
+          </button>
+          <button
+            className="button-secondary w-full"
+            type="button"
+            onClick={() => {
+              rememberCurrentEmail();
+              setResetCodeEntry(true);
+              setStatus("idle");
+              setMessage("Vul je e-mailadres, de code uit de mail en je nieuwe wachtwoord in. Je hoeft de mailsessie niet open te houden.");
+            }}
+          >
+            Ik heb al een wachtwoordcode
           </button>
           <p aria-live="polite" className={`auth-forgot-helper font-medium ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
             {message || "Nog nooit een wachtwoord gekozen of vergeten? Stuur jezelf een code en kies direct een nieuw wachtwoord."}

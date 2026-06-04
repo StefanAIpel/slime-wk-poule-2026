@@ -99,6 +99,25 @@ test("existing players can reset their password with a copyable email code inste
   assert.match(authRecoveryTemplate, /WK 2026 vriendenpoule/);
 });
 
+test("password recovery survives mobile mail-app roundtrips without the original webview state", () => {
+  assert.match(loginForm, /Ik heb al een wachtwoordcode/);
+  assert.match(loginForm, /setResetCodeEntry\(true\)/);
+  assert.match(loginForm, /status === \"sent\" \|\| resetCodeEntry/);
+  assert.match(loginForm, /aria-label=\"E-mailadres voor wachtwoordcode\"/);
+  assert.match(loginForm, /Je hoeft de mailsessie niet open te houden/);
+  assert.doesNotMatch(loginForm, /window\.location\.href = provider\.(?:appUrl|url)/);
+});
+
+test("webmail buttons open outside the SlimeScore tab instead of replacing the reset form", () => {
+  assert.match(loginForm, /href=\{provider\.appUrl\}/);
+  assert.match(loginForm, /href=\{provider\.url\}/);
+  assert.match(loginForm, /target=\"_blank\"/);
+  assert.match(loginForm, /rel=\"noopener noreferrer\"/);
+  assert.match(loginForm, /Open Gmail-app/);
+  assert.match(loginForm, /Gmail in browser/);
+  assert.match(authRecoveryTemplate, /SlimeScore mag dicht zijn geraakt/);
+});
+
 test("recovery links remain accepted by the auth callback fallback", () => {
   assert.match(finishAuth, /\"recovery\"/);
   assert.match(callbackRoute, /\"recovery\"/);
