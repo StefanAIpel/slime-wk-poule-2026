@@ -13,6 +13,10 @@ export type MatchWithTeams = {
   venue: string;
   home_code: string | null;
   away_code: string | null;
+  // Beschrijvend slot-label voor knock-outwedstrijden zolang het land nog onbekend is
+  // (bv. "Winnaar Groep A" of "Winnaar W73"). Null voor groepswedstrijden.
+  home_label?: string | null;
+  away_label?: string | null;
   status: "scheduled" | "live" | "finished";
   home_score: number | null;
   away_score: number | null;

@@ -11,8 +11,10 @@ export type ScheduleMatch = {
   group: string | null;
   homeCode: string | null;
   homeName: string | null;
+  homeLabel: string | null;
   awayCode: string | null;
   awayName: string | null;
+  awayLabel: string | null;
   startsAt: string | null;
   venue: string | null;
   status: "scheduled" | "live" | "finished";
@@ -41,6 +43,7 @@ const stageLabels: Record<string, string> = {
   round16: "Achtste finales",
   quarterfinal: "Kwartfinales",
   semifinal: "Halve finales",
+  third_place: "Troostfinale",
   final: "Finale",
   finalists: "Finalisten",
   champion: "Wereldkampioen",
@@ -70,6 +73,18 @@ function dateLabel(iso: string | null) {
 
 function hasScore(match: ScheduleMatch) {
   return match.homeScore !== null && match.awayScore !== null;
+}
+
+// Tekst voor een team: echte naam/code als die bekend is, anders het knock-out-slotlabel
+// ("Winnaar Groep A", "Winnaar W73"), met een laatste terugval.
+function homeText(match: ScheduleMatch, short = false) {
+  if (short) return match.homeCode ?? match.homeLabel ?? match.homeName ?? "TBD";
+  return match.homeName ?? match.homeLabel ?? match.homeCode ?? "Nog onbekend";
+}
+
+function awayText(match: ScheduleMatch, short = false) {
+  if (short) return match.awayCode ?? match.awayLabel ?? match.awayName ?? "TBD";
+  return match.awayName ?? match.awayLabel ?? match.awayCode ?? "Nog onbekend";
 }
 
 function stageLabel(stage: string | null, group: string | null) {
@@ -437,7 +452,7 @@ function KnockoutPanel({ matches }: { matches: ScheduleMatch[] }) {
           Knock-outfase
         </h2>
         <p className="mt-2 text-sm font-semibold leading-6 text-blue-100">
-          Zodra de echte knock-outduels bekend zijn, verschijnen ze hier automatisch. Tot die tijd zie je de routekaart.
+          Datum, tijd en stadion staan al vast; de landen verschijnen zodra de groepsfase en knock-outduels gespeeld zijn.
         </p>
       </div>
 
@@ -497,12 +512,12 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
             </span>
           ) : null}
         </div>
-        <div className="schedule-team-grid" aria-label={`${match.homeName ?? match.homeCode} tegen ${match.awayName ?? match.awayCode}`}>
+        <div className="schedule-team-grid" aria-label={`${homeText(match)} tegen ${awayText(match)}`}>
           <div className={match.winnerCode === match.homeCode ? "schedule-team-cell schedule-team-winner" : "schedule-team-cell"}>
             <TeamFlag code={match.homeCode} name={match.homeName} />
             <span className="schedule-team-name">
-              <span className="sm:hidden">{match.homeCode ?? match.homeName ?? "TBD"}</span>
-              <span className="hidden sm:inline">{match.homeName ?? match.homeCode ?? "Nog onbekend"}</span>
+              <span className="sm:hidden">{homeText(match, true)}</span>
+              <span className="hidden sm:inline">{homeText(match)}</span>
             </span>
           </div>
           {hasScore(match) ? (
@@ -515,8 +530,8 @@ function MatchRow({ match }: { match: ScheduleMatch }) {
           <div className={match.winnerCode === match.awayCode ? "schedule-team-cell schedule-team-winner" : "schedule-team-cell"}>
             <TeamFlag code={match.awayCode} name={match.awayName} />
             <span className="schedule-team-name">
-              <span className="sm:hidden">{match.awayCode ?? match.awayName ?? "TBD"}</span>
-              <span className="hidden sm:inline">{match.awayName ?? match.awayCode ?? "Nog onbekend"}</span>
+              <span className="sm:hidden">{awayText(match, true)}</span>
+              <span className="hidden sm:inline">{awayText(match)}</span>
             </span>
           </div>
         </div>

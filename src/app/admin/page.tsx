@@ -21,6 +21,8 @@ type MatchRow = {
   away_score: number | null;
   home_code: string | null;
   away_code: string | null;
+  home_label: string | null;
+  away_label: string | null;
   home: { name_nl: string | null } | null;
   away: { name_nl: string | null } | null;
 };
@@ -66,7 +68,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     admin.from("scores").select("updated_at").order("updated_at", { ascending: false }).limit(1).maybeSingle(),
     admin
       .from("matches")
-      .select("id,starts_at,group_letter,status,home_score,away_score,home_code,away_code,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)")
+      .select("id,starts_at,group_letter,status,home_score,away_score,home_code,away_code,home_label,away_label,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)")
       .order("starts_at")
       .limit(120),
     admin.from("admin_audit_log").select("id,actor_email,action,detail,created_at").order("created_at", { ascending: false }).limit(15),
@@ -128,8 +130,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             <input className="field min-h-10" name="nickname" required minLength={2} maxLength={24} placeholder="Bijv. Fedde" />
           </label>
           <label className="grid gap-1 text-xs font-bold text-[#081634]">
-            Vaste code (optioneel, anders willekeurig)
-            <input className="field min-h-10" name="code" maxLength={16} placeholder="Bijv. fedded10" autoComplete="off" />
+            Vaste code (optioneel, anders willekeurig — min. 8 tekens)
+            <input className="field min-h-10" name="code" minLength={8} maxLength={16} placeholder="Bijv. fedde2026" autoComplete="off" />
           </label>
           <PendingButton className="button-primary min-h-10 px-4" pendingText="Aanmaken…">
             Maak code-account
@@ -160,9 +162,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               <div className="flex items-center gap-2 text-sm">
                 <span className="grid size-5 place-items-center rounded-full bg-[#e7eef8] text-[10px] font-bold text-[var(--blue-2)]">{m.group_letter ?? "KO"}</span>
                 <TeamFlag code={m.home_code} name={m.home?.name_nl} />
-                <span className="font-medium text-[#081634]">{m.home?.name_nl ?? m.home_code}</span>
+                <span className="font-medium text-[#081634]">{m.home?.name_nl ?? m.home_label ?? m.home_code}</span>
                 <span className="text-[var(--muted)]">–</span>
-                <span className="font-medium text-[#081634]">{m.away?.name_nl ?? m.away_code}</span>
+                <span className="font-medium text-[#081634]">{m.away?.name_nl ?? m.away_label ?? m.away_code}</span>
                 <TeamFlag code={m.away_code} name={m.away?.name_nl} />
                 {m.status === "finished" ? <span className="rounded bg-green-100 px-1.5 text-xs font-bold text-green-800">klaar</span> : null}
               </div>

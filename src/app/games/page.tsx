@@ -4,7 +4,7 @@ import { Brand } from "@/components/brand";
 import { GameFrames } from "@/components/game-frames";
 import { SLIME_GAME_URL, SLIME_VOLLEY_URL } from "@/lib/constants";
 
-export const metadata = { title: "Spelletjes" };
+export const metadata = { title: "Spelletjes", alternates: { canonical: "/games" } };
 
 export default async function GamesPage({ searchParams }: { searchParams: Promise<{ game?: string }> }) {
   const params = await searchParams;
