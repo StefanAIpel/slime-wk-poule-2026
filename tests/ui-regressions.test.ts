@@ -20,8 +20,8 @@ const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
 
 test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
-  const heroPrimaryBlock = globalsCss.match(/\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";
-  const mobileHeroBlock = globalsCss.match(/@media \(max-width: 759px\) \{[\s\S]*?\.hero-primary-cta \{[\s\S]*?\}\n\}/)?.[0] ?? "";
+  const heroPrimaryBlock = globalsCss.match(/\.button-primary\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";
+  const mobileHeroBlock = globalsCss.match(/@media \(max-width: 759px\) \{[\s\S]*?\.button-primary\.hero-primary-cta \{[\s\S]*?\}\n\}/)?.[0] ?? "";
   assert.match(heroPrimaryBlock, /width: min\(100%, 260px\);/);
   assert.match(heroPrimaryBlock, /justify-content: center;/);
   assert.match(heroPrimaryBlock, /border-color: rgba\(255, 255, 255, 0\.62\);/);

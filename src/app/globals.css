@@ -745,7 +745,7 @@ textarea {
   position: relative;
 }
 
-.hero-primary-cta {
+.button-primary.hero-primary-cta {
   width: min(100%, 260px);
   min-width: 0;
   justify-content: center;
@@ -765,7 +765,7 @@ textarea {
     transform: translateY(-20px);
   }
 
-  .hero-primary-cta {
+  .button-primary.hero-primary-cta {
     width: min(100%, 180px);
     min-height: 44px;
     padding-inline: 12px;
