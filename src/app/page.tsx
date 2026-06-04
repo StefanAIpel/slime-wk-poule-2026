@@ -197,7 +197,7 @@ export default async function Home({
               <h2 className="text-lg font-bold text-[#081634]">Maak je eigen WK-poule</h2>
             </div>
             <p className="text-sm font-medium leading-6 text-[#48617f]">
-              Start een gratis poule voor vrienden, familie of collega&rsquo;s en nodig ze uit met je poule-link.
+              Start in 2 minuten één of meerdere gratis poules voor vrienden, familie of collega&rsquo;s en deel jouw unieke link in de groepsapp.
             </p>
             <div className="flex flex-col gap-2 sm:flex-row">
               <input
@@ -264,7 +264,7 @@ export default async function Home({
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-medium text-[#46566f]">
-          Gratis · één keer invullen · geen onnodige data · jouw voorspellingen blijven privé.
+          Gratis · 1× invullen, telt in al je groepen · geen wachtwoord · privé
         </p>
       </div>
 
@@ -303,8 +303,8 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
               Gratis WK 2026-poule voor vrienden en familie
             </h1>
             <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-blue-50 sm:text-base md:text-lg">
-              Voorspel alle WK 2026-wedstrijden, maak je eigen WK-poule en volg live wie er wint.
-              Eén keer invullen, geen advertenties, geen cookiegedoe.
+              In tien minuten vul je je voorspellingen in. Daarna doe je het hele WK mee, in zoveel groepen als je wilt.
+              Geen advertenties, geen cookiegedoe.
             </p>
             <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
               <a href="/aanmelden" className="button-primary hero-primary-cta">
@@ -343,7 +343,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
                 </p>
               </div>
               <p className="poule-share-copy-text text-sm font-bold leading-6 text-blue-50">
-                Link ontvangen? Meld je aan en doe mee met je subpoule. Succes!
+                Link gekregen? Aanmelden, 10 minuten invullen, en je doet mee.
               </p>
               <a href="/aanmelden" className="button-primary poule-primary-cta">Start je WK-poule</a>
             </div>
