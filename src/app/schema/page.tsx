@@ -50,7 +50,7 @@ export default async function SchedulePage() {
         <PageHero
           title="Speelschema"
           subtitle="Wedstrijden, groepsstanden en knock-out route in één mobiel overzicht — met Nederlandse tijden."
-          slime="/assets/hd-schema-orange.png"
+          slime="/assets/hd-schema-orange-transparent.png"
           mascotClassName="hero-mascot-field hero-mascot-schema"
         />
       </header>
