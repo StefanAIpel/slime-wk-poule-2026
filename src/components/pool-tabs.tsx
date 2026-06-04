@@ -9,12 +9,16 @@ import { Children, useState } from "react";
  */
 export function PoolTabs({
   tabs,
+  initialId,
   children,
 }: {
   tabs: { id: string; label: string; emoji: string }[];
+  initialId?: string;
   children: React.ReactNode;
 }) {
-  const [active, setActive] = useState(tabs[0]?.id ?? "");
+  const [active, setActive] = useState(
+    initialId && tabs.some((tab) => tab.id === initialId) ? initialId : tabs[0]?.id ?? "",
+  );
   const panels = Children.toArray(children);
   const multiple = tabs.length > 1;
 

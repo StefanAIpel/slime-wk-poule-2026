@@ -5,6 +5,7 @@ import { deleteAccount } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
+import { PasswordChangeForm } from "@/components/password-change-form";
 import { resolveAvatarSrc } from "@/lib/avatars";
 import { APP_VERSION, CONTACT_EMAIL } from "@/lib/constants";
 import { formatAmsterdam } from "@/lib/format";
@@ -101,6 +102,8 @@ export default async function AccountPage({
               Je e-mail is privé en alleen voor inloggen. Andere spelers zien dit niet.
             </p>
           </div>
+
+          <PasswordChangeForm />
 
           <div className="panel grid gap-3 p-5">
             <div className="flex items-center gap-3">

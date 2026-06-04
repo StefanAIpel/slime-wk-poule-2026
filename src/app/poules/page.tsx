@@ -1,10 +1,9 @@
-import { ImagePlus, Megaphone, Palette, RefreshCw, ShieldCheck, Trash2, Users } from "lucide-react";
+import { ImagePlus, Megaphone, Palette, RefreshCw, Trash2 } from "lucide-react";
 import QRCode from "qrcode";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  createPool,
   deletePoolMessage,
-  joinPool,
   postPoolMessage,
   removeMember,
   resetPoolCode,
@@ -15,10 +14,10 @@ import {
 import { Avatar } from "@/components/avatar";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
-import { HeroArt } from "@/components/hero-art";
 import { PendingButton } from "@/components/pending-button";
 import { PoolBanner } from "@/components/pool-banner";
 import { PoolMembers, type MatchLine, type PoolMember } from "@/components/pool-members";
+import { PoolQr } from "@/components/pool-qr";
 import { PoolTabs } from "@/components/pool-tabs";
 import { CopyButton, ShareRow, WhatsappShare } from "@/components/share-button";
 import { ENTRY_DEADLINE, SITE_URL } from "@/lib/constants";
@@ -36,7 +35,7 @@ const poolErrors: Record<string, string> = {
   code: "Die WK-poulecode klopt niet. Controleer de code.",
   rechten: "Je hebt hier geen rechten voor.",
   naam: "Kies een geldige WK-poulenaam (min. 2 tekens).",
-  limiet: "Je hebt het maximum aantal eigen WK-poules bereikt.",
+  limiet: "Je zit al aan het maximum aantal WK-poules (20).",
   kleur: "Kies een geldige kleur.",
   rol: "Die rol kan niet worden ingesteld.",
   "bericht-kort": "Je bericht is te kort (minimaal 10 tekens).",
@@ -86,7 +85,7 @@ type MessageRow = {
 export default async function PoolsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ aangemaakt?: string; joined?: string; fout?: string; bijgewerkt?: string }>;
+  searchParams: Promise<{ aangemaakt?: string; joined?: string; fout?: string; bijgewerkt?: string; pool?: string }>;
 }) {
   const params = await searchParams;
   const supabase = await createClient();
@@ -124,6 +123,9 @@ export default async function PoolsPage({
   const matchInfoById = new Map<number, MatchInfo>();
   const predictionsByUser = new Map<string, PredictionRow[]>();
   const pointsByUser = new Map<string, number>();
+  // Wereldrang = positie in de algemene ranglijst (alle deelnemers), zodat je
+  // in een subpoule meteen ziet hoe iemand er landelijk voor staat.
+  const worldRankByUser = new Map<string, number>();
 
   if (memberIds.length) {
     const [{ data: matchRows }, { data: predictionRows }, { data: scoreRows }] = await Promise.all([
@@ -132,8 +134,19 @@ export default async function PoolsPage({
         .select("id,starts_at,status,home_score,away_score,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)")
         .order("starts_at"),
       admin.from("predictions").select("user_id,match_id,home_score,away_score").in("user_id", memberIds),
-      admin.from("scores").select("user_id,points").in("user_id", memberIds),
+      admin.from("scores").select("user_id,points").order("points", { ascending: false }),
     ]);
+
+    // Competition ranking (1,2,2,4): gelijke punten = gelijke wereldrang.
+    let lastPoints: number | null = null;
+    let lastRank = 0;
+    (scoreRows ?? []).forEach((row, index) => {
+      pointsByUser.set(row.user_id, row.points);
+      const rank = row.points === lastPoints ? lastRank : index + 1;
+      lastPoints = row.points;
+      lastRank = rank;
+      worldRankByUser.set(row.user_id, rank);
+    });
 
     for (const row of (matchRows ?? []) as unknown as Array<{
       id: number;
@@ -157,16 +170,13 @@ export default async function PoolsPage({
     for (const row of (predictionRows ?? []) as PredictionRow[]) {
       predictionsByUser.set(row.user_id, [...(predictionsByUser.get(row.user_id) ?? []), row]);
     }
-    for (const row of (scoreRows ?? []) as Array<{ user_id: string; points: number }>) {
-      pointsByUser.set(row.user_id, row.points);
-    }
   }
 
   const poolMembersById = new Map<string, PoolMember[]>();
   for (const pool of pools) {
     poolMembersById.set(
       pool.id,
-      buildPoolMembers(pool.members, user.id, revealOthers, matchInfoById, predictionsByUser, pointsByUser),
+      buildPoolMembers(pool.members, user.id, revealOthers, matchInfoById, predictionsByUser, pointsByUser, worldRankByUser),
     );
   }
 
@@ -190,17 +200,6 @@ export default async function PoolsPage({
     <main className="page-shell">
       <header className="mb-5 grid gap-4">
         <Brand />
-        <div className="hero-band hero-band-visual">
-          <div className="hero-content">
-            <h1 className="text-2xl font-bold leading-tight text-white md:text-3xl">
-              Speel samen — maak of join je WK-poule
-            </h1>
-            <p className="mt-1 text-sm font-medium leading-6 text-blue-50 md:text-base">
-              Daag vrienden, familie of collega&rsquo;s uit in je WK 2026-poule en strijd om de eerste plek.
-            </p>
-          </div>
-          <HeroArt src="/assets/slime-05-ikea.png" />
-        </div>
       </header>
 
       {params.aangemaakt || params.joined || params.bijgewerkt ? (
@@ -214,45 +213,9 @@ export default async function PoolsPage({
         </div>
       ) : null}
 
-      <section className="grid gap-4 md:grid-cols-2">
-        <form action={createPool} className="panel grid gap-3 p-4">
-          <div className="flex items-center gap-3">
-            <ShieldCheck aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-bold text-[#081634]">Nieuwe WK-poule</h2>
-          </div>
-          <p className="text-sm font-semibold leading-6 text-[#48617f]">
-            Start zelf een gratis WK 2026-poule en deel daarna één link, QR of code.
-          </p>
-          <label className="grid gap-2 text-sm font-bold text-[#081634]">
-            Naam van je WK-poule
-            <input className="field" name="name" required minLength={2} maxLength={50} placeholder="Familie Dijkstra" />
-          </label>
-          <button className="button-primary" type="submit">
-            WK-poule maken
-          </button>
-        </form>
-
-        <form action={joinPool} className="panel grid gap-3 p-4">
-          <div className="flex items-center gap-3">
-            <Users aria-hidden="true" className="size-7 text-[#25a84a]" />
-            <h2 className="text-2xl font-bold text-[#081634]">Meedoen met bestaande WK-poule</h2>
-          </div>
-          <p className="text-sm font-semibold leading-6 text-[#48617f]">
-            Heb je al een code of uitnodigingslink gekregen? Sluit hier aan bij die WK 2026-poule.
-          </p>
-          <label className="grid gap-2 text-sm font-bold text-[#081634]">
-            WK-poulecode
-            <input className="field uppercase" name="code" required minLength={6} maxLength={10} placeholder="SLIME26" />
-          </label>
-          <button className="button-primary" type="submit">
-            Aansluiten
-          </button>
-        </form>
-      </section>
-
-      <section className="mt-5">
+      <section className="mt-1">
         {pools.length ? (
-          <PoolTabs tabs={tabs}>
+          <PoolTabs tabs={tabs} initialId={params.pool}>
           {pools.map((pool) => {
             const currentMember = pool.members.find((member) => member.user_id === user.id);
             const isOwner = currentMember?.role === "owner";
@@ -269,13 +232,13 @@ export default async function PoolsPage({
                     {pool.description ? <p className="mt-2 max-w-2xl text-sm font-medium text-white/90">{pool.description}</p> : null}
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <WhatsappShare text={inviteText} url={joinAssets.joinUrl} label="WhatsApp" />
-                    <CopyButton value={joinAssets.joinUrl} label="Kopieer link" />
-                    <CopyButton value={pool.code} label={`Code ${pool.code}`} />
+                    <WhatsappShare text={inviteText} url={joinAssets.joinUrl} label="WhatsApp" compact />
+                    <CopyButton value={joinAssets.joinUrl} label="Kopieer link" compact />
+                    <CopyButton value={pool.code} label={`Code ${pool.code}`} compact />
                     {isOwner ? (
                       <form action={resetPoolCode}>
                         <input type="hidden" name="pool_id" value={pool.id} />
-                        <button className="button-plain" type="submit" title="Maak een nieuwe deelcode (oude werkt dan niet meer)">
+                        <button className="button-plain button-compact" type="submit" title="Maak een nieuwe deelcode (oude werkt dan niet meer)">
                           <RefreshCw aria-hidden="true" className="size-4" />
                           Nieuwe code
                         </button>
@@ -291,16 +254,14 @@ export default async function PoolsPage({
                     </a>
                     <ShareRow url={joinAssets.joinUrl} text={inviteText} title={`Doe mee met ${pool.name}`} compact />
                   </div>
-                  {joinAssets.qrDataUrl ? (
-                    <img className="pool-invite-qr" src={joinAssets.qrDataUrl} alt={`QR-code om mee te doen met ${pool.name}`} width={92} height={92} />
-                  ) : null}
+                  <PoolQr qrDataUrl={joinAssets.qrDataUrl} poolName={pool.name} joinUrl={joinAssets.joinUrl} />
                 </div>
                 {isManager ? (
-                  <details className="border-b border-slate-200 bg-slate-50">
+                  <details className="border-b border-slate-200 bg-slate-50" open={params.aangemaakt && params.pool === pool.id ? true : undefined}>
                     <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">
                       WK-poule-instellingen &amp; opmaak (beheer)
                     </summary>
-                  <div className="grid gap-4 p-4 pt-0 lg:grid-cols-2">
+                  <div className="grid items-start gap-4 p-4 pt-0 md:grid-cols-2">
                     <form action={updatePoolStyle} className="grid gap-3">
                       <input type="hidden" name="pool_id" value={pool.id} />
                       <div className="flex items-center gap-2 font-bold text-[#101a2b]">
@@ -310,7 +271,12 @@ export default async function PoolsPage({
                       <div className="grid gap-2 sm:grid-cols-[72px_110px_1fr]">
                         <label className="grid gap-1 text-xs font-bold text-[#101a2b]">
                           Emoji
-                          <input className="field" name="badge_emoji" defaultValue={pool.badgeEmoji} maxLength={8} />
+                          <input className="field" name="badge_emoji" defaultValue={pool.badgeEmoji} maxLength={8} list={`emoji-${pool.id}`} />
+                          <datalist id={`emoji-${pool.id}`}>
+                            {["🏆", "⚽", "🥅", "🧡", "🔥", "🐮", "🦁", "🎯", "🍻", "🎉", "🥇", "🇳🇱"].map((e) => (
+                              <option key={e} value={e} />
+                            ))}
+                          </datalist>
                         </label>
                         <label className="grid gap-1 text-xs font-bold text-[#101a2b]">
                           Kleur
@@ -340,6 +306,7 @@ export default async function PoolsPage({
                   </div>
                   </details>
                 ) : null}
+                <PoolMembers members={poolMembersById.get(pool.id) ?? []} />
                 <div className="border-b border-slate-200 p-4">
                   <h3 className="text-lg font-bold text-[#101a2b]">Prikbord</h3>
                   <form action={postPoolMessage} className="mt-3 grid gap-2">
@@ -360,7 +327,7 @@ export default async function PoolsPage({
                       ) : (
                         <span />
                       )}
-                      <PendingButton className="button-primary min-h-10 px-4" pendingText="Plaatsen…">
+                      <PendingButton className="button-primary min-h-9 px-3 text-sm" pendingText="Plaatsen…">
                         <Megaphone aria-hidden="true" className="size-4" />
                         Plaats
                       </PendingButton>
@@ -397,10 +364,10 @@ export default async function PoolsPage({
                     ) : null}
                   </div>
                 </div>
-                <PoolMembers members={poolMembersById.get(pool.id) ?? []} />
-                <div className="p-4">
-                  <h3 className="text-lg font-bold text-[#101a2b]">Leden beheren</h3>
-                  <div className="mt-3 divide-y divide-slate-200">
+                {isManager ? (
+                <details className="border-b border-slate-200 bg-slate-50">
+                  <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">Leden beheren (beheer)</summary>
+                  <div className="px-4 pb-4 divide-y divide-slate-200">
                   {pool.members.map((member) => (
                     <div key={member.user_id} className="grid gap-3 py-3 md:grid-cols-[1fr_auto] md:items-center">
                       <div className="flex items-center gap-3">
@@ -436,7 +403,8 @@ export default async function PoolsPage({
                     </div>
                   ))}
                   </div>
-                </div>
+                </details>
+                ) : null}
               </article>
             );
           })}
@@ -444,7 +412,10 @@ export default async function PoolsPage({
         ) : (
           <div className="panel p-5">
             <h2 className="text-2xl font-bold text-[#081634]">Nog geen WK-poules</h2>
-            <p className="mt-2 font-medium text-[#48617f]">Maak een WK 2026-poule aan of vraag een code aan je groep.</p>
+            <p className="mt-2 font-medium text-[#48617f]">
+              Maak er een aan of sluit aan met een code op de{" "}
+              <Link className="font-bold text-[#064ed6]" href="/">startpagina</Link>.
+            </p>
           </div>
         )}
       </section>
@@ -507,6 +478,7 @@ function buildPoolMembers(
   matchInfoById: Map<number, MatchInfo>,
   predictionsByUser: Map<string, PredictionRow[]>,
   pointsByUser: Map<string, number>,
+  worldRankByUser: Map<string, number>,
 ): PoolMember[] {
   const built = members.map((member) => {
     const isYou = member.user_id === currentUserId;
@@ -549,6 +521,8 @@ function buildPoolMembers(
     return {
       userId: member.user_id,
       rank: 0,
+      worldRank: worldRankByUser.get(member.user_id) ?? null,
+      isOwner: member.role === "owner",
       name: member.profiles?.nickname ?? "Speler",
       teamName: member.profiles?.team_name ?? null,
       avatarKey: member.profiles?.avatar_key ?? null,

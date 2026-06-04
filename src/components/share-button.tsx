@@ -210,16 +210,18 @@ export function WhatsappShare({
   url,
   label = "WhatsApp",
   variant = "primary",
+  compact = false,
 }: {
   text: string;
   url: string;
   label?: string;
   variant?: Variant;
+  compact?: boolean;
 }) {
   void variant;
   const message = encodeURIComponent(`${text} ${url}`.trim());
   return (
-    <a className="button-whatsapp" href={`https://wa.me/?text=${message}`} target="_blank" rel="noopener noreferrer">
+    <a className={`button-whatsapp${compact ? " button-compact" : ""}`} href={`https://wa.me/?text=${message}`} target="_blank" rel="noopener noreferrer">
       <Send aria-hidden="true" className="size-5" />
       {label}
     </a>
@@ -227,9 +229,19 @@ export function WhatsappShare({
 }
 
 /** Kopieer een korte waarde (zoals een poulecode) met visuele bevestiging. */
-export function CopyButton({ value, label = "Kopieer", variant = "secondary" }: { value: string; label?: string; variant?: Variant }) {
+export function CopyButton({
+  value,
+  label = "Kopieer",
+  variant = "secondary",
+  compact = false,
+}: {
+  value: string;
+  label?: string;
+  variant?: Variant;
+  compact?: boolean;
+}) {
   const [copied, setCopied] = useState(false);
-  const buttonClass = variant === "primary" ? "button-primary" : "button-secondary";
+  const buttonClass = `${variant === "primary" ? "button-primary" : "button-secondary"}${compact ? " button-compact" : ""}`;
 
   async function onCopy() {
     try {

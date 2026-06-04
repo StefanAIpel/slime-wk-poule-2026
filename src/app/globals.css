@@ -1349,6 +1349,22 @@ textarea {
   transform: translateY(-1px);
 }
 
+/* Compacte variant voor secundaire plekken (poule-header, deelrij) zodat de
+   deelknoppen niet onredelijk groot worden. */
+.button-compact {
+  min-height: 36px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  gap: 5px;
+  border-radius: 9px;
+  box-shadow: none;
+}
+
+.button-compact svg {
+  width: 16px;
+  height: 16px;
+}
+
 .field {
   width: 100%;
   min-height: 48px;

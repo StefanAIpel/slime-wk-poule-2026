@@ -45,7 +45,7 @@ export default function RulesPage() {
         <PageHero
           title="Regels en uitleg"
           subtitle="Kort, duidelijk en net precies genoeg voor discussie in de groepsapp."
-          slime="/assets/regels-koe-slime-transparent-640.webp"
+          slime="/assets/regels-koeslime-transparant-640.webp"
           mascotClassName="hero-mascot-field hero-mascot-regels"
         />
       </header>

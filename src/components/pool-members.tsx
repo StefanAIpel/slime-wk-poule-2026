@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Lock } from "lucide-react";
+import { ChevronDown, Crown, Globe, Lock } from "lucide-react";
 import { useState } from "react";
 import { Avatar } from "@/components/avatar";
 
@@ -19,6 +19,8 @@ export type MatchLine = {
 export type PoolMember = {
   userId: string;
   rank: number;
+  worldRank: number | null;
+  isOwner: boolean;
   name: string;
   teamName: string | null;
   avatarKey: string | null;
@@ -58,8 +60,17 @@ export function PoolMembers({ members }: { members: PoolMember[] }) {
                 <Avatar name={member.name} avatarKey={member.avatarKey} size={30} />
                 <span className="min-w-0 flex-1 truncate">
                   <span className="font-bold text-[#081634]">{member.name}</span>
+                  {member.isOwner ? (
+                    <Crown aria-label="Beheerder" className="ml-1 inline size-4 -translate-y-px text-[#e0a516]" />
+                  ) : null}
                   {member.isYou ? <span className="ml-1 text-xs font-bold text-[#16863a]">(jij)</span> : null}
                   {member.teamName ? <span className="font-medium text-[#475670]"> · {member.teamName}</span> : null}
+                  {member.worldRank ? (
+                    <span className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-[#7a8aa3]">
+                      <Globe aria-hidden="true" className="size-3" />
+                      Wereldrang #{member.worldRank}
+                    </span>
+                  ) : null}
                 </span>
                 <span className="font-bold tabular-nums text-[#081634]">{member.points} pt</span>
                 <ChevronDown
