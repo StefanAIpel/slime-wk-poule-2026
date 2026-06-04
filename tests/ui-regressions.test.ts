@@ -16,6 +16,13 @@ const groupPredictionCard = await readFile(new URL("../src/components/group-pred
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
 
+test("hero primary Gratis meedoen button is capped at 260px and responsive", () => {
+  const heroPrimaryBlock = globalsCss.match(/\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(heroPrimaryBlock, /width: min\(100%, 260px\);/);
+  assert.match(heroPrimaryBlock, /justify-content: center;/);
+  assert.doesNotMatch(heroPrimaryBlock, /width: auto;/);
+});
+
 test("hero quick-link buttons stay compact but responsive", () => {
   assert.match(globalsCss, /\.hero-bottom-links \{/);
   assert.match(globalsCss, /width: min\(calc\(100% - 40px\), 370px\);/);

@@ -642,8 +642,9 @@ textarea {
 }
 
 .hero-primary-cta {
-  width: 78%;
+  width: min(100%, 260px);
   min-width: 0;
+  justify-content: center;
   justify-self: start;
 }
 
@@ -669,7 +670,6 @@ textarea {
 
 @media (min-width: 640px) {
   .hero-primary-cta {
-    width: auto;
     min-height: 56px;
     padding-inline: 24px;
     font-size: 1rem;
