@@ -14,6 +14,13 @@ const bottomNav = await readFile(new URL("../src/components/bottom-nav.tsx", imp
 const upcomingMatches = await readFile(new URL("../src/components/upcoming-matches.tsx", import.meta.url), "utf8");
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
+const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
+
+test("hero quick-link buttons stay compact but responsive", () => {
+  assert.match(globalsCss, /\.hero-bottom-links \{/);
+  assert.match(globalsCss, /width: min\(calc\(100% - 40px\), 370px\);/);
+  assert.match(globalsCss, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+});
 
 test("signup sent state has one clear success headline plus normal-weight next steps and spam hint", () => {
   assert.match(loginForm, /Registratielink verstuurd naar je e-mail/);
