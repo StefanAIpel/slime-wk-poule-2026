@@ -362,23 +362,27 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           </div>
         </section>
 
-        <section id="login" className="public-login-panel grid gap-3 p-3 sm:gap-4 sm:p-5 md:sticky md:top-4">
-          {authError ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-4 font-bold text-red-800">
-              Deze bevestigingslink is verlopen. Vraag een nieuwe aan.
+        <aside className="public-login-stack md:sticky md:top-4">
+          <section id="login" className="public-login-panel grid gap-3 p-3 sm:gap-4 sm:p-5">
+            {authError ? (
+              <div className="rounded-xl border border-red-200 bg-red-50 p-4 font-bold text-red-800">
+                Deze bevestigingslink is verlopen. Vraag een nieuwe aan.
+              </div>
+            ) : null}
+            <div className="flex items-center gap-3">
+              <span className="public-login-icon" aria-hidden="true">
+                <LogIn className="size-6" />
+              </span>
+              <div>
+                <h2 className="public-login-title text-2xl font-black text-[#101a2b]">Aanmelden</h2>
+              </div>
             </div>
-          ) : null}
-          <div className="flex items-center gap-3">
-            <span className="public-login-icon" aria-hidden="true">
-              <LogIn className="size-6" />
-            </span>
-            <div>
-              <h2 className="public-login-title text-2xl font-black text-[#101a2b]">Aanmelden</h2>
-            </div>
+            <LoginForm surface="inline" />
+          </section>
+          <div className="public-login-ad" aria-label="Speel Slime Soccer">
+            <SlimeSoccerBanner includeVolley={false} />
           </div>
-          <LoginForm surface="inline" />
-          <SlimeSoccerBanner includeVolley={false} />
-        </section>
+        </aside>
 
         <a href="/ranglijst" className="panel public-score-card p-4 no-underline md:col-start-1 md:row-start-2">
           <div className="flex items-center justify-between gap-3">

@@ -58,11 +58,12 @@ test("public login panel is compact on mobile", () => {
   assert.match(globalsCss, /\.login-form-inline \.field \{\n    min-height: 44px;/);
 });
 
-test("signup sent state has one clear success headline plus normal-weight next steps and spam hint", () => {
+test("signup sent state keeps only the success headline and code form without duplicate helper copy", () => {
   assert.match(loginForm, /Bevestigingsmail verstuurd naar je e-mail/);
-  assert.match(loginForm, /Kopieer de bevestigingscode uit de mail en plak die hieronder/);
   assert.match(loginForm, /Registratie bevestigen met mailcode/);
-  assert.match(loginForm, /Mail niet ontvangen\? Check je spambox of probeer opnieuw\./);
+  assert.match(loginForm, /Bevestigingsmail opnieuw sturen/);
+  assert.doesNotMatch(loginForm, /Mail niet ontvangen\? Check je spambox of probeer opnieuw\./);
+  assert.doesNotMatch(loginForm, /De knop in de mail blijft als fallback bestaan/);
   assert.doesNotMatch(loginForm, /Open de inloglink|Registratielink verstuurd/i);
 });
 
@@ -175,7 +176,7 @@ test("game embed is smaller on desktop and mobile defaults to new-tab play", () 
   assert.match(gameFrames, /Open spel in nieuw tabblad/);
   assert.match(gameFrames, /Mobiel speelt dit het best schermvullend/);
   assert.doesNotMatch(gameFrames, />Nieuw tabblad</);
-  assert.match(globalsCss, /\.game-frame \{[\s\S]*max-width: 920px;[\s\S]*aspect-ratio: 16 \/ 9;[\s\S]*max-height: min\(66vh, 620px\);/);
+  assert.match(globalsCss, /\.game-frame \{[\s\S]*max-width: 560px;[\s\S]*aspect-ratio: 16 \/ 9;[\s\S]*max-height: min\(42vh, 360px\);/);
   assert.match(globalsCss, /@media \(max-width: 639px\) \{[\s\S]*\.game-frame,\n  \.game-embed-note \{\n    display: none;/);
   assert.match(globalsCss, /\.game-open-link \{[\s\S]*linear-gradient\(135deg, #19b85d, #0e8a49 62%, #0a6b38\)/);
 });

@@ -150,7 +150,7 @@ export function LoginForm({
 
     rememberCurrentEmail();
     setStatus("sent");
-    setMessage("Wachtwoordcode verstuurd. Kopieer de code uit de mail, kies hieronder een nieuw wachtwoord en klaar.");
+    setMessage("");
   }
 
   async function onResendSignupConfirmation() {
@@ -434,14 +434,11 @@ export function LoginForm({
           <Check aria-hidden="true" className="size-5" />
           {isResetMail ? "Wachtwoordcode verstuurd naar je e-mail" : "Bevestigingsmail verstuurd naar je e-mail"}
         </div>
-        <p className="text-sm font-medium leading-6 text-[#0f5132]">
-          {isResetMail
-            ? "Kopieer de code uit de mail en kies hieronder je nieuwe wachtwoord. De knop in de mail blijft als fallback bestaan."
-            : "Kopieer de bevestigingscode uit de mail en plak die hieronder. De knop in de mail blijft als fallback bestaan."}
-        </p>
-        <p aria-live="polite" className="text-sm font-medium leading-5 text-[#0f5132]">
-          {message || "Mail niet ontvangen? Check je spambox of probeer opnieuw."}
-        </p>
+        {message ? (
+          <p aria-live="polite" className="text-sm font-medium leading-5 text-[#0f5132]">
+            {message}
+          </p>
+        ) : null}
         {provider ? <WebmailButton provider={provider} /> : null}
 
         {isResetMail ? (
@@ -525,31 +522,25 @@ export function LoginForm({
 
   return (
     <div className={surfaceClass} aria-label="Inloggen of registreren">
-      <div className="grid grid-cols-2 gap-2 rounded-xl bg-[#dbeafe] p-1 shadow-inner ring-1 ring-[#1e73b8]/25" role="tablist" aria-label="Account keuze">
+      <div className="auth-mode-tabs" role="tablist" aria-label="Account keuze">
         <button
           type="button"
           role="tab"
           aria-selected={mode === "login"}
-          className={`rounded-lg px-3 py-2 text-sm font-extrabold transition ${
-            mode === "login"
-              ? "bg-gradient-to-r from-[#114b82] to-[#1e73b8] text-white shadow-[0_8px_18px_rgba(30,115,184,0.32)]"
-              : "text-[#0e2a47] hover:bg-white/70 hover:text-[#114b82]"
-          }`}
+          className={`auth-mode-tab ${mode === "login" ? "is-active" : ""}`}
           onClick={() => resetMode("login")}
         >
+          <span aria-hidden="true" className="auth-mode-tab-marker" />
           Inloggen
         </button>
         <button
           type="button"
           role="tab"
           aria-selected={mode === "register"}
-          className={`rounded-lg px-3 py-2 text-sm font-extrabold transition ${
-            mode === "register"
-              ? "bg-gradient-to-r from-[#114b82] to-[#1e73b8] text-white shadow-[0_8px_18px_rgba(30,115,184,0.32)]"
-              : "text-[#0e2a47] hover:bg-white/70 hover:text-[#114b82]"
-          }`}
+          className={`auth-mode-tab ${mode === "register" ? "is-active" : ""}`}
           onClick={() => resetMode("register")}
         >
+          <span aria-hidden="true" className="auth-mode-tab-marker" />
           Nieuw account
         </button>
       </div>
@@ -573,7 +564,7 @@ export function LoginForm({
             <Mail aria-hidden="true" className="size-5" />
             {status === "loading" ? "Versturen…" : "Stuur wachtwoordcode"}
           </button>
-          <p aria-live="polite" className={`text-sm font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
+          <p aria-live="polite" className={`auth-forgot-helper font-medium ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
             {message || "Nog nooit een wachtwoord gekozen of vergeten? Stuur jezelf een code en kies direct een nieuw wachtwoord."}
           </p>
           <button type="button" className="text-sm font-bold text-[#0e7a44] underline" onClick={() => resetMode("login")}>
@@ -624,8 +615,11 @@ export function LoginForm({
           <button type="button" className="text-center text-xs font-semibold text-[#0e7a44] underline" onClick={() => resetMode("forgot")}>
             Wachtwoord vergeten?
           </button>
-          <p aria-live="polite" className={`text-center text-xs font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-            {message || "Al geregistreerd? Log direct in met mail en wachtwoord."}
+          <p
+            aria-live="polite"
+            className={status === "error" ? "text-center text-xs font-medium leading-5 text-red-700" : "auth-login-hint text-[#475670]"}
+          >
+            {message || "Al geregistreerd? Log in met mail + wachtwoord."}
           </p>
         </form>
       ) : (
@@ -722,7 +716,7 @@ export function LoginForm({
 
       <button
         type="button"
-        className="flex items-center justify-center gap-1.5 text-sm font-bold text-[#0e7a44]"
+        className="fixed-code-button"
         onClick={() => resetMode("code")}
       >
         <KeyRound aria-hidden="true" className="size-4" />
