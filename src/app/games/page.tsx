@@ -20,7 +20,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
 
       <GameFrames soccerUrl={SLIME_GAME_URL} volleyUrl={SLIME_VOLLEY_URL} initial={params.game ?? "soccer"} />
 
-      <BottomNav current="/games" />
+      <BottomNav current="/games" className="bottom-nav-hide-mobile" />
     </main>
   );
 }

@@ -49,6 +49,12 @@ export default function RulesPage() {
         />
       </header>
 
+      <p className="mb-4 rounded-xl border border-[#f3dcc0] bg-[#fff7ec] px-4 py-2.5 text-sm leading-6 text-[#7a5a2a]">
+        <strong className="font-bold text-[#8a5712]">Regels in uitvoering:</strong> we kunnen de spelregels vóór en tijdens het
+        toernooi nog bijschaven — een poule is tenslotte nooit helemaal af. Iets belangrijks? Dan melden we het netjes in je
+        WK-poule.
+      </p>
+
       <section className="grid gap-4 lg:grid-cols-2 lg:items-start">
         {/* Links: poule- en datablokken. */}
         <div className="grid gap-4">
@@ -57,7 +63,7 @@ export default function RulesPage() {
               <CalendarClock aria-hidden="true" className="size-7 text-[#064ed6]" />
               <h2 className="text-2xl font-bold text-[#081634]">Deadlines</h2>
             </div>
-            <div className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
+            <div className="mt-4 grid gap-2 text-sm leading-6 text-[#2f3d57]">
               <p>
                 Hoofdvoorspellingen sluiten bij de aftrap op{" "}
                 <strong className="text-[#081634]">{formatDeadline(ENTRY_DEADLINE_ISO)}</strong>.
@@ -74,7 +80,7 @@ export default function RulesPage() {
               <ShieldCheck aria-hidden="true" className="size-7 text-[#064ed6]" />
               <h2 className="text-2xl font-bold text-[#081634]">WK-poules</h2>
             </div>
-            <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
+            <ul className="mt-4 grid gap-2 text-sm leading-6 text-[#2f3d57]">
               <li>Iedereen doet mee in de algemene WK 2026-ranglijst.</li>
               <li>Je kunt in meerdere WK-poules zitten (familie, vrienden, collega&rsquo;s).</li>
               <li>Een WK-poule heeft een beheerder en een geheime deelcode.</li>
@@ -89,11 +95,12 @@ export default function RulesPage() {
               <Database aria-hidden="true" className="size-7 text-[#e1262f]" />
               <h2 className="text-2xl font-bold text-[#081634]">Data en uitslagen</h2>
             </div>
-            <p className="mt-4 text-sm font-medium leading-7 text-[#48617f]">
-              Je voorspellingen zijn privé tot de deadline. Zodra uitslagen binnenkomen wordt de ranglijst opnieuw
-              berekend: eerst de wedstrijdpunten, daarna rondekeuzes, kampioen en bonusvragen.
+            <p className="mt-4 text-sm leading-6 text-[#2f3d57]">
+              Je voorspellingen blijven <strong className="font-semibold text-[#081634]">privé tot de deadline</strong>. Zodra
+              uitslagen binnenkomen rekenen we de ranglijst opnieuw door: eerst de wedstrijdpunten, daarna rondekeuzes,
+              kampioen en bonusvragen.
             </p>
-            <p className="mt-3 text-sm font-medium leading-7 text-[#48617f]">
+            <p className="mt-3 text-sm leading-6 text-[#2f3d57]">
               Meer weten? Lees ons <a className="font-bold text-[#064ed6]" href="/privacy">privacybeleid</a> en de{" "}
               <a className="font-bold text-[#064ed6]" href="/voorwaarden">voorwaarden</a>.
             </p>
@@ -104,7 +111,7 @@ export default function RulesPage() {
               <HelpCircle aria-hidden="true" className="size-7 text-[#f26a1b]" />
               <h2 className="text-2xl font-bold text-[#081634]">Randgevallen</h2>
             </div>
-            <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
+            <ul className="mt-4 grid gap-2 text-sm leading-6 text-[#2f3d57]">
               <li><strong className="text-[#081634]">Verplaatste wedstrijd:</strong> je voorspelling verhuist mee en blijft in de oorspronkelijke ronde meetellen.</li>
               <li><strong className="text-[#081634]">Afgelast of gestaakt:</strong> zonder officiële eindstand geven we geen wedstrijdpunten; met een officiële eindstand gebruiken we die stand.</li>
               <li><strong className="text-[#081634]">Correcties achteraf:</strong> als een officiële uitslag of toernooifeit wijzigt, herberekenen we de ranglijst.</li>
@@ -121,7 +128,7 @@ export default function RulesPage() {
               <BookOpen aria-hidden="true" className="size-7 text-[#25a84a]" />
               <h2 className="text-2xl font-bold text-[#081634]">Puntentelling</h2>
             </div>
-            <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
+            <ul className="mt-4 grid gap-2 text-sm leading-6 text-[#2f3d57]">
               <li><strong className="text-[#081634]">Exacte uitslag:</strong> 12 punten (het maximum per wedstrijd).</li>
               <li><strong className="text-[#081634]">Juiste winnaar of gelijkspel:</strong> 6 punten, plus 2 voor het juiste doelsaldo en 2 per juist teamdoelpunt.</li>
               <li><strong className="text-[#081634]">Knock-outrondes:</strong> oplopend van de laatste 32 tot wereldkampioen — een goede eindsprint telt echt.</li>
@@ -141,7 +148,7 @@ export default function RulesPage() {
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-sm font-medium leading-7 text-[#48617f]">
+              <p className="mt-3 text-sm leading-6 text-[#2f3d57]">
                 Per wedstrijd is 12 punten het maximum. Bij een exacte uitslag stapelen de deelpunten niet door; bij een
                 gedeeltelijk goede voorspelling tellen juiste richting, doelsaldo en teamgoals wél samen op.
               </p>
@@ -152,7 +159,7 @@ export default function RulesPage() {
                   precies 2 goals (2) = <strong>8 punten</strong>. Exact 2&ndash;1 zou de volle <strong>12 punten</strong> zijn geweest.
                 </p>
               </div>
-              <p className="mt-3 text-sm font-medium leading-7 text-[#48617f]">
+              <p className="mt-3 text-sm leading-6 text-[#2f3d57]">
                 Gelijke stand? Dan kijken we naar meeste exacte uitslagen, meeste juiste resultaten en bonuspunten.
               </p>
             </details>
@@ -167,7 +174,7 @@ export default function RulesPage() {
               {faq.map((item) => (
                 <details key={item.q} className="rounded-lg border border-slate-200 p-3">
                   <summary className="cursor-pointer text-sm font-bold text-[#081634]">{item.q}</summary>
-                  <p className="mt-2 text-sm font-medium leading-7 text-[#48617f]">{item.a}</p>
+                  <p className="mt-2 text-sm leading-6 text-[#2f3d57]">{item.a}</p>
                 </details>
               ))}
             </div>
@@ -179,7 +186,7 @@ export default function RulesPage() {
         <SlimeSoccerBanner includeWk />
       </section>
 
-      <BottomNav current="/regels" />
+      <BottomNav current="/regels" className="bottom-nav-hide-mobile" />
     </main>
   );
 }

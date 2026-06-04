@@ -35,7 +35,7 @@ export default async function RankingPage() {
           .order("exact_scores", { ascending: false })
           .order("correct_results", { ascending: false })
           .order("bonus_points", { ascending: false })
-          .limit(100),
+          .limit(300),
         admin.from("pools").select("id,name,code"),
         admin.from("pool_members").select("pool_id,user_id"),
         admin.from("scores").select("user_id,points"),
@@ -64,7 +64,7 @@ export default async function RankingPage() {
     exact: 0,
     correct: 0,
   }));
-  const players: PlayerRow[] = [...realPlayers, ...demoPlayers].slice(0, 100).map((row, index) => ({
+  const players: PlayerRow[] = [...realPlayers, ...demoPlayers].slice(0, 300).map((row, index) => ({
     ...row,
     rank: index + 1,
   }));
@@ -100,7 +100,7 @@ export default async function RankingPage() {
 
       <RankingExplorer players={players} pools={poolRankings} />
 
-      <BottomNav current="/ranglijst" />
+      <BottomNav current="/ranglijst" className="bottom-nav-hide-mobile" />
     </main>
   );
 }
