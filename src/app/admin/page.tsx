@@ -91,7 +91,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       {params.fout ? <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-3 font-bold text-red-800">Er ging iets mis ({params.fout}).</div> : null}
       {params.kind ? (
         <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-3 font-bold text-green-800">
-          Kind-account aangemaakt. Inlogcode: <span className="font-mono text-lg">{params.kind}</span> — geef deze aan het kind (login → “Inloggen met code”).
+          Code-account aangemaakt. Vaste inlogcode: <span className="font-mono text-lg">{params.kind}</span> — geef deze code alleen aan deze speler (login → “Vaste code zonder e-mail”).
         </div>
       ) : null}
 
@@ -117,22 +117,22 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       <section className="mt-4 panel p-4">
         <div className="flex items-center gap-2">
           <KeyRound aria-hidden="true" className="size-5 text-[#064ed6]" />
-          <h2 className="text-lg font-bold text-[#081634]">Kind-accounts (inloggen met code, geen e-mail)</h2>
+          <h2 className="text-lg font-bold text-[#081634]">Vaste inlogcodes zonder e-mail</h2>
         </div>
         <p className="mt-1 text-sm font-medium text-[#48617f]">
-          Maak een account voor een kind zonder e-mail. Het kind kiest bij de eerste login zelf naam + teamnaam. Houd codes privé.
+          Maak een account voor iemand zonder e-mail. Diegene logt steeds in met dezelfde vaste code en kiest bij de eerste login zelf naam + teamnaam. Houd codes privé.
         </p>
         <form action={createKidAccount} className="mt-3 flex flex-wrap items-end gap-2">
           <label className="grid gap-1 text-xs font-bold text-[#081634]">
-            Naam (voor jouw overzicht)
+            Naam/speler (voor jouw overzicht)
             <input className="field min-h-10" name="nickname" required minLength={2} maxLength={24} placeholder="Bijv. Fedde" />
           </label>
           <label className="grid gap-1 text-xs font-bold text-[#081634]">
-            Code (optioneel, anders willekeurig)
+            Vaste code (optioneel, anders willekeurig)
             <input className="field min-h-10" name="code" maxLength={16} placeholder="Bijv. fedded10" autoComplete="off" />
           </label>
           <PendingButton className="button-primary min-h-10 px-4" pendingText="Aanmaken…">
-            Maak kind-account
+            Maak code-account
           </PendingButton>
         </form>
         {kidRows.length ? (
