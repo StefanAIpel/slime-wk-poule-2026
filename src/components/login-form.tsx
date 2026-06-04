@@ -254,7 +254,7 @@ export function LoginForm({
 
   if (mode === "code") {
     return (
-      <form onSubmit={onCodeSubmit} className={surfaceClass} aria-label="Inloggen met code">
+      <form method="post" onSubmit={onCodeSubmit} className={surfaceClass} aria-label="Inloggen met code">
         <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
           Pincode van je poule
           <input
@@ -331,7 +331,7 @@ export function LoginForm({
       </div>
 
       {mode === "forgot" ? (
-        <form onSubmit={onForgotSubmit} className="grid gap-3" aria-label="Wachtwoord opnieuw aanvragen">
+        <form method="post" onSubmit={onForgotSubmit} className="grid gap-3" aria-label="Wachtwoord opnieuw aanvragen">
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
             E-mailadres
             <input
@@ -357,7 +357,7 @@ export function LoginForm({
           </button>
         </form>
       ) : mode === "login" ? (
-        <form onSubmit={onPasswordSubmit} className="grid gap-3" aria-label="Inloggen met mail en wachtwoord">
+        <form method="post" onSubmit={onPasswordSubmit} className="grid gap-3" aria-label="Inloggen met mail en wachtwoord">
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
             E-mailadres
             <input
@@ -405,13 +405,12 @@ export function LoginForm({
           </p>
         </form>
       ) : (
-        <form onSubmit={onRegisterSubmit} className="grid gap-3" aria-label="Nieuw SlimeScore-account maken">
+        <form method="post" onSubmit={onRegisterSubmit} className="grid gap-3" aria-label="Nieuw SlimeScore-account maken">
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
             E-mailadres
             <input
               className="field"
               type="email"
-              name="email"
               inputMode="email"
               autoComplete="email"
               required
@@ -424,7 +423,6 @@ export function LoginForm({
             Naam of bijnaam
             <input
               className="field"
-              name="nickname"
               autoComplete="name"
               required
               minLength={4}
@@ -438,7 +436,6 @@ export function LoginForm({
             Teamnaam
             <input
               className="field"
-              name="team_name"
               required
               minLength={4}
               maxLength={28}
@@ -452,7 +449,6 @@ export function LoginForm({
             <input
               className="field"
               type="password"
-              name="password"
               autoComplete="new-password"
               required
               minLength={8}
@@ -466,7 +462,6 @@ export function LoginForm({
             <input
               className="field"
               type="password"
-              name="password_confirm"
               autoComplete="new-password"
               required
               minLength={8}
@@ -479,7 +474,6 @@ export function LoginForm({
             <input
               className="mt-1 size-4 accent-[#0e7a44]"
               type="checkbox"
-              name="terms_accepted"
               value="yes"
               required
               checked={termsAccepted}

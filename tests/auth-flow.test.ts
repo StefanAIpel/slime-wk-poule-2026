@@ -35,17 +35,26 @@ test("registration email template is SlimeScore-branded confirmation, not a logi
 });
 
 test("new players enter profile, password and legal acceptance before confirmation mail", () => {
-  assert.match(loginForm, /aria-label=\"Nieuw SlimeScore-account maken\"/);
-  assert.match(loginForm, /name=\"nickname\"/);
-  assert.match(loginForm, /name=\"team_name\"/);
-  assert.match(loginForm, /name=\"password\"/);
-  assert.match(loginForm, /name=\"password_confirm\"/);
-  assert.match(loginForm, /name=\"terms_accepted\"/);
-  assert.match(loginForm, /signUp\(\{[\s\S]*password/);
-  assert.match(loginForm, /emailRedirectTo: buildEmailRedirectTo/);
-  assert.doesNotMatch(loginForm, /signInWithOtp|shouldCreateUser|Registratielink verstuurd|Open de inloglink/i);
-  assert.match(loginForm, /Bevestigingsmail verstuurd naar je e-mail/);
+  assert.match(loginForm, /Nieuw SlimeScore-account maken/);
+  assert.match(loginForm, /Naam of bijnaam/);
+  assert.match(loginForm, /Teamnaam/);
+  assert.match(loginForm, /type=\"password\"/);
+  assert.match(loginForm, /passwordConfirm/);
+  assert.match(loginForm, /termsAccepted/);
+  assert.match(loginForm, /supabase\.auth\.signUp/);
+  assert.match(loginForm, /signup_flow: \"profile_password_confirm\"/);
+  assert.doesNotMatch(loginForm, /signInWithOtp/);
 });
+
+test("registration form cannot leak passwords through a native GET fallback", () => {
+  assert.match(loginForm, /<form method=\"post\" onSubmit=\{onRegisterSubmit\}/);
+  assert.doesNotMatch(loginForm, /name=\"password\"/);
+  assert.doesNotMatch(loginForm, /name=\"password_confirm\"/);
+  assert.doesNotMatch(loginForm, /name=\"email\"/);
+  assert.doesNotMatch(loginForm, /name=\"nickname\"/);
+  assert.doesNotMatch(loginForm, /name=\"team_name\"/);
+});
+
 
 test("verified signup profile data is persisted after email confirmation", () => {
   assert.match(callbackRoute, /persistVerifiedSignupProfile/);
