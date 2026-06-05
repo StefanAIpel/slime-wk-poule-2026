@@ -23,7 +23,7 @@ export function PageHero({
       <div className="hero-content">
         <h1 className="text-3xl font-bold leading-tight md:text-4xl">{title}</h1>
         {subtitle ? (
-          <p className="mt-2 max-w-2xl text-base font-medium leading-7 text-blue-50">{subtitle}</p>
+          <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-blue-50 sm:text-[0.95rem] md:text-base">{subtitle}</p>
         ) : null}
         {children ? <div className="mt-3">{children}</div> : null}
       </div>
