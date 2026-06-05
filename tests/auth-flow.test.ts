@@ -118,6 +118,14 @@ test("webmail buttons open outside the SlimeScore tab instead of replacing the r
   assert.match(authRecoveryTemplate, /SlimeScore mag dicht zijn geraakt/);
 });
 
+test("webmail shortcut is picked by email domain for Outlook, Live and Zoho users", () => {
+  assert.match(loginForm, /match: \[\"outlook\.com\", \"hotmail\.com\", \"live\.nl\", \"live\.com\", \"msn\.com\"\], label: \"Open Outlook\", url: \"https:\/\/outlook\.live\.com\/mail\/\"/);
+  assert.match(loginForm, /match: \[\"zohomail\.eu\", \"zoho\.eu\"\], label: \"Open Zoho Mail\", url: \"https:\/\/mail\.zoho\.eu\/\"/);
+  assert.match(loginForm, /match: \[\"zohomail\.com\", \"zoho\.com\"\], label: \"Open Zoho Mail\", url: \"https:\/\/mail\.zoho\.com\/\"/);
+  assert.match(loginForm, /const domain = email\.split\("@"\)\[1\]\?\.toLowerCase\(\) \?\? "";/);
+  assert.match(loginForm, /w\.match\.includes\(domain\)/);
+});
+
 test("confirmation and recovery screens help Zoho users find codes outside the inbox", () => {
   assert.match(loginForm, /zohomail\.eu/);
   assert.match(loginForm, /Open Zoho Mail/);

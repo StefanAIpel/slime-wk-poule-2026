@@ -517,7 +517,7 @@ function MatchRow({ match, compactMeta = false, knockout = false }: { match: Sch
           </div>
           <span className="schedule-team-separator" aria-hidden="true">•</span>
           <span className="sr-only">tegen</span>
-          <div className={match.winnerCode === match.awayCode ? "schedule-team-cell schedule-team-winner" : "schedule-team-cell"} title={teamText(match, "away")}>
+          <div className={match.winnerCode === match.awayCode ? "schedule-team-cell schedule-team-cell-away schedule-team-winner" : "schedule-team-cell schedule-team-cell-away"} title={teamText(match, "away")}>
             <TeamFlag code={match.awayCode} name={match.awayName ?? match.awayLabel} />
             <span className="schedule-team-name">
               <span className="sm:hidden">{teamText(match, "away", true)}</span>

@@ -43,12 +43,19 @@ test("mobile landing hero keeps the WK pills and title separated", () => {
   assert.match(globalsCss, /\.hero-home-title-block \{\n    max-width: min\(100%, 305px\);\n    transform: translateY\(-4px\);/);
 });
 
-test("hero quick-link buttons stay inside the mobile hero card", () => {
+test("hero quick-link buttons stay inside the mobile hero card and align right on desktop", () => {
   assert.match(globalsCss, /\.hero-bottom-links \{/);
   assert.match(globalsCss, /left: 20px;/);
   assert.match(globalsCss, /right: 20px;/);
   assert.match(globalsCss, /width: auto;/);
   assert.match(globalsCss, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+  assert.match(globalsCss, /@media \(min-width: 760px\) \{[\s\S]*\.hero-bottom-links \{[\s\S]*left: auto;[\s\S]*width: min\(38vw, 360px\);[\s\S]*justify-self: end;/);
+  assert.match(globalsCss, /@media \(min-width: 760px\) \{[\s\S]*\.hero-bottom-link \{[\s\S]*min-height: 50px;[\s\S]*font-size: 0\.9rem;/);
+});
+
+test("mobile app starts with a 10px gap below browser chrome before the sticky status bar", () => {
+  assert.match(globalsCss, /--mobile-browser-chrome-gap: 10px;/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.status-bar \{[\s\S]*top: var\(--mobile-browser-chrome-gap\);[\s\S]*margin-top: var\(--mobile-browser-chrome-gap\);/);
 });
 
 test("public login panel is compact on mobile", () => {
@@ -114,6 +121,13 @@ test("dashboard copy matches the 72-group-result progress metric and password fl
   assert.doesNotMatch(homePage, /geen wachtwoord/);
 });
 
+test("share panel keeps the Deel SlimeScore label before icons and stacks it above on mobile", () => {
+  assert.match(homePage, /<p className=\"share-panel-title\">Deel SlimeScore<\/p>[\s\S]*<ShareRow/);
+  assert.match(globalsCss, /\.share-panel-strip \{[\s\S]*display: grid;[\s\S]*justify-items: center;/);
+  assert.match(globalsCss, /\.share-panel-strip \.share-actions \{[\s\S]*justify-content: center;/);
+  assert.match(globalsCss, /@media \(min-width: 640px\) \{[\s\S]*\.share-panel-strip \{[\s\S]*grid-template-columns: auto minmax\(0, 1fr\);/);
+});
+
 test("prediction saves sync the global status bar progress without requiring reload", () => {
   assert.match(predictionsPage, /StatusProgressSync/);
   assert.match(predictionsPage, /<StatusProgressSync progress=\{groupProgress\} \/>/);
@@ -144,10 +158,14 @@ test("small team columns use official 3-letter country abbreviations", () => {
   assert.doesNotMatch(upcomingMatches, /hidden sm:inline">\{m\.away\?\.name_nl/);
 });
 
-test("match rows always reserve right-side API score boxes", () => {
+test("match rows always reserve right-side API score boxes with fixed home-separator-away columns", () => {
   assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} \/>/);
   assert.match(scheduleExplorer, /<ResultBoxes match=\{match\} \/>/);
-  assert.match(globalsCss, /grid-template-columns: minmax\(0, auto\) auto minmax\(0, 1fr\) 62px;/);
+  assert.match(globalsCss, /grid-template-columns: var\(--match-home-col, minmax\(118px, 160px\)\) 30px minmax\(0, 1fr\) 62px;/);
+  assert.match(globalsCss, /\.schedule-team-grid-knockout \{[\s\S]*--match-home-col: minmax\(160px, 1fr\);/);
+  assert.match(globalsCss, /\.schedule-team-cell-home \{[\s\S]*justify-content: flex-end;[\s\S]*text-align: right;/);
+  assert.match(globalsCss, /\.schedule-team-cell-away \{[\s\S]*justify-content: flex-start;/);
+  assert.doesNotMatch(globalsCss, /grid-template-columns: minmax\(0, auto\) auto minmax\(0, 1fr\) (?:58|70)px;/);
   assert.match(globalsCss, /\.score-box \{/);
   assert.doesNotMatch(scheduleExplorer, /schedule-team-grid-has-score/);
 });
@@ -177,11 +195,12 @@ test("schema copy is public-facing and group filters can search team, group, or 
   assert.match(scheduleExplorer, /filteredMatchesByGroup/);
 });
 
-test("desktop schedule cards are compact and match rows use a visible team separator", () => {
+test("desktop schedule cards are compact and match rows use a visible aligned team separator", () => {
   assert.match(globalsCss, /\.hero-band-page \{[\s\S]*max-height: 220px;/);
   assert.match(globalsCss, /\.hero-band-page\.hero-band-visual \{\n    min-height: 200px;\n  \}/);
-  assert.match(globalsCss, /\.schedule-team-grid \{[\s\S]*minmax\(0, auto\) auto minmax\(0, 1fr\) 62px;/);
+  assert.match(globalsCss, /\.schedule-team-grid \{[\s\S]*grid-template-columns: var\(--match-home-col, minmax\(118px, 160px\)\) 30px minmax\(0, 1fr\) 62px;/);
   assert.match(scheduleExplorer, /schedule-team-separator/);
+  assert.match(scheduleExplorer, /schedule-team-cell-away/);
   assert.match(globalsCss, /\.group-phase-body \{[\s\S]*minmax\(0, 1fr\) 320px/);
   assert.match(scheduleExplorer, /teamAbbrev\(row\.code, row\.name\)/);
   assert.doesNotMatch(scheduleExplorer, /dark-panel rounded-2xl/);

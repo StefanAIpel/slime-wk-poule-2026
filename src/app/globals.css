@@ -18,6 +18,7 @@
   --orange-2: #fb8c46;
   --cream: #fff7e8;
   --ink-soft: #5a6b82;
+  --mobile-browser-chrome-gap: 10px;
 }
 
 @theme inline {
@@ -159,6 +160,13 @@ textarea {
   background: linear-gradient(90deg, var(--blue-2), var(--blue) 70%, var(--green-deep));
   color: #fff;
   box-shadow: 0 2px 10px rgba(14, 42, 71, 0.18);
+}
+
+@media (max-width: 759px) {
+  .status-bar {
+    top: var(--mobile-browser-chrome-gap);
+    margin-top: var(--mobile-browser-chrome-gap);
+  }
 }
 
 .status-bar-inner {
@@ -428,9 +436,24 @@ textarea {
 
 .share-panel-strip {
   display: grid;
+  justify-items: center;
   gap: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.18);
   padding-top: 14px;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .share-panel-strip {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .share-panel-strip .share-row {
+    justify-self: end;
+  }
 }
 
 .share-panel-title,
@@ -854,6 +877,22 @@ textarea {
     background-image:
       linear-gradient(102deg, rgba(7, 18, 46, 0.82) 0%, rgba(7, 18, 46, 0.34) 50%, rgba(7, 18, 46, 0.02) 100%),
       url("/assets/hero-home-landscape.webp");
+  }
+
+  .hero-bottom-links {
+    right: 28px;
+    bottom: 22px;
+    left: auto;
+    width: min(38vw, 360px);
+    justify-self: end;
+    gap: 12px;
+  }
+
+  .hero-bottom-link {
+    min-height: 50px;
+    gap: 8px;
+    border-radius: 16px;
+    font-size: 0.9rem;
   }
 }
 
@@ -1661,9 +1700,8 @@ textarea {
 
 .upcoming-team-grid {
   display: grid;
-  /* Thuisland links uitgelijnd (gelijk met de datum erboven), dan de scheidings-
-     pill, dan het uitland, en rechts de scoreboxjes. */
-  grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 62px;
+  /* Vaste thuis | scheiding | uit | score-kolommen: rijtjes blijven strak onder elkaar. */
+  grid-template-columns: var(--match-home-col, minmax(118px, 160px)) 30px minmax(0, 1fr) 62px;
   align-items: center;
   column-gap: 7px;
 }
@@ -1697,14 +1735,15 @@ textarea {
 
 .schedule-team-grid {
   display: grid;
-  /* Thuisland links onder de datum, subtiel bolletje ertussen, uitland ernaast en score rechts. */
-  grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 62px;
+  /* Vaste thuis | scheiding | uit | score-kolommen: rijtjes blijven strak onder elkaar. */
+  grid-template-columns: var(--match-home-col, minmax(118px, 160px)) 30px minmax(0, 1fr) 62px;
   align-items: center;
   column-gap: 7px;
   color: #0b1f4d;
 }
 
 .schedule-team-grid-knockout {
+  --match-home-col: minmax(160px, 1fr);
   font-size: 0.82rem;
 }
 
@@ -1715,6 +1754,16 @@ textarea {
   gap: 8px;
   font-weight: 800;
   color: #0b1f4d;
+}
+
+.schedule-team-cell-home {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.schedule-team-cell-away {
+  justify-content: flex-start;
+  text-align: left;
 }
 
 .schedule-team-name {
@@ -2971,12 +3020,13 @@ textarea {
 
   .schedule-team-grid,
   .upcoming-team-grid {
-    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 58px;
+    --match-home-col: minmax(58px, 78px);
+    grid-template-columns: var(--match-home-col) 20px minmax(0, 1fr) 54px;
     column-gap: 5px;
   }
 
   .upcoming-team-grid {
-    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 58px;
+    --match-home-col: minmax(58px, 78px);
   }
 
   .upcoming-team-separator,
@@ -2987,7 +3037,7 @@ textarea {
   }
 
   .schedule-team-cell,
-  .upcoming-team-grid .flex {
+  .upcoming-team-grid .schedule-team-cell {
     gap: 5px;
   }
 
@@ -3021,12 +3071,17 @@ textarea {
 @media (min-width: 640px) {
   .schedule-team-grid,
   .upcoming-team-grid {
-    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 70px;
+    --match-home-col: minmax(160px, 210px);
+    grid-template-columns: var(--match-home-col) 30px minmax(0, 1fr) 70px;
     column-gap: 10px;
   }
 
   .upcoming-team-grid {
-    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 70px;
+    --match-home-col: minmax(92px, 128px);
+  }
+
+  .schedule-team-grid-knockout {
+    --match-home-col: minmax(160px, 1fr);
   }
 
   .match-score-boxes {
