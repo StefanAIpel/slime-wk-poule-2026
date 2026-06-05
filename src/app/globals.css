@@ -430,8 +430,13 @@ textarea {
   padding: 12px 14px;
   background: rgba(255, 255, 255, 0.14);
   color: #fff;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
+  line-height: 1.35;
+}
+
+.auth-flow-note span {
+  min-width: 0;
 }
 
 .share-panel-strip {
@@ -950,7 +955,7 @@ textarea {
 
 @media (max-width: 759px) {
   .hero-home .world-cup-kicker {
-    transform: translateY(8px);
+    transform: translateY(3px);
   }
 
   .hero-home-title-block {

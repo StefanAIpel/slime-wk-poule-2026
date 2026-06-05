@@ -44,7 +44,7 @@ test("hero primary Gratis meedoen button is compact on mobile with a light empha
 
 test("mobile landing hero keeps the WK pills and title separated", () => {
   assert.match(homePage, /className=\"hero-home-title-block\"/);
-  assert.match(globalsCss, /\.hero-home \.world-cup-kicker \{\n    transform: translateY\(8px\);/);
+  assert.match(globalsCss, /\.hero-home \.world-cup-kicker \{\n    transform: translateY\(3px\);/);
   assert.match(globalsCss, /\.hero-home-title-block \{\n    max-width: min\(100%, 305px\);\n    transform: translateY\(-4px\);/);
 });
 
@@ -69,6 +69,8 @@ test("public login panel is compact on mobile", () => {
   assert.match(globalsCss, /\.public-login-title \{\n    font-size: 1\.36rem;\n    line-height: 1\.12;/);
   assert.match(globalsCss, /\.login-form-inline label \{\n    gap: 6px;\n    font-size: 0\.86rem;\n    line-height: 1\.18;/);
   assert.match(globalsCss, /\.login-form-inline \.field \{\n    min-height: 44px;/);
+  assert.match(globalsCss, /\.auth-flow-note \{[\s\S]*font-size: 0\.8125rem;[\s\S]*line-height: 1\.35;/);
+  assert.match(globalsCss, /\.auth-flow-note span \{\n  min-width: 0;\n\}/);
 });
 
 test("signup sent state keeps only the success headline and code form without duplicate helper copy", () => {
