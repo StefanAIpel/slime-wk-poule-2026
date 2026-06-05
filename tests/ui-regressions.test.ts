@@ -24,6 +24,7 @@ const bottomNav = await readFile(new URL("../src/components/bottom-nav.tsx", imp
 const upcomingMatches = await readFile(new URL("../src/components/upcoming-matches.tsx", import.meta.url), "utf8");
 const scheduleExplorer = await readFile(new URL("../src/components/schedule-explorer.tsx", import.meta.url), "utf8");
 const gameFrames = await readFile(new URL("../src/components/game-frames.tsx", import.meta.url), "utf8");
+const gamesPage = await readFile(new URL("../src/app/games/page.tsx", import.meta.url), "utf8");
 const schemaPage = await readFile(new URL("../src/app/schema/page.tsx", import.meta.url), "utf8");
 const schemaGroupsPage = await readFile(new URL("../src/app/schema/groepen/page.tsx", import.meta.url), "utf8");
 const schemaKnockoutPage = await readFile(new URL("../src/app/schema/knockout/page.tsx", import.meta.url), "utf8");
@@ -334,11 +335,15 @@ test("desktop schedule cards are compact and match rows use a visible aligned te
   assert.doesNotMatch(scheduleExplorer, /dark-panel rounded-2xl/);
 });
 
-test("game embed is smaller on desktop and mobile defaults to new-tab play", () => {
+test("game embed is larger and left-aligned on desktop while mobile defaults to new-tab play", () => {
   assert.match(gameFrames, /Open spel in nieuw tabblad/);
   assert.match(gameFrames, /Mobiel speelt dit het best schermvullend/);
+  assert.match(gameFrames, /Laadt het spel niet\? Open het in een nieuw tabblad\./);
+  assert.doesNotMatch(gameFrames, /game-site moet inbedden toestaan/);
   assert.doesNotMatch(gameFrames, />Nieuw tabblad</);
-  assert.match(globalsCss, /\.game-frame \{[\s\S]*max-width: 560px;[\s\S]*aspect-ratio: 16 \/ 9;[\s\S]*max-height: min\(42vh, 360px\);/);
+  assert.match(gamesPage, /page-shell game-page-shell/);
+  assert.match(globalsCss, /\.game-page-shell \{\n  width: min\(1420px, 100%\);\n\}/);
+  assert.match(globalsCss, /\.game-frame \{[\s\S]*width: min\(1120px, 100%\);[\s\S]*aspect-ratio: 16 \/ 9;[\s\S]*margin-inline: 0 auto;/);
   assert.match(globalsCss, /@media \(max-width: 639px\) \{[\s\S]*\.game-frame,\n  \.game-embed-note \{\n    display: none;/);
   assert.match(globalsCss, /\.game-open-link \{[\s\S]*linear-gradient\(135deg, #19b85d, #0e8a49 62%, #0a6b38\)/);
 });
