@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Crown, MapPin, Search, Table2, Trophy } from "lucide-react";
+import { CalendarDays, ChevronDown, Crown, MapPin, Table2, Trophy } from "lucide-react";
 import { useMemo, useState } from "react";
 import { TeamFlag } from "@/components/team-flag";
 import { formatAmsterdam, teamAbbrev, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
@@ -78,38 +78,6 @@ function dateLabel(iso: string | null) {
   return new Intl.DateTimeFormat("nl-NL", { timeZone: "Europe/Amsterdam", weekday: "short", day: "numeric", month: "short" }).format(
     new Date(iso),
   );
-}
-
-function normalizeSearch(value: string | null | undefined) {
-  return (value ?? "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
-function matchSearchHaystack(match: ScheduleMatch) {
-  return normalizeSearch(
-    [
-      match.group ? `groep ${match.group}` : "",
-      match.homeCode,
-      match.homeName,
-      match.homeLabel,
-      match.awayCode,
-      match.awayName,
-      match.awayLabel,
-      dateKey(match.startsAt),
-      dateLabel(match.startsAt),
-      formatAmsterdam(match.startsAt),
-      match.venue,
-    ]
-      .filter(Boolean)
-      .join(" "),
-  );
-}
-
-function normalizeScheduleQuery(value: string) {
-  const normalized = normalizeSearch(value).trim();
-  return normalized === "oranje" ? "nederland" : normalized;
 }
 
 function hasScore(match: ScheduleMatch) {
@@ -314,35 +282,72 @@ function StandingTable({ group, rows }: { group: string; rows: StandingRow[] }) 
 
 function StandingsPanel({ matches, standings }: { matches: ScheduleMatch[]; standings: { group: string; rows: StandingRow[] }[] }) {
   const [display, setDisplay] = useState<"groups" | "dates">("groups");
-  const [query, setQuery] = useState("");
-  const normalizedQuery = normalizeScheduleQuery(query);
-  const isNetherlandsQuery = normalizedQuery === "nederland";
+  const [groupFilter, setGroupFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all");
+  const [nlOnly, setNlOnly] = useState(false);
+  const [openPicker, setOpenPicker] = useState<"group" | "date" | null>(null);
+
+  const allGroups = useMemo(
+    () => Array.from(new Set(matches.map((m) => m.group).filter(Boolean) as string[])).sort(),
+    [matches],
+  );
+  const allDates = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const m of matches) {
+      const key = dateKey(m.startsAt);
+      if (key && !map.has(key)) map.set(key, m.startsAt as string);
+    }
+    return Array.from(map.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, iso]) => ({ key, label: dateLabel(iso) }));
+  }, [matches]);
+
+  const isNl = (match: ScheduleMatch) => !nlOnly || match.homeCode === "NLD" || match.awayCode === "NLD";
+
   const matchesByGroup = useMemo(() => {
     const map = new Map<string, ScheduleMatch[]>();
     for (const match of matches) {
       if (!match.group) continue;
+      if (groupFilter !== "all" && match.group !== groupFilter) continue;
+      if (!isNl(match)) continue;
       map.set(match.group, [...(map.get(match.group) ?? []), match]);
     }
     return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
-  }, [matches]);
-  const filteredMatchesByGroup = useMemo(() => {
-    if (!normalizedQuery) return matchesByGroup;
-    return matchesByGroup.filter(([group, groupMatches]) => {
-      const groupLabel = normalizeSearch(`groep ${group} group ${group}`);
-      return groupLabel.includes(normalizedQuery) || groupMatches.some((match) => matchSearchHaystack(match).includes(normalizedQuery));
-    });
-  }, [matchesByGroup, normalizedQuery]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [matches, groupFilter, nlOnly]);
+
   const matchesByDate = useMemo(() => {
     const map = new Map<string, ScheduleMatch[]>();
     for (const match of matches) {
-      if (normalizedQuery && !matchSearchHaystack(match).includes(normalizedQuery)) continue;
       const key = dateKey(match.startsAt) || "unknown";
+      if (dateFilter !== "all" && key !== dateFilter) continue;
+      if (!isNl(match)) continue;
       map.set(key, [...(map.get(key) ?? []), match]);
     }
     return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
-  }, [matches, normalizedQuery]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [matches, dateFilter, nlOnly]);
+
   const standingsByGroup = new Map(standings.map((item) => [item.group, item.rows]));
-  const visibleMatchCount = display === "groups" ? filteredMatchesByGroup.reduce((total, [, groupMatches]) => total + groupMatches.length, 0) : matchesByDate.reduce((total, [, dateMatches]) => total + dateMatches.length, 0);
+  const visibleMatchCount = display === "groups"
+    ? matchesByGroup.reduce((total, [, groupMatches]) => total + groupMatches.length, 0)
+    : matchesByDate.reduce((total, [, dateMatches]) => total + dateMatches.length, 0);
+
+  const groupButtonLabel = groupFilter === "all" ? "Alle groepen" : `Groep ${groupFilter}`;
+  const dateButtonLabel = dateFilter === "all" ? "Alle datums" : allDates.find((d) => d.key === dateFilter)?.label ?? "Datum";
+
+  function pickGroup(value: string) {
+    setGroupFilter(value);
+    setDateFilter("all");
+    setDisplay("groups");
+    setOpenPicker(null);
+  }
+  function pickDate(value: string) {
+    setDateFilter(value);
+    setGroupFilter("all");
+    setDisplay(value === "all" ? "groups" : "dates");
+    setOpenPicker(null);
+  }
 
   return (
     <div className="grid gap-3">
@@ -351,24 +356,57 @@ function StandingsPanel({ matches, standings }: { matches: ScheduleMatch[]; stan
           <p className="schedule-section-kicker">Live groepsfase</p>
         </div>
         <div className="schedule-groups-controls">
-          <label className="schedule-search-field">
-            <Search aria-hidden="true" className="size-4" />
-            <span className="sr-only">Zoek op groep, land of datum</span>
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Zoek groep, land of datum" />
-          </label>
-          <button type="button" className={isNetherlandsQuery ? "schedule-orange-chip schedule-orange-chip-active" : "schedule-orange-chip"} onClick={() => setQuery("Nederland")}>
+          <div className="schedule-picker">
+            <button type="button" className="schedule-picker-button" aria-expanded={openPicker === "group"} onClick={() => setOpenPicker(openPicker === "group" ? null : "group")}>
+              <Table2 aria-hidden="true" className="size-4" />
+              {groupButtonLabel}
+              <ChevronDown aria-hidden="true" className="size-4 schedule-picker-caret" />
+            </button>
+            {openPicker === "group" ? (
+              <>
+                <button type="button" className="schedule-picker-backdrop" aria-label="Sluiten" onClick={() => setOpenPicker(null)} />
+                <div className="schedule-picker-pop" role="menu">
+                  <button type="button" className={groupFilter === "all" ? "schedule-pick schedule-pick-wide schedule-pick-active" : "schedule-pick schedule-pick-wide"} onClick={() => pickGroup("all")}>Alle groepen</button>
+                  <div className="schedule-group-grid">
+                    {allGroups.map((g) => (
+                      <button key={g} type="button" className={groupFilter === g ? "schedule-pick schedule-pick-active" : "schedule-pick"} onClick={() => pickGroup(g)}>{g}</button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : null}
+          </div>
+
+          <div className="schedule-picker">
+            <button type="button" className="schedule-picker-button" aria-expanded={openPicker === "date"} onClick={() => setOpenPicker(openPicker === "date" ? null : "date")}>
+              <CalendarDays aria-hidden="true" className="size-4" />
+              {dateButtonLabel}
+              <ChevronDown aria-hidden="true" className="size-4 schedule-picker-caret" />
+            </button>
+            {openPicker === "date" ? (
+              <>
+                <button type="button" className="schedule-picker-backdrop" aria-label="Sluiten" onClick={() => setOpenPicker(null)} />
+                <div className="schedule-picker-pop" role="menu">
+                  <button type="button" className={dateFilter === "all" ? "schedule-pick schedule-pick-wide schedule-pick-active" : "schedule-pick schedule-pick-wide"} onClick={() => pickDate("all")}>Alle datums</button>
+                  <div className="schedule-date-list">
+                    {allDates.map((d) => (
+                      <button key={d.key} type="button" className={dateFilter === d.key ? "schedule-pick schedule-pick-row schedule-pick-active" : "schedule-pick schedule-pick-row"} onClick={() => pickDate(d.key)}>{d.label}</button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : null}
+          </div>
+
+          <button type="button" className={nlOnly ? "schedule-orange-chip schedule-orange-chip-active" : "schedule-orange-chip"} onClick={() => setNlOnly((value) => !value)}>
             Nederland - Oranje
           </button>
-          <div className="schedule-subtabs schedule-subtabs-light" role="tablist" aria-label="Groepsfase weergave">
-            <button type="button" className={display === "groups" ? "schedule-subtab schedule-subtab-active" : "schedule-subtab"} onClick={() => setDisplay("groups")}>Per groep</button>
-            <button type="button" className={display === "dates" ? "schedule-subtab schedule-subtab-active" : "schedule-subtab"} onClick={() => setDisplay("dates")}>Per datum</button>
-          </div>
         </div>
       </div>
 
       {display === "groups" ? (
         <div className="group-phase-grid">
-          {filteredMatchesByGroup.length ? filteredMatchesByGroup.map(([group, groupMatches]) => (
+          {matchesByGroup.length ? matchesByGroup.map(([group, groupMatches]) => (
             <article key={group} className="panel group-phase-card overflow-hidden">
               <header className="standing-card-header">
                 <span>Groep {group}</span>
@@ -384,7 +422,7 @@ function StandingsPanel({ matches, standings }: { matches: ScheduleMatch[]; stan
               </div>
             </article>
           )) : (
-            <p className="panel p-4 text-sm font-bold text-[#48617f]">Geen groep gevonden voor “{query}”.</p>
+            <p className="panel p-4 text-sm font-bold text-[#48617f]">Geen wedstrijden voor deze selectie.</p>
           )}
         </div>
       ) : (
@@ -400,7 +438,7 @@ function StandingsPanel({ matches, standings }: { matches: ScheduleMatch[]; stan
               </div>
             </article>
           )) : (
-            <p className="panel p-4 text-sm font-bold text-[#48617f]">Geen wedstrijden gevonden voor “{query}”.</p>
+            <p className="panel p-4 text-sm font-bold text-[#48617f]">Geen wedstrijden voor deze selectie.</p>
           )}
         </div>
       )}

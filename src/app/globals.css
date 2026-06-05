@@ -2478,16 +2478,106 @@ textarea {
 }
 
 .schedule-groups-controls {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
 }
 
-@media (min-width: 760px) {
-  .schedule-groups-controls {
-    grid-template-columns: minmax(260px, 1fr) auto auto;
-    align-items: center;
-  }
+.schedule-picker {
+  position: relative;
+}
+
+.schedule-picker-button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 11px;
+  background: #fff;
+  padding: 0 10px;
+  color: #081634;
+  font-size: 0.8rem;
+  font-weight: 1000;
+  cursor: pointer;
+}
+
+.schedule-picker-caret {
+  color: #7a8aa3;
+}
+
+.schedule-picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.schedule-picker-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 40;
+  display: grid;
+  gap: 8px;
+  width: max-content;
+  max-width: min(86vw, 320px);
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 14px;
+  background: #fff;
+  padding: 10px;
+  box-shadow: 0 18px 40px rgba(8, 22, 52, 0.2);
+}
+
+.schedule-group-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.schedule-date-list {
+  display: grid;
+  gap: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.schedule-pick {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(8, 22, 52, 0.1);
+  border-radius: 10px;
+  background: #f7faff;
+  padding: 0 8px;
+  color: #081634;
+  font-size: 0.85rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.schedule-pick-row {
+  width: 100%;
+  justify-content: flex-start;
+  white-space: nowrap;
+}
+
+.schedule-pick-wide {
+  width: 100%;
+}
+
+.schedule-pick-active {
+  border-color: transparent;
+  background: linear-gradient(135deg, #1e73b8, #0e7a44);
+  color: #fff;
+}
+
+.schedule-pick:hover {
+  border-color: rgba(30, 115, 184, 0.4);
 }
 
 .schedule-search-field {
