@@ -211,7 +211,9 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.doesNotMatch(quickMenu, /WK-poule invullen \/ wijzigen/);
   assert.match(quickMenu, /\[publicLinks\[0\], privateLinks\[0\], \.\.\.publicLinks\.slice\(1\), \.\.\.privateLinks\.slice\(1\)\]/);
   assert.match(quickMenu, /<form className=\"quick-menu-form\" action=\"\/logout\" method=\"post\">/);
-  assert.match(quickMenu, /<span>Uitloggen<\/span>/);
+  assert.match(quickMenu, /quick-menu-link-compact/);
+  assert.match(quickMenu, /slime-soccer-icon\.webp/);
+  assert.doesNotMatch(quickMenu, /slime-soccer-icon\.png/);
   assert.match(globalsCss, /\.quick-menu-logout \{/);
   assert.match(bottomNav, /return null;/);
   assert.doesNotMatch(bottomNav, /bottom-nav-emphasis/);

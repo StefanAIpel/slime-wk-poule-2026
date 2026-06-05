@@ -119,7 +119,7 @@ export function QuickMenu() {
                 </Link>
               ) : null}
               <Link className="quick-menu-link slime-link" href="/games?game=soccer" onClick={() => setOpen(false)}>
-                <Image src="/slime-soccer-icon.png" alt="" width={28} height={28} className="quick-menu-link-image" />
+                <Image src="/slime-soccer-icon.webp" alt="" width={28} height={28} className="quick-menu-link-image" />
                 <span>Slime Soccer</span>
               </Link>
               {loggedIn ? (
