@@ -2870,7 +2870,7 @@ textarea {
   background: #f6fbf8;
 }
 
-@media (min-width: 940px) {
+@media (min-width: 800px) {
   .group-phase-body {
     grid-template-columns: minmax(0, 1fr) 320px;
   }
