@@ -201,6 +201,14 @@ test("mobile pool navigation uses a dropdown selector instead of wrapping all po
   assert.match(globalsCss, /@media \(max-width: 640px\) \{[\s\S]*\.poules-page-shell \.pool-tabs \{\n    display: none;\n  \}[\s\S]*\.pool-selector-mobile \{\n    display: grid;/);
 });
 
+test("pool share text includes the poulecode and account-before-join guidance", () => {
+  assert.match(poulesPage, /Poulecode: \$\{pool\.code\}/);
+  assert.match(poulesPage, /Nog geen account\? Maak eerst gratis een SlimeScore-account aan; daarna kom je via deze link\/code in de poule\./);
+  assert.match(poolQuickShare, /const message = `\$\{inviteText\}\\n\\n\$\{joinUrl\}`\.trim\(\)/);
+  assert.match(joinPoolPage, /Nog geen account\? Maak eerst gratis een SlimeScore-account aan; daarna kom je terug bij deze poule\./);
+  assert.doesNotMatch(joinPoolPage, /Geen wachtwoord\. Link klikken/);
+});
+
 test("account page keeps name/team fixed but lets players change avatar and password safely", () => {
   assert.match(profileForm, /name=\"nickname\"/);
   assert.match(profileForm, /name=\"team_name\"/);

@@ -22,12 +22,12 @@ export function PoolQuickShare({
   const [copied, setCopied] = useState(false);
   const [qrBusy, setQrBusy] = useState(false);
   const [nativeCopied, setNativeCopied] = useState(false);
-  const message = `${inviteText} ${joinUrl}`.trim();
+  const message = `${inviteText}\n\n${joinUrl}`.trim();
   const encodedMessage = encodeURIComponent(message);
   const encodedInvite = encodeURIComponent(inviteText);
   const encodedUrl = encodeURIComponent(joinUrl);
   const encodedTitle = encodeURIComponent(`Doe mee met ${poolName}`);
-  const encodedBody = encodeURIComponent(`${inviteText}\n\n${joinUrl}`.trim());
+  const encodedBody = encodedMessage;
   const facebookWebHref = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedMessage}`;
   const fileName = `qr-${poolName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "wk-poule"}.png`;
 

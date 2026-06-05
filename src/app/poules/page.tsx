@@ -225,7 +225,12 @@ export default async function PoolsPage({
             const isOwner = currentMember?.role === "owner";
             const isManager = currentMember?.role === "owner" || currentMember?.role === "moderator";
             const joinAssets = poolJoinAssets.get(pool.id) ?? { joinUrl: SITE_URL, qrDataUrl: "" };
-            const inviteText = `Doe je mee met onze gratis WK 2026-poule "${pool.name}"? 1 keer ~10 minuten invullen en je strijdt het hele WK mee. 👇`;
+            const inviteText = `Doe je mee met onze gratis WK 2026-poule "${pool.name}"?
+
+Poulecode: ${pool.code}
+Nog geen account? Maak eerst gratis een SlimeScore-account aan; daarna kom je via deze link/code in de poule.
+
+Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee. 👇`;
             const poolHeroStyle = {
               "--pool-accent": pool.accentColor,
               "--pool-banner-image": `url("${poolBannerUrl(pool.id, pool.bannerPath, pool.bannerUpdatedAt)}")`,

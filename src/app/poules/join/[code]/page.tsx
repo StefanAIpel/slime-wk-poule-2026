@@ -92,7 +92,7 @@ export default async function JoinPoolPage({ params }: { params: Promise<{ code:
               <div>
                 <h2 className="text-2xl font-black text-[#101a2b]">Eerst aanmelden</h2>
                 <p className="mt-1 text-sm font-semibold leading-6 text-[#38506d]">
-                  Geen wachtwoord. Link klikken en je komt terug bij deze poule.
+                  Nog geen account? Maak eerst gratis een SlimeScore-account aan; daarna kom je terug bij deze poule.
                 </p>
               </div>
             </div>
