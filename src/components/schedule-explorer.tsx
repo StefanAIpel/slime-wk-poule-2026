@@ -256,7 +256,6 @@ export function ScheduleExplorer({ matches, initialView = "groups" }: { matches:
     () => matches.filter((m) => !m.group || (m.stage && m.stage !== "group")).sort((a, b) => (a.startsAt ?? "").localeCompare(b.startsAt ?? "") || a.id - b.id),
     [matches],
   );
-  const completedGroupMatches = useMemo(() => matches.filter((m) => m.group && hasScore(m)).length, [matches]);
 
   return (
     <section className="schedule-explorer grid gap-3">
@@ -274,7 +273,7 @@ export function ScheduleExplorer({ matches, initialView = "groups" }: { matches:
 
       {initialView === "groups" ? (
         <section id="groepen" className="schedule-section-anchor">
-          <StandingsPanel completedGroupMatches={completedGroupMatches} matches={matches.filter((m) => m.group)} standings={standings} />
+          <StandingsPanel matches={matches.filter((m) => m.group)} standings={standings} />
         </section>
       ) : null}
 
@@ -313,7 +312,7 @@ function StandingTable({ group, rows }: { group: string; rows: StandingRow[] }) 
   );
 }
 
-function StandingsPanel({ completedGroupMatches, matches, standings }: { completedGroupMatches: number; matches: ScheduleMatch[]; standings: { group: string; rows: StandingRow[] }[] }) {
+function StandingsPanel({ matches, standings }: { matches: ScheduleMatch[]; standings: { group: string; rows: StandingRow[] }[] }) {
   const [display, setDisplay] = useState<"groups" | "dates">("groups");
   const [query, setQuery] = useState("");
   const normalizedQuery = normalizeScheduleQuery(query);
@@ -349,11 +348,7 @@ function StandingsPanel({ completedGroupMatches, matches, standings }: { complet
     <div className="grid gap-3">
       <div className="schedule-section-tools">
         <div className="schedule-section-titlebar">
-          <div>
-            <p className="schedule-section-kicker">Live groepsfase</p>
-            <h2>Groepen</h2>
-          </div>
-          <p className="schedule-count-pill">{completedGroupMatches} van 72 groepsduels met score</p>
+          <p className="schedule-section-kicker">Live groepsfase</p>
         </div>
         <div className="schedule-groups-controls">
           <label className="schedule-search-field">
@@ -369,7 +364,6 @@ function StandingsPanel({ completedGroupMatches, matches, standings }: { complet
             <button type="button" className={display === "dates" ? "schedule-subtab schedule-subtab-active" : "schedule-subtab"} onClick={() => setDisplay("dates")}>Per datum</button>
           </div>
         </div>
-        <p className="schedule-filter-help">Zoek bijvoorbeeld op “Nederland - Oranje”, “Duitsland”, “Groep A” of “11 juni”. Je krijgt dan direct de bijbehorende poule of speeldag.</p>
       </div>
 
       {display === "groups" ? (
