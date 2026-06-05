@@ -27,7 +27,23 @@ export function AppFirstShareLink({ appHref, webHref, className, label, title, c
     event.preventDefault();
 
     if (isMobileAppContext()) {
+      let cancelled = false;
+      const cancelFallback = () => {
+        cancelled = true;
+        window.removeEventListener("pagehide", cancelFallback);
+        window.removeEventListener("blur", cancelFallback);
+        document.removeEventListener("visibilitychange", cancelFallback);
+      };
+      window.addEventListener("pagehide", cancelFallback, { once: true });
+      window.addEventListener("blur", cancelFallback, { once: true });
+      document.addEventListener("visibilitychange", cancelFallback, { once: true });
       window.location.href = appHref;
+      window.setTimeout(() => {
+        if (!cancelled && document.visibilityState === "visible") {
+          window.open(webHref, "_blank", "noopener,noreferrer");
+        }
+        cancelFallback();
+      }, 900);
       return;
     }
 

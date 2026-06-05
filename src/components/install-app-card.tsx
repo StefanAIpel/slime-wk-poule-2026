@@ -8,7 +8,7 @@ type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 };
 
-const storageKey = "slime-score-install-card-dismissed";
+const storageKey = "slime-score-install-card-dismissed-v2";
 const subscribe = () => () => {};
 
 export function InstallAppCard() {

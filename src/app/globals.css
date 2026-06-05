@@ -3262,16 +3262,137 @@ textarea {
   box-shadow: 0 10px 22px rgba(8, 22, 52, 0.12);
 }
 
+/* Voorspellingen: knock-outkeuzes zonder interne scroll; elke ronde volgt uit de vorige. */
+.knockout-picker {
+  display: grid;
+  gap: 14px;
+}
+
+.knockout-picker-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(8, 22, 52, 0.1);
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 14px;
+  box-shadow: 0 10px 24px rgba(8, 22, 52, 0.05);
+}
+
+.knockout-picker-card:disabled,
+.knockout-picker-card[disabled] {
+  opacity: 0.72;
+}
+
+.knockout-picker-title {
+  color: #081634;
+  font-size: 1.04rem;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.knockout-picker-hint {
+  color: #48617f;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.knockout-picker-status {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.knockout-picker-status-ok {
+  background: #dcfce7;
+  color: #137c35;
+}
+
+.knockout-picker-status-warn {
+  background: #fff4ce;
+  color: #8a5a00;
+}
+
+.knockout-picker-grid {
+  display: grid;
+  gap: 8px;
+}
+
+@media (min-width: 560px) {
+  .knockout-picker-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 940px) {
+  .knockout-picker-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.knockout-picker-option {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(8, 22, 52, 0.1);
+  border-radius: 14px;
+  background: #f8fbff;
+  padding: 9px 10px;
+  color: #081634;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.knockout-picker-option:has(input:checked) {
+  border-color: rgba(19, 124, 53, 0.45);
+  background: #f0fdf4;
+}
+
+.knockout-picker-code {
+  flex: 0 0 auto;
+  color: #064ed6;
+  font-weight: 900;
+}
+
+.knockout-picker-name {
+  min-width: 0;
+}
+
+.knockout-picker-empty {
+  border-radius: 14px;
+  background: #f8fbff;
+  padding: 12px;
+  color: #48617f;
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.knockout-champion-card {
+  color: #081634;
+}
+
 /* Poule-pagina: mobiel compacter en prioriteit op ranglijst/deelnemers. */
 .pool-card-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
   align-items: center;
   padding: 14px 16px;
 }
 
+.pool-card-title-row {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
 .pool-card-title {
+  min-width: 0;
   overflow: hidden;
   font-size: clamp(1.25rem, 4.6vw, 1.7rem);
   font-weight: 800;
@@ -3303,10 +3424,73 @@ textarea {
 }
 
 .pool-quick-share {
-  display: inline-flex;
-  flex-wrap: nowrap;
-  justify-content: flex-end;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+.pool-share-toggle {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #0b1f4d;
+  box-shadow: 0 6px 14px rgba(7, 18, 46, 0.16);
+  cursor: pointer;
+  list-style: none;
+}
+
+.pool-share-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.pool-share-toggle::marker {
+  content: "";
+}
+
+.pool-quick-share[open] .pool-share-toggle {
+  background: #0b1f4d;
+  color: #fff;
+}
+
+.pool-share-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  width: min(300px, calc(100vw - 40px));
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 18px;
+  background: #fff;
+  padding: 12px;
+  color: #0b1f4d;
+  box-shadow: 0 18px 40px rgba(7, 18, 46, 0.22);
+}
+
+.pool-share-menu-title {
+  margin: 0;
+  color: #48617f;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.pool-share-actions {
+  display: flex;
+  flex-wrap: wrap;
   gap: 7px;
+}
+
+.pool-share-admin {
+  display: grid;
+  gap: 7px;
+  border-top: 1px solid rgba(8, 22, 52, 0.08);
+  padding-top: 9px;
 }
 
 .pool-quick-share-button {
@@ -3315,11 +3499,11 @@ textarea {
   height: 38px;
   flex: 0 0 auto;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(8, 22, 52, 0.1);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(248, 251, 255, 0.98);
   color: #0b1f4d;
-  box-shadow: 0 8px 18px rgba(7, 18, 46, 0.15);
+  box-shadow: 0 6px 14px rgba(7, 18, 46, 0.1);
   cursor: pointer;
   text-decoration: none;
 }
@@ -3338,6 +3522,24 @@ textarea {
 
 .pool-quick-share-qr {
   color: #114b82;
+}
+
+.pool-quick-share-facebook {
+  color: #1765d8;
+}
+
+.pool-quick-share-instagram {
+  color: #c13584;
+}
+
+.pool-quick-share-telegram {
+  color: #229ed9;
+}
+
+.pool-share-brand-letter {
+  font-size: 0.76rem;
+  font-weight: 950;
+  letter-spacing: -0.03em;
 }
 
 .pool-members-title-row {
@@ -3410,9 +3612,15 @@ textarea {
     display: none;
   }
 
-  .pool-quick-share {
-    justify-content: flex-start;
-    gap: 5px;
+  .pool-share-toggle {
+    width: 31px;
+    height: 31px;
+  }
+
+  .pool-share-menu {
+    right: -4px;
+    width: min(286px, calc(100vw - 36px));
+    padding: 10px;
   }
 
   .pool-quick-share-button {
@@ -3515,6 +3723,11 @@ textarea {
 }
 
 @media (max-width: 380px) {
+  .pool-share-toggle {
+    width: 29px;
+    height: 29px;
+  }
+
   .pool-quick-share-button {
     width: 31px;
     height: 31px;
