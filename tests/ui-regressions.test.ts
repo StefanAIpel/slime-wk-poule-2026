@@ -208,20 +208,20 @@ test("schema defaults to groups, keeps knockout separate, and removes the all-ma
   assert.doesNotMatch(scheduleExplorer, /view: "matches"/);
   assert.doesNotMatch(scheduleExplorer, /label: "Wedstrijden"/);
   assert.match(scheduleExplorer, /knockoutStageTabs/);
-  assert.match(scheduleExplorer, /Per groep/);
-  assert.match(scheduleExplorer, /Per datum/);
+  assert.match(scheduleExplorer, /schedule-group-grid/);
+  assert.match(scheduleExplorer, /Alle datums/);
 });
 
-test("schema copy is public-facing and group filters can search team, group, or date", () => {
+test("schema copy is public-facing and group/date are chosen via pickers", () => {
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Alle WK-wedstrijden op een rij met datum, tijd en stadion/);
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Geen account nodig — deel het schema gerust in je groepsapp/);
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /<ShareButton url=\{scheduleShareUrl\} text=\{scheduleIntro\} title="WK 2026 speelschema" label="Deel schema" \/>/);
   assert.doesNotMatch(schemaPage + schemaGroupsPage + schemaKnockoutPage, /AI-score|API-score|feedback|pagina staat/i);
-  assert.match(scheduleExplorer, /Zoek groep, land of datum/);
   assert.match(scheduleExplorer, /Nederland - Oranje/);
-  assert.match(scheduleExplorer, /normalizeScheduleQuery/);
-  assert.match(scheduleExplorer, /query/);
-  assert.match(scheduleExplorer, /filteredMatchesByGroup/);
+  assert.match(scheduleExplorer, /schedule-picker-pop/);
+  assert.match(scheduleExplorer, /schedule-group-grid/);
+  assert.match(scheduleExplorer, /groupFilter/);
+  assert.match(scheduleExplorer, /dateFilter/);
 });
 
 test("desktop schedule cards are compact and match rows use a visible aligned team separator", () => {
