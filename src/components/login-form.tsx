@@ -3,6 +3,7 @@
 import { Check, ExternalLink, KeyRound, LogIn, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { kidEmail } from "@/lib/kid";
+import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH, TEAM_NAME_MAX_LENGTH, TEAM_NAME_MIN_LENGTH } from "@/lib/limits";
 import { buildEmailRedirectTo } from "@/lib/supabase/auth-redirect";
 import { createClient } from "@/lib/supabase/browser";
 
@@ -348,9 +349,9 @@ export function LoginForm({
     setStatus("loading");
     setMessage("");
 
-    const cleanNickname = nickname.trim().replace(/\s+/g, " ").slice(0, 24);
-    const cleanTeamName = teamName.trim().replace(/\s+/g, " ").slice(0, 28);
-    if (cleanNickname.length < 4 || cleanTeamName.length < 4) {
+    const cleanNickname = nickname.trim().replace(/\s+/g, " ").slice(0, NICKNAME_MAX_LENGTH);
+    const cleanTeamName = teamName.trim().replace(/\s+/g, " ").slice(0, TEAM_NAME_MAX_LENGTH);
+    if (cleanNickname.length < NICKNAME_MIN_LENGTH || cleanTeamName.length < TEAM_NAME_MIN_LENGTH) {
       setStatus("error");
       setMessage("Vul je naam en teamnaam allebei met minstens 4 tekens in.");
       return;
@@ -730,8 +731,8 @@ export function LoginForm({
               className="field"
               autoComplete="name"
               required
-              minLength={4}
-              maxLength={24}
+              minLength={NICKNAME_MIN_LENGTH}
+              maxLength={NICKNAME_MAX_LENGTH}
               value={nickname}
               onChange={(event) => setNickname(event.target.value)}
               placeholder="Stefan"
@@ -742,8 +743,8 @@ export function LoginForm({
             <input
               className="field"
               required
-              minLength={4}
-              maxLength={28}
+              minLength={TEAM_NAME_MIN_LENGTH}
+              maxLength={TEAM_NAME_MAX_LENGTH}
               value={teamName}
               onChange={(event) => setTeamName(event.target.value)}
               placeholder="VARschrikkelijk goed"

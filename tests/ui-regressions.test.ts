@@ -37,6 +37,8 @@ const knockoutPredictionPicker = await readFile(new URL("../src/components/knock
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
 const rankingLib = await readFile(new URL("../src/lib/ranking.ts", import.meta.url), "utf8");
+const limitsLib = await readFile(new URL("../src/lib/limits.ts", import.meta.url), "utf8");
+const lengthMigration = await readFile(new URL("../supabase/migrations/20260605103457_enforce_profile_pool_name_lengths.sql", import.meta.url), "utf8");
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
 const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
 const recoveryEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
@@ -101,6 +103,25 @@ test("signup sent state keeps only the success headline and code form without du
   assert.doesNotMatch(loginForm, /Mail niet ontvangen\? Check je spambox of probeer opnieuw\./);
   assert.doesNotMatch(loginForm, /De knop in de mail blijft als fallback bestaan/);
   assert.doesNotMatch(loginForm, /Open de inloglink|Registratielink verstuurd/i);
+});
+
+test("profile and pool display names are capped for compact mobile UI", () => {
+  assert.match(limitsLib, /NICKNAME_MAX_LENGTH = 15/);
+  assert.match(limitsLib, /TEAM_NAME_MAX_LENGTH = 25/);
+  assert.match(limitsLib, /POOL_NAME_MAX_LENGTH = 25/);
+  assert.match(loginForm, /slice\(0, NICKNAME_MAX_LENGTH\)/);
+  assert.match(loginForm, /slice\(0, TEAM_NAME_MAX_LENGTH\)/);
+  assert.match(loginForm, /maxLength=\{NICKNAME_MAX_LENGTH\}/);
+  assert.match(loginForm, /maxLength=\{TEAM_NAME_MAX_LENGTH\}/);
+  assert.match(profileForm, /maxLength=\{NICKNAME_MAX_LENGTH\}/);
+  assert.match(profileForm, /maxLength=\{TEAM_NAME_MAX_LENGTH\}/);
+  assert.match(homePage, /maxLength=\{POOL_NAME_MAX_LENGTH\}/);
+  assert.match(actions, /cleanText\(formData\.get\("nickname"\), NICKNAME_MAX_LENGTH\)/);
+  assert.match(actions, /cleanText\(formData\.get\("team_name"\), TEAM_NAME_MAX_LENGTH\)/);
+  assert.match(actions, /cleanText\(formData\.get\("name"\), POOL_NAME_MAX_LENGTH\)/);
+  assert.match(lengthMigration, /char_length\(nickname\) between 2 and 15/);
+  assert.match(lengthMigration, /char_length\(team_name\) between 2 and 25/);
+  assert.match(lengthMigration, /char_length\(name\) between 2 and 25/);
 });
 
 test("account page keeps name/team fixed but lets players change avatar and password safely", () => {

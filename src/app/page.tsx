@@ -15,6 +15,7 @@ import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
 import { UpcomingMatches } from "@/components/upcoming-matches";
 import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
+import { POOL_NAME_MAX_LENGTH, POOL_NAME_MIN_LENGTH } from "@/lib/limits";
 import { compareScoresAlphabetical, withPublicRankScores, worldRankForUser, type RankedScore } from "@/lib/ranking";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -210,8 +211,8 @@ export default async function Home({
               <input
                 name="name"
                 required
-                minLength={2}
-                maxLength={50}
+                minLength={POOL_NAME_MIN_LENGTH}
+                maxLength={POOL_NAME_MAX_LENGTH}
                 placeholder="Bijv. Familie Dijkstra"
                 className="field flex-1"
                 aria-label="Naam van je WK-poule"
