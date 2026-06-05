@@ -21,8 +21,8 @@ const appFont = Plus_Jakarta_Sans({
 const description =
   "Gratis Nederlandse WK 2026-poule. Eén keer invullen, maak een WK-poule met vrienden en familie en zie wie er wint. Jouw data privé.";
 
-const appIcon = "/icons/slimescore-app-icon-v2-512.png";
-const appleTouchIcon = "/icons/slimescore-apple-touch-icon-v2-180.png";
+const appIcon = "/icons/slimescore-app-icon-v3-512.png";
+const appleTouchIcon = "/icons/slimescore-apple-touch-icon-v3-180.png";
 // Vierkant app-icon voor gedeelde links: duidelijker in WhatsApp/Telegram dan de brede banner.
 const ogImage = appIcon;
 
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: appIcon, sizes: "512x512", type: "image/png" },
-      { url: "/icons/slimescore-app-icon-v2-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/slimescore-app-icon-v3-192.png", sizes: "192x192", type: "image/png" },
     ],
     apple: [{ url: appleTouchIcon, sizes: "180x180", type: "image/png" }],
   },

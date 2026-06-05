@@ -3,6 +3,7 @@
 import { Check, ExternalLink, KeyRound, LogIn, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { kidEmail } from "@/lib/kid";
+import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH, TEAM_NAME_MAX_LENGTH, TEAM_NAME_MIN_LENGTH } from "@/lib/limits";
 import { buildEmailRedirectTo } from "@/lib/supabase/auth-redirect";
 import { createClient } from "@/lib/supabase/browser";
 
@@ -29,7 +30,7 @@ const webmail: WebmailProvider[] = [
 ];
 
 const rememberedEmailKey = "slimescore:last-email";
-const mailFolderHint = "Check ook Spam of Ongewenst als je de mail niet ziet.";
+const mailFolderHint = "Niet gezien? Check Spam of Ongewenst.";
 
 function webmailFor(email: string) {
   const domain = email.split("@")[1]?.toLowerCase() ?? "";
@@ -348,9 +349,9 @@ export function LoginForm({
     setStatus("loading");
     setMessage("");
 
-    const cleanNickname = nickname.trim().replace(/\s+/g, " ").slice(0, 24);
-    const cleanTeamName = teamName.trim().replace(/\s+/g, " ").slice(0, 28);
-    if (cleanNickname.length < 4 || cleanTeamName.length < 4) {
+    const cleanNickname = nickname.trim().replace(/\s+/g, " ").slice(0, NICKNAME_MAX_LENGTH);
+    const cleanTeamName = teamName.trim().replace(/\s+/g, " ").slice(0, TEAM_NAME_MAX_LENGTH);
+    if (cleanNickname.length < NICKNAME_MIN_LENGTH || cleanTeamName.length < TEAM_NAME_MIN_LENGTH) {
       setStatus("error");
       setMessage("Vul je naam en teamnaam allebei met minstens 4 tekens in.");
       return;
@@ -461,26 +462,28 @@ export function LoginForm({
     const isResetMail = mode === "forgot";
     return (
       <div className={surfaceClass}>
-        <div className="flex items-center gap-2 rounded-lg bg-green-50 p-3 font-bold text-[#0f7a39]">
+        <div className="auth-sent-banner flex items-center gap-2 rounded-lg bg-green-50 p-3 font-bold text-[#0f7a39]">
           <Check aria-hidden="true" className="size-5" />
-          {isResetMail
-            ? status === "sent"
-              ? "Resetmail verstuurd naar je e-mail"
-              : "Code uit resetmail invullen"
-            : "Bevestigingsmail verstuurd naar je e-mail"}
+          <span>
+            {isResetMail
+              ? status === "sent"
+                ? "Resetmail verstuurd"
+                : "Code uit resetmail"
+              : "Bevestigingsmail verstuurd"}
+          </span>
         </div>
         {message ? (
-          <p aria-live="polite" className="text-sm font-medium leading-5 text-[#0f5132]">
+          <p aria-live="polite" className="auth-sent-message text-sm font-medium leading-5 text-[#0f5132]">
             {message}
           </p>
         ) : null}
         {provider ? <WebmailButton provider={provider} /> : null}
-        <p className="rounded-lg bg-[#fff8e6] p-2 text-xs font-bold leading-5 text-[#7a4a00]">
+        <p className="auth-mail-hint rounded-lg bg-[#fff8e6] p-2 text-xs font-bold leading-5 text-[#7a4a00]">
           {mailFolderHint}
         </p>
 
         {isResetMail ? (
-          <form method="post" onSubmit={onResetCodeSubmit} className="grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label="Wachtwoord wijzigen met mailcode">
+          <form method="post" onSubmit={onResetCodeSubmit} className="auth-code-panel grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label="Wachtwoord wijzigen met mailcode">
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
               E-mailadres
               <input
@@ -501,7 +504,7 @@ export function LoginForm({
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
               Code uit de resetmail
               <input
-                className="field text-center text-lg font-black tracking-[0.3em]"
+                className="auth-code-field field text-center text-lg font-black tracking-[0.3em]"
                 inputMode="numeric"
                 autoComplete="one-time-code"
                 required
@@ -545,11 +548,11 @@ export function LoginForm({
             </button>
           </form>
         ) : (
-          <form method="post" onSubmit={onSignupCodeSubmit} className="grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label="Registratie bevestigen met mailcode">
+          <form method="post" onSubmit={onSignupCodeSubmit} className="auth-code-panel grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label="Registratie bevestigen met mailcode">
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
               Code uit de mail
               <input
-                className="field text-center text-lg font-black tracking-[0.3em]"
+                className="auth-code-field field text-center text-lg font-black tracking-[0.3em]"
                 inputMode="numeric"
                 autoComplete="one-time-code"
                 required
@@ -563,7 +566,7 @@ export function LoginForm({
               {signupSubmitting ? "Bevestigen…" : "Registratie bevestigen"}
             </button>
             <button className="button-secondary w-full" type="button" onClick={onResendSignupConfirmation} disabled={resendSubmitting || signupSubmitting}>
-              {resendSubmitting ? "Opnieuw sturen…" : "Bevestigingsmail opnieuw sturen"}
+              {resendSubmitting ? "Opnieuw sturen…" : "Mail opnieuw sturen"}
             </button>
           </form>
         )}
@@ -730,8 +733,8 @@ export function LoginForm({
               className="field"
               autoComplete="name"
               required
-              minLength={4}
-              maxLength={24}
+              minLength={NICKNAME_MIN_LENGTH}
+              maxLength={NICKNAME_MAX_LENGTH}
               value={nickname}
               onChange={(event) => setNickname(event.target.value)}
               placeholder="Stefan"
@@ -742,8 +745,8 @@ export function LoginForm({
             <input
               className="field"
               required
-              minLength={4}
-              maxLength={28}
+              minLength={TEAM_NAME_MIN_LENGTH}
+              maxLength={TEAM_NAME_MAX_LENGTH}
               value={teamName}
               onChange={(event) => setTeamName(event.target.value)}
               placeholder="VARschrikkelijk goed"

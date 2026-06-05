@@ -2,8 +2,8 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
 import { RankingExplorer, type PlayerRow, type PoolRow } from "@/components/ranking-explorer";
-import { DEMO_PLAYERS, DEMO_POOLS, hasSafePublicProfile } from "@/lib/demo-leaderboard";
 import { formatAmsterdam } from "@/lib/format";
+import { compareScoresAlphabetical, hasPublicProfile } from "@/lib/ranking";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
 export const metadata = {
@@ -45,35 +45,24 @@ export default async function RankingPage() {
 
   const lastUpdate = (lastScore as { updated_at: string | null } | null)?.updated_at ?? null;
 
-  const rows = ((globalScores ?? []) as unknown as GlobalScoreRow[]).filter((row) => hasSafePublicProfile(row.profiles));
-  const realPlayers = rows.map((row) => ({
-    userId: row.user_id,
-    nickname: row.profiles?.nickname ?? null,
-    teamName: row.profiles?.team_name ?? null,
-    avatarKey: row.profiles?.avatar_key ?? null,
-    points: row.points,
-    exact: row.exact_scores,
-    correct: row.correct_results,
-  }));
-  const demoPlayers = DEMO_PLAYERS.map((player) => ({
-    userId: player.userId,
-    nickname: player.nickname,
-    teamName: player.teamName,
-    avatarKey: null,
-    points: 0,
-    exact: 0,
-    correct: 0,
-  }));
-  const players: PlayerRow[] = [...realPlayers, ...demoPlayers].slice(0, 300).map((row, index) => ({
-    ...row,
-    rank: index + 1,
-  }));
-  const realPoolRankings = buildPoolRankings(pools ?? [], members ?? [], allScores ?? []);
-  const demoPoolRankings = DEMO_POOLS.map((pool) => ({
-    ...pool,
-    points: DEMO_PLAYERS.filter((player) => player.poolId === pool.id).length * 0,
-  }));
-  const poolRankings: PoolRow[] = [...realPoolRankings, ...demoPoolRankings].map((pool, index) => ({
+  const rows = ((globalScores ?? []) as unknown as GlobalScoreRow[]).filter((row) => hasPublicProfile(row.profiles));
+  const players: PlayerRow[] = rows
+    .map((row) => ({
+      userId: row.user_id,
+      nickname: row.profiles?.nickname ?? null,
+      teamName: row.profiles?.team_name ?? null,
+      avatarKey: row.profiles?.avatar_key ?? null,
+      points: row.points,
+      exact: row.exact_scores,
+      correct: row.correct_results,
+    }))
+    .sort(compareScoresAlphabetical)
+    .slice(0, 300)
+    .map((row, index) => ({
+      ...row,
+      rank: index + 1,
+    }));
+  const poolRankings: PoolRow[] = buildPoolRankings(pools ?? [], members ?? [], allScores ?? []).map((pool, index) => ({
     id: pool.id,
     rank: index + 1,
     name: pool.name,

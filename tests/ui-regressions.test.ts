@@ -9,8 +9,12 @@ const passwordChangeForm = await readFile(new URL("../src/components/password-ch
 const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
+const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
+const rankingPage = await readFile(new URL("../src/app/ranglijst/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
+const manifest = await readFile(new URL("../src/app/manifest.ts", import.meta.url), "utf8");
+const constants = await readFile(new URL("../src/lib/constants.ts", import.meta.url), "utf8");
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
 const quickMenu = await readFile(new URL("../src/components/quick-menu.tsx", import.meta.url), "utf8");
 const statusBar = await readFile(new URL("../src/components/status-bar.tsx", import.meta.url), "utf8");
@@ -20,6 +24,7 @@ const bottomNav = await readFile(new URL("../src/components/bottom-nav.tsx", imp
 const upcomingMatches = await readFile(new URL("../src/components/upcoming-matches.tsx", import.meta.url), "utf8");
 const scheduleExplorer = await readFile(new URL("../src/components/schedule-explorer.tsx", import.meta.url), "utf8");
 const gameFrames = await readFile(new URL("../src/components/game-frames.tsx", import.meta.url), "utf8");
+const gamesPage = await readFile(new URL("../src/app/games/page.tsx", import.meta.url), "utf8");
 const schemaPage = await readFile(new URL("../src/app/schema/page.tsx", import.meta.url), "utf8");
 const schemaGroupsPage = await readFile(new URL("../src/app/schema/groepen/page.tsx", import.meta.url), "utf8");
 const schemaKnockoutPage = await readFile(new URL("../src/app/schema/knockout/page.tsx", import.meta.url), "utf8");
@@ -31,6 +36,9 @@ const installAppCard = await readFile(new URL("../src/components/install-app-car
 const knockoutPredictionPicker = await readFile(new URL("../src/components/knockout-prediction-picker.tsx", import.meta.url), "utf8");
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
+const rankingLib = await readFile(new URL("../src/lib/ranking.ts", import.meta.url), "utf8");
+const limitsLib = await readFile(new URL("../src/lib/limits.ts", import.meta.url), "utf8");
+const lengthMigration = await readFile(new URL("../supabase/migrations/20260605103457_enforce_profile_pool_name_lengths.sql", import.meta.url), "utf8");
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
 const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
 const recoveryEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
@@ -80,20 +88,46 @@ test("public login panel is compact on mobile", () => {
 test("public FrontPage shows the PWA install instructions card near login", () => {
   assert.match(homePage, /import \{ InstallAppCard \} from "@\/components\/install-app-card"/);
   assert.match(homePage, /<LoginForm surface=\"inline\" \/>[\s\S]*<InstallAppCard \/>/);
-  assert.match(installAppCard, /Zet Slime Score op je beginscherm/);
+  assert.match(installAppCard, /Voeg toe als app/);
+  assert.match(globalsCss, /\.install-card-title \{[\s\S]*font-size: 0\.95rem;[\s\S]*white-space: nowrap;/);
   assert.match(installAppCard, /Zo installeer je|Installeren/);
   assert.match(installAppCard, /iPhone \(Safari\)/);
   assert.match(installAppCard, /Android \(Chrome\)/);
   assert.match(installAppCard, /slime-score-install-card-dismissed-v2/);
 });
 
-test("signup sent state keeps only the success headline and code form without duplicate helper copy", () => {
-  assert.match(loginForm, /Bevestigingsmail verstuurd naar je e-mail/);
+test("signup sent state keeps compact mobile copy and code form without duplicate helper copy", () => {
+  assert.match(loginForm, /Bevestigingsmail verstuurd/);
   assert.match(loginForm, /Registratie bevestigen met mailcode/);
-  assert.match(loginForm, /Bevestigingsmail opnieuw sturen/);
+  assert.match(loginForm, /Mail opnieuw sturen/);
+  assert.match(loginForm, /auth-sent-banner/);
+  assert.match(loginForm, /auth-code-panel/);
+  assert.match(globalsCss, /\.login-form-inline \.auth-sent-banner \{\n    padding: 9px 10px;\n    font-size: 0\.88rem;\n    line-height: 1\.22;/);
+  assert.match(globalsCss, /\.login-form-inline \.auth-code-panel \{\n    gap: 9px;\n    padding: 10px;/);
+  assert.doesNotMatch(loginForm, /Bevestigingsmail verstuurd naar je e-mail/);
+  assert.doesNotMatch(loginForm, /Bevestigingsmail opnieuw sturen/);
   assert.doesNotMatch(loginForm, /Mail niet ontvangen\? Check je spambox of probeer opnieuw\./);
   assert.doesNotMatch(loginForm, /De knop in de mail blijft als fallback bestaan/);
   assert.doesNotMatch(loginForm, /Open de inloglink|Registratielink verstuurd/i);
+});
+
+test("profile and pool display names are capped for compact mobile UI", () => {
+  assert.match(limitsLib, /NICKNAME_MAX_LENGTH = 15/);
+  assert.match(limitsLib, /TEAM_NAME_MAX_LENGTH = 25/);
+  assert.match(limitsLib, /POOL_NAME_MAX_LENGTH = 25/);
+  assert.match(loginForm, /slice\(0, NICKNAME_MAX_LENGTH\)/);
+  assert.match(loginForm, /slice\(0, TEAM_NAME_MAX_LENGTH\)/);
+  assert.match(loginForm, /maxLength=\{NICKNAME_MAX_LENGTH\}/);
+  assert.match(loginForm, /maxLength=\{TEAM_NAME_MAX_LENGTH\}/);
+  assert.match(profileForm, /maxLength=\{NICKNAME_MAX_LENGTH\}/);
+  assert.match(profileForm, /maxLength=\{TEAM_NAME_MAX_LENGTH\}/);
+  assert.match(homePage, /maxLength=\{POOL_NAME_MAX_LENGTH\}/);
+  assert.match(actions, /cleanText\(formData\.get\("nickname"\), NICKNAME_MAX_LENGTH\)/);
+  assert.match(actions, /cleanText\(formData\.get\("team_name"\), TEAM_NAME_MAX_LENGTH\)/);
+  assert.match(actions, /cleanText\(formData\.get\("name"\), POOL_NAME_MAX_LENGTH\)/);
+  assert.match(lengthMigration, /char_length\(nickname\) between 2 and 15/);
+  assert.match(lengthMigration, /char_length\(team_name\) between 2 and 25/);
+  assert.match(lengthMigration, /char_length\(name\) between 2 and 25/);
 });
 
 test("account page keeps name/team fixed but lets players change avatar and password safely", () => {
@@ -116,7 +150,14 @@ test("account page keeps name/team fixed but lets players change avatar and pass
 });
 
 test("shared SlimeScore links use the app icon instead of the wide banner", () => {
+  assert.match(constants, /SITE_NAME = "SlimeScore"/);
+  assert.match(manifest, /name: "SlimeScore"/);
+  assert.match(manifest, /short_name: "SlimeScore"/);
+  assert.match(manifest, /src: "\/icons\/slimescore-app-icon-v3-512\.png"/);
+  assert.match(manifest, /purpose: "any"/);
+  assert.match(manifest, /purpose: "maskable"/);
   assert.match(layout, /const ogImage = appIcon/);
+  assert.match(layout, /slimescore-app-icon-v3-512\.png/);
   assert.match(layout, /width: 512, height: 512/);
   assert.doesNotMatch(layout, /og-slimescore-wk2026-v2\.png/);
 });
@@ -201,27 +242,28 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.doesNotMatch(quickMenu, /WK-poule invullen \/ wijzigen/);
   assert.match(quickMenu, /\[publicLinks\[0\], privateLinks\[0\], \.\.\.publicLinks\.slice\(1\), \.\.\.privateLinks\.slice\(1\)\]/);
   assert.match(quickMenu, /<form className=\"quick-menu-form\" action=\"\/logout\" method=\"post\">/);
-  assert.match(quickMenu, /<span>Uitloggen<\/span>/);
+  assert.match(quickMenu, /quick-menu-link-compact/);
+  assert.match(quickMenu, /slime-soccer-icon\.webp/);
+  assert.doesNotMatch(quickMenu, /slime-soccer-icon\.png/);
   assert.match(globalsCss, /\.quick-menu-logout \{/);
   assert.match(bottomNav, /return null;/);
   assert.doesNotMatch(bottomNav, /bottom-nav-emphasis/);
   assert.match(statusBar, /href=\"\/voorspellingen\" className=\"status-chip status-chip-countdown/);
 });
 
-test("mobile poule page prioritizes ranking and hides bulky share/admin controls", () => {
+test("mobile poule page prioritizes ranking and keeps share buttons visible next to the pool name", () => {
   assert.match(poulesPage, /<div className=\"pool-card-title-row\">[\s\S]*<PoolQuickShare/);
   assert.match(poulesPage, /isManager=\{isManager\}/);
   assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} \/>[\s\S]*Prikbord[\s\S]*Deelopties &amp; QR[\s\S]*WK-poule-instellingen &amp; opmaak \(beheer\)/);
   assert.match(poolMembers, /Ranglijst &amp; deelnemers/);
   assert.match(poolMembers, /pool-members-count/);
-  assert.match(poolQuickShare, /<details className=\"pool-quick-share\">/);
-  assert.match(poolQuickShare, /<summary className=\"pool-share-toggle\"/);
+  assert.match(poolQuickShare, /<div className=\"pool-quick-share\" aria-label=\"Poule delen\">/);
+  assert.match(poolQuickShare, /pool-share-inline-label/);
   assert.match(poolQuickShare, /label="Deel via WhatsApp"/);
   assert.match(poolQuickShare, /Kopieer link/);
   assert.match(poolQuickShare, /aria-label=\"Deel via mail\"/);
   assert.match(poolQuickShare, /aria-label=\"Deel QR-code\"/);
   assert.match(poolQuickShare, /isManager \? \(/);
-  assert.match(poolQuickShare, /Beheerder · app-delen/);
   assert.match(poolQuickShare, /label=\"Deel via Facebook\"/);
   assert.match(poolQuickShare, /Deel via Instagram of native deelmenu/);
   assert.match(poolQuickShare, /label=\"Deel via Telegram\"/);
@@ -233,20 +275,42 @@ test("mobile poule page prioritizes ranking and hides bulky share/admin controls
   assert.match(appFirstShareLink, /window\.location\.href = appHref/);
   assert.match(appFirstShareLink, /window\.open\(webHref, "_blank", "noopener,noreferrer"\)/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);/);
-  assert.match(globalsCss, /\.pool-card-title-row \{[\s\S]*display: flex;[\s\S]*gap: 8px;/);
-  assert.match(globalsCss, /\.pool-share-menu \{[\s\S]*position: absolute;[\s\S]*width: min\(300px, calc\(100vw - 40px\)\);/);
-  assert.match(globalsCss, /\.pool-share-admin \{[\s\S]*border-top: 1px solid rgba\(8, 22, 52, 0\.08\);/);
+  assert.match(globalsCss, /\.pool-card-title-row \{[\s\S]*display: flex;[\s\S]*flex-wrap: wrap;[\s\S]*gap: 8px;/);
+  assert.match(globalsCss, /\.pool-quick-share \{[\s\S]*display: inline-flex;[\s\S]*align-items: center;/);
+  assert.match(globalsCss, /\.pool-quick-share-button \{[\s\S]*width: 31px;[\s\S]*height: 31px;/);
+  assert.doesNotMatch(poolQuickShare, /<details className=\"pool-quick-share\">/);
+  assert.doesNotMatch(globalsCss, /\.pool-share-menu \{[\s\S]*position: absolute;/);
   assert.match(globalsCss, /\.pool-member-button \{[\s\S]*min-height: 42px;/);
   assert.match(globalsCss, /\.pool-member-team \{\n    display: none;/);
+});
+
+test("world rankings are real Supabase scores without demo rows or fake #1 fallback", () => {
+  assert.match(rankingLib, /punten dalend, bij gelijke punten alfabetisch/);
+  assert.match(rankingLib, /export function compareScoresAlphabetical/);
+  assert.match(rankingLib, /b\.points - a\.points/);
+  assert.match(rankingLib, /aName\.localeCompare\(bName, "nl-NL"/);
+  assert.match(rankingLib, /export function worldRankMap/);
+  assert.match(rankingLib, /export function withPublicRankScores/);
+  assert.match(rankingLib, /hasPublicProfile/);
+  assert.doesNotMatch(rankingLib, /withDemoRankScores|demoRankScores|DEMO_PLAYERS|hasSafePublicProfile/);
+  assert.match(rankingPage, /hasPublicProfile\(row\.profiles\)/);
+  assert.doesNotMatch(rankingPage, /DEMO_PLAYERS|DEMO_POOLS|demoPlayers|demoPoolRankings|hasSafePublicProfile/);
+  assert.match(homePage, /worldRankForUser\(withPublicRankScores\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\]\), user\.id\)/);
+  assert.match(apiMeRoute, /worldRankForUser\(withPublicRankScores\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\]\), user\.id\)/);
+  assert.doesNotMatch(apiMeRoute, /\?\? 1/);
+  assert.match(statusBar, /typeof me\.rank === "number"/);
+  assert.match(poulesPage, /withPublicRankScores\(\(scoreRows \?\? \[\]\) as unknown as RankedScore\[\]\)\.sort\(compareScoresAlphabetical\)/);
+  assert.match(poulesPage, /worldRankMap\(rankedScores\)/);
+  assert.doesNotMatch(poulesPage, /withDemoRankScores|gelijke punten = gelijke wereldrang/);
 });
 
 test("small team columns use official 3-letter country abbreviations", () => {
   assert.match(formatLib, /teamAbbrev/);
   assert.match(upcomingMatches, /teamAbbrev\(m\.home_code/);
   assert.match(groupPredictionCard, /teamAbbrev\(match\.home_code/);
-  // Eerstvolgende wedstrijden: afgekort op mobiel, volledige landnaam op desktop.
-  assert.match(upcomingMatches, /sm:hidden">\{teamAbbrev\(m\.home_code/);
-  assert.match(upcomingMatches, /hidden sm:inline">\{m\.home_label \?\? m\.home\?\.name_nl/);
+  // Eerstvolgende wedstrijden: ook op tablet/desktop afgekort in de compacte dashboardkolom.
+  assert.doesNotMatch(upcomingMatches, /hidden sm:inline">\{m\.home_label/);
+  assert.match(globalsCss, /\.upcoming-team-grid \.schedule-team-cell-home \{[\s\S]*justify-content: flex-start;[\s\S]*text-align: left;/);
 });
 
 test("match rows always reserve right-side API score boxes with fixed home-separator-away columns", () => {
@@ -297,11 +361,15 @@ test("desktop schedule cards are compact and match rows use a visible aligned te
   assert.doesNotMatch(scheduleExplorer, /dark-panel rounded-2xl/);
 });
 
-test("game embed is smaller on desktop and mobile defaults to new-tab play", () => {
+test("game embed is larger and left-aligned on desktop while mobile defaults to new-tab play", () => {
   assert.match(gameFrames, /Open spel in nieuw tabblad/);
   assert.match(gameFrames, /Mobiel speelt dit het best schermvullend/);
+  assert.match(gameFrames, /Laadt het spel niet\? Open het in een nieuw tabblad\./);
+  assert.doesNotMatch(gameFrames, /game-site moet inbedden toestaan/);
   assert.doesNotMatch(gameFrames, />Nieuw tabblad</);
-  assert.match(globalsCss, /\.game-frame \{[\s\S]*max-width: 560px;[\s\S]*aspect-ratio: 16 \/ 9;[\s\S]*max-height: min\(42vh, 360px\);/);
+  assert.match(gamesPage, /page-shell game-page-shell/);
+  assert.match(globalsCss, /\.game-page-shell \{\n  width: min\(1420px, 100%\);\n\}/);
+  assert.match(globalsCss, /\.game-frame \{[\s\S]*width: min\(1120px, 100%\);[\s\S]*aspect-ratio: 16 \/ 9;[\s\S]*margin-inline: 0 auto;/);
   assert.match(globalsCss, /@media \(max-width: 639px\) \{[\s\S]*\.game-frame,\n  \.game-embed-note \{\n    display: none;/);
   assert.match(globalsCss, /\.game-open-link \{[\s\S]*linear-gradient\(135deg, #19b85d, #0e8a49 62%, #0a6b38\)/);
 });

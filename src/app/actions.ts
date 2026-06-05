@@ -9,6 +9,7 @@ import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
 import { kidEmail } from "@/lib/kid";
+import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH, POOL_NAME_MAX_LENGTH, POOL_NAME_MIN_LENGTH, TEAM_NAME_MAX_LENGTH, TEAM_NAME_MIN_LENGTH } from "@/lib/limits";
 import { logError } from "@/lib/log";
 import { rateLimit } from "@/lib/rate-limit";
 import { recalculateAllScores } from "@/lib/recalculate";
@@ -59,8 +60,8 @@ const reservedNames = ["anoniem", "naam volgt", "speler", "onbekend"];
 export async function saveProfile(formData: FormData) {
   const { supabase, user } = await requireUser();
   const admin = createAdminClient();
-  const nickname = cleanText(formData.get("nickname"), 24);
-  const teamName = cleanText(formData.get("team_name"), 28);
+  const nickname = cleanText(formData.get("nickname"), NICKNAME_MAX_LENGTH);
+  const teamName = cleanText(formData.get("team_name"), TEAM_NAME_MAX_LENGTH);
   const termsAccepted = formData.get("terms_accepted") === "yes";
   const avatarKey = cleanText(formData.get("avatar_key"), 64);
 
@@ -68,7 +69,7 @@ export async function saveProfile(formData: FormData) {
     redirect("/?profiel=akkoord");
   }
 
-  if (nickname.length < 4 || teamName.length < 4) {
+  if (nickname.length < NICKNAME_MIN_LENGTH || teamName.length < TEAM_NAME_MIN_LENGTH) {
     redirect("/?profiel=te-kort");
   }
   if (reservedNames.includes(nickname.toLowerCase())) {
@@ -196,7 +197,7 @@ export async function createKidAccount(formData: FormData) {
   if (!isAdminEmail(user.email)) redirect("/");
 
   const admin = createAdminClient();
-  const nickname = cleanText(formData.get("nickname"), 24);
+  const nickname = cleanText(formData.get("nickname"), NICKNAME_MAX_LENGTH);
   if (nickname.length < 2) redirect("/admin?fout=kind-naam");
 
   // Eigen code mag, anders automatisch genereren. Code is hoofdletter-ongevoelig.
@@ -253,9 +254,9 @@ export async function adminRecalculate() {
 export async function createPool(formData: FormData) {
   const { user } = await requireUser();
   const admin = createAdminClient();
-  const name = cleanText(formData.get("name"), 50);
+  const name = cleanText(formData.get("name"), POOL_NAME_MAX_LENGTH);
 
-  if (name.length < 2) redirect("/poules?fout=naam");
+  if (name.length < POOL_NAME_MIN_LENGTH) redirect("/poules?fout=naam");
 
   // Rate limit: max 5 nieuwe poules per 10 minuten per gebruiker.
   if (!(await rateLimit(admin, `pool_create:${user.id}`, 5, 600))) redirect("/poules?fout=te-snel");

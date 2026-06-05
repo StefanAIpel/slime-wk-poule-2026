@@ -7,6 +7,7 @@ import { PendingButton } from "@/components/pending-button";
 import { TeamFlag } from "@/components/team-flag";
 import { isAdminEmail } from "@/lib/admin";
 import { formatAmsterdam } from "@/lib/format";
+import { NICKNAME_MAX_LENGTH } from "@/lib/limits";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -127,7 +128,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         <form action={createKidAccount} className="mt-3 flex flex-wrap items-end gap-2">
           <label className="grid gap-1 text-xs font-bold text-[#081634]">
             Naam/speler (voor jouw overzicht)
-            <input className="field min-h-10" name="nickname" required minLength={2} maxLength={24} placeholder="Bijv. Fedde" />
+            <input className="field min-h-10" name="nickname" required minLength={2} maxLength={NICKNAME_MAX_LENGTH} placeholder="Bijv. Fedde" />
           </label>
           <label className="grid gap-1 text-xs font-bold text-[#081634]">
             Vaste code (optioneel, anders willekeurig — min. 8 tekens)

@@ -1,4 +1,5 @@
 import { type User } from "@supabase/supabase-js";
+import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH, TEAM_NAME_MAX_LENGTH, TEAM_NAME_MIN_LENGTH } from "@/lib/limits";
 
 export type SignupProfileClient = {
   from: (table: string) => {
@@ -21,12 +22,12 @@ export function signupProfileFromMetadata(user: User) {
   const metadata = user.user_metadata ?? {};
   if (metadata.signup_flow !== "profile_password_confirm") return null;
 
-  const nickname = cleanText(metadata.nickname, 24);
-  const teamName = cleanText(metadata.team_name, 28);
+  const nickname = cleanText(metadata.nickname, NICKNAME_MAX_LENGTH);
+  const teamName = cleanText(metadata.team_name, TEAM_NAME_MAX_LENGTH);
   const termsAcceptedAt = cleanText(metadata.terms_accepted_at, 40) || new Date().toISOString();
   const privacyAcceptedAt = cleanText(metadata.privacy_accepted_at, 40) || termsAcceptedAt;
 
-  if (nickname.length < 4 || teamName.length < 4) return null;
+  if (nickname.length < NICKNAME_MIN_LENGTH || teamName.length < TEAM_NAME_MIN_LENGTH) return null;
 
   return {
     id: user.id,

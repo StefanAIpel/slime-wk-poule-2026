@@ -1,0 +1,7 @@
+-- Placeholder for a migration version already present in the remote Supabase
+-- migration history before this repo had a corresponding local file.
+--
+-- The exact SQL body was not recoverable via the local Supabase CLI because
+-- remote schema dumps require Docker in this environment. Keep this file so
+-- local and remote migration version histories stay aligned. Do not add DDL
+-- here retroactively; create a new migration for future changes.
