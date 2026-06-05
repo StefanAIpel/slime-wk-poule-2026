@@ -266,14 +266,14 @@ export function LoginForm({
     });
     if (verifyError) {
       setResetSubmitting(false);
-      setMessage("Die code klopt niet of is verlopen. Vraag eventueel een nieuwe code aan.");
+      setMessage("Die resetmail-code klopt niet of is verlopen. Vraag een nieuwe resetmail aan. Lukt het dan nog niet? Neem contact op met de poulebeheerder.");
       return;
     }
 
     const { error: updateError } = await supabase.auth.updateUser({ password: resetNewPassword });
     if (updateError) {
       setResetSubmitting(false);
-      setMessage("Wachtwoord opslaan lukte niet. Vraag een nieuwe code aan en probeer opnieuw.");
+      setMessage("Wachtwoord opslaan lukte niet. Vraag een nieuwe resetmail aan en probeer opnieuw. Blijft het misgaan? Neem contact op met de poulebeheerder.");
       return;
     }
 
@@ -496,7 +496,7 @@ export function LoginForm({
               />
             </label>
             <p className="rounded-lg bg-[#eef6ff] p-2 text-xs font-bold leading-5 text-[#305074]">
-              Je hoeft je mail-app niet open te houden. Open SlimeScore opnieuw, kies “Wachtwoord vergeten?” en tik “Ik heb de resetmail al ontvangen”.
+              Gebruik de code uit je resetmail om hier een nieuw wachtwoord te kiezen. Dit is niet de vaste inlogcode die een kind van de beheerder krijgt.
             </p>
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
               Code uit de resetmail
@@ -632,7 +632,7 @@ export function LoginForm({
             Ik heb de resetmail al ontvangen
           </button>
           <p aria-live="polite" className={`auth-forgot-helper font-medium ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-            {message || "Nog nooit een wachtwoord gekozen of vergeten? Stuur jezelf een resetmail en kies direct een nieuw wachtwoord."}
+            {message || "Nog nooit een wachtwoord gekozen of vergeten? Stuur jezelf een resetmail en kies met de code uit die mail direct een nieuw wachtwoord."}
           </p>
           <button type="button" className="text-sm font-bold text-[#0e7a44] underline" onClick={() => resetMode("login")}>
             Terug naar inloggen

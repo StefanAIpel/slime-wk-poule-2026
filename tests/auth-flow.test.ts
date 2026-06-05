@@ -103,6 +103,10 @@ test("existing players can reset their password with a copyable email code inste
   assert.match(loginForm, /Je hebt net al een resetmail aangevraagd\. Gebruik de code uit die mail hieronder/);
   assert.match(authRecoveryTemplate, /{{ \.Token }}/);
   assert.match(authRecoveryTemplate, /Code uit deze resetmail/);
+  assert.match(authRecoveryTemplate, /niet de vaste inlogcode die een kind van de beheerder krijgt/);
+  assert.match(authRecoveryTemplate, /Neem contact op met de poulebeheerder/);
+  assert.doesNotMatch(authRecoveryTemplate, /{{ \.ConfirmationURL }}/);
+  assert.doesNotMatch(authRecoveryTemplate, /Kies nieuw wachtwoord<\/a>|Werkt de knop niet|Kopieer deze link/i);
   assert.match(authRecoveryTemplate, /Voorspel\. Deel\. Win de poule\./);
   assert.match(authRecoveryTemplate, /WK 2026 vriendenpoule/);
 });
@@ -112,7 +116,7 @@ test("password recovery survives mobile mail-app roundtrips without the original
   assert.match(loginForm, /setResetCodeEntry\(true\)/);
   assert.match(loginForm, /status === \"sent\" \|\| resetCodeEntry/);
   assert.match(loginForm, /aria-label=\"E-mailadres voor resetmail\"/);
-  assert.match(loginForm, /Je hoeft je mail-app niet open te houden/);
+  assert.match(loginForm, /niet de vaste inlogcode die een kind van de beheerder krijgt/);
   assert.doesNotMatch(loginForm, /window\.location\.href = provider\.(?:appUrl|url)/);
 });
 
@@ -123,7 +127,7 @@ test("webmail buttons open outside the SlimeScore tab instead of replacing the r
   assert.match(loginForm, /rel=\"noopener noreferrer\"/);
   assert.match(loginForm, /Open Gmail-app/);
   assert.match(loginForm, /Gmail in browser/);
-  assert.match(authRecoveryTemplate, /Ik heb de resetmail al ontvangen/);
+  assert.match(loginForm, /Ik heb de resetmail al ontvangen/);
 });
 
 test("webmail shortcut is picked by email domain for common providers without exposing niche-provider copy", () => {
