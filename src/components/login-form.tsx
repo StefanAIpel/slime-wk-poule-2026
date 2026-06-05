@@ -26,12 +26,10 @@ const webmail: WebmailProvider[] = [
   { match: ["yahoo.com", "yahoo.nl"], label: "Open Yahoo Mail", url: "https://mail.yahoo.com/" },
   { match: ["icloud.com", "me.com", "mac.com"], label: "Open iCloud Mail", url: "https://www.icloud.com/mail/" },
   { match: ["proton.me", "protonmail.com"], label: "Open Proton Mail", url: "https://mail.proton.me/" },
-  { match: ["zohomail.eu", "zoho.eu"], label: "Open Zoho Mail", url: "https://mail.zoho.eu/" },
-  { match: ["zohomail.com", "zoho.com"], label: "Open Zoho Mail", url: "https://mail.zoho.com/" },
 ];
 
 const rememberedEmailKey = "slimescore:last-email";
-const mailFolderHint = "Check ook Spam, Ongewenst of bij Zoho de map Notification als je de mail niet ziet.";
+const mailFolderHint = "Check ook Spam of Ongewenst als je de mail niet ziet.";
 
 function webmailFor(email: string) {
   const domain = email.split("@")[1]?.toLowerCase() ?? "";
@@ -167,7 +165,7 @@ export function LoginForm({
         rememberCurrentEmail();
         setStatus("sent");
         setResetCodeEntry(true);
-        setMessage("Je hebt net al een wachtwoordcode aangevraagd. Gebruik de code uit die mail hieronder, of wacht ongeveer 1 minuut en stuur opnieuw.");
+        setMessage("Je hebt net al een resetmail aangevraagd. Gebruik de code uit die mail hieronder, of wacht ongeveer 1 minuut en stuur opnieuw.");
       } else {
         setStatus("error");
         setMessage("Wachtwoordmail versturen lukte niet. Controleer je e-mailadres en probeer opnieuw.");
@@ -222,15 +220,15 @@ export function LoginForm({
       const errorMessage = error.message.toLowerCase();
       if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
         setResetCodeEntry(true);
-        setMessage("Je hebt net al een wachtwoordcode aangevraagd. Wacht ongeveer 1 minuut en probeer daarna opnieuw.");
+        setMessage("Je hebt net al een resetmail aangevraagd. Wacht ongeveer 1 minuut en probeer daarna opnieuw.");
       } else {
-        setMessage("Wachtwoordcode opnieuw sturen lukte niet. Controleer je e-mailadres of probeer straks opnieuw.");
+        setMessage("Resetmail opnieuw sturen lukte niet. Controleer je e-mailadres of probeer straks opnieuw.");
       }
       return;
     }
 
     setResetCodeEntry(true);
-    setMessage(`Nieuwe wachtwoordcode verstuurd. ${mailFolderHint}`);
+    setMessage(`Nieuwe resetmail verstuurd. ${mailFolderHint}`);
   }
 
   async function onResetCodeSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -246,7 +244,7 @@ export function LoginForm({
     }
     if (normalizedCode.length < 6) {
       setResetSubmitting(false);
-      setMessage("Vul de code uit de mail in.");
+      setMessage("Vul de code uit de resetmail in.");
       return;
     }
     if (resetNewPassword.length < 8) {
@@ -467,8 +465,8 @@ export function LoginForm({
           <Check aria-hidden="true" className="size-5" />
           {isResetMail
             ? status === "sent"
-              ? "Wachtwoordcode verstuurd naar je e-mail"
-              : "Wachtwoordcode invullen"
+              ? "Resetmail verstuurd naar je e-mail"
+              : "Code uit resetmail invullen"
             : "Bevestigingsmail verstuurd naar je e-mail"}
         </div>
         {message ? (
@@ -486,7 +484,7 @@ export function LoginForm({
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
               E-mailadres
               <input
-                aria-label="E-mailadres voor wachtwoordcode"
+                aria-label="E-mailadres voor resetmail"
                 className="field"
                 type="email"
                 inputMode="email"
@@ -498,10 +496,10 @@ export function LoginForm({
               />
             </label>
             <p className="rounded-lg bg-[#eef6ff] p-2 text-xs font-bold leading-5 text-[#305074]">
-              Je hoeft de mailsessie niet open te houden. Open SlimeScore opnieuw, tik “Ik heb al een wachtwoordcode” en plak deze code.
+              Je hoeft je mail-app niet open te houden. Open SlimeScore opnieuw, kies “Wachtwoord vergeten?” en tik “Ik heb de resetmail al ontvangen”.
             </p>
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
-              Code uit de mail
+              Code uit de resetmail
               <input
                 className="field text-center text-lg font-black tracking-[0.3em]"
                 inputMode="numeric"
@@ -543,7 +541,7 @@ export function LoginForm({
               {resetSubmitting ? "Opslaan…" : "Nieuw wachtwoord opslaan"}
             </button>
             <button className="button-secondary w-full" type="button" onClick={onResendPasswordResetMail} disabled={resetSubmitting}>
-              Wachtwoordcode opnieuw sturen
+              Resetmail opnieuw sturen
             </button>
           </form>
         ) : (
@@ -619,7 +617,7 @@ export function LoginForm({
           </label>
           <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
             <Mail aria-hidden="true" className="size-5" />
-            {status === "loading" ? "Versturen…" : "Stuur wachtwoordcode"}
+            {status === "loading" ? "Versturen…" : "Stuur resetmail"}
           </button>
           <button
             className="button-secondary w-full"
@@ -628,13 +626,13 @@ export function LoginForm({
               rememberCurrentEmail();
               setResetCodeEntry(true);
               setStatus("idle");
-              setMessage("Vul je e-mailadres, de code uit de mail en je nieuwe wachtwoord in. Je hoeft de mailsessie niet open te houden.");
+              setMessage("Vul je e-mailadres, de code uit de resetmail en je nieuwe wachtwoord in. Je hoeft je mail-app niet open te houden.");
             }}
           >
-            Ik heb al een wachtwoordcode
+            Ik heb de resetmail al ontvangen
           </button>
           <p aria-live="polite" className={`auth-forgot-helper font-medium ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-            {message || "Nog nooit een wachtwoord gekozen of vergeten? Stuur jezelf een code en kies direct een nieuw wachtwoord."}
+            {message || "Nog nooit een wachtwoord gekozen of vergeten? Stuur jezelf een resetmail en kies direct een nieuw wachtwoord."}
           </p>
           <button type="button" className="text-sm font-bold text-[#0e7a44] underline" onClick={() => resetMode("login")}>
             Terug naar inloggen

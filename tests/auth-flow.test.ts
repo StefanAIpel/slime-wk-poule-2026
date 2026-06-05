@@ -98,21 +98,21 @@ test("existing players can reset their password with a copyable email code inste
   assert.match(loginForm, /Wachtwoord vergeten\?/);
   assert.match(loginForm, /resetPasswordForEmail/);
   assert.match(loginForm, /verifyOtp\(\{[\s\S]*type: \"recovery\"/);
-  assert.match(loginForm, /Code uit de mail/);
+  assert.match(loginForm, /Code uit de resetmail/);
   assert.match(loginForm, /Nieuw wachtwoord opslaan/);
-  assert.match(loginForm, /Je hebt net al een wachtwoordcode aangevraagd\. Gebruik de code uit die mail hieronder/);
+  assert.match(loginForm, /Je hebt net al een resetmail aangevraagd\. Gebruik de code uit die mail hieronder/);
   assert.match(authRecoveryTemplate, /{{ \.Token }}/);
-  assert.match(authRecoveryTemplate, /Code uit de mail/);
+  assert.match(authRecoveryTemplate, /Code uit deze resetmail/);
   assert.match(authRecoveryTemplate, /Voorspel\. Deel\. Win de poule\./);
   assert.match(authRecoveryTemplate, /WK 2026 vriendenpoule/);
 });
 
 test("password recovery survives mobile mail-app roundtrips without the original webview state", () => {
-  assert.match(loginForm, /Ik heb al een wachtwoordcode/);
+  assert.match(loginForm, /Ik heb de resetmail al ontvangen/);
   assert.match(loginForm, /setResetCodeEntry\(true\)/);
   assert.match(loginForm, /status === \"sent\" \|\| resetCodeEntry/);
-  assert.match(loginForm, /aria-label=\"E-mailadres voor wachtwoordcode\"/);
-  assert.match(loginForm, /Je hoeft de mailsessie niet open te houden/);
+  assert.match(loginForm, /aria-label=\"E-mailadres voor resetmail\"/);
+  assert.match(loginForm, /Je hoeft je mail-app niet open te houden/);
   assert.doesNotMatch(loginForm, /window\.location\.href = provider\.(?:appUrl|url)/);
 });
 
@@ -123,23 +123,23 @@ test("webmail buttons open outside the SlimeScore tab instead of replacing the r
   assert.match(loginForm, /rel=\"noopener noreferrer\"/);
   assert.match(loginForm, /Open Gmail-app/);
   assert.match(loginForm, /Gmail in browser/);
-  assert.match(authRecoveryTemplate, /SlimeScore mag dicht zijn geraakt/);
+  assert.match(authRecoveryTemplate, /Ik heb de resetmail al ontvangen/);
 });
 
-test("webmail shortcut is picked by email domain for Outlook, Live and Zoho users", () => {
+test("webmail shortcut is picked by email domain for common providers without exposing niche-provider copy", () => {
   assert.match(loginForm, /match: \[\"outlook\.com\", \"hotmail\.com\", \"live\.nl\", \"live\.com\", \"msn\.com\"\], label: \"Open Outlook\", url: \"https:\/\/outlook\.live\.com\/mail\/\"/);
-  assert.match(loginForm, /match: \[\"zohomail\.eu\", \"zoho\.eu\"\], label: \"Open Zoho Mail\", url: \"https:\/\/mail\.zoho\.eu\/\"/);
-  assert.match(loginForm, /match: \[\"zohomail\.com\", \"zoho\.com\"\], label: \"Open Zoho Mail\", url: \"https:\/\/mail\.zoho\.com\/\"/);
   assert.match(loginForm, /const domain = email\.split\("@"\)\[1\]\?\.toLowerCase\(\) \?\? "";/);
   assert.match(loginForm, /w\.match\.includes\(domain\)/);
+  assert.doesNotMatch(loginForm, /Zoho|zohomail|Notification/);
 });
 
-test("confirmation and recovery screens help Zoho users find codes outside the inbox", () => {
-  assert.match(loginForm, /zohomail\.eu/);
-  assert.match(loginForm, /Open Zoho Mail/);
-  assert.match(loginForm, /Spam, Ongewenst of bij Zoho de map Notification/);
-  assert.match(authEmailTemplate, /Spam, Ongewenst of Notification/);
-  assert.match(authRecoveryTemplate, /Spam, Ongewenst of Notification/);
+test("confirmation and recovery screens keep provider-neutral spam folder hints", () => {
+  assert.match(loginForm, /Check ook Spam of Ongewenst als je de mail niet ziet/);
+  assert.match(authEmailTemplate, /Check ook Spam of Ongewenst/);
+  assert.match(authRecoveryTemplate, /Check ook Spam of Ongewenst/);
+  assert.doesNotMatch(loginForm, /Zoho|zohomail|Notification/);
+  assert.doesNotMatch(authEmailTemplate, /Notification/);
+  assert.doesNotMatch(authRecoveryTemplate, /Notification/);
 });
 
 test("recovery links remain accepted by the auth callback fallback", () => {
