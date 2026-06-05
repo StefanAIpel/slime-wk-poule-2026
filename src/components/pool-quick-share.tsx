@@ -5,10 +5,7 @@ import { useState } from "react";
 
 import { AppFirstShareLink } from "@/components/app-first-share-link";
 
-/**
- * Ingeklapte deelknop voor de poule-header. De zichtbare header houdt alleen
- * een klein deelicoon achter de poule-naam; alle kanalen zitten in het menu.
- */
+/** Inline deelknoppen naast de poulenaam: zichtbaar, compact en zonder zwevende popover. */
 export function PoolQuickShare({
   joinUrl,
   qrDataUrl,
@@ -83,86 +80,81 @@ export function PoolQuickShare({
   }
 
   return (
-    <details className="pool-quick-share">
-      <summary className="pool-share-toggle" aria-label="Poule delen" title="Poule delen">
-        <Share2 aria-hidden="true" className="size-4" />
-      </summary>
-      <div className="pool-share-menu" aria-label="Poule delen">
-        <p className="pool-share-menu-title">Deel deze poule</p>
-        <div className="pool-share-actions">
-          <AppFirstShareLink
-            className="pool-quick-share-button pool-quick-share-whatsapp"
-            appHref={`whatsapp://send?text=${encodedMessage}`}
-            webHref={`https://wa.me/?text=${encodedMessage}`}
-            label="Deel via WhatsApp"
-            title="Deel via WhatsApp"
-          >
-            <Send aria-hidden="true" className="size-4" />
-          </AppFirstShareLink>
-          <button
-            className="pool-quick-share-button pool-quick-share-copy"
-            type="button"
-            onClick={() => copyText(joinUrl)}
-            aria-label={copied ? "Link gekopieerd" : "Kopieer link"}
-            title={copied ? "Link gekopieerd" : "Kopieer link"}
-          >
-            {copied ? <Check aria-hidden="true" className="size-4" /> : <LinkIcon aria-hidden="true" className="size-4" />}
-          </button>
-          <a
-            className="pool-quick-share-button pool-quick-share-mail"
-            href={`mailto:?subject=${encodedTitle}&body=${encodedBody}`}
-            aria-label="Deel via mail"
-            title="Deel via mail"
-          >
-            <Mail aria-hidden="true" className="size-4" />
-          </a>
-          <button
-            className="pool-quick-share-button pool-quick-share-qr"
-            type="button"
-            onClick={shareQr}
-            disabled={qrBusy}
-            aria-label="Deel QR-code"
-            title="Deel QR-code"
-          >
-            <QrCode aria-hidden="true" className="size-4" />
-          </button>
-        </div>
+    <div className="pool-quick-share" aria-label="Poule delen">
+      <span className="pool-share-inline-label" title="Poule delen">
+        <Share2 aria-hidden="true" className="size-3.5" />
+        <span className="sr-only">Poule delen</span>
+      </span>
+      <div className="pool-share-actions" aria-label="Deel deze poule">
+        <AppFirstShareLink
+          className="pool-quick-share-button pool-quick-share-whatsapp"
+          appHref={`whatsapp://send?text=${encodedMessage}`}
+          webHref={`https://wa.me/?text=${encodedMessage}`}
+          label="Deel via WhatsApp"
+          title="Deel via WhatsApp"
+        >
+          <Send aria-hidden="true" className="size-4" />
+        </AppFirstShareLink>
+        <button
+          className="pool-quick-share-button pool-quick-share-copy"
+          type="button"
+          onClick={() => copyText(joinUrl)}
+          aria-label={copied ? "Link gekopieerd" : "Kopieer link"}
+          title={copied ? "Link gekopieerd" : "Kopieer link"}
+        >
+          {copied ? <Check aria-hidden="true" className="size-4" /> : <LinkIcon aria-hidden="true" className="size-4" />}
+        </button>
+        <a
+          className="pool-quick-share-button pool-quick-share-mail"
+          href={`mailto:?subject=${encodedTitle}&body=${encodedBody}`}
+          aria-label="Deel via mail"
+          title="Deel via mail"
+        >
+          <Mail aria-hidden="true" className="size-4" />
+        </a>
+        <button
+          className="pool-quick-share-button pool-quick-share-qr"
+          type="button"
+          onClick={shareQr}
+          disabled={qrBusy}
+          aria-label="Deel QR-code"
+          title="Deel QR-code"
+        >
+          <QrCode aria-hidden="true" className="size-4" />
+        </button>
 
         {isManager ? (
-          <div className="pool-share-admin">
-            <p className="pool-share-menu-title">Beheerder · app-delen</p>
-            <div className="pool-share-actions">
-              <AppFirstShareLink
-                className="pool-quick-share-button pool-quick-share-facebook"
-                appHref={`fb://facewebmodal/f?href=${encodeURIComponent(facebookWebHref)}`}
-                webHref={facebookWebHref}
-                label="Deel via Facebook"
-                title="Deel via Facebook"
-              >
-                <span aria-hidden="true" className="pool-share-brand-letter">f</span>
-              </AppFirstShareLink>
-              <button
-                className="pool-quick-share-button pool-quick-share-instagram"
-                type="button"
-                onClick={nativeShare}
-                aria-label={nativeCopied ? "Link gekopieerd voor Instagram" : "Deel via Instagram of native deelmenu"}
-                title={nativeCopied ? "Link gekopieerd voor Instagram" : "Deel via Instagram/native deelmenu"}
-              >
-                <span aria-hidden="true" className="pool-share-brand-letter">IG</span>
-              </button>
-              <AppFirstShareLink
-                className="pool-quick-share-button pool-quick-share-telegram"
-                appHref={`tg://msg_url?url=${encodedUrl}&text=${encodedInvite}`}
-                webHref={`https://t.me/share/url?url=${encodedUrl}&text=${encodedInvite}`}
-                label="Deel via Telegram"
-                title="Deel via Telegram"
-              >
-                <span aria-hidden="true" className="pool-share-brand-letter">TG</span>
-              </AppFirstShareLink>
-            </div>
-          </div>
+          <>
+            <AppFirstShareLink
+              className="pool-quick-share-button pool-quick-share-facebook pool-quick-share-admin-button"
+              appHref={`fb://facewebmodal/f?href=${encodeURIComponent(facebookWebHref)}`}
+              webHref={facebookWebHref}
+              label="Deel via Facebook"
+              title="Deel via Facebook"
+            >
+              <span aria-hidden="true" className="pool-share-brand-letter">f</span>
+            </AppFirstShareLink>
+            <button
+              className="pool-quick-share-button pool-quick-share-instagram pool-quick-share-admin-button"
+              type="button"
+              onClick={nativeShare}
+              aria-label={nativeCopied ? "Link gekopieerd voor Instagram" : "Deel via Instagram of native deelmenu"}
+              title={nativeCopied ? "Link gekopieerd voor Instagram" : "Deel via Instagram/native deelmenu"}
+            >
+              <span aria-hidden="true" className="pool-share-brand-letter">IG</span>
+            </button>
+            <AppFirstShareLink
+              className="pool-quick-share-button pool-quick-share-telegram pool-quick-share-admin-button"
+              appHref={`tg://msg_url?url=${encodedUrl}&text=${encodedInvite}`}
+              webHref={`https://t.me/share/url?url=${encodedUrl}&text=${encodedInvite}`}
+              label="Deel via Telegram"
+              title="Deel via Telegram"
+            >
+              <span aria-hidden="true" className="pool-share-brand-letter">TG</span>
+            </AppFirstShareLink>
+          </>
         ) : null}
       </div>
-    </details>
+    </div>
   );
 }

@@ -31,6 +31,7 @@ const installAppCard = await readFile(new URL("../src/components/install-app-car
 const knockoutPredictionPicker = await readFile(new URL("../src/components/knockout-prediction-picker.tsx", import.meta.url), "utf8");
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
+const rankingLib = await readFile(new URL("../src/lib/ranking.ts", import.meta.url), "utf8");
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
 const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
 const recoveryEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
@@ -200,20 +201,19 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(statusBar, /href=\"\/voorspellingen\" className=\"status-chip status-chip-countdown/);
 });
 
-test("mobile poule page prioritizes ranking and hides bulky share/admin controls", () => {
+test("mobile poule page prioritizes ranking and keeps share buttons visible next to the pool name", () => {
   assert.match(poulesPage, /<div className=\"pool-card-title-row\">[\s\S]*<PoolQuickShare/);
   assert.match(poulesPage, /isManager=\{isManager\}/);
   assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} \/>[\s\S]*Prikbord[\s\S]*Deelopties &amp; QR[\s\S]*WK-poule-instellingen &amp; opmaak \(beheer\)/);
   assert.match(poolMembers, /Ranglijst &amp; deelnemers/);
   assert.match(poolMembers, /pool-members-count/);
-  assert.match(poolQuickShare, /<details className=\"pool-quick-share\">/);
-  assert.match(poolQuickShare, /<summary className=\"pool-share-toggle\"/);
+  assert.match(poolQuickShare, /<div className=\"pool-quick-share\" aria-label=\"Poule delen\">/);
+  assert.match(poolQuickShare, /pool-share-inline-label/);
   assert.match(poolQuickShare, /label="Deel via WhatsApp"/);
   assert.match(poolQuickShare, /Kopieer link/);
   assert.match(poolQuickShare, /aria-label=\"Deel via mail\"/);
   assert.match(poolQuickShare, /aria-label=\"Deel QR-code\"/);
   assert.match(poolQuickShare, /isManager \? \(/);
-  assert.match(poolQuickShare, /Beheerder · app-delen/);
   assert.match(poolQuickShare, /label=\"Deel via Facebook\"/);
   assert.match(poolQuickShare, /Deel via Instagram of native deelmenu/);
   assert.match(poolQuickShare, /label=\"Deel via Telegram\"/);
@@ -225,20 +225,33 @@ test("mobile poule page prioritizes ranking and hides bulky share/admin controls
   assert.match(appFirstShareLink, /window\.location\.href = appHref/);
   assert.match(appFirstShareLink, /window\.open\(webHref, "_blank", "noopener,noreferrer"\)/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);/);
-  assert.match(globalsCss, /\.pool-card-title-row \{[\s\S]*display: flex;[\s\S]*gap: 8px;/);
-  assert.match(globalsCss, /\.pool-share-menu \{[\s\S]*position: absolute;[\s\S]*width: min\(300px, calc\(100vw - 40px\)\);/);
-  assert.match(globalsCss, /\.pool-share-admin \{[\s\S]*border-top: 1px solid rgba\(8, 22, 52, 0\.08\);/);
+  assert.match(globalsCss, /\.pool-card-title-row \{[\s\S]*display: flex;[\s\S]*flex-wrap: wrap;[\s\S]*gap: 8px;/);
+  assert.match(globalsCss, /\.pool-quick-share \{[\s\S]*display: inline-flex;[\s\S]*align-items: center;/);
+  assert.match(globalsCss, /\.pool-quick-share-button \{[\s\S]*width: 31px;[\s\S]*height: 31px;/);
+  assert.doesNotMatch(poolQuickShare, /<details className=\"pool-quick-share\">/);
+  assert.doesNotMatch(globalsCss, /\.pool-share-menu \{[\s\S]*position: absolute;/);
   assert.match(globalsCss, /\.pool-member-button \{[\s\S]*min-height: 42px;/);
   assert.match(globalsCss, /\.pool-member-team \{\n    display: none;/);
+});
+
+test("world rankings use alphabetical order as a temporary tie-break", () => {
+  assert.match(rankingLib, /punten dalend, bij gelijke punten alfabetisch/);
+  assert.match(rankingLib, /export function compareScoresAlphabetical/);
+  assert.match(rankingLib, /b\.points - a\.points/);
+  assert.match(rankingLib, /aName\.localeCompare\(bName, "nl-NL"/);
+  assert.match(rankingLib, /export function worldRankMap/);
+  assert.match(homePage, /worldRankForUser\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\], user\.id\)/);
+  assert.match(poulesPage, /worldRankMap\(rankedScores\)/);
+  assert.doesNotMatch(poulesPage, /gelijke punten = gelijke wereldrang/);
 });
 
 test("small team columns use official 3-letter country abbreviations", () => {
   assert.match(formatLib, /teamAbbrev/);
   assert.match(upcomingMatches, /teamAbbrev\(m\.home_code/);
   assert.match(groupPredictionCard, /teamAbbrev\(match\.home_code/);
-  // Eerstvolgende wedstrijden: afgekort op mobiel, volledige landnaam op desktop.
-  assert.match(upcomingMatches, /sm:hidden">\{teamAbbrev\(m\.home_code/);
-  assert.match(upcomingMatches, /hidden sm:inline">\{m\.home_label \?\? m\.home\?\.name_nl/);
+  // Eerstvolgende wedstrijden: ook op tablet/desktop afgekort in de compacte dashboardkolom.
+  assert.doesNotMatch(upcomingMatches, /hidden sm:inline">\{m\.home_label/);
+  assert.match(globalsCss, /\.upcoming-team-grid \.schedule-team-cell-home \{[\s\S]*justify-content: flex-start;[\s\S]*text-align: left;/);
 });
 
 test("match rows always reserve right-side API score boxes with fixed home-separator-away columns", () => {

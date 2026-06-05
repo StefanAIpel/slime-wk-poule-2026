@@ -16,6 +16,7 @@ import { UpcomingMatches } from "@/components/upcoming-matches";
 import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
 import { DEMO_PLAYERS, hasSafePublicProfile } from "@/lib/demo-leaderboard";
 import { displayName } from "@/lib/format";
+import { worldRankForUser, type RankedScore } from "@/lib/ranking";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { persistSignupProfileFromMetadata, type SignupProfileClient } from "@/lib/supabase/signup-profile";
@@ -121,12 +122,14 @@ export default async function Home({
     timeStyle: "short",
   }).format(new Date(ENTRY_DEADLINE_ISO));
 
-  // Jouw plek op de wereldranglijst (aantal spelers met meer punten + 1).
+  // Jouw plek op de wereldranglijst: punten dalend, bij gelijke punten alfabetisch.
   const admin = createOptionalAdminClient();
   let myRank: number | null = null;
   if (admin) {
-    const { count } = await admin.from("scores").select("user_id", { count: "exact", head: true }).gt("points", myPoints);
-    myRank = (count ?? 0) + 1;
+    const { data: rankScores } = await admin
+      .from("scores")
+      .select("user_id,points,profiles(nickname,team_name)");
+    myRank = worldRankForUser((rankScores ?? []) as unknown as RankedScore[], user.id);
   }
 
   return (

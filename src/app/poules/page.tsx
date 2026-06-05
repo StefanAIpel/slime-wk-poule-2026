@@ -22,6 +22,7 @@ import { PoolQuickShare } from "@/components/pool-quick-share";
 import { PoolTabs } from "@/components/pool-tabs";
 import { ENTRY_DEADLINE, SITE_URL } from "@/lib/constants";
 import { displayName, formatAmsterdam } from "@/lib/format";
+import { compareScoresAlphabetical, worldRankMap } from "@/lib/ranking";
 import { scoreMatchPrediction } from "@/lib/scoring";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -134,19 +135,16 @@ export default async function PoolsPage({
         .select("id,starts_at,status,home_score,away_score,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)")
         .order("starts_at"),
       admin.from("predictions").select("user_id,match_id,home_score,away_score").in("user_id", memberIds),
-      admin.from("scores").select("user_id,points").order("points", { ascending: false }),
+      admin.from("scores").select("user_id,points,profiles(nickname,team_name)"),
     ]);
 
-    // Competition ranking (1,2,2,4): gelijke punten = gelijke wereldrang.
-    let lastPoints: number | null = null;
-    let lastRank = 0;
-    (scoreRows ?? []).forEach((row, index) => {
+    const rankedScores = (scoreRows ?? []).slice().sort(compareScoresAlphabetical);
+    for (const row of rankedScores) {
       pointsByUser.set(row.user_id, row.points);
-      const rank = row.points === lastPoints ? lastRank : index + 1;
-      lastPoints = row.points;
-      lastRank = rank;
-      worldRankByUser.set(row.user_id, rank);
-    });
+    }
+    for (const [userId, rank] of worldRankMap(rankedScores)) {
+      worldRankByUser.set(userId, rank);
+    }
 
     for (const row of (matchRows ?? []) as unknown as Array<{
       id: number;

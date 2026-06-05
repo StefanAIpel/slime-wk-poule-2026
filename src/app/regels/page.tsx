@@ -122,6 +122,10 @@ export default function RulesPage() {
               <li><strong className="text-[#081634]">Knock-out:</strong> landen die een ronde halen tellen op basis van de officiële winnaar, dus inclusief eventuele verlenging of penalty&rsquo;s.</li>
             </ul>
           </article>
+
+          <section className="rules-side-banners" aria-label="SlimeScore spellen">
+            <SlimeSoccerBanner includeWk />
+          </section>
         </div>
 
         {/* Rechts: puntentelling + FAQ. */}
@@ -183,10 +187,6 @@ export default function RulesPage() {
             </div>
           </article>
         </div>
-      </section>
-
-      <section className="mt-5">
-        <SlimeSoccerBanner includeWk />
       </section>
 
       <BottomNav current="/regels" className="bottom-nav-hide-mobile" />

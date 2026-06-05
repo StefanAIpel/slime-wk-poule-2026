@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { worldRankForUser, type RankedScore } from "@/lib/ranking";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -20,16 +21,15 @@ export async function GET() {
   ]);
 
   const myPoints = myScore?.points ?? 0;
-  const { count: ahead } = await admin
+  const { data: rankScores } = await admin
     .from("scores")
-    .select("user_id", { count: "exact", head: true })
-    .gt("points", myPoints);
+    .select("user_id,points,profiles(nickname,team_name)");
 
   return NextResponse.json({
     loggedIn: true,
     nickname: profile?.nickname ?? null,
     points: myPoints,
-    rank: (ahead ?? 0) + 1,
+    rank: worldRankForUser((rankScores ?? []) as unknown as RankedScore[], user.id) ?? 1,
     progress: Math.round(((predictionCount ?? 0) / 72) * 100),
   });
 }

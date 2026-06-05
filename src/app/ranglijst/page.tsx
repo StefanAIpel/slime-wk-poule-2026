@@ -4,6 +4,7 @@ import { PageHero } from "@/components/page-hero";
 import { RankingExplorer, type PlayerRow, type PoolRow } from "@/components/ranking-explorer";
 import { DEMO_PLAYERS, DEMO_POOLS, hasSafePublicProfile } from "@/lib/demo-leaderboard";
 import { formatAmsterdam } from "@/lib/format";
+import { compareScoresAlphabetical } from "@/lib/ranking";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
 export const metadata = {
@@ -64,7 +65,7 @@ export default async function RankingPage() {
     exact: 0,
     correct: 0,
   }));
-  const players: PlayerRow[] = [...realPlayers, ...demoPlayers].slice(0, 300).map((row, index) => ({
+  const players: PlayerRow[] = [...realPlayers, ...demoPlayers].sort(compareScoresAlphabetical).slice(0, 300).map((row, index) => ({
     ...row,
     rank: index + 1,
   }));
