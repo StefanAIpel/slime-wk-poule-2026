@@ -39,6 +39,7 @@ const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url
 const rankingLib = await readFile(new URL("../src/lib/ranking.ts", import.meta.url), "utf8");
 const limitsLib = await readFile(new URL("../src/lib/limits.ts", import.meta.url), "utf8");
 const lengthMigration = await readFile(new URL("../supabase/migrations/20260605103457_enforce_profile_pool_name_lengths.sql", import.meta.url), "utf8");
+const uniqueMigration = await readFile(new URL("../supabase/migrations/20260605132432_enforce_unique_display_names.sql", import.meta.url), "utf8");
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
 const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
 const recoveryEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
@@ -128,6 +129,26 @@ test("profile and pool display names are capped for compact mobile UI", () => {
   assert.match(lengthMigration, /char_length\(nickname\) between 2 and 15/);
   assert.match(lengthMigration, /char_length\(team_name\) between 2 and 25/);
   assert.match(lengthMigration, /char_length\(name\) between 2 and 25/);
+  assert.match(uniqueMigration, /profiles_nickname_unique_lower/);
+  assert.match(uniqueMigration, /lower\(btrim\(nickname\)\)/);
+  assert.match(uniqueMigration, /pools_name_unique_lower/);
+  assert.match(uniqueMigration, /lower\(btrim\(name\)\)/);
+  assert.match(actions, /fout=naam-bezet/);
+});
+
+test("create-pool card uses Mexico green contrast styling", () => {
+  assert.match(homePage, /create-pool-card/);
+  assert.match(homePage, /create-pool-button/);
+  assert.match(globalsCss, /\.create-pool-card \{[\s\S]*#006847[\s\S]*#009b3a/);
+  assert.match(globalsCss, /\.create-pool-button\.button-primary \{[\s\S]*#ce1126/);
+  assert.match(globalsCss, /\.create-pool-title,[\s\S]*\.create-pool-copy \{\n  color: #ffffff;/);
+});
+
+test("pool banner upload helper appears before file input and states final resolution", () => {
+  const uploadBlock = poulesPage.match(/<form action=\{uploadPoolImage\}[\s\S]*?<PendingButton/)?.[0] ?? "";
+  assert.match(uploadBlock, /Wordt automatisch bijgesneden en verkleind naar 1600 × 900 px \(16:9\)\. Max 6 MB\./);
+  assert.ok(uploadBlock.indexOf("1600 × 900 px") < uploadBlock.indexOf('type="file"'));
+  assert.match(actions, /resize\(1600, 900, \{ fit: "cover"/);
 });
 
 test("account page keeps name/team fixed but lets players change avatar and password safely", () => {

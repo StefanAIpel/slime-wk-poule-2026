@@ -53,7 +53,13 @@ export async function persistSignupProfileFromMetadata(client: SignupProfileClie
   if (taken) return { ok: false as const, reason: "nickname-taken" as const };
 
   const { error } = await client.from("profiles").upsert(profile);
-  if (error) return { ok: false as const, reason: "upsert-error" as const, message: error.message };
+  if (error) {
+    const message = error.message.toLowerCase();
+    if (message.includes("profiles_nickname_unique_lower") || message.includes("duplicate key")) {
+      return { ok: false as const, reason: "nickname-taken" as const };
+    }
+    return { ok: false as const, reason: "upsert-error" as const, message: error.message };
+  }
 
   return { ok: true as const };
 }

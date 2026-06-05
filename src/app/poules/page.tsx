@@ -40,6 +40,7 @@ const poolErrors: Record<string, string> = {
   kleur: "Kies een geldige kleur.",
   rol: "Die rol kan niet worden ingesteld.",
   "bericht-kort": "Je bericht is te kort (minimaal 10 tekens).",
+  "naam-bezet": "Er bestaat al een WK-poule met deze naam. Kies een nét andere naam.",
   "te-snel": "Even rustig aan — je doet dit te vaak achter elkaar. Probeer het zo nog eens.",
   afbeelding: "Kies een geldige afbeelding.",
   "afbeelding-groot": "De afbeelding is te groot (max 6 MB).",
@@ -351,10 +352,10 @@ export default async function PoolsPage({
                         <ImagePlus aria-hidden="true" className="size-5 text-[#2f7a60]" />
                         WK-poulebanner uploaden
                       </div>
-                      <input className="field" type="file" name="image" accept="image/*" required />
                       <p className="text-xs font-medium text-[#4c5a70]">
-                        Wordt automatisch bijgesneden en verkleind. Max 6 MB.
+                        Wordt automatisch bijgesneden en verkleind naar 1600 × 900 px (16:9). Max 6 MB.
                       </p>
+                      <input className="field" type="file" name="image" accept="image/*" required />
                       <PendingButton className="button-secondary w-fit" pendingText="Uploaden…">
                         Upload banner
                       </PendingButton>

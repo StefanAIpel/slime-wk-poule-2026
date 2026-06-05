@@ -57,6 +57,11 @@ function poolCode() {
 
 const reservedNames = ["anoniem", "naam volgt", "speler", "onbekend"];
 
+function isUniqueViolation(error: { code?: string; message?: string } | null | undefined, indexName: string) {
+  const message = error?.message?.toLowerCase() ?? "";
+  return error?.code === "23505" || message.includes(indexName.toLowerCase()) || message.includes("duplicate key");
+}
+
 export async function saveProfile(formData: FormData) {
   const { supabase, user } = await requireUser();
   const admin = createAdminClient();
@@ -99,6 +104,7 @@ export async function saveProfile(formData: FormData) {
   const { error } = await supabase.from("profiles").upsert(profilePayload);
 
   if (error) {
+    if (isUniqueViolation(error, "profiles_nickname_unique_lower")) redirect("/?profiel=bezet");
     const missingLegalColumns = error.message.includes("terms_accepted_at") || error.message.includes("privacy_accepted_at");
     if (!missingLegalColumns) throw new Error(error.message);
 
@@ -258,6 +264,13 @@ export async function createPool(formData: FormData) {
 
   if (name.length < POOL_NAME_MIN_LENGTH) redirect("/poules?fout=naam");
 
+  const { data: existingPoolName } = await admin
+    .from("pools")
+    .select("id")
+    .ilike("name", name)
+    .maybeSingle();
+  if (existingPoolName) redirect("/poules?fout=naam-bezet");
+
   // Rate limit: max 5 nieuwe poules per 10 minuten per gebruiker.
   if (!(await rateLimit(admin, `pool_create:${user.id}`, 5, 600))) redirect("/poules?fout=te-snel");
 
@@ -287,6 +300,8 @@ export async function createPool(formData: FormData) {
       revalidatePath("/");
       redirect(`/poules?aangemaakt=${code}&pool=${data.id}`);
     }
+
+    if (isUniqueViolation(error, "pools_name_unique_lower")) redirect("/poules?fout=naam-bezet");
 
     code = poolCode();
   }

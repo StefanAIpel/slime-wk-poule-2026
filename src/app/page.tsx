@@ -80,9 +80,11 @@ export default async function Home({
 
   if (!profile?.nickname || !profile.team_name) {
     const admin = createOptionalAdminClient();
+    let profileError = params.profiel;
     if (admin) {
       const signupProfile = await persistSignupProfileFromMetadata(admin as unknown as SignupProfileClient, user);
       if (signupProfile.ok) redirect("/");
+      if (signupProfile.reason === "nickname-taken") profileError = "bezet";
     }
 
     return (
@@ -99,7 +101,7 @@ export default async function Home({
           />
         </section>
         <section className="grid gap-4">
-          <ProfileForm error={params.profiel} />
+          <ProfileForm error={profileError} />
           <div className="panel p-4">
             <h2 className="text-xl font-bold text-[#081634]">Na deze stap</h2>
             <div className="mt-3 grid gap-2 text-sm font-semibold leading-6 text-[#48617f]">
@@ -199,12 +201,12 @@ export default async function Home({
             </div>
           </form>
 
-          <form action={createPool} className="panel grid gap-3 p-5">
+          <form action={createPool} className="panel create-pool-card grid gap-3 p-5">
             <div className="flex items-center gap-2">
-              <PlusCircle aria-hidden="true" className="size-5 flex-none text-[#15a35b]" />
-              <h2 className="text-lg font-bold text-[#081634]">Maak je eigen WK-poule</h2>
+              <PlusCircle aria-hidden="true" className="create-pool-icon size-5 flex-none" />
+              <h2 className="create-pool-title text-lg font-bold">Maak je eigen WK-poule</h2>
             </div>
-            <p className="text-sm font-medium leading-6 text-[#48617f]">
+            <p className="create-pool-copy text-sm font-medium leading-6">
               Start in 2 minuten één of meerdere gratis poules voor vrienden, familie of collega&rsquo;s en deel jouw unieke link in de groepsapp.
             </p>
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -214,10 +216,10 @@ export default async function Home({
                 minLength={POOL_NAME_MIN_LENGTH}
                 maxLength={POOL_NAME_MAX_LENGTH}
                 placeholder="Bijv. Familie Dijkstra"
-                className="field flex-1"
+                className="field create-pool-field flex-1"
                 aria-label="Naam van je WK-poule"
               />
-              <button type="submit" className="button-primary justify-center px-5">Maken</button>
+              <button type="submit" className="button-primary create-pool-button justify-center px-5">Maken</button>
             </div>
           </form>
         </div>

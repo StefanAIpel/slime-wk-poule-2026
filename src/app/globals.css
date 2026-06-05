@@ -312,6 +312,42 @@ textarea {
   box-shadow: 0 12px 30px rgba(8, 22, 52, 0.08);
 }
 
+.create-pool-card {
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(252, 209, 22, 0.28), transparent 34%),
+    linear-gradient(135deg, #006847 0%, #007a3d 55%, #009b3a 100%);
+  border-color: rgba(0, 104, 71, 0.38);
+  box-shadow: 0 16px 34px rgba(0, 104, 71, 0.2);
+}
+
+.create-pool-title,
+.create-pool-copy {
+  color: #ffffff;
+}
+
+.create-pool-copy {
+  opacity: 0.92;
+}
+
+.create-pool-icon {
+  color: #fcd116;
+}
+
+.create-pool-field {
+  border-color: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.create-pool-button.button-primary {
+  background: #ce1126;
+  box-shadow: 0 10px 22px rgba(120, 18, 28, 0.28);
+}
+
+.create-pool-button.button-primary:hover {
+  background: #b30f21;
+}
+
 .dark-panel {
   color: #fff;
   background:
