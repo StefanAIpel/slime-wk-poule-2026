@@ -470,8 +470,8 @@ export async function deletePoolMessage(formData: FormData) {
 }
 
 const POOL_MEDIA_BUCKET = "pool-media";
-const POOL_BANNER_WIDTH = 1600;
-const POOL_BANNER_HEIGHT = 900;
+const POOL_BANNER_MAX_WIDTH = 1600;
+const POOL_BANNER_MAX_HEIGHT = 900;
 
 export async function uploadPoolImage(formData: FormData) {
   const { user } = await requireUser();
@@ -495,15 +495,16 @@ export async function uploadPoolImage(formData: FormData) {
   const { data: poolBefore } = await admin.from("pools").select("banner_path").eq("id", poolId).maybeSingle();
   const oldBannerPath = typeof poolBefore?.banner_path === "string" ? poolBefore.banner_path : null;
 
-  // Auto-conversie: bewaar de hele afbeelding binnen een 16:9 canvas. Geen slimme crop:
-  // dat ziet er bij banners met tekst/logo's te snel verkeerd uit op mobiel.
+  // Auto-conversie: bewaar de originele verhouding binnen een ruime banner-limiet.
+  // Geen crop, geen uitrekken: banners met tekst/logo's moeten zoveel mogelijk zichtbaar blijven.
   const sharp = (await import("sharp")).default;
   const input = Buffer.from(await file.arrayBuffer());
   const webp = await sharp(input)
     .rotate()
-    .resize(POOL_BANNER_WIDTH, POOL_BANNER_HEIGHT, {
-      fit: "contain",
-      background: { r: 8, g: 22, b: 52, alpha: 1 },
+    .resize({
+      width: POOL_BANNER_MAX_WIDTH,
+      height: POOL_BANNER_MAX_HEIGHT,
+      fit: "inside",
       withoutEnlargement: true,
     })
     .webp({ quality: 82 })

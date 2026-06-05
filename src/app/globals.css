@@ -3598,7 +3598,7 @@ textarea {
     var(--pool-banner-image, none),
     var(--pool-accent, #114b82);
   background-position: center, center, center;
-  background-size: cover, cover, auto;
+  background-size: cover, contain, auto;
   background-repeat: no-repeat;
   padding: 20px 18px;
 }

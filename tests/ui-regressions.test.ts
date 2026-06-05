@@ -146,13 +146,14 @@ test("create-pool card uses Mexico green contrast styling", () => {
   assert.match(globalsCss, /\.create-pool-title,[\s\S]*\.create-pool-copy \{\n  color: #ffffff;/);
 });
 
-test("pool banner upload helper appears before file input and keeps the full image inside a 16:9 banner", () => {
+test("pool banner upload helper appears before file input and keeps the original image ratio visible", () => {
   const uploadBlock = poulesPage.match(/<form action=\{uploadPoolImage\}[\s\S]*?<PendingButton/)?.[0] ?? "";
-  assert.match(uploadBlock, /Aanbevolen: 1600 × 900 px \(16:9\)\. We bewaren de hele afbeelding in een 16:9 banner, zonder slimme autocrop\./);
+  assert.match(uploadBlock, /Aanbevolen: breed beeld, liefst 1600 × 900 px \(16:9\)\. We slaan uploads op als \.webp en tonen ze in originele verhouding, zonder crop of uitrekken\./);
   assert.ok(uploadBlock.indexOf("1600 × 900 px") < uploadBlock.indexOf('type="file"'));
-  assert.match(actions, /const POOL_BANNER_WIDTH = 1600/);
-  assert.match(actions, /const POOL_BANNER_HEIGHT = 900/);
-  assert.match(actions, /resize\(POOL_BANNER_WIDTH, POOL_BANNER_HEIGHT, \{[\s\S]*fit: "contain"/);
+  assert.match(actions, /const POOL_BANNER_MAX_WIDTH = 1600/);
+  assert.match(actions, /const POOL_BANNER_MAX_HEIGHT = 900/);
+  assert.match(actions, /resize\(\{[\s\S]*width: POOL_BANNER_MAX_WIDTH,[\s\S]*height: POOL_BANNER_MAX_HEIGHT,[\s\S]*fit: "inside"/);
+  assert.doesNotMatch(actions, /fit: "cover"/);
   assert.doesNotMatch(uploadBlock, /1050 × 150|7:1|snijdt/);
 });
 
@@ -190,7 +191,7 @@ test("pool card uses the uploaded banner as the full hero background instead of 
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*border-top: 4px solid var\(--pool-accent/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*aspect-ratio: 16 \/ 9;/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*var\(--pool-banner-image, none\)[\s\S]*var\(--pool-accent/);
-  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*background-size: cover, cover, auto;/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*background-size: cover, contain, auto;/);
 });
 
 test("mobile pool navigation uses a dropdown selector instead of wrapping all pool tabs", () => {

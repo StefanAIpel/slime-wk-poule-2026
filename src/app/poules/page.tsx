@@ -364,7 +364,7 @@ Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
                         WK-poulebanner uploaden
                       </div>
                       <p className="text-xs font-medium text-[#4c5a70]">
-                        Aanbevolen: 1600 × 900 px (16:9). We bewaren de hele afbeelding in een 16:9 banner, zonder slimme autocrop.
+                        Aanbevolen: breed beeld, liefst 1600 × 900 px (16:9). We slaan uploads op als .webp en tonen ze in originele verhouding, zonder crop of uitrekken.
                       </p>
                       <input className="field" type="file" name="image" accept="image/*" required />
                       <PendingButton className="button-secondary w-fit" pendingText="Uploaden…">
