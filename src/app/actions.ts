@@ -470,6 +470,8 @@ export async function deletePoolMessage(formData: FormData) {
 }
 
 const POOL_MEDIA_BUCKET = "pool-media";
+const POOL_BANNER_WIDTH = 1050;
+const POOL_BANNER_HEIGHT = 150;
 
 export async function uploadPoolImage(formData: FormData) {
   const { user } = await requireUser();
@@ -490,12 +492,12 @@ export async function uploadPoolImage(formData: FormData) {
     .maybeSingle();
   if (!manager) redirect("/poules?fout=rechten");
 
-  // Auto-conversie: schaal naar max 1600px en comprimeer naar WebP.
+  // Auto-conversie: crop als smalle poule-headerstrip (7:1) en comprimeer naar WebP.
   const sharp = (await import("sharp")).default;
   const input = Buffer.from(await file.arrayBuffer());
   const webp = await sharp(input)
     .rotate()
-    .resize(1600, 900, { fit: "cover", withoutEnlargement: true })
+    .resize(POOL_BANNER_WIDTH, POOL_BANNER_HEIGHT, { fit: "cover", withoutEnlargement: true })
     .webp({ quality: 82 })
     .toBuffer();
 

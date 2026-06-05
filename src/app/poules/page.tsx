@@ -353,7 +353,7 @@ export default async function PoolsPage({
                         WK-poulebanner uploaden
                       </div>
                       <p className="text-xs font-medium text-[#4c5a70]">
-                        Wordt automatisch bijgesneden en verkleind naar 1600 × 900 px (16:9). Max 6 MB.
+                        Wordt automatisch bijgesneden en verkleind naar max 1050 × 150 px (7:1). Max 6 MB.
                       </p>
                       <input className="field" type="file" name="image" accept="image/*" required />
                       <PendingButton className="button-secondary w-fit" pendingText="Uploaden…">

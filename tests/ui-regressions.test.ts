@@ -144,11 +144,15 @@ test("create-pool card uses Mexico green contrast styling", () => {
   assert.match(globalsCss, /\.create-pool-title,[\s\S]*\.create-pool-copy \{\n  color: #ffffff;/);
 });
 
-test("pool banner upload helper appears before file input and states final resolution", () => {
+test("pool banner upload helper appears before file input and uses a narrow 7:1 header strip", () => {
   const uploadBlock = poulesPage.match(/<form action=\{uploadPoolImage\}[\s\S]*?<PendingButton/)?.[0] ?? "";
-  assert.match(uploadBlock, /Wordt automatisch bijgesneden en verkleind naar 1600 × 900 px \(16:9\)\. Max 6 MB\./);
-  assert.ok(uploadBlock.indexOf("1600 × 900 px") < uploadBlock.indexOf('type="file"'));
-  assert.match(actions, /resize\(1600, 900, \{ fit: "cover"/);
+  assert.match(uploadBlock, /Wordt automatisch bijgesneden en verkleind naar max 1050 × 150 px \(7:1\)\. Max 6 MB\./);
+  assert.ok(uploadBlock.indexOf("1050 × 150 px") < uploadBlock.indexOf('type="file"'));
+  assert.match(actions, /const POOL_BANNER_WIDTH = 1050/);
+  assert.match(actions, /const POOL_BANNER_HEIGHT = 150/);
+  assert.match(actions, /resize\(POOL_BANNER_WIDTH, POOL_BANNER_HEIGHT, \{ fit: "cover"/);
+  assert.match(globalsCss, /\.pool-banner \{[\s\S]*max-height: 150px;[\s\S]*aspect-ratio: 7 \/ 1;/);
+  assert.doesNotMatch(uploadBlock, /1600 × 900|16:9/);
 });
 
 test("account page keeps name/team fixed but lets players change avatar and password safely", () => {
