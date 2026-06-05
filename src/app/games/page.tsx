@@ -9,7 +9,7 @@ export const metadata = { title: "Spelletjes", alternates: { canonical: "/games"
 export default async function GamesPage({ searchParams }: { searchParams: Promise<{ game?: string }> }) {
   const params = await searchParams;
   return (
-    <main className="page-shell">
+    <main className="page-shell game-page-shell">
       <header className="mb-4 grid gap-3">
         <Brand />
         <div className="flex items-center gap-2">

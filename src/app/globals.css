@@ -88,6 +88,10 @@ textarea {
   padding: 20px 16px calc(32px + env(safe-area-inset-bottom));
 }
 
+.game-page-shell {
+  width: min(1420px, 100%);
+}
+
 /* Landing: net genoeg lucht onder menu/statusbalk, daarna meteen hero. */
 .shell-top-tight {
   padding-top: 10px !important;
@@ -2064,11 +2068,10 @@ textarea {
 
 .game-frame {
   position: relative;
-  width: 100%;
-  max-width: 560px;
+  width: min(1120px, 100%);
+  max-width: 100%;
   aspect-ratio: 16 / 9;
-  max-height: min(42vh, 360px);
-  margin-inline: auto;
+  margin-inline: 0 auto;
   overflow: hidden;
   border-radius: 16px;
   border: 1px solid rgba(8, 22, 52, 0.12);

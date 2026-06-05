@@ -41,7 +41,7 @@ export function GameFrames({ soccerUrl, volleyUrl, initial = "soccer" }: { socce
         />
       </div>
       <p className="game-embed-note text-xs font-medium text-[#54657f]">
-        Laadt het spel niet? Open het in een nieuw tabblad — de game-site moet inbedden toestaan.
+        Laadt het spel niet? Open het in een nieuw tabblad.
       </p>
     </div>
   );
