@@ -81,9 +81,9 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                 ) : null}
               </div>
               <div className="upcoming-team-grid mt-2 text-sm">
-                <div className="flex min-w-0 items-center gap-2">
+                <div className="schedule-team-cell schedule-team-cell-home">
                   <TeamFlag code={m.home_code} name={m.home?.name_nl} />
-                  <span className="truncate font-medium tracking-wide text-[var(--ink)]" title={m.home?.name_nl ?? m.home_label ?? m.home_code ?? undefined}>
+                  <span className="schedule-team-name font-medium tracking-wide text-[var(--ink)]" title={m.home?.name_nl ?? m.home_label ?? m.home_code ?? undefined}>
                     <span className="sm:hidden">{teamAbbrev(m.home_code, m.home_label ?? m.home?.name_nl)}</span>
                     <span className="hidden sm:inline">{m.home_label ?? m.home?.name_nl ?? teamAbbrev(m.home_code, m.home?.name_nl)}</span>
                   </span>
@@ -92,9 +92,9 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                   <span aria-hidden="true">-</span>
                   <span className="sr-only">tegen</span>
                 </span>
-                <div className="flex min-w-0 items-center gap-2">
+                <div className="schedule-team-cell schedule-team-cell-away">
                   <TeamFlag code={m.away_code} name={m.away?.name_nl} />
-                  <span className="truncate font-medium tracking-wide text-[var(--ink)]" title={m.away?.name_nl ?? m.away_label ?? m.away_code ?? undefined}>
+                  <span className="schedule-team-name font-medium tracking-wide text-[var(--ink)]" title={m.away?.name_nl ?? m.away_label ?? m.away_code ?? undefined}>
                     <span className="sm:hidden">{teamAbbrev(m.away_code, m.away_label ?? m.away?.name_nl)}</span>
                     <span className="hidden sm:inline">{m.away_label ?? m.away?.name_nl ?? teamAbbrev(m.away_code, m.away?.name_nl)}</span>
                   </span>

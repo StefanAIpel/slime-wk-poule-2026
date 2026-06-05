@@ -18,6 +18,7 @@
   --orange-2: #fb8c46;
   --cream: #fff7e8;
   --ink-soft: #5a6b82;
+  --mobile-browser-chrome-gap: 10px;
 }
 
 @theme inline {
@@ -159,6 +160,13 @@ textarea {
   background: linear-gradient(90deg, var(--blue-2), var(--blue) 70%, var(--green-deep));
   color: #fff;
   box-shadow: 0 2px 10px rgba(14, 42, 71, 0.18);
+}
+
+@media (max-width: 759px) {
+  .status-bar {
+    top: var(--mobile-browser-chrome-gap);
+    margin-top: var(--mobile-browser-chrome-gap);
+  }
 }
 
 .status-bar-inner {
@@ -335,17 +343,30 @@ textarea {
   position: relative;
   display: grid;
   overflow: hidden;
-  background: #0b1733;
+  background: #0b4f9f;
 }
 
 .auth-flow-bg {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(7, 13, 31, 0.3), rgba(7, 13, 31, 0.86)),
-    radial-gradient(circle at 80% 12%, rgba(255, 122, 24, 0.42), transparent 35%),
-    radial-gradient(circle at 18% 82%, rgba(30, 115, 184, 0.44), transparent 34%),
-    linear-gradient(135deg, #101a2b, #6f2605 58%, #0b1733);
+    linear-gradient(180deg, rgba(7, 33, 87, 0.1), rgba(5, 18, 54, 0.58)),
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.22), transparent 36%),
+    url("/assets/auth/wk-stadium-auth-bg.webp"),
+    linear-gradient(135deg, #0b4f9f 0%, #1e73b8 48%, #0b2f5d 100%);
+  background-position: center, center, center, center;
+  background-repeat: no-repeat;
+  background-size: cover, cover, cover, cover;
+}
+
+.auth-flow-bg::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(3, 14, 40, 0.26), rgba(3, 14, 40, 0.02) 34%, rgba(3, 14, 40, 0.26)),
+    linear-gradient(180deg, rgba(3, 14, 40, 0), rgba(3, 14, 40, 0.18));
+  pointer-events: none;
 }
 
 .auth-flow-panel {
@@ -415,9 +436,24 @@ textarea {
 
 .share-panel-strip {
   display: grid;
+  justify-items: center;
   gap: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.18);
   padding-top: 14px;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .share-panel-strip {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .share-panel-strip .share-row {
+    justify-self: end;
+  }
 }
 
 .share-panel-title,
@@ -435,6 +471,16 @@ textarea {
   box-shadow: 0 18px 42px rgba(8, 22, 52, 0.12);
 }
 
+.public-login-stack {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.public-login-ad {
+  display: block;
+}
+
 .public-login-icon {
   display: grid;
   width: 44px;
@@ -449,6 +495,91 @@ textarea {
 
 .login-form-inline {
   font-size: 0.94rem;
+}
+
+.auth-mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  border: 1px solid rgba(30, 115, 184, 0.22);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #edf6ff 0%, #dcebff 100%);
+  padding: 5px;
+  box-shadow: inset 0 1px 3px rgba(8, 22, 52, 0.1);
+}
+
+.auth-mode-tab {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.62);
+  color: #174264;
+  font-size: 0.9rem;
+  font-weight: 900;
+  line-height: 1.1;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, color 120ms ease;
+}
+
+.auth-mode-tab-marker {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border: 2px solid currentcolor;
+  border-radius: 999px;
+  opacity: 0.55;
+}
+
+.auth-mode-tab.is-active {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.7);
+  background: linear-gradient(135deg, #075ca8, #0b7bd5 58%, #06457e);
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(6, 82, 157, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.auth-mode-tab.is-active .auth-mode-tab-marker {
+  border-color: #d8ffea;
+  background: #39d46f;
+  box-shadow: 0 0 0 3px rgba(57, 212, 111, 0.2);
+  opacity: 1;
+}
+
+.auth-login-hint {
+  display: block;
+  overflow: hidden;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-forgot-helper {
+  font-size: 0.82rem;
+  line-height: 1.38;
+}
+
+.fixed-code-button {
+  display: inline-flex;
+  width: 100%;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px dashed rgba(14, 122, 68, 0.48);
+  border-radius: 13px;
+  background: linear-gradient(180deg, rgba(240, 253, 244, 0.98), rgba(225, 246, 235, 0.98));
+  color: #0b6b3c;
+  font-size: 0.86rem;
+  font-weight: 900;
+  line-height: 1.2;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.74);
 }
 
 @media (max-width: 759px) {
@@ -473,13 +604,14 @@ textarea {
   }
 
   .login-form-inline > [role="tablist"] {
-    gap: 6px;
-    border-radius: 12px;
+    gap: 7px;
+    border-radius: 14px;
   }
 
   .login-form-inline [role="tab"] {
-    padding: 7px 10px;
-    font-size: 0.88rem;
+    min-height: 40px;
+    padding: 8px 8px;
+    font-size: 0.84rem;
     line-height: 1.12;
   }
 
@@ -507,10 +639,24 @@ textarea {
     line-height: 1.15;
   }
 
-  .login-form-inline p,
-  .login-form-inline > button {
+  .login-form-inline p {
     font-size: 0.82rem;
     line-height: 1.35;
+  }
+
+  .login-form-inline .auth-login-hint {
+    font-size: 0.72rem;
+    line-height: 1.15;
+  }
+
+  .login-form-inline .auth-forgot-helper {
+    font-size: 0.76rem;
+    line-height: 1.32;
+  }
+
+  .login-form-inline > button {
+    font-size: 0.8rem;
+    line-height: 1.25;
   }
 }
 
@@ -652,7 +798,7 @@ textarea {
 
 /* Hero met geïntegreerde header: ruimte bovenin voor de balk (alleen mobiel). */
 .hero-band-topbar {
-  padding-top: 40px;
+  padding-top: 72px;
 }
 
 @media (min-width: 768px) {
@@ -733,16 +879,26 @@ textarea {
       url("/assets/hero-home-landscape.webp");
   }
 
-  /* Desktop: hero 70px hoger en de twee onderknoppen niet breder dan de
-     "Gratis meedoen"-knop (links onder de CTA). */
+  /* Desktop: hogere hero uit main behouden, maar de twee onderknoppen
+     rechts uitlijnen en wat groter maken. */
   .hero-home {
     min-height: 340px;
   }
 
   .hero-home .hero-bottom-links {
-    width: min(calc(100% - 40px), 260px);
-    left: 20px;
-    right: auto;
+    right: 28px;
+    bottom: 22px;
+    left: auto;
+    width: min(38vw, 360px);
+    justify-self: end;
+    gap: 12px;
+  }
+
+  .hero-bottom-link {
+    min-height: 50px;
+    gap: 8px;
+    border-radius: 16px;
+    font-size: 0.9rem;
   }
 }
 
@@ -1550,9 +1706,8 @@ textarea {
 
 .upcoming-team-grid {
   display: grid;
-  /* Thuisland links uitgelijnd (gelijk met de datum erboven), dan de scheidings-
-     pill, dan het uitland, en rechts de scoreboxjes. */
-  grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 62px;
+  /* Vaste thuis | scheiding | uit | score-kolommen: rijtjes blijven strak onder elkaar. */
+  grid-template-columns: var(--match-home-col, minmax(118px, 160px)) 30px minmax(0, 1fr) 62px;
   align-items: center;
   column-gap: 7px;
 }
@@ -1586,14 +1741,15 @@ textarea {
 
 .schedule-team-grid {
   display: grid;
-  /* Thuisland links onder de datum, subtiel bolletje ertussen, uitland ernaast en score rechts. */
-  grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 62px;
+  /* Vaste thuis | scheiding | uit | score-kolommen: rijtjes blijven strak onder elkaar. */
+  grid-template-columns: var(--match-home-col, minmax(118px, 160px)) 30px minmax(0, 1fr) 62px;
   align-items: center;
   column-gap: 7px;
   color: #0b1f4d;
 }
 
 .schedule-team-grid-knockout {
+  --match-home-col: minmax(160px, 1fr);
   font-size: 0.82rem;
 }
 
@@ -1604,6 +1760,16 @@ textarea {
   gap: 8px;
   font-weight: 800;
   color: #0b1f4d;
+}
+
+.schedule-team-cell-home {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.schedule-team-cell-away {
+  justify-content: flex-start;
+  text-align: left;
 }
 
 .schedule-team-name {
@@ -1775,7 +1941,7 @@ textarea {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   width: 100%;
-  max-width: calc(100vw - 32px);
+  max-width: 100%;
   gap: 10px;
 }
 
@@ -1821,9 +1987,10 @@ textarea {
 
 .game-open-link {
   grid-column: 1 / -1;
-  border-color: rgba(14, 122, 68, 0.22);
-  background: #ecfdf3;
-  color: #0b6f3b;
+  border-color: transparent;
+  background: linear-gradient(135deg, #19b85d, #0e8a49 62%, #0a6b38);
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(14, 138, 73, 0.26);
 }
 
 .game-tab-pill:hover,
@@ -1840,6 +2007,10 @@ textarea {
   }
 }
 
+.game-mobile-note {
+  display: none;
+}
+
 @media (min-width: 640px) {
   .game-toolbar {
     grid-template-columns: repeat(3, minmax(0, auto));
@@ -1854,7 +2025,10 @@ textarea {
 .game-frame {
   position: relative;
   width: 100%;
-  height: min(78vh, 860px);
+  max-width: 560px;
+  aspect-ratio: 16 / 9;
+  max-height: min(42vh, 360px);
+  margin-inline: auto;
   overflow: hidden;
   border-radius: 16px;
   border: 1px solid rgba(8, 22, 52, 0.12);
@@ -1867,6 +2041,33 @@ textarea {
   height: 100%;
   border: 0;
   display: block;
+}
+
+@media (max-width: 639px) {
+  .game-open-link {
+    order: -1;
+    min-height: 54px;
+    font-size: 0.94rem;
+  }
+
+  .game-mobile-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: #eff6ff;
+    padding: 10px 12px;
+    color: #174176;
+    font-size: 0.84rem;
+    font-weight: 800;
+    line-height: 1.35;
+    text-align: center;
+  }
+
+  .game-frame,
+  .game-embed-note {
+    display: none;
+  }
 }
 
 .score-slot {
@@ -2825,12 +3026,13 @@ textarea {
 
   .schedule-team-grid,
   .upcoming-team-grid {
-    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 58px;
+    --match-home-col: minmax(58px, 78px);
+    grid-template-columns: var(--match-home-col) 20px minmax(0, 1fr) 54px;
     column-gap: 5px;
   }
 
   .upcoming-team-grid {
-    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 58px;
+    --match-home-col: minmax(58px, 78px);
   }
 
   .upcoming-team-separator,
@@ -2841,7 +3043,7 @@ textarea {
   }
 
   .schedule-team-cell,
-  .upcoming-team-grid .flex {
+  .upcoming-team-grid .schedule-team-cell {
     gap: 5px;
   }
 
@@ -2875,12 +3077,17 @@ textarea {
 @media (min-width: 640px) {
   .schedule-team-grid,
   .upcoming-team-grid {
-    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 70px;
+    --match-home-col: minmax(160px, 210px);
+    grid-template-columns: var(--match-home-col) 30px minmax(0, 1fr) 70px;
     column-gap: 10px;
   }
 
   .upcoming-team-grid {
-    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 70px;
+    --match-home-col: minmax(92px, 128px);
+  }
+
+  .schedule-team-grid-knockout {
+    --match-home-col: minmax(160px, 1fr);
   }
 
   .match-score-boxes {

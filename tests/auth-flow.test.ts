@@ -40,7 +40,7 @@ test("registration email template is SlimeScore-branded and supports code-first 
 });
 
 test("new players enter profile, password and legal acceptance before confirmation mail", () => {
-  assert.match(loginForm, /Nieuw SlimeScore-account maken/);
+  assert.match(loginForm, /aria-label=\"Nieuw SlimeScore-account maken\"/);
   assert.match(loginForm, /Naam of bijnaam/);
   assert.match(loginForm, /Teamnaam/);
   assert.match(loginForm, /type=\"password\"/);
@@ -49,6 +49,14 @@ test("new players enter profile, password and legal acceptance before confirmati
   assert.match(loginForm, /supabase\.auth\.signUp/);
   assert.match(loginForm, /signup_flow: \"profile_password_confirm\"/);
   assert.doesNotMatch(loginForm, /signInWithOtp/);
+});
+
+test("registration surfaces actionable Supabase mail errors instead of a vague retry message", () => {
+  assert.match(loginForm, /function registrationErrorMessage\(errorMessage: string\)/);
+  assert.match(loginForm, /e-mailadres wordt door de maildienst geweigerd/);
+  assert.match(loginForm, /bevestigingsmail versturen lukte niet/);
+  assert.match(loginForm, /Controleer je e-mailadres en probeer opnieuw/);
+  assert.doesNotMatch(loginForm, /setMessage\(\"Account maken lukte niet\. Controleer je gegevens en probeer het opnieuw\.\"\)/);
 });
 
 test("registration form cannot leak passwords through a native GET fallback", () => {
@@ -97,6 +105,41 @@ test("existing players can reset their password with a copyable email code inste
   assert.match(authRecoveryTemplate, /Code uit de mail/);
   assert.match(authRecoveryTemplate, /Voorspel\. Deel\. Win de poule\./);
   assert.match(authRecoveryTemplate, /WK 2026 vriendenpoule/);
+});
+
+test("password recovery survives mobile mail-app roundtrips without the original webview state", () => {
+  assert.match(loginForm, /Ik heb al een wachtwoordcode/);
+  assert.match(loginForm, /setResetCodeEntry\(true\)/);
+  assert.match(loginForm, /status === \"sent\" \|\| resetCodeEntry/);
+  assert.match(loginForm, /aria-label=\"E-mailadres voor wachtwoordcode\"/);
+  assert.match(loginForm, /Je hoeft de mailsessie niet open te houden/);
+  assert.doesNotMatch(loginForm, /window\.location\.href = provider\.(?:appUrl|url)/);
+});
+
+test("webmail buttons open outside the SlimeScore tab instead of replacing the reset form", () => {
+  assert.match(loginForm, /href=\{provider\.appUrl\}/);
+  assert.match(loginForm, /href=\{provider\.url\}/);
+  assert.match(loginForm, /target=\"_blank\"/);
+  assert.match(loginForm, /rel=\"noopener noreferrer\"/);
+  assert.match(loginForm, /Open Gmail-app/);
+  assert.match(loginForm, /Gmail in browser/);
+  assert.match(authRecoveryTemplate, /SlimeScore mag dicht zijn geraakt/);
+});
+
+test("webmail shortcut is picked by email domain for Outlook, Live and Zoho users", () => {
+  assert.match(loginForm, /match: \[\"outlook\.com\", \"hotmail\.com\", \"live\.nl\", \"live\.com\", \"msn\.com\"\], label: \"Open Outlook\", url: \"https:\/\/outlook\.live\.com\/mail\/\"/);
+  assert.match(loginForm, /match: \[\"zohomail\.eu\", \"zoho\.eu\"\], label: \"Open Zoho Mail\", url: \"https:\/\/mail\.zoho\.eu\/\"/);
+  assert.match(loginForm, /match: \[\"zohomail\.com\", \"zoho\.com\"\], label: \"Open Zoho Mail\", url: \"https:\/\/mail\.zoho\.com\/\"/);
+  assert.match(loginForm, /const domain = email\.split\("@"\)\[1\]\?\.toLowerCase\(\) \?\? "";/);
+  assert.match(loginForm, /w\.match\.includes\(domain\)/);
+});
+
+test("confirmation and recovery screens help Zoho users find codes outside the inbox", () => {
+  assert.match(loginForm, /zohomail\.eu/);
+  assert.match(loginForm, /Open Zoho Mail/);
+  assert.match(loginForm, /Spam, Ongewenst of bij Zoho de map Notification/);
+  assert.match(authEmailTemplate, /Spam, Ongewenst of Notification/);
+  assert.match(authRecoveryTemplate, /Spam, Ongewenst of Notification/);
 });
 
 test("recovery links remain accepted by the auth callback fallback", () => {

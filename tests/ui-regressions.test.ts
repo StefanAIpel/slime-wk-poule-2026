@@ -9,6 +9,7 @@ const passwordChangeForm = await readFile(new URL("../src/components/password-ch
 const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
+const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
 const quickMenu = await readFile(new URL("../src/components/quick-menu.tsx", import.meta.url), "utf8");
@@ -18,6 +19,7 @@ const brandWordmark = await readFile(new URL("../src/components/brand-wordmark.t
 const bottomNav = await readFile(new URL("../src/components/bottom-nav.tsx", import.meta.url), "utf8");
 const upcomingMatches = await readFile(new URL("../src/components/upcoming-matches.tsx", import.meta.url), "utf8");
 const scheduleExplorer = await readFile(new URL("../src/components/schedule-explorer.tsx", import.meta.url), "utf8");
+const gameFrames = await readFile(new URL("../src/components/game-frames.tsx", import.meta.url), "utf8");
 const schemaPage = await readFile(new URL("../src/app/schema/page.tsx", import.meta.url), "utf8");
 const schemaGroupsPage = await readFile(new URL("../src/app/schema/groepen/page.tsx", import.meta.url), "utf8");
 const schemaKnockoutPage = await readFile(new URL("../src/app/schema/knockout/page.tsx", import.meta.url), "utf8");
@@ -46,12 +48,19 @@ test("mobile landing hero keeps the WK pills and title separated", () => {
   assert.match(globalsCss, /\.hero-home-title-block \{\n    max-width: min\(100%, 305px\);\n    transform: translateY\(-4px\);/);
 });
 
-test("hero quick-link buttons stay inside the mobile hero card", () => {
+test("hero quick-link buttons stay inside the mobile hero card and align right on desktop", () => {
   assert.match(globalsCss, /\.hero-bottom-links \{/);
   assert.match(globalsCss, /left: 20px;/);
   assert.match(globalsCss, /right: 20px;/);
   assert.match(globalsCss, /width: auto;/);
   assert.match(globalsCss, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+  assert.match(globalsCss, /@media \(min-width: 760px\) \{[\s\S]*\.hero-bottom-links \{[\s\S]*left: auto;[\s\S]*width: min\(38vw, 360px\);[\s\S]*justify-self: end;/);
+  assert.match(globalsCss, /@media \(min-width: 760px\) \{[\s\S]*\.hero-bottom-link \{[\s\S]*min-height: 50px;[\s\S]*font-size: 0\.9rem;/);
+});
+
+test("mobile app starts with a 10px gap below browser chrome before the sticky status bar", () => {
+  assert.match(globalsCss, /--mobile-browser-chrome-gap: 10px;/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.status-bar \{[\s\S]*top: var\(--mobile-browser-chrome-gap\);[\s\S]*margin-top: var\(--mobile-browser-chrome-gap\);/);
 });
 
 test("public login panel is compact on mobile", () => {
@@ -62,11 +71,12 @@ test("public login panel is compact on mobile", () => {
   assert.match(globalsCss, /\.login-form-inline \.field \{\n    min-height: 44px;/);
 });
 
-test("signup sent state has one clear success headline plus normal-weight next steps and spam hint", () => {
+test("signup sent state keeps only the success headline and code form without duplicate helper copy", () => {
   assert.match(loginForm, /Bevestigingsmail verstuurd naar je e-mail/);
-  assert.match(loginForm, /Kopieer de bevestigingscode uit de mail en plak die hieronder/);
   assert.match(loginForm, /Registratie bevestigen met mailcode/);
-  assert.match(loginForm, /Mail niet ontvangen\? Check je spambox of probeer opnieuw\./);
+  assert.match(loginForm, /Bevestigingsmail opnieuw sturen/);
+  assert.doesNotMatch(loginForm, /Mail niet ontvangen\? Check je spambox of probeer opnieuw\./);
+  assert.doesNotMatch(loginForm, /De knop in de mail blijft als fallback bestaan/);
   assert.doesNotMatch(loginForm, /Open de inloglink|Registratielink verstuurd/i);
 });
 
@@ -107,6 +117,27 @@ test("logged-in dashboard only shows SlimeSoccer in the right column and no Slim
   assert.match(homePage, /lg:grid-cols-\[1\.2fr_0\.8fr\]/);
   assert.match(homePage, /<SlimeSoccerBanner includeVolley=\{false\}/);
   assert.doesNotMatch(homePage, /<SlimeSoccerBanner \/>/);
+});
+
+test("dashboard copy matches the 72-group-result progress metric and password flow", () => {
+  assert.doesNotMatch(homePage, /Vul je wedstrijden en knock-outkeuzes in/);
+  assert.match(homePage, /De voortgang hieronder telt je 72 groepsuitslagen/);
+  assert.match(homePage, /e-mail \+ wachtwoord/);
+  assert.doesNotMatch(homePage, /geen wachtwoord/);
+});
+
+test("share panel keeps the Deel SlimeScore label before icons and stacks it above on mobile", () => {
+  assert.match(homePage, /<p className=\"share-panel-title\">Deel SlimeScore<\/p>[\s\S]*<ShareRow/);
+  assert.match(globalsCss, /\.share-panel-strip \{[\s\S]*display: grid;[\s\S]*justify-items: center;/);
+  assert.match(globalsCss, /\.share-panel-strip \.share-actions \{[\s\S]*justify-content: center;/);
+  assert.match(globalsCss, /@media \(min-width: 640px\) \{[\s\S]*\.share-panel-strip \{[\s\S]*grid-template-columns: auto minmax\(0, 1fr\);/);
+});
+
+test("prediction saves sync the global status bar progress without requiring reload", () => {
+  assert.match(predictionsPage, /StatusProgressSync/);
+  assert.match(predictionsPage, /<StatusProgressSync progress=\{groupProgress\} \/>/);
+  assert.match(statusBar, /slimescore:me-update/);
+  assert.match(statusBar, /setMe\(\(current\)/);
 });
 
 test("logged-in navigation emphasizes Voorspel, keeps compact account/logout actions, and uses no mobile tabbar", () => {
@@ -156,10 +187,14 @@ test("small team columns use official 3-letter country abbreviations", () => {
   assert.match(upcomingMatches, /hidden sm:inline">\{m\.home_label \?\? m\.home\?\.name_nl/);
 });
 
-test("match rows always reserve right-side API score boxes", () => {
+test("match rows always reserve right-side API score boxes with fixed home-separator-away columns", () => {
   assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} \/>/);
   assert.match(scheduleExplorer, /<ResultBoxes match=\{match\} \/>/);
-  assert.match(globalsCss, /grid-template-columns: minmax\(0, auto\) auto minmax\(0, 1fr\) 62px;/);
+  assert.match(globalsCss, /grid-template-columns: var\(--match-home-col, minmax\(118px, 160px\)\) 30px minmax\(0, 1fr\) 62px;/);
+  assert.match(globalsCss, /\.schedule-team-grid-knockout \{[\s\S]*--match-home-col: minmax\(160px, 1fr\);/);
+  assert.match(globalsCss, /\.schedule-team-cell-home \{[\s\S]*justify-content: flex-end;[\s\S]*text-align: right;/);
+  assert.match(globalsCss, /\.schedule-team-cell-away \{[\s\S]*justify-content: flex-start;/);
+  assert.doesNotMatch(globalsCss, /grid-template-columns: minmax\(0, auto\) auto minmax\(0, 1fr\) (?:58|70)px;/);
   assert.match(globalsCss, /\.score-box \{/);
   assert.doesNotMatch(scheduleExplorer, /schedule-team-grid-has-score/);
 });
@@ -189,12 +224,22 @@ test("schema copy is public-facing and group filters can search team, group, or 
   assert.match(scheduleExplorer, /filteredMatchesByGroup/);
 });
 
-test("desktop schedule cards are compact and match rows use a visible team separator", () => {
+test("desktop schedule cards are compact and match rows use a visible aligned team separator", () => {
   assert.match(globalsCss, /\.hero-band-page \{[\s\S]*max-height: 220px;/);
   assert.match(globalsCss, /\.hero-band-page\.hero-band-visual \{\n    min-height: 200px;\n  \}/);
-  assert.match(globalsCss, /\.schedule-team-grid \{[\s\S]*minmax\(0, auto\) auto minmax\(0, 1fr\) 62px;/);
+  assert.match(globalsCss, /\.schedule-team-grid \{[\s\S]*grid-template-columns: var\(--match-home-col, minmax\(118px, 160px\)\) 30px minmax\(0, 1fr\) 62px;/);
   assert.match(scheduleExplorer, /schedule-team-separator/);
+  assert.match(scheduleExplorer, /schedule-team-cell-away/);
   assert.match(globalsCss, /\.group-phase-body \{[\s\S]*minmax\(0, 1fr\) 320px/);
   assert.match(scheduleExplorer, /teamAbbrev\(row\.code, row\.name\)/);
   assert.doesNotMatch(scheduleExplorer, /dark-panel rounded-2xl/);
+});
+
+test("game embed is smaller on desktop and mobile defaults to new-tab play", () => {
+  assert.match(gameFrames, /Open spel in nieuw tabblad/);
+  assert.match(gameFrames, /Mobiel speelt dit het best schermvullend/);
+  assert.doesNotMatch(gameFrames, />Nieuw tabblad</);
+  assert.match(globalsCss, /\.game-frame \{[\s\S]*max-width: 560px;[\s\S]*aspect-ratio: 16 \/ 9;[\s\S]*max-height: min\(42vh, 360px\);/);
+  assert.match(globalsCss, /@media \(max-width: 639px\) \{[\s\S]*\.game-frame,\n  \.game-embed-note \{\n    display: none;/);
+  assert.match(globalsCss, /\.game-open-link \{[\s\S]*linear-gradient\(135deg, #19b85d, #0e8a49 62%, #0a6b38\)/);
 });

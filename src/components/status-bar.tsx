@@ -25,13 +25,41 @@ export function StatusBar() {
   const [left, setLeft] = useState<string | null>(() => countdown(Date.now()));
 
   useEffect(() => {
-    fetch("/api/me")
-      .then((r) => r.json())
-      .then(setMe)
-      .catch(() => setMe({ loggedIn: false }));
+    let mounted = true;
+
+    async function refreshMe() {
+      try {
+        const response = await fetch("/api/me", { cache: "no-store" });
+        const data = (await response.json()) as Me;
+        if (mounted) setMe(data);
+      } catch {
+        if (mounted) setMe({ loggedIn: false });
+      }
+    }
+
+    function handleMeUpdate(event: Event) {
+      const detail = (event as CustomEvent<Partial<Me>>).detail;
+      if (!detail) return;
+      setMe((current) => (current ? { ...current, ...detail } : current));
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") void refreshMe();
+    }
+
+    void refreshMe();
+    window.addEventListener("slimescore:me-update", handleMeUpdate);
+    window.addEventListener("focus", refreshMe);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     const id = setInterval(() => setLeft(countdown(Date.now())), 30000);
-    return () => clearInterval(id);
+    return () => {
+      mounted = false;
+      clearInterval(id);
+      window.removeEventListener("slimescore:me-update", handleMeUpdate);
+      window.removeEventListener("focus", refreshMe);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   return (

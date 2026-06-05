@@ -141,7 +141,7 @@ export default async function Home({
               <div>
                 <h1 className="text-2xl font-bold leading-tight md:text-4xl">Jouw Slime Score, alles op één plek.</h1>
                 <p className="mt-2 max-w-xl text-base font-medium text-blue-100">
-                  Vul je wedstrijden en knock-outkeuzes in. Aanpassen kan tot de aftrap op{" "}
+                  De voortgang hieronder telt je 72 groepsuitslagen. Knock-outkeuzes en bonusvragen kun je ook invullen tot de deadline op{" "}
                   <strong className="font-bold text-white">{deadlineLabel}</strong> — daarna staat alles vast.
                 </p>
               </div>
@@ -267,7 +267,7 @@ export default async function Home({
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-medium text-[#46566f]">
-          Gratis · 1× invullen, telt in al je groepen · geen wachtwoord · privé
+          Gratis · 1× invullen, telt in al je groepen · e-mail + wachtwoord · privé
         </p>
       </div>
 
@@ -363,23 +363,27 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
           </div>
         </section>
 
-        <section id="login" className="public-login-panel grid gap-3 p-3 sm:gap-4 sm:p-5 md:sticky md:top-4">
-          {authError ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-4 font-bold text-red-800">
-              Deze bevestigingslink is verlopen. Vraag een nieuwe aan.
+        <aside className="public-login-stack md:sticky md:top-4">
+          <section id="login" className="public-login-panel grid gap-3 p-3 sm:gap-4 sm:p-5">
+            {authError ? (
+              <div className="rounded-xl border border-red-200 bg-red-50 p-4 font-bold text-red-800">
+                Deze bevestigingslink is verlopen. Vraag een nieuwe aan.
+              </div>
+            ) : null}
+            <div className="flex items-center gap-3">
+              <span className="public-login-icon" aria-hidden="true">
+                <LogIn className="size-6" />
+              </span>
+              <div>
+                <h2 className="public-login-title text-2xl font-black text-[#101a2b]">Aanmelden</h2>
+              </div>
             </div>
-          ) : null}
-          <div className="flex items-center gap-3">
-            <span className="public-login-icon" aria-hidden="true">
-              <LogIn className="size-6" />
-            </span>
-            <div>
-              <h2 className="public-login-title text-2xl font-black text-[#101a2b]">Aanmelden</h2>
-            </div>
+            <LoginForm surface="inline" />
+          </section>
+          <div className="public-login-ad" aria-label="Speel Slime Soccer">
+            <SlimeSoccerBanner includeVolley={false} />
           </div>
-          <LoginForm surface="inline" />
-          <SlimeSoccerBanner includeVolley={false} />
-        </section>
+        </aside>
 
         <a href="/ranglijst" className="panel public-score-card p-4 no-underline md:col-start-1 md:row-start-2">
           <div className="flex items-center justify-between gap-3">
