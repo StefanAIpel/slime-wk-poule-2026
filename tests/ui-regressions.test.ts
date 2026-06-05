@@ -5,17 +5,26 @@ import { test } from "node:test";
 const loginForm = await readFile(new URL("../src/components/login-form.tsx", import.meta.url), "utf8");
 const profileForm = await readFile(new URL("../src/components/profile-form.tsx", import.meta.url), "utf8");
 const accountPage = await readFile(new URL("../src/app/account/page.tsx", import.meta.url), "utf8");
+const passwordChangeForm = await readFile(new URL("../src/components/password-change-form.tsx", import.meta.url), "utf8");
+const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
 const quickMenu = await readFile(new URL("../src/components/quick-menu.tsx", import.meta.url), "utf8");
 const statusBar = await readFile(new URL("../src/components/status-bar.tsx", import.meta.url), "utf8");
+const shareButton = await readFile(new URL("../src/components/share-button.tsx", import.meta.url), "utf8");
+const brandWordmark = await readFile(new URL("../src/components/brand-wordmark.tsx", import.meta.url), "utf8");
 const bottomNav = await readFile(new URL("../src/components/bottom-nav.tsx", import.meta.url), "utf8");
 const upcomingMatches = await readFile(new URL("../src/components/upcoming-matches.tsx", import.meta.url), "utf8");
 const scheduleExplorer = await readFile(new URL("../src/components/schedule-explorer.tsx", import.meta.url), "utf8");
+const schemaPage = await readFile(new URL("../src/app/schema/page.tsx", import.meta.url), "utf8");
 const schemaGroupsPage = await readFile(new URL("../src/app/schema/groepen/page.tsx", import.meta.url), "utf8");
 const schemaKnockoutPage = await readFile(new URL("../src/app/schema/knockout/page.tsx", import.meta.url), "utf8");
+const poulesPage = await readFile(new URL("../src/app/poules/page.tsx", import.meta.url), "utf8");
+const poolMembers = await readFile(new URL("../src/components/pool-members.tsx", import.meta.url), "utf8");
+const poolQuickShare = await readFile(new URL("../src/components/pool-quick-share.tsx", import.meta.url), "utf8");
+const appFirstShareLink = await readFile(new URL("../src/components/app-first-share-link.tsx", import.meta.url), "utf8");
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
@@ -31,15 +40,17 @@ test("hero primary Gratis meedoen button is compact on mobile with a light empha
   assert.doesNotMatch(heroPrimaryBlock, /width: auto;/);
 });
 
-test("mobile landing hero offsets title block up and world-cup pills down", () => {
+test("mobile landing hero keeps the WK pills and title separated", () => {
   assert.match(homePage, /className=\"hero-home-title-block\"/);
-  assert.match(globalsCss, /\.hero-home \.world-cup-kicker \{\n    transform: translateY\(20px\);/);
-  assert.match(globalsCss, /\.hero-home-title-block \{\n    transform: translateY\(-20px\);/);
+  assert.match(globalsCss, /\.hero-home \.world-cup-kicker \{\n    transform: translateY\(8px\);/);
+  assert.match(globalsCss, /\.hero-home-title-block \{\n    max-width: min\(100%, 305px\);\n    transform: translateY\(-4px\);/);
 });
 
-test("hero quick-link buttons stay compact but responsive", () => {
+test("hero quick-link buttons stay inside the mobile hero card", () => {
   assert.match(globalsCss, /\.hero-bottom-links \{/);
-  assert.match(globalsCss, /width: min\(calc\(100% - 40px\), 370px\);/);
+  assert.match(globalsCss, /left: 20px;/);
+  assert.match(globalsCss, /right: 20px;/);
+  assert.match(globalsCss, /width: auto;/);
   assert.match(globalsCss, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
 });
 
@@ -59,19 +70,37 @@ test("signup sent state has one clear success headline plus normal-weight next s
   assert.doesNotMatch(loginForm, /Open de inloglink|Registratielink verstuurd/i);
 });
 
-test("profile can only be set at onboarding; account page cannot edit name/team/avatar afterwards", () => {
+test("account page keeps name/team fixed but lets players change avatar and password safely", () => {
   assert.match(profileForm, /name=\"nickname\"/);
   assert.match(profileForm, /name=\"team_name\"/);
-  assert.doesNotMatch(profileForm, /AvatarPicker/);
   assert.match(profileForm, /avatar_key/);
-  assert.doesNotMatch(accountPage, /name=\"nickname\"|name=\"team_name\"|AvatarPicker|Opslaan/);
-  assert.doesNotMatch(actions, /update\(\{ nickname, team_name: teamName, avatar_key: avatarKey \}\)/);
+  assert.doesNotMatch(accountPage, /name=\"nickname\"|name=\"team_name\"/);
+  assert.match(accountPage, /<form action=\{updateAccount\}/);
+  assert.match(accountPage, /<AvatarPicker initialKey=\{profile\?\.avatar_key\} name=\{nickname \|\| \"Speler\"\}/);
+  assert.match(accountPage, /Avatar opslaan/);
+  assert.match(accountPage, /<PasswordChangeForm \/>/);
+  assert.match(accountPage, /<details className=\"panel p-5\">[\s\S]*E-mail/);
+  assert.match(accountPage, /<details className=\"panel border-red-200 p-5\">[\s\S]*Account verwijderen/);
+  assert.match(actions, /avatar_key: isAvatarKey\(avatarKey\) \? avatarKey : null/);
+  assert.match(actions, /from\(\"profiles\"\)\.update\(avatarPayload\)\.eq\(\"id\", user\.id\)/);
+  assert.match(avatarPicker, /name=\"avatar_key\"/);
+  assert.match(passwordChangeForm, /supabase\.auth\.getSession\(\)/);
+  assert.match(passwordChangeForm, /supabase\.auth\.updateUser\(\{ password \}\)/);
+  assert.match(passwordChangeForm, /autoComplete=\"new-password\"/);
 });
 
 test("shared SlimeScore links use the app icon instead of the wide banner", () => {
   assert.match(layout, /const ogImage = appIcon/);
   assert.match(layout, /width: 512, height: 512/);
   assert.doesNotMatch(layout, /og-slimescore-wk2026-v2\.png/);
+});
+
+test("SlimeScore brand wordmark uses the neutral WK slime and a richer pill lockup", () => {
+  assert.match(brandWordmark, /wk_slime_700_transparant\.webp/);
+  assert.match(siteHeader, /wk_slime_700_transparant\.webp/);
+  assert.doesNotMatch(`${brandWordmark}\n${siteHeader}`, /trump_slime_700_transparant\.webp/);
+  assert.match(globalsCss, /\.brand-wordmark-text \{[\s\S]*border-radius: 999px;[\s\S]*linear-gradient\(135deg, #061a3c/);
+  assert.match(globalsCss, /\.brand-wordmark-score \{\n  color: #60f47c;/);
 });
 
 test("logged-in dashboard only shows SlimeSoccer in the right column and no SlimeVolley", () => {
@@ -96,6 +125,28 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(statusBar, /href=\"\/voorspellingen\" className=\"status-chip status-chip-countdown/);
 });
 
+test("mobile poule page prioritizes ranking and hides bulky share/admin controls", () => {
+  assert.match(poulesPage, /<PoolQuickShare joinUrl=\{joinAssets\.joinUrl\} qrDataUrl=\{joinAssets\.qrDataUrl\}/);
+  assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} \/>[\s\S]*Prikbord[\s\S]*Deelopties &amp; QR[\s\S]*WK-poule-instellingen &amp; opmaak \(beheer\)/);
+  assert.match(poolMembers, /Ranglijst &amp; deelnemers/);
+  assert.match(poolMembers, /pool-members-count/);
+  assert.match(poolQuickShare, /label="Deel via WhatsApp"/);
+  assert.match(poolQuickShare, /Kopieer link/);
+  assert.match(poolQuickShare, /aria-label=\"Deel via mail\"/);
+  assert.match(poolQuickShare, /aria-label=\"Deel QR-code\"/);
+  assert.match(poolQuickShare, /whatsapp:\/\/send\?text=\$\{encodedMessage\}/);
+  assert.match(poolQuickShare, /https:\/\/wa\.me\/\?text=\$\{encodedMessage\}/);
+  assert.match(shareButton, /whatsapp:\/\/send\?text=\$\{encodedBoth\}/);
+  assert.match(shareButton, /fb:\/\/facewebmodal\/f\?href=\$\{encodeURIComponent\(facebookWebHref\)\}/);
+  assert.match(shareButton, /https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=\$\{encodedUrl\}&quote=\$\{encodedBoth\}/);
+  assert.match(appFirstShareLink, /window\.location\.href = appHref/);
+  assert.match(appFirstShareLink, /window\.open\(webHref, "_blank", "noopener,noreferrer"\)/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\) auto;/);
+  assert.match(globalsCss, /@media \(max-width: 640px\) \{[\s\S]*\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);/);
+  assert.match(globalsCss, /\.pool-member-button \{[\s\S]*min-height: 42px;/);
+  assert.match(globalsCss, /\.pool-member-team \{\n    display: none;/);
+});
+
 test("small team columns use official 3-letter country abbreviations", () => {
   assert.match(formatLib, /teamAbbrev/);
   assert.match(upcomingMatches, /teamAbbrev\(m\.home_code/);
@@ -108,17 +159,42 @@ test("small team columns use official 3-letter country abbreviations", () => {
 test("match rows always reserve right-side API score boxes", () => {
   assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} \/>/);
   assert.match(scheduleExplorer, /<ResultBoxes match=\{match\} \/>/);
-  assert.match(globalsCss, /grid-template-columns: minmax\(0, 1fr\) minmax\(0, 1fr\) 62px;/);
+  assert.match(globalsCss, /grid-template-columns: minmax\(0, auto\) auto minmax\(0, 1fr\) 62px;/);
   assert.match(globalsCss, /\.score-box \{/);
   assert.doesNotMatch(scheduleExplorer, /schedule-team-grid-has-score/);
 });
 
-test("schema has separate groups and knockout pages with compact subtabs", () => {
-  assert.match(schemaGroupsPage, /initialView=\"groups\"/);
-  assert.match(schemaKnockoutPage, /initialView=\"knockout\"/);
-  assert.match(scheduleExplorer, /href: \"\/schema\/groepen\"/);
-  assert.match(scheduleExplorer, /href: \"\/schema\/knockout\"/);
+test("schema defaults to groups, keeps knockout separate, and removes the all-matches tab", () => {
+  assert.match(schemaPage, /initialView="groups"/);
+  assert.match(schemaGroupsPage, /initialView="groups"/);
+  assert.match(schemaKnockoutPage, /initialView="knockout"/);
+  assert.match(scheduleExplorer, /href: "\/schema"/);
+  assert.match(scheduleExplorer, /href: "\/schema\/knockout"/);
+  assert.doesNotMatch(scheduleExplorer, /view: "matches"/);
+  assert.doesNotMatch(scheduleExplorer, /label: "Wedstrijden"/);
   assert.match(scheduleExplorer, /knockoutStageTabs/);
   assert.match(scheduleExplorer, /Per groep/);
   assert.match(scheduleExplorer, /Per datum/);
+});
+
+test("schema copy is public-facing and group filters can search team, group, or date", () => {
+  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Alle WK-wedstrijden op een rij met datum, tijd en stadion/);
+  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Geen account nodig — deel het schema gerust in je groepsapp/);
+  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /<ShareButton url=\{scheduleShareUrl\} text=\{scheduleIntro\} title="WK 2026 speelschema" label="Deel schema" \/>/);
+  assert.doesNotMatch(schemaPage + schemaGroupsPage + schemaKnockoutPage, /AI-score|API-score|feedback|pagina staat/i);
+  assert.match(scheduleExplorer, /Zoek groep, land of datum/);
+  assert.match(scheduleExplorer, /Nederland - Oranje/);
+  assert.match(scheduleExplorer, /normalizeScheduleQuery/);
+  assert.match(scheduleExplorer, /query/);
+  assert.match(scheduleExplorer, /filteredMatchesByGroup/);
+});
+
+test("desktop schedule cards are compact and match rows use a visible team separator", () => {
+  assert.match(globalsCss, /\.hero-band-page \{[\s\S]*max-height: 220px;/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-band-visual \{\n    min-height: 200px;\n  \}/);
+  assert.match(globalsCss, /\.schedule-team-grid \{[\s\S]*minmax\(0, auto\) auto minmax\(0, 1fr\) 62px;/);
+  assert.match(scheduleExplorer, /schedule-team-separator/);
+  assert.match(globalsCss, /\.group-phase-body \{[\s\S]*minmax\(0, 1fr\) 320px/);
+  assert.match(scheduleExplorer, /teamAbbrev\(row\.code, row\.name\)/);
+  assert.doesNotMatch(scheduleExplorer, /dark-panel rounded-2xl/);
 });

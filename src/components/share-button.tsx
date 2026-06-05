@@ -1,11 +1,22 @@
 "use client";
 
 import { Check, Copy, Mail, Send, Share2 } from "lucide-react";
-import { useState } from "react";
+import { useState, type ComponentType } from "react";
+
+import { AppFirstShareLink } from "@/components/app-first-share-link";
 
 type Variant = "primary" | "secondary";
 
 type GlyphProps = { className?: string };
+type ShareTarget = {
+  key: string;
+  label: string;
+  icon: ComponentType<GlyphProps>;
+  className: string;
+} & (
+  | { appHref: string; webHref: string; href?: never }
+  | { href: string; appHref?: never; webHref?: never }
+);
 
 /** Merk-glyph als inline SVG (lucide-react bevat geen merklogo's meer). */
 function WhatsappGlyph({ className }: GlyphProps) {
@@ -100,19 +111,23 @@ export function ShareRow({
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
   const encodedBody = encodeURIComponent(`${text}\n\n${url}`.trim());
+  const whatsappWebHref = `https://wa.me/?text=${encodedBoth}`;
+  const facebookWebHref = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedBoth}`;
 
-  const targets = [
+  const targets: ShareTarget[] = [
     {
       key: "whatsapp",
       label: "WhatsApp",
-      href: `https://wa.me/?text=${encodedBoth}`,
+      appHref: `whatsapp://send?text=${encodedBoth}`,
+      webHref: whatsappWebHref,
       icon: WhatsappGlyph,
       className: "share-link share-link-whatsapp",
     },
     {
       key: "facebook",
       label: "Facebook",
-      href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedBoth}`,
+      appHref: `fb://facewebmodal/f?href=${encodeURIComponent(facebookWebHref)}`,
+      webHref: facebookWebHref,
       icon: FacebookGlyph,
       className: "share-link share-link-facebook",
     },
@@ -159,15 +174,29 @@ export function ShareRow({
       <div className="share-actions">
         {targets.map((target) => {
           const Icon = target.icon;
+          const label = `Delen via ${target.label}`;
+          if (target.appHref && target.webHref) {
+            return (
+              <AppFirstShareLink
+                key={target.key}
+                className={target.className}
+                appHref={target.appHref}
+                webHref={target.webHref}
+                label={label}
+                title={label}
+              >
+                <Icon aria-hidden="true" className="size-5" />
+                <span className={compact ? "sr-only" : undefined}>{target.label}</span>
+              </AppFirstShareLink>
+            );
+          }
           return (
             <a
               key={target.key}
               className={target.className}
               href={target.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Delen via ${target.label}`}
-              title={`Delen via ${target.label}`}
+              aria-label={label}
+              title={label}
             >
               <Icon aria-hidden="true" className="size-5" />
               <span className={compact ? "sr-only" : undefined}>{target.label}</span>
@@ -221,10 +250,16 @@ export function WhatsappShare({
   void variant;
   const message = encodeURIComponent(`${text} ${url}`.trim());
   return (
-    <a className={`button-whatsapp${compact ? " button-compact" : ""}`} href={`https://wa.me/?text=${message}`} target="_blank" rel="noopener noreferrer">
+    <AppFirstShareLink
+      className={`button-whatsapp${compact ? " button-compact" : ""}`}
+      appHref={`whatsapp://send?text=${message}`}
+      webHref={`https://wa.me/?text=${message}`}
+      label={label}
+      title={label}
+    >
       <Send aria-hidden="true" className="size-5" />
       {label}
-    </a>
+    </AppFirstShareLink>
   );
 }
 

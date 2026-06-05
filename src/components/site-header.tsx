@@ -47,7 +47,7 @@ export function SiteHeader() {
         <Link href="/" className="site-header-logo" aria-label="Slime Score home">
           <Image
             className="site-header-avatar header-slime-avatar"
-            src="/assets/transparant-avatar/trump_slime_700_transparant.webp"
+            src="/assets/transparant-avatar/wk_slime_700_transparant.webp"
             width={96}
             height={96}
             alt=""

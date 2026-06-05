@@ -40,42 +40,45 @@ export function PoolMembers({ members }: { members: PoolMember[] }) {
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
-    <div className="border-b border-slate-200 p-4">
-      <h3 className="text-lg font-bold text-[#101a2b]">Stand &amp; voorspellingen</h3>
-      <p className="mt-1 text-sm font-medium text-[#48617f]">Klik op een speler voor punten en voorspellingen.</p>
-      <div className="mt-3 grid gap-2">
+    <div className="pool-members-section border-b border-slate-200 p-4">
+      <div className="pool-members-title-row">
+        <h3 className="pool-members-title text-lg font-bold text-[#101a2b]">Ranglijst &amp; deelnemers</h3>
+        <span className="pool-members-count">{members.length}</span>
+      </div>
+      <p className="pool-members-hint mt-1 text-sm font-medium text-[#48617f]">Tik op een speler voor punten en voorspellingen.</p>
+      <div className="pool-members-list mt-3 grid gap-2">
         {members.map((member) => {
           const open = openId === member.userId;
           return (
-            <div key={member.userId} className="rounded-lg border border-slate-200 bg-white">
+            <div key={member.userId} className="pool-member-card rounded-lg border border-slate-200 bg-white">
               <button
                 type="button"
-                className="flex w-full items-center gap-3 p-3 text-left"
+                className="pool-member-button flex w-full items-center gap-3 p-3 text-left"
                 aria-expanded={open}
                 onClick={() => setOpenId(open ? null : member.userId)}
               >
-                <span className="grid size-7 flex-none place-items-center rounded-full bg-[#20508c] text-xs font-bold text-white">
+                <span className="pool-member-rank grid size-7 flex-none place-items-center rounded-full bg-[#20508c] text-xs font-bold text-white">
                   {member.rank}
                 </span>
-                <Avatar name={member.name} avatarKey={member.avatarKey} size={30} />
-                <span className="min-w-0 flex-1 truncate">
-                  <span className="font-bold text-[#081634]">{member.name}</span>
+                <Avatar name={member.name} avatarKey={member.avatarKey} size={26} />
+                <span className="pool-member-main min-w-0 flex-1 truncate">
+                  <span className="pool-member-name font-bold text-[#081634]">{member.name}</span>
                   {member.isOwner ? (
                     <Crown aria-label="Beheerder" className="ml-1 inline size-4 -translate-y-px text-[#e0a516]" />
                   ) : null}
-                  {member.isYou ? <span className="ml-1 text-xs font-bold text-[#16863a]">(jij)</span> : null}
-                  {member.teamName ? <span className="font-medium text-[#475670]"> · {member.teamName}</span> : null}
+                  {member.isYou ? <span className="pool-member-you ml-1 text-xs font-bold text-[#16863a]">(jij)</span> : null}
+                  {member.teamName ? <span className="pool-member-team font-medium text-[#475670]"> · {member.teamName}</span> : null}
                   {member.worldRank ? (
-                    <span className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-[#7a8aa3]">
+                    <span className="pool-member-world mt-0.5 flex items-center gap-1 text-xs font-semibold text-[#7a8aa3]">
                       <Globe aria-hidden="true" className="size-3" />
                       Wereldrang #{member.worldRank}
                     </span>
                   ) : null}
                 </span>
-                <span className="font-bold tabular-nums text-[#081634]">{member.points} pt</span>
+                <span className="pool-member-points font-bold tabular-nums text-[#081634]">{member.points} pt</span>
                 <ChevronDown
                   aria-hidden="true"
-                  className={`size-4 flex-none text-[#475670] transition-transform ${open ? "rotate-180" : ""}`}
+                  className={`pool-member-chevron size-4 flex-none text-[#475670] transition-transform ${open ? "rotate-180" : ""}`}
                 />
               </button>
 

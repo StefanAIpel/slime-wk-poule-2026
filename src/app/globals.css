@@ -673,16 +673,30 @@ textarea {
   .hero-home {
     padding-bottom: 76px;
   }
+
+  .hero-topbar .brand-wordmark {
+    gap: 7px;
+    font-size: 1.14rem;
+  }
+
+  .hero-topbar .brand-wordmark-logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .hero-topbar .brand-wordmark-text {
+    padding: 7px 10px 8px 11px;
+  }
 }
 
 .hero-bottom-links {
   position: absolute;
   right: 20px;
   bottom: 18px;
-  left: auto;
+  left: 20px;
   z-index: 3;
   display: grid;
-  width: min(calc(100% - 40px), 370px);
+  width: auto;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
@@ -734,13 +748,22 @@ textarea {
 
 /* Compactere stadion-kop voor binnenpagina's. */
 .hero-band-page {
-  min-height: 200px;
+  min-height: 180px;
+  max-height: 220px;
 }
 
 @media (min-width: 800px) {
   .hero-band-page {
-    min-height: 220px;
+    min-height: 200px;
+    max-height: 220px;
   }
+}
+
+.hero-band-page .button-primary {
+  min-height: 42px;
+  padding: 8px 14px;
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 6px 18px rgba(220, 85, 16, 0.28);
 }
 
 .hero-content {
@@ -771,11 +794,16 @@ textarea {
 
 @media (max-width: 759px) {
   .hero-home .world-cup-kicker {
-    transform: translateY(20px);
+    transform: translateY(8px);
   }
 
   .hero-home-title-block {
-    transform: translateY(-20px);
+    max-width: min(100%, 305px);
+    transform: translateY(-4px);
+  }
+
+  .hero-home-title-block p {
+    max-width: 292px;
   }
 
   .button-primary.hero-primary-cta {
@@ -857,6 +885,10 @@ textarea {
   .hero-band-visual {
     grid-template-columns: 1fr;
     min-height: 320px;
+  }
+
+  .hero-band-page.hero-band-visual {
+    min-height: 200px;
   }
 
   .hero-content {
@@ -1038,62 +1070,70 @@ textarea {
 .brand-wordmark {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 800;
+  gap: 9px;
+  font-weight: 900;
   font-style: italic;
-  font-size: 1.5rem;
-  letter-spacing: -0.015em;
+  font-size: 1.35rem;
+  letter-spacing: -0.035em;
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
 }
 
 .brand-wordmark-logo {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
+  transform: rotate(-4deg);
 }
 
 .header-slime-avatar {
   object-fit: contain;
   border-radius: 0;
   box-shadow: none;
-  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.28));
+  filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.3));
 }
 
 .brand-wordmark-text {
+  position: relative;
   display: inline-flex;
   align-items: baseline;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.18) 0 16%, transparent 17% 100%),
+    linear-gradient(135deg, #061a3c 0%, #0a2a61 52%, #0b8f4d 138%);
+  box-shadow:
+    0 10px 22px rgba(8, 22, 52, 0.2),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+  padding: 8px 13px 9px 14px;
 }
 
 .brand-wordmark-slime {
-  color: #0b1f4d;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 18, 48, 0.6);
 }
 
 .brand-wordmark-score {
-  color: #15a35b;
+  color: #60f47c;
+  text-shadow: 0 1px 2px rgba(0, 18, 48, 0.5);
 }
 
 .brand-wordmark-tld {
-  margin-left: 1px;
-  font-size: 0.62em;
-  font-weight: 700;
+  margin-left: 2px;
+  font-size: 0.58em;
+  font-weight: 800;
   font-style: italic;
-  color: #15a35b;
+  color: #bce8ff;
+  letter-spacing: -0.025em;
+  text-shadow: 0 1px 2px rgba(0, 18, 48, 0.45);
 }
 
-.brand-wordmark-dark .brand-wordmark-slime {
-  color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 18, 48, 0.55);
-}
-
-.brand-wordmark-dark .brand-wordmark-score {
-  color: #36d65f;
-  text-shadow: 0 1px 3px rgba(0, 18, 48, 0.45);
-}
-
-.brand-wordmark-dark .brand-wordmark-tld {
-  color: #36d65f;
-  text-shadow: 0 1px 3px rgba(0, 18, 48, 0.45);
+.brand-wordmark-dark .brand-wordmark-text {
+  border-color: rgba(255, 255, 255, 0.44);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.32),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.22);
 }
 
 /* Geïntegreerde header-balk bovenin de stadion-hero. */
@@ -1148,12 +1188,13 @@ textarea {
   }
 
   .site-header-logo img.site-header-avatar {
-    width: 46px;
-    height: 46px;
+    width: 50px;
+    height: 50px;
+    transform: rotate(-4deg);
   }
 
   .site-header-logo .brand-wordmark {
-    font-size: 1.6rem;
+    font-size: 1.48rem;
   }
 
   .site-header-nav {
@@ -1546,7 +1587,8 @@ textarea {
 
 .schedule-team-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 62px;
+  /* Thuisland links onder de datum, subtiel bolletje ertussen, uitland ernaast en score rechts. */
+  grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 62px;
   align-items: center;
   column-gap: 7px;
   color: #0b1f4d;
@@ -2358,8 +2400,8 @@ textarea {
 /* Speelschema tabs + standings/knock-out overview. */
 .schedule-tabs {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
   position: sticky;
   top: calc(8px + env(safe-area-inset-top));
   z-index: 20;
@@ -2390,6 +2432,119 @@ textarea {
   background: linear-gradient(135deg, #ff9800, #f26a1b);
   color: #fff;
   box-shadow: 0 8px 18px rgba(242, 106, 27, 0.28);
+}
+
+.schedule-section-tools {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(8, 22, 52, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 14px;
+  box-shadow: 0 10px 26px rgba(8, 22, 52, 0.07);
+}
+
+.schedule-section-titlebar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.schedule-section-kicker {
+  color: #48617f;
+  font-size: 0.7rem;
+  font-weight: 1000;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.schedule-section-titlebar h2 {
+  margin-top: 2px;
+  color: #081634;
+  font-size: clamp(1.35rem, 2vw, 1.85rem);
+  font-weight: 1000;
+  letter-spacing: -0.03em;
+}
+
+.schedule-count-pill {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: #1c3a66;
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  font-weight: 1000;
+}
+
+.schedule-groups-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+@media (min-width: 760px) {
+  .schedule-groups-controls {
+    grid-template-columns: minmax(260px, 1fr) auto auto;
+    align-items: center;
+  }
+}
+
+.schedule-search-field {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 13px;
+  background: #fff;
+  padding: 0 12px;
+  color: #48617f;
+}
+
+.schedule-search-field input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #081634;
+  font-size: 0.9rem;
+  font-weight: 800;
+  outline: 0;
+}
+
+.schedule-orange-chip {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(242, 106, 27, 0.24);
+  border-radius: 13px;
+  background: #fff7ed;
+  color: #c44b07;
+  padding: 0 14px;
+  font-size: 0.88rem;
+  font-weight: 1000;
+}
+
+.schedule-orange-chip-active,
+.schedule-orange-chip:hover {
+  background: linear-gradient(135deg, #ff9800, #f26a1b);
+  color: #fff;
+  box-shadow: 0 8px 16px rgba(242, 106, 27, 0.22);
+}
+
+.schedule-filter-help,
+.schedule-result-count {
+  color: #48617f;
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.schedule-result-count {
+  margin-top: -2px;
+  padding-inline: 4px;
 }
 
 .match-status {
@@ -2583,6 +2738,10 @@ textarea {
   padding: 4px;
 }
 
+.schedule-subtabs-light {
+  background: #eef4ff;
+}
+
 .schedule-subtab {
   display: inline-flex;
   min-height: 30px;
@@ -2623,7 +2782,7 @@ textarea {
 
 @media (min-width: 940px) {
   .group-phase-body {
-    grid-template-columns: minmax(0, 1fr) 270px;
+    grid-template-columns: minmax(0, 1fr) 320px;
   }
 
   .group-phase-standing {
@@ -2667,7 +2826,7 @@ textarea {
 
   .schedule-team-grid,
   .upcoming-team-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 58px;
+    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 58px;
     column-gap: 5px;
   }
 
@@ -2717,7 +2876,7 @@ textarea {
 @media (min-width: 640px) {
   .schedule-team-grid,
   .upcoming-team-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 70px;
+    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr) 70px;
     column-gap: 10px;
   }
 
@@ -2799,6 +2958,273 @@ textarea {
   border: 1px solid rgba(8, 22, 52, 0.1);
   background: #fff;
   box-shadow: 0 10px 22px rgba(8, 22, 52, 0.12);
+}
+
+/* Poule-pagina: mobiel compacter en prioriteit op ranglijst/deelnemers. */
+.pool-card-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+}
+
+.pool-card-title {
+  overflow: hidden;
+  font-size: clamp(1.25rem, 4.6vw, 1.7rem);
+  font-weight: 800;
+  line-height: 1.08;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pool-code-line {
+  margin-top: 5px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.pool-code-pill {
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+}
+
+.pool-card-description {
+  margin-top: 6px;
+  max-width: 42rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.pool-quick-share {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.pool-quick-share-button {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #0b1f4d;
+  box-shadow: 0 8px 18px rgba(7, 18, 46, 0.15);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.pool-quick-share-button:disabled {
+  opacity: 0.65;
+}
+
+.pool-quick-share-whatsapp {
+  color: #168f4a;
+}
+
+.pool-quick-share-mail {
+  color: #a85b00;
+}
+
+.pool-quick-share-qr {
+  color: #114b82;
+}
+
+.pool-members-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pool-members-count {
+  display: inline-grid;
+  min-width: 28px;
+  height: 24px;
+  place-items: center;
+  border-radius: 999px;
+  background: #e8f0fb;
+  color: #114b82;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.pool-share-details > summary,
+.pool-card details > summary {
+  list-style-position: inside;
+}
+
+.pool-invite-strip-hidden {
+  border-top: 1px solid rgba(8, 22, 52, 0.06);
+  border-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .poules-page-shell {
+    padding: 12px 10px calc(22px + env(safe-area-inset-bottom));
+  }
+
+  .poules-page-shell > header {
+    margin-bottom: 10px;
+  }
+
+  .poules-page-shell .pool-tabs {
+    gap: 6px;
+  }
+
+  .pool-card {
+    border-radius: 14px;
+  }
+
+  .pool-card .pool-banner {
+    max-height: 72px;
+  }
+
+  .pool-card-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 11px 12px;
+  }
+
+  .pool-card-title {
+    font-size: 1.18rem;
+    letter-spacing: -0.03em;
+  }
+
+  .pool-code-line {
+    margin-top: 3px;
+    font-size: 0.82rem;
+  }
+
+  .pool-card-description {
+    display: none;
+  }
+
+  .pool-quick-share {
+    justify-content: flex-start;
+    gap: 5px;
+  }
+
+  .pool-quick-share-button {
+    width: 34px;
+    height: 34px;
+    box-shadow: 0 5px 12px rgba(7, 18, 46, 0.12);
+  }
+
+  .pool-members-section,
+  .pool-board-section {
+    padding: 10px 11px;
+  }
+
+  .pool-members-title,
+  .pool-board-section h3 {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .pool-members-hint {
+    margin-top: 2px;
+    font-size: 0.72rem;
+  }
+
+  .pool-members-list {
+    margin-top: 8px;
+    gap: 6px;
+  }
+
+  .pool-member-card {
+    border-radius: 10px;
+  }
+
+  .pool-member-button {
+    gap: 7px;
+    min-height: 42px;
+    padding: 7px 8px;
+  }
+
+  .pool-member-rank {
+    width: 24px;
+    height: 24px;
+    font-size: 0.68rem;
+  }
+
+  .pool-member-name,
+  .pool-member-points {
+    font-size: 0.82rem;
+    line-height: 1.1;
+  }
+
+  .pool-member-main {
+    line-height: 1.1;
+  }
+
+  .pool-member-team {
+    display: none;
+  }
+
+  .pool-member-world {
+    font-size: 0.66rem;
+  }
+
+  .pool-member-points {
+    min-width: 44px;
+    text-align: right;
+  }
+
+  .pool-member-chevron {
+    width: 14px;
+    height: 14px;
+  }
+
+  .pool-member-card [aria-expanded="true"] + div {
+    padding: 9px;
+  }
+
+  .pool-board-textarea {
+    min-height: 64px;
+  }
+
+  .pool-board-message {
+    padding: 9px;
+  }
+
+  .pool-share-details > summary,
+  .pool-card details > summary {
+    padding: 10px 11px;
+    font-size: 0.78rem;
+  }
+
+  .pool-invite-strip {
+    gap: 10px;
+    padding: 10px 11px;
+  }
+
+  .pool-invite-url {
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .pool-quick-share-button {
+    width: 31px;
+    height: 31px;
+  }
+
+  .pool-card-title {
+    font-size: 1.08rem;
+  }
+
+  .pool-member-world {
+    display: none;
+  }
 }
 
 @media (max-width: 520px) {

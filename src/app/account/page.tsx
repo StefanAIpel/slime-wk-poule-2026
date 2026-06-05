@@ -1,12 +1,11 @@
 import { AtSign, LifeBuoy, ShieldCheck, Trash2, Trophy, UserCog } from "lucide-react";
-import Image from "next/image";
 import { redirect } from "next/navigation";
-import { deleteAccount } from "@/app/actions";
+import { deleteAccount, updateAccount } from "@/app/actions";
+import { AvatarPicker } from "@/components/avatar-picker";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
 import { PasswordChangeForm } from "@/components/password-change-form";
-import { resolveAvatarSrc } from "@/lib/avatars";
 import { APP_VERSION, CONTACT_EMAIL } from "@/lib/constants";
 import { formatAmsterdam } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
@@ -45,7 +44,7 @@ export default async function AccountPage({
     <main className="page-shell">
       <header className="mb-6 grid gap-4">
         <Brand />
-        <PageHero title="Mijn account" subtitle="Beheer je naam, teamnaam, avatar en je account." slime="/assets/hd-account.webp" />
+        <PageHero title="Mijn account" subtitle="Beheer je profiel, avatar, wachtwoord en account." slime="/assets/hd-account.webp" />
       </header>
 
       {params.opgeslagen ? (
@@ -60,49 +59,65 @@ export default async function AccountPage({
       ) : null}
 
       <section className="grid gap-4 lg:grid-cols-[1fr_0.8fr] lg:items-start">
-        <div className="panel grid gap-4 p-5">
-          <div className="flex items-center gap-3">
-            <UserCog aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-bold text-[#081634]">Profiel</h2>
-          </div>
-          <p className="text-sm font-medium leading-6 text-[#48617f]">
-            Je naam en teamnaam staan vast na aanmelding. Zo blijft de ranglijst herkenbaar en voorkom je chaos in poules.
-          </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <ReadOnlyProfileField label="Naam of bijnaam" value={nickname || "Speler"} />
-            <ReadOnlyProfileField label="Teamnaam" value={teamName || "—"} />
-          </div>
-          <div className="rounded-xl border border-slate-200 bg-[#f7faff] p-3">
-            <div className="mb-2 text-sm font-bold text-[#081634]">Avatar</div>
-            <div className="flex items-center gap-3">
-              <Image
-                className="avatar-img"
-                src={resolveAvatarSrc(nickname || "Speler")}
-                alt=""
-                aria-hidden="true"
-                width={56}
-                height={56}
-              />
-              <p className="text-sm font-medium text-[#48617f]">Automatisch gekozen op basis van je naam.</p>
-            </div>
-          </div>
-        </div>
-
         <div className="grid gap-4">
-          <div className="panel grid gap-3 p-5">
+          <div className="panel grid gap-4 p-5">
             <div className="flex items-center gap-3">
-              <AtSign aria-hidden="true" className="size-7 text-[#25a84a]" />
-              <h2 className="text-xl font-bold text-[#081634]">E-mail</h2>
+              <UserCog aria-hidden="true" className="size-7 text-[#064ed6]" />
+              <h2 className="text-2xl font-bold text-[#081634]">Profiel</h2>
             </div>
-            <p className="break-all rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm font-semibold text-[#081634]">
+            <p className="text-sm font-medium leading-6 text-[#48617f]">
+              Je naam en teamnaam staan vast na aanmelding. Je slime-avatar kun je wél aanpassen.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <ReadOnlyProfileField label="Naam of bijnaam" value={nickname || "Speler"} />
+              <ReadOnlyProfileField label="Teamnaam" value={teamName || "—"} />
+            </div>
+            <form action={updateAccount} className="grid gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3">
+              <div className="text-sm font-bold text-[#081634]">Avatar aanpassen</div>
+              <AvatarPicker initialKey={profile?.avatar_key} name={nickname || "Speler"} />
+              <button className="button-secondary w-fit" type="submit">
+                Avatar opslaan
+              </button>
+            </form>
+          </div>
+
+          <details className="panel p-5">
+            <summary className="flex cursor-pointer items-center gap-3">
+              <AtSign aria-hidden="true" className="size-6 text-[#25a84a]" />
+              <span className="text-lg font-bold text-[#081634]">E-mail</span>
+            </summary>
+            <p className="mt-3 break-all rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm font-semibold text-[#081634]">
               {user.email}
             </p>
-            <p className="flex items-center gap-2 text-xs font-medium text-[#48617f]">
+            <p className="mt-2 flex items-center gap-2 text-xs font-medium text-[#48617f]">
               <ShieldCheck aria-hidden="true" className="size-4 text-[#25a84a]" />
               Je e-mail is privé en alleen voor inloggen. Andere spelers zien dit niet.
             </p>
-          </div>
+          </details>
 
+          <details className="panel border-red-200 p-5">
+            <summary className="flex cursor-pointer items-center gap-3">
+              <Trash2 aria-hidden="true" className="size-6 text-[#b23b46]" />
+              <span className="text-lg font-bold text-[#081634]">Account verwijderen</span>
+            </summary>
+            <form action={deleteAccount} className="mt-3 grid gap-3">
+              <p className="text-sm font-medium leading-6 text-[#48617f]">
+                Dit verwijdert je profiel, voorspellingen, scores en je deelname aan WK-poules. WK-poules waarvan jij beheerder
+                bent worden ook verwijderd. Dit kan niet ongedaan worden gemaakt.
+              </p>
+              <label className="grid gap-2 text-sm font-bold text-[#081634]">
+                Typ <span className="text-[#b23b46]">VERWIJDER</span> om te bevestigen
+                <input className="field" name="confirm" placeholder="VERWIJDER" autoComplete="off" />
+              </label>
+              <button className="button-secondary w-fit text-[#b23b46]" type="submit">
+                <Trash2 aria-hidden="true" className="size-4" />
+                Verwijder mijn account
+              </button>
+            </form>
+          </details>
+        </div>
+
+        <div className="grid gap-4">
           <PasswordChangeForm />
 
           <div className="panel grid gap-3 p-5">
@@ -140,25 +155,6 @@ export default async function AccountPage({
               <div className="flex justify-between gap-3"><dt>App-versie</dt><dd className="text-[#081634]">bèta {APP_VERSION}</dd></div>
             </dl>
           </details>
-
-          <form action={deleteAccount} className="panel grid gap-3 border-red-200 p-5">
-            <div className="flex items-center gap-3">
-              <Trash2 aria-hidden="true" className="size-7 text-[#b23b46]" />
-              <h2 className="text-xl font-bold text-[#081634]">Account verwijderen</h2>
-            </div>
-            <p className="text-sm font-medium leading-6 text-[#48617f]">
-              Dit verwijdert je profiel, voorspellingen, scores en je deelname aan WK-poules. WK-poules waarvan jij beheerder
-              bent worden ook verwijderd. Dit kan niet ongedaan worden gemaakt.
-            </p>
-            <label className="grid gap-2 text-sm font-bold text-[#081634]">
-              Typ <span className="text-[#b23b46]">VERWIJDER</span> om te bevestigen
-              <input className="field" name="confirm" placeholder="VERWIJDER" autoComplete="off" />
-            </label>
-            <button className="button-secondary w-fit text-[#b23b46]" type="submit">
-              <Trash2 aria-hidden="true" className="size-4" />
-              Verwijder mijn account
-            </button>
-          </form>
         </div>
       </section>
 

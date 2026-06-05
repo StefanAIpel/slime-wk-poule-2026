@@ -10,7 +10,7 @@ export function BrandWordmark({ onDark = false, className = "" }: { onDark?: boo
     <Link href="/" className={`brand-wordmark ${onDark ? "brand-wordmark-dark" : ""} ${className}`} aria-label="Slime Score home">
       <Image
         className="brand-wordmark-logo header-slime-avatar"
-        src="/assets/transparant-avatar/trump_slime_700_transparant.webp"
+        src="/assets/transparant-avatar/wk_slime_700_transparant.webp"
         alt=""
         width={96}
         height={96}
