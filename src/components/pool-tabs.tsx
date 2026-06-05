@@ -25,21 +25,40 @@ export function PoolTabs({
   return (
     <div className="grid gap-4">
       {multiple ? (
-        <div className="pool-tabs" role="tablist" aria-label="Kies WK-poule">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={active === tab.id}
-              className={`tab-pill ${active === tab.id ? "is-active" : ""}`}
-              onClick={() => setActive(tab.id)}
-            >
-              <span aria-hidden="true">{tab.emoji}</span>
-              <span className="truncate">{tab.label}</span>
-            </button>
-          ))}
-        </div>
+        <>
+          <label className="pool-selector-mobile">
+            <span className="pool-selector-label">Kies WK-poule</span>
+            <span className="pool-selector-field">
+              <select
+                className="pool-selector-select"
+                value={active}
+                onChange={(event) => setActive(event.target.value)}
+                aria-label="Kies WK-poule"
+              >
+                {tabs.map((tab) => (
+                  <option key={tab.id} value={tab.id}>
+                    {tab.emoji} {tab.label}
+                  </option>
+                ))}
+              </select>
+            </span>
+          </label>
+          <div className="pool-tabs" role="tablist" aria-label="Kies WK-poule">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={active === tab.id}
+                className={`tab-pill ${active === tab.id ? "is-active" : ""}`}
+                onClick={() => setActive(tab.id)}
+              >
+                <span aria-hidden="true">{tab.emoji}</span>
+                <span className="truncate">{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </>
       ) : null}
       {panels.map((panel, index) => (
         <div key={tabs[index]?.id ?? index} hidden={multiple && tabs[index]?.id !== active}>

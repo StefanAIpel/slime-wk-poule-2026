@@ -2513,12 +2513,47 @@ textarea {
   color: var(--blue-2);
 }
 
-.pool-banner {
+.pool-selector-mobile {
+  display: none;
+}
+
+.pool-selector-label {
+  color: #48617f;
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.pool-selector-field {
+  position: relative;
   display: block;
+}
+
+.pool-selector-field::after {
+  content: "⌄";
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-55%);
+  color: var(--blue-2);
+  font-size: 1.1rem;
+  font-weight: 900;
+  pointer-events: none;
+}
+
+.pool-selector-select {
   width: 100%;
-  max-height: 150px;
-  aspect-ratio: 7 / 1;
-  object-fit: cover;
+  min-height: 52px;
+  appearance: none;
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 16px;
+  background: #ffffff;
+  color: var(--blue-2);
+  padding: 0 44px 0 14px;
+  font-size: 1rem;
+  font-weight: 850;
+  box-shadow: 0 10px 22px rgba(8, 22, 52, 0.09);
 }
 
 @media (max-width: 767px) {
@@ -3507,11 +3542,22 @@ textarea {
 
 /* Poule-pagina: mobiel compacter en prioriteit op ranglijst/deelnemers. */
 .pool-card-hero {
+  position: relative;
   display: grid;
+  min-height: clamp(156px, 27vw, 230px);
   grid-template-columns: minmax(0, 1fr);
   gap: 8px;
-  align-items: center;
-  padding: 14px 16px;
+  align-items: end;
+  overflow: hidden;
+  border-top: 4px solid var(--pool-accent, #114b82);
+  background:
+    linear-gradient(90deg, rgba(4, 12, 32, 0.78) 0%, rgba(4, 12, 32, 0.42) 58%, rgba(4, 12, 32, 0.18) 100%),
+    var(--pool-banner-image, none),
+    var(--pool-accent, #114b82);
+  background-position: center, center, center;
+  background-size: cover, cover, auto;
+  background-repeat: no-repeat;
+  padding: 20px 18px;
 }
 
 .pool-card-title-row {
@@ -3682,6 +3728,11 @@ textarea {
   }
 
   .poules-page-shell .pool-tabs {
+    display: none;
+  }
+
+  .pool-selector-mobile {
+    display: grid;
     gap: 6px;
   }
 
@@ -3689,14 +3740,11 @@ textarea {
     border-radius: 14px;
   }
 
-  .pool-card .pool-banner {
-    max-height: 72px;
-  }
-
   .pool-card-hero {
+    min-height: 188px;
     grid-template-columns: minmax(0, 1fr);
     gap: 8px;
-    padding: 11px 12px;
+    padding: 16px 12px 13px;
   }
 
   .pool-card-title {

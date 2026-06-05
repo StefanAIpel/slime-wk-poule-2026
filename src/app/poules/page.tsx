@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { ImagePlus, Megaphone, Palette, RefreshCw, Trash2 } from "lucide-react";
 import QRCode from "qrcode";
 import Link from "next/link";
@@ -15,7 +16,6 @@ import { Avatar } from "@/components/avatar";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PendingButton } from "@/components/pending-button";
-import { PoolBanner } from "@/components/pool-banner";
 import { PoolMembers, type MatchLine, type PoolMember } from "@/components/pool-members";
 import { PoolQr } from "@/components/pool-qr";
 import { PoolQuickShare } from "@/components/pool-quick-share";
@@ -222,10 +222,13 @@ export default async function PoolsPage({
             const isManager = currentMember?.role === "owner" || currentMember?.role === "moderator";
             const joinAssets = poolJoinAssets.get(pool.id) ?? { joinUrl: SITE_URL, qrDataUrl: "" };
             const inviteText = `Doe je mee met onze gratis WK 2026-poule "${pool.name}"? 1 keer ~10 minuten invullen en je strijdt het hele WK mee. 👇`;
+            const poolHeroStyle = {
+              "--pool-accent": pool.accentColor,
+              "--pool-banner-image": `url("${poolBannerUrl(pool.id)}")`,
+            } as CSSProperties;
             return (
               <article key={pool.id} className="panel pool-card overflow-hidden">
-                <PoolBanner src={poolBannerUrl(pool.id)} alt={`Banner van ${pool.name}`} />
-                <div className="pool-card-hero text-white" style={{ background: pool.accentColor }}>
+                <div className="pool-card-hero text-white" style={poolHeroStyle}>
                   <div className="min-w-0">
                     <div className="pool-card-title-row">
                       <h2 className="pool-card-title"><span aria-hidden="true">{pool.badgeEmoji}</span> {pool.name}</h2>

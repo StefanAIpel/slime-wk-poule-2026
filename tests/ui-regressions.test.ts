@@ -31,6 +31,7 @@ const schemaKnockoutPage = await readFile(new URL("../src/app/schema/knockout/pa
 const poulesPage = await readFile(new URL("../src/app/poules/page.tsx", import.meta.url), "utf8");
 const poolMembers = await readFile(new URL("../src/components/pool-members.tsx", import.meta.url), "utf8");
 const poolQuickShare = await readFile(new URL("../src/components/pool-quick-share.tsx", import.meta.url), "utf8");
+const poolTabs = await readFile(new URL("../src/components/pool-tabs.tsx", import.meta.url), "utf8");
 const appFirstShareLink = await readFile(new URL("../src/components/app-first-share-link.tsx", import.meta.url), "utf8");
 const installAppCard = await readFile(new URL("../src/components/install-app-card.tsx", import.meta.url), "utf8");
 const knockoutPredictionPicker = await readFile(new URL("../src/components/knockout-prediction-picker.tsx", import.meta.url), "utf8");
@@ -151,8 +152,25 @@ test("pool banner upload helper appears before file input and uses a narrow 7:1 
   assert.match(actions, /const POOL_BANNER_WIDTH = 1050/);
   assert.match(actions, /const POOL_BANNER_HEIGHT = 150/);
   assert.match(actions, /resize\(POOL_BANNER_WIDTH, POOL_BANNER_HEIGHT, \{ fit: "cover"/);
-  assert.match(globalsCss, /\.pool-banner \{[\s\S]*max-height: 150px;[\s\S]*aspect-ratio: 7 \/ 1;/);
   assert.doesNotMatch(uploadBlock, /1600 × 900|16:9/);
+});
+
+test("pool card uses the uploaded banner as the full hero background instead of a separate color strip", () => {
+  assert.match(poulesPage, /"--pool-accent": pool\.accentColor/);
+  assert.match(poulesPage, /"--pool-banner-image": `url\("\$\{poolBannerUrl\(pool\.id\)\}"\)`/);
+  assert.match(poulesPage, /<div className="pool-card-hero text-white" style=\{poolHeroStyle\}>/);
+  assert.doesNotMatch(poulesPage, /<PoolBanner/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*border-top: 4px solid var\(--pool-accent/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*var\(--pool-banner-image, none\)[\s\S]*var\(--pool-accent/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*background-size: cover, cover, auto;/);
+});
+
+test("mobile pool navigation uses a dropdown selector instead of wrapping all pool tabs", () => {
+  assert.match(poolTabs, /className="pool-selector-mobile"/);
+  assert.match(poolTabs, /<select[\s\S]*className="pool-selector-select"[\s\S]*value=\{active\}[\s\S]*onChange=\{\(event\) => setActive\(event\.target\.value\)\}/);
+  assert.match(poolTabs, /<option key=\{tab\.id\} value=\{tab\.id\}>[\s\S]*\{tab\.emoji\} \{tab\.label\}/);
+  assert.match(globalsCss, /\.pool-selector-mobile \{\n  display: none;\n\}/);
+  assert.match(globalsCss, /@media \(max-width: 640px\) \{[\s\S]*\.poules-page-shell \.pool-tabs \{\n    display: none;\n  \}[\s\S]*\.pool-selector-mobile \{\n    display: grid;/);
 });
 
 test("account page keeps name/team fixed but lets players change avatar and password safely", () => {
