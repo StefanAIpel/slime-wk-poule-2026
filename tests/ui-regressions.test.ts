@@ -179,8 +179,14 @@ test("knockout predictions flow from last 16 to later rounds without scroll boxe
   assert.match(knockoutPredictionPicker, /finalists: teams\.filter\(\(team\) => state\.semifinal\.includes\(team\.code\)\)/);
   assert.match(knockoutPredictionPicker, /Nog \$\{expected - count\} kiezen/);
   assert.match(knockoutPredictionPicker, /Max \$\{limit\} bereikt/);
-  assert.match(knockoutPredictionPicker, /disabled=\{lateDisabled \|\| championOptions\.length === 0\}/);
-  assert.match(globalsCss, /\.knockout-picker-grid \{\n  display: grid;\n  gap: 8px;\n\}/);
+  // Wereldkampioen staat los onderaan (vrij uit alle landen), niet meer beperkt in de picker.
+  assert.doesNotMatch(knockoutPredictionPicker, /champion/i);
+  assert.match(knockoutPredictionPicker, /TeamFlag/);
+  assert.match(predictionsPage, /name="champion_code"/);
+  assert.match(predictionsPage, /vrij uit alle landen/);
+  assert.doesNotMatch(predictionsPage, /cards_ko_team_code/);
+  // Compacte landkeuze: vlag + code in 2 kolommen op mobiel, geen scrollbox.
+  assert.match(globalsCss, /\.knockout-picker-grid \{\n  display: grid;\n  gap: 8px;\n  grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);\n\}/);
   assert.doesNotMatch(globalsCss, /\.knockout-picker-grid[\s\S]*overflow-y: auto/);
   assert.doesNotMatch(predictionsPage, /max-h-72/);
 });

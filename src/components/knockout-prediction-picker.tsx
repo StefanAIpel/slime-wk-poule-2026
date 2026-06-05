@@ -2,15 +2,12 @@
 
 import { useMemo, useState } from "react";
 
+import { TeamFlag } from "@/components/team-flag";
 import type { Team } from "@/lib/types";
 
 type StageKey = "round16" | "quarterfinal" | "semifinal" | "finalists";
 
-type StageSelections = Record<StageKey, string[]>;
-
-type SelectionState = StageSelections & {
-  champion: string;
-};
+type SelectionState = Record<StageKey, string[]>;
 
 const stageLimits: Record<StageKey, number> = {
   round16: 16,
@@ -68,13 +65,11 @@ function labelForCount(count: number, expected: number) {
 export function KnockoutPredictionPicker({
   teams,
   initialSelections,
-  initialChampion,
   mainDisabled,
   lateDisabled,
 }: {
   teams: Team[];
-  initialSelections: Partial<StageSelections>;
-  initialChampion?: string | null;
+  initialSelections: Partial<SelectionState>;
   mainDisabled?: boolean;
   lateDisabled?: boolean;
 }) {
@@ -97,8 +92,7 @@ export function KnockoutPredictionPicker({
       semifinal,
       stageLimits.finalists,
     );
-    const champion = initialChampion && finalists.includes(initialChampion.toUpperCase()) ? initialChampion.toUpperCase() : "";
-    return { round16, quarterfinal, semifinal, finalists, champion };
+    return { round16, quarterfinal, semifinal, finalists };
   });
 
   const teamsByStage = useMemo(
@@ -116,18 +110,18 @@ export function KnockoutPredictionPicker({
       const quarterfinal = cleanAgainstOptions(previous.quarterfinal, nextCodes, stageLimits.quarterfinal);
       const semifinal = cleanAgainstOptions(previous.semifinal, quarterfinal, stageLimits.semifinal);
       const finalists = cleanAgainstOptions(previous.finalists, semifinal, stageLimits.finalists);
-      return { ...previous, round16: nextCodes, quarterfinal, semifinal, finalists, champion: finalists.includes(previous.champion) ? previous.champion : "" };
+      return { ...previous, round16: nextCodes, quarterfinal, semifinal, finalists };
     }
     if (stage === "quarterfinal") {
       const semifinal = cleanAgainstOptions(previous.semifinal, nextCodes, stageLimits.semifinal);
       const finalists = cleanAgainstOptions(previous.finalists, semifinal, stageLimits.finalists);
-      return { ...previous, quarterfinal: nextCodes, semifinal, finalists, champion: finalists.includes(previous.champion) ? previous.champion : "" };
+      return { ...previous, quarterfinal: nextCodes, semifinal, finalists };
     }
     if (stage === "semifinal") {
       const finalists = cleanAgainstOptions(previous.finalists, nextCodes, stageLimits.finalists);
-      return { ...previous, semifinal: nextCodes, finalists, champion: finalists.includes(previous.champion) ? previous.champion : "" };
+      return { ...previous, semifinal: nextCodes, finalists };
     }
-    return { ...previous, finalists: nextCodes, champion: nextCodes.includes(previous.champion) ? previous.champion : "" };
+    return { ...previous, finalists: nextCodes };
   }
 
   function toggleStage(stage: StageKey, code: string, checked: boolean) {
@@ -171,6 +165,7 @@ export function KnockoutPredictionPicker({
                   checked={selectedSet.has(team.code)}
                   onChange={(event) => toggleStage(stage, team.code, event.currentTarget.checked)}
                 />
+                <TeamFlag code={team.code} name={team.name_nl} size="sm" />
                 <span className="knockout-picker-code">{team.code}</span>
                 <span className="knockout-picker-name">{team.name_nl}</span>
               </label>
@@ -183,26 +178,12 @@ export function KnockoutPredictionPicker({
     );
   }
 
-  const championOptions = teams.filter((team) => state.finalists.includes(team.code));
-
   return (
     <div className="knockout-picker">
       {renderStage("round16", mainDisabled)}
       {renderStage("quarterfinal", mainDisabled)}
       {renderStage("semifinal", mainDisabled)}
       {renderStage("finalists", lateDisabled)}
-      <label className="knockout-picker-card knockout-champion-card">
-        <span className="knockout-picker-title">Wereldkampioen</span>
-        <span className="knockout-picker-hint">Kies uit je twee finalisten. Wijzigbaar t/m 28 juni 21:00.</span>
-        <select className="field" name="champion_code" value={state.champion} onChange={(event) => setState((previous) => ({ ...previous, champion: event.target.value }))} disabled={lateDisabled || championOptions.length === 0}>
-          <option value="">Kies eerst twee finalisten</option>
-          {championOptions.map((team) => (
-            <option key={team.code} value={team.code}>
-              {team.name_nl}
-            </option>
-          ))}
-        </select>
-      </label>
     </div>
   );
 }
