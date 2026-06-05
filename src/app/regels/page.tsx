@@ -186,7 +186,7 @@ export default function RulesPage() {
       </section>
 
       <section className="mt-5">
-        <SlimeSoccerBanner includeWk />
+        <SlimeSoccerBanner includeWk fullWidth />
       </section>
 
       <BottomNav current="/regels" className="bottom-nav-hide-mobile" />

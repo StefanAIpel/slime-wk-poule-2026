@@ -1928,6 +1928,10 @@ textarea {
   gap: 10px;
 }
 
+.slime-link-banners-wide {
+  width: 100%;
+}
+
 @media (min-width: 768px) {
   .slime-link-banners {
     gap: 12px;

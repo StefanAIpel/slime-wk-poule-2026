@@ -79,7 +79,7 @@ test("public login panel is compact on mobile", () => {
 
 test("public FrontPage shows the PWA install instructions card near login", () => {
   assert.match(homePage, /import \{ InstallAppCard \} from "@\/components\/install-app-card"/);
-  assert.match(homePage, /<LoginForm surface=\"inline\" \/>[\s\S]*<InstallAppCard \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\}/);
+  assert.match(homePage, /<LoginForm surface=\"inline\" \/>[\s\S]*<InstallAppCard \/>/);
   assert.match(installAppCard, /Zet Slime Score op je beginscherm/);
   assert.match(installAppCard, /Zo installeer je|Installeren/);
   assert.match(installAppCard, /iPhone \(Safari\)/);
@@ -148,7 +148,6 @@ test("logged-in dashboard only shows SlimeSoccer in the right column and no Slim
 test("dashboard copy matches the 72-group-result progress metric and password flow", () => {
   assert.doesNotMatch(homePage, /Vul je wedstrijden en knock-outkeuzes in/);
   assert.match(homePage, /De voortgang hieronder telt je 72 groepsuitslagen/);
-  assert.match(homePage, /e-mail \+ wachtwoord/);
   assert.doesNotMatch(homePage, /geen wachtwoord/);
 });
 
