@@ -31,17 +31,17 @@ export default async function JoinPoolPage({ params }: { params: Promise<{ code:
   return (
     <main className="page-shell grid min-h-screen content-center gap-5">
       <Brand />
-      <section className="hero-band hero-band-visual hero-band-page">
+      <section className="hero-band hero-band-visual hero-band-page join-pool-hero">
         <div className="hero-content">
           <div className="world-cup-kicker" aria-label="WK 2026 poule uitnodiging">
             <span>WK 2026</span>
             <span>Poule</span>
             <span>Code {code || "—"}</span>
           </div>
-          <h1 className="mt-3 text-3xl font-black leading-tight text-white md:text-4xl">
+          <h1 className="join-pool-title mt-3 font-black text-white">
             {poolInfo ? `Meedoen met ${poolInfo.name}` : "Meedoen met een WK-poule"}
           </h1>
-          <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-blue-50">
+          <p className="join-pool-copy mt-2 max-w-2xl font-semibold text-blue-50">
             Sluit aan bij deze SlimeScore WK 2026-poule. Eén keer voorspellen, daarna live meekijken wie wint.
           </p>
         </div>

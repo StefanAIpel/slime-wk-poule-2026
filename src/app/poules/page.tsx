@@ -360,7 +360,7 @@ export default async function PoolsPage({
                         WK-poulebanner uploaden
                       </div>
                       <p className="text-xs font-medium text-[#4c5a70]">
-                        Aanbevolen: 1600 × 900 px (16:9). De kaart gebruikt dezelfde banner en snijdt het midden per scherm passend bij.
+                        Aanbevolen: 1600 × 900 px (16:9). We bewaren de hele afbeelding in een 16:9 banner, zonder slimme autocrop.
                       </p>
                       <input className="field" type="file" name="image" accept="image/*" required />
                       <PendingButton className="button-secondary w-fit" pendingText="Uploaden…">

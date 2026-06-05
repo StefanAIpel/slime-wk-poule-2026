@@ -1011,6 +1011,47 @@ textarea {
   box-shadow: 0 6px 18px rgba(220, 85, 16, 0.28);
 }
 
+.join-pool-hero {
+  max-height: none;
+  padding: 18px;
+}
+
+.join-pool-title {
+  font-size: clamp(1.78rem, 8vw, 2.55rem);
+  line-height: 1.08;
+}
+
+.join-pool-copy {
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 759px) {
+  .join-pool-hero {
+    min-height: 250px;
+    padding: 18px 16px 20px;
+  }
+
+  .join-pool-hero .world-cup-kicker {
+    font-size: 0.64rem;
+    gap: 5px;
+  }
+
+  .join-pool-hero .world-cup-kicker span {
+    padding: 4px 7px;
+  }
+
+  .join-pool-title {
+    font-size: clamp(1.56rem, 7.2vw, 2.05rem);
+    line-height: 1.12;
+  }
+
+  .join-pool-copy {
+    font-size: 0.94rem;
+    line-height: 1.44;
+  }
+}
+
 .hero-content {
   position: relative;
   z-index: 2;

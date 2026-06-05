@@ -66,6 +66,10 @@ const knockoutStageTabs: Record<string, string> = {
   final: "Finale",
 };
 
+// De FIFA/seed-data gebruikt de ISO-3 code NED. Sommige externe feeds gebruiken
+// NLD; ondersteun beide zodat de Oranje-filter nooit leegvalt door een codevariant.
+const ORANJE_TEAM_CODES = new Set(["NED", "NLD"]);
+
 function dateKey(iso: string | null) {
   if (!iso) return "";
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Amsterdam", year: "numeric", month: "2-digit", day: "2-digit" }).format(
@@ -302,7 +306,8 @@ function StandingsPanel({ matches, standings }: { matches: ScheduleMatch[]; stan
       .map(([key, iso]) => ({ key, label: dateLabel(iso) }));
   }, [matches]);
 
-  const isNl = (match: ScheduleMatch) => !nlOnly || match.homeCode === "NLD" || match.awayCode === "NLD";
+  const isNl = (match: ScheduleMatch) =>
+    !nlOnly || ORANJE_TEAM_CODES.has(match.homeCode ?? "") || ORANJE_TEAM_CODES.has(match.awayCode ?? "");
 
   const matchesByGroup = useMemo(() => {
     const map = new Map<string, ScheduleMatch[]>();

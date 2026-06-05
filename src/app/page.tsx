@@ -215,7 +215,7 @@ export default async function Home({
                 required
                 minLength={POOL_NAME_MIN_LENGTH}
                 maxLength={POOL_NAME_MAX_LENGTH}
-                placeholder="Bijv. Familie Dijkstra"
+                placeholder="Bijv. FC Vathorst"
                 className="field create-pool-field flex-1"
                 aria-label="Naam van je WK-poule"
               />

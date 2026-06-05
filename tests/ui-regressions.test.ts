@@ -29,6 +29,7 @@ const schemaPage = await readFile(new URL("../src/app/schema/page.tsx", import.m
 const schemaGroupsPage = await readFile(new URL("../src/app/schema/groepen/page.tsx", import.meta.url), "utf8");
 const schemaKnockoutPage = await readFile(new URL("../src/app/schema/knockout/page.tsx", import.meta.url), "utf8");
 const poulesPage = await readFile(new URL("../src/app/poules/page.tsx", import.meta.url), "utf8");
+const joinPoolPage = await readFile(new URL("../src/app/poules/join/[code]/page.tsx", import.meta.url), "utf8");
 const poolMembers = await readFile(new URL("../src/components/pool-members.tsx", import.meta.url), "utf8");
 const poolQuickShare = await readFile(new URL("../src/components/pool-quick-share.tsx", import.meta.url), "utf8");
 const poolTabs = await readFile(new URL("../src/components/pool-tabs.tsx", import.meta.url), "utf8");
@@ -145,14 +146,30 @@ test("create-pool card uses Mexico green contrast styling", () => {
   assert.match(globalsCss, /\.create-pool-title,[\s\S]*\.create-pool-copy \{\n  color: #ffffff;/);
 });
 
-test("pool banner upload helper appears before file input and uses a 16:9 source crop", () => {
+test("pool banner upload helper appears before file input and keeps the full image inside a 16:9 banner", () => {
   const uploadBlock = poulesPage.match(/<form action=\{uploadPoolImage\}[\s\S]*?<PendingButton/)?.[0] ?? "";
-  assert.match(uploadBlock, /Aanbevolen: 1600 × 900 px \(16:9\)\. De kaart gebruikt dezelfde banner en snijdt het midden per scherm passend bij\./);
+  assert.match(uploadBlock, /Aanbevolen: 1600 × 900 px \(16:9\)\. We bewaren de hele afbeelding in een 16:9 banner, zonder slimme autocrop\./);
   assert.ok(uploadBlock.indexOf("1600 × 900 px") < uploadBlock.indexOf('type="file"'));
   assert.match(actions, /const POOL_BANNER_WIDTH = 1600/);
   assert.match(actions, /const POOL_BANNER_HEIGHT = 900/);
-  assert.match(actions, /resize\(POOL_BANNER_WIDTH, POOL_BANNER_HEIGHT, \{ fit: "cover"/);
-  assert.doesNotMatch(uploadBlock, /1050 × 150|7:1/);
+  assert.match(actions, /resize\(POOL_BANNER_WIDTH, POOL_BANNER_HEIGHT, \{[\s\S]*fit: "contain"/);
+  assert.doesNotMatch(uploadBlock, /1050 × 150|7:1|snijdt/);
+});
+
+test("create-pool placeholder uses a neutral local example instead of a personal family name", () => {
+  assert.match(homePage, /placeholder="Bijv\. FC Vathorst"/);
+  assert.doesNotMatch(homePage, /Familie Dijkstra/);
+});
+
+test("mobile join-pool invite hero is compact and cannot clip its copy", () => {
+  assert.match(joinPoolPage, /className="hero-band hero-band-visual hero-band-page join-pool-hero"/);
+  assert.match(joinPoolPage, /className="join-pool-title/);
+  assert.match(joinPoolPage, /className="join-pool-copy/);
+  assert.doesNotMatch(joinPoolPage, /text-3xl font-black leading-tight text-white md:text-4xl/);
+  assert.match(globalsCss, /\.join-pool-hero \{[\s\S]*max-height: none;/);
+  assert.match(globalsCss, /\.join-pool-title \{[\s\S]*font-size: clamp\(1\.78rem, 8vw, 2\.55rem\);/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.join-pool-title \{[\s\S]*font-size: clamp\(1\.56rem, 7\.2vw, 2\.05rem\);/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.join-pool-copy \{[\s\S]*font-size: 0\.94rem;/);
 });
 
 test("pool banner uploads use versioned storage paths so replacements show immediately", () => {
@@ -402,6 +419,13 @@ test("schema copy is public-facing and group/date are chosen via pickers", () =>
   assert.match(scheduleExplorer, /schedule-group-grid/);
   assert.match(scheduleExplorer, /groupFilter/);
   assert.match(scheduleExplorer, /dateFilter/);
+});
+
+test("Nederland - Oranje filter supports the app seed code NED as well as external NLD", () => {
+  assert.match(scheduleExplorer, /ORANJE_TEAM_CODES = new Set\(\["NED", "NLD"\]\)/);
+  assert.match(scheduleExplorer, /ORANJE_TEAM_CODES\.has\(match\.homeCode \?\? ""\)/);
+  assert.match(scheduleExplorer, /ORANJE_TEAM_CODES\.has\(match\.awayCode \?\? ""\)/);
+  assert.doesNotMatch(scheduleExplorer, /match\.homeCode === "NLD" \|\| match\.awayCode === "NLD"/);
 });
 
 test("desktop schedule cards are compact and match rows use a visible aligned team separator", () => {

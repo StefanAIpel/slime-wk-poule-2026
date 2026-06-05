@@ -495,12 +495,17 @@ export async function uploadPoolImage(formData: FormData) {
   const { data: poolBefore } = await admin.from("pools").select("banner_path").eq("id", poolId).maybeSingle();
   const oldBannerPath = typeof poolBefore?.banner_path === "string" ? poolBefore.banner_path : null;
 
-  // Auto-conversie: bewaar een 16:9 bronbeeld voor de responsieve poule-hero.
+  // Auto-conversie: bewaar de hele afbeelding binnen een 16:9 canvas. Geen slimme crop:
+  // dat ziet er bij banners met tekst/logo's te snel verkeerd uit op mobiel.
   const sharp = (await import("sharp")).default;
   const input = Buffer.from(await file.arrayBuffer());
   const webp = await sharp(input)
     .rotate()
-    .resize(POOL_BANNER_WIDTH, POOL_BANNER_HEIGHT, { fit: "cover", withoutEnlargement: true })
+    .resize(POOL_BANNER_WIDTH, POOL_BANNER_HEIGHT, {
+      fit: "contain",
+      background: { r: 8, g: 22, b: 52, alpha: 1 },
+      withoutEnlargement: true,
+    })
     .webp({ quality: 82 })
     .toBuffer();
 
