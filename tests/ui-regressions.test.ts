@@ -9,6 +9,7 @@ const passwordChangeForm = await readFile(new URL("../src/components/password-ch
 const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
+const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
@@ -240,13 +241,18 @@ test("mobile poule page prioritizes ranking and keeps share buttons visible next
   assert.match(globalsCss, /\.pool-member-team \{\n    display: none;/);
 });
 
-test("world rankings use alphabetical order as a temporary tie-break", () => {
+test("world rankings use alphabetical order and the same demo-player tie-break everywhere", () => {
   assert.match(rankingLib, /punten dalend, bij gelijke punten alfabetisch/);
   assert.match(rankingLib, /export function compareScoresAlphabetical/);
   assert.match(rankingLib, /b\.points - a\.points/);
   assert.match(rankingLib, /aName\.localeCompare\(bName, "nl-NL"/);
   assert.match(rankingLib, /export function worldRankMap/);
-  assert.match(homePage, /worldRankForUser\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\], user\.id\)/);
+  assert.match(rankingLib, /export function withDemoRankScores/);
+  assert.match(rankingLib, /hasSafePublicProfile/);
+  assert.match(rankingLib, /safePublicScores/);
+  assert.match(homePage, /worldRankForUser\(withDemoRankScores\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\]\), user\.id\)/);
+  assert.match(apiMeRoute, /worldRankForUser\(withDemoRankScores\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\]\), user\.id\)/);
+  assert.match(poulesPage, /withDemoRankScores\(\(scoreRows \?\? \[\]\) as unknown as RankedScore\[\]\)\.sort\(compareScoresAlphabetical\)/);
   assert.match(poulesPage, /worldRankMap\(rankedScores\)/);
   assert.doesNotMatch(poulesPage, /gelijke punten = gelijke wereldrang/);
 });

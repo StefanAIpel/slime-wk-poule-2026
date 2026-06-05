@@ -22,7 +22,7 @@ import { PoolQuickShare } from "@/components/pool-quick-share";
 import { PoolTabs } from "@/components/pool-tabs";
 import { ENTRY_DEADLINE, SITE_URL } from "@/lib/constants";
 import { displayName, formatAmsterdam } from "@/lib/format";
-import { compareScoresAlphabetical, worldRankMap } from "@/lib/ranking";
+import { compareScoresAlphabetical, withDemoRankScores, worldRankMap, type RankedScore } from "@/lib/ranking";
 import { scoreMatchPrediction } from "@/lib/scoring";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -138,8 +138,9 @@ export default async function PoolsPage({
       admin.from("scores").select("user_id,points,profiles(nickname,team_name)"),
     ]);
 
-    const rankedScores = (scoreRows ?? []).slice().sort(compareScoresAlphabetical);
-    for (const row of rankedScores) {
+    const realScores = (scoreRows ?? []) as Array<{ user_id: string; points: number }>;
+    const rankedScores = withDemoRankScores((scoreRows ?? []) as unknown as RankedScore[]).sort(compareScoresAlphabetical);
+    for (const row of realScores) {
       pointsByUser.set(row.user_id, row.points);
     }
     for (const [userId, rank] of worldRankMap(rankedScores)) {

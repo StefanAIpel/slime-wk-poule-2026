@@ -16,7 +16,7 @@ import { UpcomingMatches } from "@/components/upcoming-matches";
 import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
 import { DEMO_PLAYERS, hasSafePublicProfile } from "@/lib/demo-leaderboard";
 import { displayName } from "@/lib/format";
-import { worldRankForUser, type RankedScore } from "@/lib/ranking";
+import { withDemoRankScores, worldRankForUser, type RankedScore } from "@/lib/ranking";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { persistSignupProfileFromMetadata, type SignupProfileClient } from "@/lib/supabase/signup-profile";
@@ -129,7 +129,7 @@ export default async function Home({
     const { data: rankScores } = await admin
       .from("scores")
       .select("user_id,points,profiles(nickname,team_name)");
-    myRank = worldRankForUser((rankScores ?? []) as unknown as RankedScore[], user.id);
+    myRank = worldRankForUser(withDemoRankScores((rankScores ?? []) as unknown as RankedScore[]), user.id);
   }
 
   return (

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { worldRankForUser, type RankedScore } from "@/lib/ranking";
+import { withDemoRankScores, worldRankForUser, type RankedScore } from "@/lib/ranking";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -29,7 +29,7 @@ export async function GET() {
     loggedIn: true,
     nickname: profile?.nickname ?? null,
     points: myPoints,
-    rank: worldRankForUser((rankScores ?? []) as unknown as RankedScore[], user.id) ?? 1,
+    rank: worldRankForUser(withDemoRankScores((rankScores ?? []) as unknown as RankedScore[]), user.id) ?? 1,
     progress: Math.round(((predictionCount ?? 0) / 72) * 100),
   });
 }
