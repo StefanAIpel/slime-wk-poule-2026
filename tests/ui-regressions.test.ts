@@ -202,7 +202,7 @@ test("mobile pool navigation uses a dropdown selector instead of wrapping all po
 });
 
 test("pool share text includes the poulecode and account-before-join guidance", () => {
-  assert.match(poulesPage, /Poulecode: \$\{pool\.code\}/);
+  assert.match(poulesPage, /Poulecode: \$\{pool\.code\} 👇/);
   assert.match(poulesPage, /Nog geen account\? Maak eerst gratis een SlimeScore-account aan; daarna kom je via deze link\/code in de poule\./);
   assert.match(poolQuickShare, /const message = `\$\{inviteText\}\\n\\n\$\{joinUrl\}`\.trim\(\)/);
   assert.match(joinPoolPage, /Nog geen account\? Maak eerst gratis een SlimeScore-account aan; daarna kom je terug bij deze poule\./);
