@@ -1995,6 +1995,10 @@ textarea {
   gap: 10px;
 }
 
+.slime-link-banners-wide {
+  width: 100%;
+}
+
 .rules-side-banners .slime-link-banners {
   width: min(460px, 100%);
   margin-inline: 0;

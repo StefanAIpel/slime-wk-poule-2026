@@ -269,13 +269,6 @@ export default async function Home({
         </div>
       </section>
 
-
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm font-medium text-[#46566f]">
-          Gratis · 1× invullen, telt in al je groepen · e-mail + wachtwoord · privé
-        </p>
-      </div>
-
       <BottomNav current="/" />
     </main>
   );
@@ -360,6 +353,28 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
               />
             </div>
           </div>
+
+          <a href="/ranglijst" className="panel public-score-card p-4 no-underline">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Trophy aria-hidden="true" className="size-5 flex-none text-[#efa820]" />
+                <h2 className="text-base font-bold text-[#081634]">Ranglijst</h2>
+              </div>
+              <span className="text-sm font-bold text-[#0866e8]">Bekijk alles</span>
+            </div>
+            <div className="mt-3 grid gap-1.5">
+              {displayRows.map((row, index) => (
+                <div key={`${index}-${displayName(row.profiles)}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
+                  <span className="flex min-w-0 items-center gap-2">
+                    <span className="w-4 flex-none text-right font-bold tabular-nums text-[#475670]">{index + 1}</span>
+                    <span className="truncate font-medium">{displayName(row.profiles)}</span>
+                  </span>
+                  <span className="flex-none font-bold tabular-nums">{row.points} pt</span>
+                </div>
+              ))}
+            </div>
+          </a>
+          <SlimeSoccerBanner includeVolley={false} fullWidth />
         </section>
 
         <aside className="public-login-stack md:sticky md:top-4">
@@ -380,31 +395,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             <LoginForm surface="inline" />
           </section>
           <InstallAppCard />
-          <div className="public-login-ad" aria-label="Speel Slime Soccer">
-            <SlimeSoccerBanner includeVolley={false} />
-          </div>
         </aside>
-
-        <a href="/ranglijst" className="panel public-score-card p-4 no-underline md:col-start-1 md:row-start-2">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Trophy aria-hidden="true" className="size-5 flex-none text-[#efa820]" />
-              <h2 className="text-base font-bold text-[#081634]">Ranglijst</h2>
-            </div>
-            <span className="text-sm font-bold text-[#0866e8]">Bekijk alles</span>
-          </div>
-          <div className="mt-3 grid gap-1.5">
-            {displayRows.map((row, index) => (
-              <div key={`${index}-${displayName(row.profiles)}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
-                <span className="flex min-w-0 items-center gap-2">
-                  <span className="w-4 flex-none text-right font-bold tabular-nums text-[#475670]">{index + 1}</span>
-                  <span className="truncate font-medium">{displayName(row.profiles)}</span>
-                </span>
-                <span className="flex-none font-bold tabular-nums">{row.points} pt</span>
-              </div>
-            ))}
-          </div>
-        </a>
       </div>
 
     </main>
