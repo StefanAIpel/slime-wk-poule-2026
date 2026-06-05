@@ -18,8 +18,8 @@ import { PendingButton } from "@/components/pending-button";
 import { PoolBanner } from "@/components/pool-banner";
 import { PoolMembers, type MatchLine, type PoolMember } from "@/components/pool-members";
 import { PoolQr } from "@/components/pool-qr";
+import { PoolQuickShare } from "@/components/pool-quick-share";
 import { PoolTabs } from "@/components/pool-tabs";
-import { CopyButton, ShareRow, WhatsappShare } from "@/components/share-button";
 import { ENTRY_DEADLINE, SITE_URL } from "@/lib/constants";
 import { displayName, formatAmsterdam } from "@/lib/format";
 import { scoreMatchPrediction } from "@/lib/scoring";
@@ -197,7 +197,7 @@ export default async function PoolsPage({
   const tabs = pools.map((pool) => ({ id: pool.id, label: pool.name, emoji: pool.badgeEmoji }));
 
   return (
-    <main className="page-shell">
+    <main className="page-shell poules-page-shell">
       <header className="mb-5 grid gap-4">
         <Brand />
       </header>
@@ -222,44 +222,91 @@ export default async function PoolsPage({
             const isManager = currentMember?.role === "owner" || currentMember?.role === "moderator";
             const joinAssets = poolJoinAssets.get(pool.id) ?? { joinUrl: SITE_URL, qrDataUrl: "" };
             const inviteText = `Doe je mee met onze gratis WK 2026-poule "${pool.name}"? 1 keer ~10 minuten invullen en je strijdt het hele WK mee. 👇`;
-            const reminderText = `⏰ Vul je voorspellingen in voor onze WK-poule "${pool.name}"! 1 keer invullen (±10 min) en je doet het hele WK mee — laatkomers nog welkom. 👇`;
             return (
-              <article key={pool.id} className="panel overflow-hidden">
+              <article key={pool.id} className="panel pool-card overflow-hidden">
                 <PoolBanner src={poolBannerUrl(pool.id)} alt={`Banner van ${pool.name}`} />
-                <div className="grid gap-3 p-4 text-white md:grid-cols-[1fr_auto] md:items-center" style={{ background: pool.accentColor }}>
-                  <div>
-                    <h2 className="text-2xl font-bold"><span aria-hidden="true">{pool.badgeEmoji}</span> {pool.name}</h2>
-                    <p className="mt-1 font-medium text-white/85">Code: <span className="font-bold text-white">{pool.code}</span></p>
-                    {pool.description ? <p className="mt-2 max-w-2xl text-sm font-medium text-white/90">{pool.description}</p> : null}
+                <div className="pool-card-hero text-white" style={{ background: pool.accentColor }}>
+                  <div className="min-w-0">
+                    <h2 className="pool-card-title"><span aria-hidden="true">{pool.badgeEmoji}</span> {pool.name}</h2>
+                    <p className="pool-code-line">
+                      Code: <span className="pool-code-pill">{pool.code}</span>
+                    </p>
+                    {pool.description ? <p className="pool-card-description">{pool.description}</p> : null}
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    <WhatsappShare text={inviteText} url={joinAssets.joinUrl} label="Uitnodigen" compact />
-                    <WhatsappShare text={reminderText} url={joinAssets.joinUrl} label="Herinnering" compact />
-                    <CopyButton value={joinAssets.joinUrl} label="Kopieer link" compact />
-                    <CopyButton value={pool.code} label={`Code ${pool.code}`} compact />
-                    {isOwner ? (
-                      <form action={resetPoolCode}>
-                        <input type="hidden" name="pool_id" value={pool.id} />
-                        <button className="button-plain button-compact" type="submit" title="Maak een nieuwe deelcode (oude werkt dan niet meer)">
-                          <RefreshCw aria-hidden="true" className="size-4" />
-                          Nieuwe code
-                        </button>
-                      </form>
+                  <PoolQuickShare joinUrl={joinAssets.joinUrl} qrDataUrl={joinAssets.qrDataUrl} poolName={pool.name} inviteText={inviteText} />
+                </div>
+                <PoolMembers members={poolMembersById.get(pool.id) ?? []} />
+                <div className="border-b border-slate-200 p-4 pool-board-section">
+                  <h3 className="text-lg font-bold text-[#101a2b]">Prikbord</h3>
+                  <form action={postPoolMessage} className="mt-3 grid gap-2">
+                    <input type="hidden" name="pool_id" value={pool.id} />
+                    <textarea
+                      className="field min-h-20 pool-board-textarea"
+                      name="body"
+                      minLength={10}
+                      maxLength={500}
+                      required
+                      placeholder="Schrijf iets voor je WK-poule… (min. 10 tekens)"
+                    />
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      {isManager ? (
+                        <label className="flex items-center gap-2 text-sm font-medium text-[#101a2b]">
+                          <input type="checkbox" name="pinned" /> Vastzetten bovenaan
+                        </label>
+                      ) : (
+                        <span />
+                      )}
+                      <PendingButton className="button-primary min-h-9 px-3 text-sm" pendingText="Plaatsen…">
+                        <Megaphone aria-hidden="true" className="size-4" />
+                        Plaats
+                      </PendingButton>
+                    </div>
+                  </form>
+                  <div className="mt-3 grid gap-2">
+                    {(messagesByPool.get(pool.id) ?? []).slice(0, 6).map((message) => {
+                      const canDelete = isManager || message.author_id === user.id;
+                      return (
+                        <div
+                          key={message.id}
+                          className={`rounded-lg border p-3 pool-board-message ${message.pinned ? "border-[#e0b23a] bg-amber-50" : "border-slate-200 bg-white"}`}
+                        >
+                          <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-normal text-[#4c5a70]">
+                            {message.pinned ? <span className="text-[#9a6b12]">Vastgezet</span> : null}
+                            <span>{displayName(message.profiles)}</span>
+                            <span>{new Intl.DateTimeFormat("nl-NL", { dateStyle: "short", timeStyle: "short" }).format(new Date(message.created_at))}</span>
+                            {canDelete ? (
+                              <form action={deletePoolMessage} className="ml-auto">
+                                <input type="hidden" name="pool_id" value={pool.id} />
+                                <input type="hidden" name="message_id" value={message.id} />
+                                <button className="font-bold text-[#b23b46] hover:underline" type="submit">
+                                  Verwijder
+                                </button>
+                              </form>
+                            ) : null}
+                          </div>
+                          <p className="mt-1 text-sm font-medium leading-6 text-[#101a2b]">{message.body}</p>
+                        </div>
+                      );
+                    })}
+                    {!messagesByPool.get(pool.id)?.length ? (
+                      <p className="text-sm font-medium text-[#4c5a70]">Nog geen berichten.</p>
                     ) : null}
                   </div>
                 </div>
-                <div className="pool-invite-strip">
-                  <div className="pool-invite-copy">
-                    <p className="pool-invite-kicker">Uitnodigingslink</p>
-                    <a className="pool-invite-url" href={joinAssets.joinUrl}>
-                      {joinAssets.joinUrl.replace(/^https?:\/\//, "")}
-                    </a>
-                    <ShareRow url={joinAssets.joinUrl} text={inviteText} title={`Doe mee met ${pool.name}`} compact />
+                <details className="pool-share-details border-b border-slate-200 bg-[#fffaf0]">
+                  <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">Deelopties &amp; QR</summary>
+                  <div className="pool-invite-strip pool-invite-strip-hidden">
+                    <div className="pool-invite-copy">
+                      <p className="pool-invite-kicker">Uitnodigingslink</p>
+                      <a className="pool-invite-url" href={joinAssets.joinUrl}>
+                        {joinAssets.joinUrl.replace(/^https?:\/\//, "")}
+                      </a>
+                    </div>
+                    <PoolQr qrDataUrl={joinAssets.qrDataUrl} poolName={pool.name} joinUrl={joinAssets.joinUrl} />
                   </div>
-                  <PoolQr qrDataUrl={joinAssets.qrDataUrl} poolName={pool.name} joinUrl={joinAssets.joinUrl} />
-                </div>
+                </details>
                 {isManager ? (
-                  <details className="border-b border-slate-200 bg-slate-50" open={params.aangemaakt && params.pool === pool.id ? true : undefined}>
+                  <details className="border-b border-slate-200 bg-slate-50">
                     <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">
                       WK-poule-instellingen &amp; opmaak (beheer)
                     </summary>
@@ -305,67 +352,20 @@ export default async function PoolsPage({
                         Upload banner
                       </PendingButton>
                     </form>
+                    {isOwner ? (
+                      <form action={resetPoolCode} className="grid gap-2 rounded-xl border border-slate-200 bg-white p-3 md:col-span-2">
+                        <input type="hidden" name="pool_id" value={pool.id} />
+                        <div className="font-bold text-[#101a2b]">Deelcode beheren</div>
+                        <p className="text-xs font-medium text-[#4c5a70]">Maakt een nieuwe code; de oude uitnodigingslink werkt daarna niet meer.</p>
+                        <button className="button-plain button-compact w-fit" type="submit" title="Maak een nieuwe deelcode">
+                          <RefreshCw aria-hidden="true" className="size-4" />
+                          Nieuwe code
+                        </button>
+                      </form>
+                    ) : null}
                   </div>
                   </details>
                 ) : null}
-                <PoolMembers members={poolMembersById.get(pool.id) ?? []} />
-                <div className="border-b border-slate-200 p-4">
-                  <h3 className="text-lg font-bold text-[#101a2b]">Prikbord</h3>
-                  <form action={postPoolMessage} className="mt-3 grid gap-2">
-                    <input type="hidden" name="pool_id" value={pool.id} />
-                    <textarea
-                      className="field min-h-20"
-                      name="body"
-                      minLength={10}
-                      maxLength={500}
-                      required
-                      placeholder="Schrijf iets voor je WK-poule… (min. 10 tekens)"
-                    />
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      {isManager ? (
-                        <label className="flex items-center gap-2 text-sm font-medium text-[#101a2b]">
-                          <input type="checkbox" name="pinned" /> Vastzetten bovenaan
-                        </label>
-                      ) : (
-                        <span />
-                      )}
-                      <PendingButton className="button-primary min-h-9 px-3 text-sm" pendingText="Plaatsen…">
-                        <Megaphone aria-hidden="true" className="size-4" />
-                        Plaats
-                      </PendingButton>
-                    </div>
-                  </form>
-                  <div className="mt-3 grid gap-2">
-                    {(messagesByPool.get(pool.id) ?? []).slice(0, 6).map((message) => {
-                      const canDelete = isManager || message.author_id === user.id;
-                      return (
-                        <div
-                          key={message.id}
-                          className={`rounded-lg border p-3 ${message.pinned ? "border-[#e0b23a] bg-amber-50" : "border-slate-200 bg-white"}`}
-                        >
-                          <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-normal text-[#4c5a70]">
-                            {message.pinned ? <span className="text-[#9a6b12]">Vastgezet</span> : null}
-                            <span>{displayName(message.profiles)}</span>
-                            <span>{new Intl.DateTimeFormat("nl-NL", { dateStyle: "short", timeStyle: "short" }).format(new Date(message.created_at))}</span>
-                            {canDelete ? (
-                              <form action={deletePoolMessage} className="ml-auto">
-                                <input type="hidden" name="pool_id" value={pool.id} />
-                                <input type="hidden" name="message_id" value={message.id} />
-                                <button className="font-bold text-[#b23b46] hover:underline" type="submit">
-                                  Verwijder
-                                </button>
-                              </form>
-                            ) : null}
-                          </div>
-                          <p className="mt-1 text-sm font-medium leading-6 text-[#101a2b]">{message.body}</p>
-                        </div>
-                      );
-                    })}
-                    {!messagesByPool.get(pool.id)?.length ? (
-                      <p className="text-sm font-medium text-[#4c5a70]">Nog geen berichten.</p>
-                    ) : null}
-                  </div>
-                </div>
                 {isManager ? (
                 <details className="border-b border-slate-200 bg-slate-50">
                   <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">Leden beheren (beheer)</summary>

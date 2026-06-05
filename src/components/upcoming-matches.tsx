@@ -84,7 +84,8 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                 <div className="schedule-team-cell schedule-team-cell-home">
                   <TeamFlag code={m.home_code} name={m.home?.name_nl} />
                   <span className="schedule-team-name font-medium tracking-wide text-[var(--ink)]" title={m.home?.name_nl ?? m.home_label ?? m.home_code ?? undefined}>
-                    {teamAbbrev(m.home_code, m.home_label ?? m.home?.name_nl)}
+                    <span className="sm:hidden">{teamAbbrev(m.home_code, m.home_label ?? m.home?.name_nl)}</span>
+                    <span className="hidden sm:inline">{m.home_label ?? m.home?.name_nl ?? teamAbbrev(m.home_code, m.home?.name_nl)}</span>
                   </span>
                 </div>
                 <span className="upcoming-team-separator">
@@ -94,7 +95,8 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
                 <div className="schedule-team-cell schedule-team-cell-away">
                   <TeamFlag code={m.away_code} name={m.away?.name_nl} />
                   <span className="schedule-team-name font-medium tracking-wide text-[var(--ink)]" title={m.away?.name_nl ?? m.away_label ?? m.away_code ?? undefined}>
-                    {teamAbbrev(m.away_code, m.away_label ?? m.away?.name_nl)}
+                    <span className="sm:hidden">{teamAbbrev(m.away_code, m.away_label ?? m.away?.name_nl)}</span>
+                    <span className="hidden sm:inline">{m.away_label ?? m.away?.name_nl ?? teamAbbrev(m.away_code, m.away?.name_nl)}</span>
                   </span>
                 </div>
                 <ResultBoxes home={m.home_score} away={m.away_score} />

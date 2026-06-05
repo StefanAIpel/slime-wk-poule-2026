@@ -14,6 +14,7 @@ const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url),
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
 const quickMenu = await readFile(new URL("../src/components/quick-menu.tsx", import.meta.url), "utf8");
 const statusBar = await readFile(new URL("../src/components/status-bar.tsx", import.meta.url), "utf8");
+const shareButton = await readFile(new URL("../src/components/share-button.tsx", import.meta.url), "utf8");
 const brandWordmark = await readFile(new URL("../src/components/brand-wordmark.tsx", import.meta.url), "utf8");
 const bottomNav = await readFile(new URL("../src/components/bottom-nav.tsx", import.meta.url), "utf8");
 const upcomingMatches = await readFile(new URL("../src/components/upcoming-matches.tsx", import.meta.url), "utf8");
@@ -22,6 +23,10 @@ const gameFrames = await readFile(new URL("../src/components/game-frames.tsx", i
 const schemaPage = await readFile(new URL("../src/app/schema/page.tsx", import.meta.url), "utf8");
 const schemaGroupsPage = await readFile(new URL("../src/app/schema/groepen/page.tsx", import.meta.url), "utf8");
 const schemaKnockoutPage = await readFile(new URL("../src/app/schema/knockout/page.tsx", import.meta.url), "utf8");
+const poulesPage = await readFile(new URL("../src/app/poules/page.tsx", import.meta.url), "utf8");
+const poolMembers = await readFile(new URL("../src/components/pool-members.tsx", import.meta.url), "utf8");
+const poolQuickShare = await readFile(new URL("../src/components/pool-quick-share.tsx", import.meta.url), "utf8");
+const appFirstShareLink = await readFile(new URL("../src/components/app-first-share-link.tsx", import.meta.url), "utf8");
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
@@ -151,11 +156,35 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(statusBar, /href=\"\/voorspellingen\" className=\"status-chip status-chip-countdown/);
 });
 
+test("mobile poule page prioritizes ranking and hides bulky share/admin controls", () => {
+  assert.match(poulesPage, /<PoolQuickShare joinUrl=\{joinAssets\.joinUrl\} qrDataUrl=\{joinAssets\.qrDataUrl\}/);
+  assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} \/>[\s\S]*Prikbord[\s\S]*Deelopties &amp; QR[\s\S]*WK-poule-instellingen &amp; opmaak \(beheer\)/);
+  assert.match(poolMembers, /Ranglijst &amp; deelnemers/);
+  assert.match(poolMembers, /pool-members-count/);
+  assert.match(poolQuickShare, /label="Deel via WhatsApp"/);
+  assert.match(poolQuickShare, /Kopieer link/);
+  assert.match(poolQuickShare, /aria-label=\"Deel via mail\"/);
+  assert.match(poolQuickShare, /aria-label=\"Deel QR-code\"/);
+  assert.match(poolQuickShare, /whatsapp:\/\/send\?text=\$\{encodedMessage\}/);
+  assert.match(poolQuickShare, /https:\/\/wa\.me\/\?text=\$\{encodedMessage\}/);
+  assert.match(shareButton, /whatsapp:\/\/send\?text=\$\{encodedBoth\}/);
+  assert.match(shareButton, /fb:\/\/facewebmodal\/f\?href=\$\{encodeURIComponent\(facebookWebHref\)\}/);
+  assert.match(shareButton, /https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=\$\{encodedUrl\}&quote=\$\{encodedBoth\}/);
+  assert.match(appFirstShareLink, /window\.location\.href = appHref/);
+  assert.match(appFirstShareLink, /window\.open\(webHref, "_blank", "noopener,noreferrer"\)/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\) auto;/);
+  assert.match(globalsCss, /@media \(max-width: 640px\) \{[\s\S]*\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);/);
+  assert.match(globalsCss, /\.pool-member-button \{[\s\S]*min-height: 42px;/);
+  assert.match(globalsCss, /\.pool-member-team \{\n    display: none;/);
+});
+
 test("small team columns use official 3-letter country abbreviations", () => {
   assert.match(formatLib, /teamAbbrev/);
   assert.match(upcomingMatches, /teamAbbrev\(m\.home_code/);
   assert.match(groupPredictionCard, /teamAbbrev\(match\.home_code/);
-  assert.doesNotMatch(upcomingMatches, /hidden sm:inline">\{m\.away\?\.name_nl/);
+  // Eerstvolgende wedstrijden: afgekort op mobiel, volledige landnaam op desktop.
+  assert.match(upcomingMatches, /sm:hidden">\{teamAbbrev\(m\.home_code/);
+  assert.match(upcomingMatches, /hidden sm:inline">\{m\.home_label \?\? m\.home\?\.name_nl/);
 });
 
 test("match rows always reserve right-side API score boxes with fixed home-separator-away columns", () => {

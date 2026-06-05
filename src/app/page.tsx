@@ -302,12 +302,13 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             <span>Mexico</span>
           </div>
           <div className="hero-home-title-block">
-            <h1 className="mt-4 text-[1.42rem] font-bold leading-[1.15] text-white sm:text-[1.78rem] md:text-[2.25rem]">
-              Gratis WK 2026-poule voor vrienden en familie
+            <h1 className="mt-4 text-[1.5rem] font-bold leading-[1.12] text-white sm:whitespace-nowrap sm:text-[1.8rem] md:text-[2rem]">
+              Gratis WK voetbal 2026 poule
             </h1>
-            <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-blue-50 sm:text-base md:text-lg">
-              In tien minuten vul je je voorspellingen in. Daarna doe je het hele WK mee, in zoveel groepen als je wilt.
-              Geen advertenties, geen cookiegedoe.
+            <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-blue-50 sm:text-[0.95rem] md:text-base">
+              In tien minuten vul je voorspellingen voor het hele WK. Speel met en tegen je vrienden en familie en maak
+              zoveel subpoules als je wilt. Gratis, en zo gedeeld in je groepsapp. Geen irritante reclames en cookies,
+              alleen een e-mailadres nodig.
             </p>
             <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
               <a href="/aanmelden" className="button-primary hero-primary-cta">
