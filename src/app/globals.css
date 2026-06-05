@@ -655,6 +655,48 @@ textarea {
     line-height: 1.35;
   }
 
+  .login-form-inline .auth-sent-banner {
+    padding: 9px 10px;
+    font-size: 0.88rem;
+    line-height: 1.22;
+  }
+
+  .login-form-inline .auth-sent-banner svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex: 0 0 auto;
+  }
+
+  .login-form-inline .auth-mail-hint,
+  .login-form-inline .auth-sent-message {
+    padding: 8px 10px;
+    font-size: 0.76rem;
+    line-height: 1.28;
+  }
+
+  .login-form-inline .auth-code-panel {
+    gap: 9px;
+    padding: 10px;
+  }
+
+  .login-form-inline .auth-code-panel label {
+    gap: 5px;
+    font-size: 0.82rem;
+  }
+
+  .login-form-inline .auth-code-field {
+    min-height: 42px;
+    font-size: 0.95rem;
+    letter-spacing: 0.22em;
+  }
+
+  .login-form-inline .auth-code-panel .button-primary,
+  .login-form-inline .auth-code-panel .button-secondary {
+    min-height: 43px;
+    padding: 8px 12px;
+    font-size: 0.88rem;
+  }
+
   .login-form-inline .auth-login-hint {
     font-size: 0.72rem;
     line-height: 1.15;

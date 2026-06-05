@@ -89,7 +89,7 @@ test("homepage salvages verified signups that arrive already logged in without a
 
 test("unconfirmed players can explicitly resend and code-confirm the registration mail", () => {
   assert.match(loginForm, /auth\.resend\(\{[\s\S]*type: \"signup\"/);
-  assert.match(loginForm, /Bevestigingsmail opnieuw sturen/);
+  assert.match(loginForm, /Mail opnieuw sturen/);
   assert.match(loginForm, /buildEmailRedirectTo\(origin, next\)/);
   assert.match(loginForm, /verifyOtp\(\{[\s\S]*type: \"email\"/);
   assert.match(loginForm, /Registratie bevestigen met mailcode/);
@@ -140,7 +140,7 @@ test("webmail shortcut is picked by email domain for common providers without ex
 });
 
 test("confirmation and recovery screens keep provider-neutral spam folder hints", () => {
-  assert.match(loginForm, /Check ook Spam of Ongewenst als je de mail niet ziet/);
+  assert.match(loginForm, /Niet gezien\? Check Spam of Ongewenst/);
   assert.match(authEmailTemplate, /Check ook Spam of Ongewenst/);
   assert.match(authRecoveryTemplate, /Check ook Spam of Ongewenst/);
   assert.doesNotMatch(loginForm, /Zoho|zohomail|Notification/);

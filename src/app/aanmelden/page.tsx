@@ -44,7 +44,7 @@ export default async function AanmeldenPage({
 
         <div className="auth-flow-note">
           <CheckCircle2 aria-hidden="true" className="size-5" />
-          <span>Na aanmelden vul je direct je scores en WK-poule in.</span>
+          <span>Na aanmelden vul je je poule in.</span>
         </div>
       </section>
     </main>

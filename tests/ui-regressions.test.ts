@@ -96,10 +96,16 @@ test("public FrontPage shows the PWA install instructions card near login", () =
   assert.match(installAppCard, /slime-score-install-card-dismissed-v2/);
 });
 
-test("signup sent state keeps only the success headline and code form without duplicate helper copy", () => {
-  assert.match(loginForm, /Bevestigingsmail verstuurd naar je e-mail/);
+test("signup sent state keeps compact mobile copy and code form without duplicate helper copy", () => {
+  assert.match(loginForm, /Bevestigingsmail verstuurd/);
   assert.match(loginForm, /Registratie bevestigen met mailcode/);
-  assert.match(loginForm, /Bevestigingsmail opnieuw sturen/);
+  assert.match(loginForm, /Mail opnieuw sturen/);
+  assert.match(loginForm, /auth-sent-banner/);
+  assert.match(loginForm, /auth-code-panel/);
+  assert.match(globalsCss, /\.login-form-inline \.auth-sent-banner \{\n    padding: 9px 10px;\n    font-size: 0\.88rem;\n    line-height: 1\.22;/);
+  assert.match(globalsCss, /\.login-form-inline \.auth-code-panel \{\n    gap: 9px;\n    padding: 10px;/);
+  assert.doesNotMatch(loginForm, /Bevestigingsmail verstuurd naar je e-mail/);
+  assert.doesNotMatch(loginForm, /Bevestigingsmail opnieuw sturen/);
   assert.doesNotMatch(loginForm, /Mail niet ontvangen\? Check je spambox of probeer opnieuw\./);
   assert.doesNotMatch(loginForm, /De knop in de mail blijft als fallback bestaan/);
   assert.doesNotMatch(loginForm, /Open de inloglink|Registratielink verstuurd/i);
