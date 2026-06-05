@@ -19,8 +19,8 @@ const stageLimits: Record<StageKey, number> = {
 const stageCopy: Record<StageKey, { title: string; hint: string; empty: string }> = {
   round16: {
     title: "Achtste finale",
-    hint: "Kies precies 16 landen. Meer kan niet; minder geeft een waarschuwing.",
-    empty: "Er zijn nog geen landen beschikbaar.",
+    hint: "Kies precies 16 landen uit jouw berekende laatste 32. Meer kan niet; minder geeft een waarschuwing.",
+    empty: "Vul eerst je groepswedstrijden in; daaruit rollen je laatste 32 landen.",
   },
   quarterfinal: {
     title: "Kwartfinale",
@@ -65,18 +65,30 @@ function labelForCount(count: number, expected: number) {
 export function KnockoutPredictionPicker({
   teams,
   initialSelections,
+  round16Pool,
   mainDisabled,
   lateDisabled,
 }: {
   teams: Team[];
   initialSelections: Partial<SelectionState>;
+  round16Pool?: string[];
   mainDisabled?: boolean;
   lateDisabled?: boolean;
 }) {
   const validCodes = useMemo(() => new Set(teams.map((team) => team.code.toUpperCase())), [teams]);
+  // De laatste 32 die uit de groepsvoorspellingen rollen. Alleen daaruit kies je je achtste finalisten.
+  const round16Set = useMemo(
+    () => (round16Pool ? new Set(round16Pool.map((code) => code.toUpperCase())) : null),
+    [round16Pool],
+  );
+  const round16Teams = useMemo(
+    () => (round16Set ? teams.filter((team) => round16Set.has(team.code.toUpperCase())) : teams),
+    [teams, round16Set],
+  );
   const [notice, setNotice] = useState<{ stage: StageKey; message: string } | null>(null);
   const [state, setState] = useState<SelectionState>(() => {
-    const round16 = uniqueValidCodes(initialSelections.round16, validCodes, stageLimits.round16);
+    const round16Raw = uniqueValidCodes(initialSelections.round16, validCodes, stageLimits.round16);
+    const round16 = round16Set ? round16Raw.filter((code) => round16Set.has(code)) : round16Raw;
     const quarterfinal = cleanAgainstOptions(
       uniqueValidCodes(initialSelections.quarterfinal, validCodes, stageLimits.quarterfinal),
       round16,
@@ -97,12 +109,12 @@ export function KnockoutPredictionPicker({
 
   const teamsByStage = useMemo(
     () => ({
-      round16: teams,
+      round16: round16Teams,
       quarterfinal: teams.filter((team) => state.round16.includes(team.code)),
       semifinal: teams.filter((team) => state.quarterfinal.includes(team.code)),
       finalists: teams.filter((team) => state.semifinal.includes(team.code)),
     }),
-    [teams, state.round16, state.quarterfinal, state.semifinal],
+    [teams, round16Teams, state.round16, state.quarterfinal, state.semifinal],
   );
 
   function cascadeSelection(previous: SelectionState, stage: StageKey, nextCodes: string[]): SelectionState {

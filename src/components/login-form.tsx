@@ -600,6 +600,26 @@ export function LoginForm({
         </button>
       </div>
 
+      {mode === "login" || mode === "register" ? (
+        <p className="auth-switch-hint text-center text-xs font-semibold text-[#475670]">
+          {mode === "login" ? (
+            <>
+              Nog geen account?{" "}
+              <button type="button" className="font-bold text-[#0e7a44] underline" onClick={() => resetMode("register")}>
+                Registreer je in 1 minuut
+              </button>
+            </>
+          ) : (
+            <>
+              Heb je al een account?{" "}
+              <button type="button" className="font-bold text-[#0e7a44] underline" onClick={() => resetMode("login")}>
+                Log direct in
+              </button>
+            </>
+          )}
+        </p>
+      ) : null}
+
       {mode === "forgot" ? (
         <form method="post" onSubmit={onForgotSubmit} className="grid gap-3" aria-label="Wachtwoord opnieuw aanvragen">
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
@@ -666,7 +686,7 @@ export function LoginForm({
               placeholder="Je gekozen wachtwoord"
             />
           </label>
-          <label className="flex items-center gap-2 text-sm font-semibold text-[#475670]">
+          <label className="flex items-center gap-2 text-[0.7rem] font-semibold text-[#475670]">
             <input
               type="checkbox"
               className="size-4 accent-[#0e7a44]"
@@ -776,7 +796,7 @@ export function LoginForm({
             {status === "loading" ? "Account maken…" : "Aanmelden"}
           </button>
           <p aria-live="polite" className={`text-sm font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-            {message || "We sturen één bevestigingsmail. Na bevestiging log je in met je e-mail en wachtwoord."}
+            {message || "Vul je e-mail, naam, teamnaam en wachtwoord in. Check daarna je mailbox om je account te bevestigen."}
           </p>
         </form>
       )}
