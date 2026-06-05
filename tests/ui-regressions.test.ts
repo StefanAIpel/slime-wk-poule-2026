@@ -27,9 +27,13 @@ const poulesPage = await readFile(new URL("../src/app/poules/page.tsx", import.m
 const poolMembers = await readFile(new URL("../src/components/pool-members.tsx", import.meta.url), "utf8");
 const poolQuickShare = await readFile(new URL("../src/components/pool-quick-share.tsx", import.meta.url), "utf8");
 const appFirstShareLink = await readFile(new URL("../src/components/app-first-share-link.tsx", import.meta.url), "utf8");
+const installAppCard = await readFile(new URL("../src/components/install-app-card.tsx", import.meta.url), "utf8");
+const knockoutPredictionPicker = await readFile(new URL("../src/components/knockout-prediction-picker.tsx", import.meta.url), "utf8");
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
+const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
+const recoveryEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
 
 test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
   const heroPrimaryBlock = globalsCss.match(/\.button-primary\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";
@@ -71,6 +75,16 @@ test("public login panel is compact on mobile", () => {
   assert.match(globalsCss, /\.login-form-inline \.field \{\n    min-height: 44px;/);
   assert.match(globalsCss, /\.auth-flow-note \{[\s\S]*font-size: 0\.8125rem;[\s\S]*line-height: 1\.35;/);
   assert.match(globalsCss, /\.auth-flow-note span \{\n  min-width: 0;\n\}/);
+});
+
+test("public FrontPage shows the PWA install instructions card near login", () => {
+  assert.match(homePage, /import \{ InstallAppCard \} from "@\/components\/install-app-card"/);
+  assert.match(homePage, /<LoginForm surface=\"inline\" \/>[\s\S]*<InstallAppCard \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\}/);
+  assert.match(installAppCard, /Zet Slime Score op je beginscherm/);
+  assert.match(installAppCard, /Zo installeer je|Installeren/);
+  assert.match(installAppCard, /iPhone \(Safari\)/);
+  assert.match(installAppCard, /Android \(Chrome\)/);
+  assert.match(installAppCard, /slime-score-install-card-dismissed-v2/);
 });
 
 test("signup sent state keeps only the success headline and code form without duplicate helper copy", () => {
@@ -115,6 +129,16 @@ test("SlimeScore brand wordmark uses the neutral WK slime and a richer pill lock
   assert.match(globalsCss, /\.brand-wordmark-score \{\n  color: #60f47c;/);
 });
 
+test("SlimeScore auth emails use a fixed high-contrast image header", () => {
+  const templates = `${authEmailTemplate}\n${recoveryEmailTemplate}`;
+  assert.match(templates, /slimescore-mail-header-v3\.png/);
+  assert.match(templates, /alt=\"SlimeScore\.com — WK 2026 vriendenpoule\. Voorspel\. Deel\. Win de poule\.\"/);
+  assert.match(templates, /width=\"560\" height=\"210\"/);
+  assert.match(templates, /background:#061a3c/);
+  assert.doesNotMatch(templates, /background-image:linear-gradient\(135deg,#075bbb/);
+  assert.doesNotMatch(templates, /<span style=\"color:#60f47c;\">Score<\/span>/);
+});
+
 test("logged-in dashboard only shows SlimeSoccer in the right column and no SlimeVolley", () => {
   assert.match(homePage, /lg:grid-cols-\[1\.2fr_0\.8fr\]/);
   assert.match(homePage, /<SlimeSoccerBanner includeVolley=\{false\}/);
@@ -142,6 +166,24 @@ test("prediction saves sync the global status bar progress without requiring rel
   assert.match(statusBar, /setMe\(\(current\)/);
 });
 
+test("knockout predictions flow from last 16 to later rounds without scroll boxes", () => {
+  assert.match(predictionsPage, /<KnockoutPredictionPicker/);
+  assert.match(predictionsPage, /Typ je verwachte uitslag\. Je kunt tussentijds opslaan en later verdergaan/);
+  assert.match(knockoutPredictionPicker, /round16: 16/);
+  assert.match(knockoutPredictionPicker, /quarterfinal: 8/);
+  assert.match(knockoutPredictionPicker, /Kies precies 16 landen\. Meer kan niet; minder geeft een waarschuwing\./);
+  assert.match(knockoutPredictionPicker, /round16: teams/);
+  assert.match(knockoutPredictionPicker, /quarterfinal: teams\.filter\(\(team\) => state\.round16\.includes\(team\.code\)\)/);
+  assert.match(knockoutPredictionPicker, /semifinal: teams\.filter\(\(team\) => state\.quarterfinal\.includes\(team\.code\)\)/);
+  assert.match(knockoutPredictionPicker, /finalists: teams\.filter\(\(team\) => state\.semifinal\.includes\(team\.code\)\)/);
+  assert.match(knockoutPredictionPicker, /Nog \$\{expected - count\} kiezen/);
+  assert.match(knockoutPredictionPicker, /Max \$\{limit\} bereikt/);
+  assert.match(knockoutPredictionPicker, /disabled=\{lateDisabled \|\| championOptions\.length === 0\}/);
+  assert.match(globalsCss, /\.knockout-picker-grid \{\n  display: grid;\n  gap: 8px;\n\}/);
+  assert.doesNotMatch(globalsCss, /\.knockout-picker-grid[\s\S]*overflow-y: auto/);
+  assert.doesNotMatch(predictionsPage, /max-h-72/);
+});
+
 test("logged-in navigation emphasizes Voorspel, keeps compact account/logout actions, and uses no mobile tabbar", () => {
   assert.match(siteHeader, /emphasis: true/);
   assert.match(siteHeader, /site-header-link-emphasis/);
@@ -159,14 +201,22 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
 });
 
 test("mobile poule page prioritizes ranking and hides bulky share/admin controls", () => {
-  assert.match(poulesPage, /<PoolQuickShare joinUrl=\{joinAssets\.joinUrl\} qrDataUrl=\{joinAssets\.qrDataUrl\}/);
+  assert.match(poulesPage, /<div className=\"pool-card-title-row\">[\s\S]*<PoolQuickShare/);
+  assert.match(poulesPage, /isManager=\{isManager\}/);
   assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} \/>[\s\S]*Prikbord[\s\S]*Deelopties &amp; QR[\s\S]*WK-poule-instellingen &amp; opmaak \(beheer\)/);
   assert.match(poolMembers, /Ranglijst &amp; deelnemers/);
   assert.match(poolMembers, /pool-members-count/);
+  assert.match(poolQuickShare, /<details className=\"pool-quick-share\">/);
+  assert.match(poolQuickShare, /<summary className=\"pool-share-toggle\"/);
   assert.match(poolQuickShare, /label="Deel via WhatsApp"/);
   assert.match(poolQuickShare, /Kopieer link/);
   assert.match(poolQuickShare, /aria-label=\"Deel via mail\"/);
   assert.match(poolQuickShare, /aria-label=\"Deel QR-code\"/);
+  assert.match(poolQuickShare, /isManager \? \(/);
+  assert.match(poolQuickShare, /Beheerder · app-delen/);
+  assert.match(poolQuickShare, /label=\"Deel via Facebook\"/);
+  assert.match(poolQuickShare, /Deel via Instagram of native deelmenu/);
+  assert.match(poolQuickShare, /label=\"Deel via Telegram\"/);
   assert.match(poolQuickShare, /whatsapp:\/\/send\?text=\$\{encodedMessage\}/);
   assert.match(poolQuickShare, /https:\/\/wa\.me\/\?text=\$\{encodedMessage\}/);
   assert.match(shareButton, /whatsapp:\/\/send\?text=\$\{encodedBoth\}/);
@@ -174,8 +224,10 @@ test("mobile poule page prioritizes ranking and hides bulky share/admin controls
   assert.match(shareButton, /https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=\$\{encodedUrl\}&quote=\$\{encodedBoth\}/);
   assert.match(appFirstShareLink, /window\.location\.href = appHref/);
   assert.match(appFirstShareLink, /window\.open\(webHref, "_blank", "noopener,noreferrer"\)/);
-  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\) auto;/);
-  assert.match(globalsCss, /@media \(max-width: 640px\) \{[\s\S]*\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);/);
+  assert.match(globalsCss, /\.pool-card-title-row \{[\s\S]*display: flex;[\s\S]*gap: 8px;/);
+  assert.match(globalsCss, /\.pool-share-menu \{[\s\S]*position: absolute;[\s\S]*width: min\(300px, calc\(100vw - 40px\)\);/);
+  assert.match(globalsCss, /\.pool-share-admin \{[\s\S]*border-top: 1px solid rgba\(8, 22, 52, 0\.08\);/);
   assert.match(globalsCss, /\.pool-member-button \{[\s\S]*min-height: 42px;/);
   assert.match(globalsCss, /\.pool-member-team \{\n    display: none;/);
 });

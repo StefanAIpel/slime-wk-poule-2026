@@ -227,13 +227,21 @@ export default async function PoolsPage({
                 <PoolBanner src={poolBannerUrl(pool.id)} alt={`Banner van ${pool.name}`} />
                 <div className="pool-card-hero text-white" style={{ background: pool.accentColor }}>
                   <div className="min-w-0">
-                    <h2 className="pool-card-title"><span aria-hidden="true">{pool.badgeEmoji}</span> {pool.name}</h2>
+                    <div className="pool-card-title-row">
+                      <h2 className="pool-card-title"><span aria-hidden="true">{pool.badgeEmoji}</span> {pool.name}</h2>
+                      <PoolQuickShare
+                        joinUrl={joinAssets.joinUrl}
+                        qrDataUrl={joinAssets.qrDataUrl}
+                        poolName={pool.name}
+                        inviteText={inviteText}
+                        isManager={isManager}
+                      />
+                    </div>
                     <p className="pool-code-line">
                       Code: <span className="pool-code-pill">{pool.code}</span>
                     </p>
                     {pool.description ? <p className="pool-card-description">{pool.description}</p> : null}
                   </div>
-                  <PoolQuickShare joinUrl={joinAssets.joinUrl} qrDataUrl={joinAssets.qrDataUrl} poolName={pool.name} inviteText={inviteText} />
                 </div>
                 <PoolMembers members={poolMembersById.get(pool.id) ?? []} />
                 <div className="border-b border-slate-200 p-4 pool-board-section">

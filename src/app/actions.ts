@@ -39,6 +39,12 @@ function cleanText(value: FormDataEntryValue | null, max = 50) {
     .slice(0, max);
 }
 
+function optionalInt(value: FormDataEntryValue | null, min = 0, max = 20) {
+  const raw = String(value ?? "").trim();
+  if (raw === "") return null;
+  return clampInt(raw, min, min, max);
+}
+
 function poolCode() {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   const bytes = randomBytes(8);
@@ -593,9 +599,9 @@ export async function savePredictions(formData: FormData) {
 
     if (canEditMain) {
       // Vooraf vast te leggen bonusvragen (sluiten bij de aftrap).
-      special.total_goals = clampInt(formData.get("total_goals"), 172, 100, 400);
-      special.total_red_cards = clampInt(formData.get("total_red_cards"), 8, 0, 50);
-      special.fastest_goal_minute = clampInt(formData.get("fastest_goal_minute"), 3, 1, 120);
+      special.total_goals = optionalInt(formData.get("total_goals"), 100, 400);
+      special.total_red_cards = optionalInt(formData.get("total_red_cards"), 0, 50);
+      special.fastest_goal_minute = optionalInt(formData.get("fastest_goal_minute"), 1, 120);
       special.team_most_goals_code = cleanText(formData.get("team_most_goals_code"), 3).toUpperCase() || null;
     }
 
@@ -607,8 +613,8 @@ export async function savePredictions(formData: FormData) {
       finalists = Array.from(new Set(formData.getAll("finalists").map(String).filter(Boolean))).slice(0, 2);
       special.champion_code = champion;
       special.finalists = finalists;
-      special.penalty_shootouts_ko = clampInt(formData.get("penalty_shootouts_ko"), 4, 0, 20);
-      special.own_goals_ko = clampInt(formData.get("own_goals_ko"), 2, 0, 20);
+      special.penalty_shootouts_ko = optionalInt(formData.get("penalty_shootouts_ko"), 0, 20);
+      special.own_goals_ko = null;
       special.cards_ko_team_code = cleanText(formData.get("cards_ko_team_code"), 3).toUpperCase() || null;
       special.oranje_stage = cleanText(formData.get("oranje_stage"), 16) || null;
       special.post_group_updated_at = now >= POST_GROUP_WINDOW_START ? new Date().toISOString() : null;

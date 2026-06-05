@@ -16,8 +16,9 @@ const publicLinks = [
 const privateLinks = [
   { href: "/voorspellingen", label: "Voorspellen", icon: ClipboardList },
   { href: "/poules", label: "WK-poules", icon: Users },
-  { href: "/account", label: "Mijn account", icon: UserCog },
 ];
+
+const accountLink = { href: "/account", label: "Mijn account", icon: UserCog };
 
 export function QuickMenu() {
   const [open, setOpen] = useState(false);
@@ -66,6 +67,7 @@ export function QuickMenu() {
   }, [open]);
 
   const links = loggedIn ? [publicLinks[0], privateLinks[0], ...publicLinks.slice(1), ...privateLinks.slice(1)] : publicLinks;
+  const AccountIcon = accountLink.icon;
 
   return (
     <>
@@ -110,14 +112,6 @@ export function QuickMenu() {
                   </Link>
                 );
               })}
-              {loggedIn ? (
-                <form className="quick-menu-form" action="/logout" method="post">
-                  <button className="quick-menu-link quick-menu-logout" type="submit">
-                    <LogOut aria-hidden="true" className="size-5" />
-                    <span>Uitloggen</span>
-                  </button>
-                </form>
-              ) : null}
               {!loggedIn ? (
                 <Link className="quick-menu-link" href="/aanmelden" onClick={() => setOpen(false)}>
                   <Users aria-hidden="true" className="size-5" />
@@ -128,6 +122,20 @@ export function QuickMenu() {
                 <Image src="/slime-soccer-icon.png" alt="" width={28} height={28} className="quick-menu-link-image" />
                 <span>Slime Soccer</span>
               </Link>
+              {loggedIn ? (
+                <div className="quick-menu-account-actions" aria-label="Account acties">
+                  <Link href={accountLink.href} className="quick-menu-link quick-menu-link-compact" onClick={() => setOpen(false)}>
+                    <AccountIcon aria-hidden="true" className="size-4" />
+                    <span>{accountLink.label}</span>
+                  </Link>
+                  <form className="quick-menu-form" action="/logout" method="post">
+                    <button className="quick-menu-link quick-menu-link-compact quick-menu-logout" type="submit">
+                      <LogOut aria-hidden="true" className="size-4" />
+                      <span>Uitloggen</span>
+                    </button>
+                  </form>
+                </div>
+              ) : null}
             </div>
           </nav>
         </div>

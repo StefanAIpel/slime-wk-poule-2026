@@ -5,6 +5,7 @@ import { createPool, joinPool } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
+import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { PasswordResetForm } from "@/components/password-reset-form";
 import { PredictionsComplete } from "@/components/predictions-complete";
@@ -380,6 +381,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             </div>
             <LoginForm surface="inline" />
           </section>
+          <InstallAppCard />
           <div className="public-login-ad" aria-label="Speel Slime Soccer">
             <SlimeSoccerBanner includeVolley={false} />
           </div>

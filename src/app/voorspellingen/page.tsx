@@ -3,6 +3,7 @@ import { savePredictions } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { GroupPredictionCard } from "@/components/group-prediction-card";
+import { KnockoutPredictionPicker } from "@/components/knockout-prediction-picker";
 import { PageHero } from "@/components/page-hero";
 import { PredictionsComplete } from "@/components/predictions-complete";
 import { StatusProgressSync } from "@/components/status-progress-sync";
@@ -61,6 +62,13 @@ export default async function PredictionsPage({
     groupDone.set(group, groupMatches.length > 0 && groupMatches.every((match) => isMatchFilled(match.id)));
   }
   const typedTeams = (teams ?? []) as Team[];
+  const initialBracketSelections = {
+    round16: Array.from(bracketByStage.get("round16") ?? []),
+    quarterfinal: Array.from(bracketByStage.get("quarterfinal") ?? []),
+    semifinal: Array.from(bracketByStage.get("semifinal") ?? []),
+    finalists: (special?.finalists as string[] | undefined) ?? Array.from(bracketByStage.get("finalists") ?? []),
+  };
+  const initialChampion = special?.champion_code ?? Array.from(bracketByStage.get("champion") ?? [])[0] ?? "";
 
   return (
     <main className="page-shell">
@@ -85,7 +93,7 @@ export default async function PredictionsPage({
           <h2 className="text-2xl font-bold">Groepswedstrijden</h2>
           <p className="mt-1 text-sm font-medium text-blue-100">
             {mainOpen
-              ? "Typ je verwachte uitslag. Leeg laten mag; alles is aanpasbaar tot de aftrap."
+              ? "Typ je verwachte uitslag. Je kunt tussentijds opslaan en later verdergaan tot 11 juni 21:00."
               : "De hoofdvoorspellingen zijn gesloten."}
           </p>
         </section>
@@ -155,64 +163,21 @@ export default async function PredictionsPage({
             </div>
           ) : null}
           <div className="mt-4 grid gap-4">
-            <TeamChecklist
-              name="round16"
-              title="Achtste finale"
-              hint="Welke landen winnen hun eerste knock-outwedstrijd?"
-              maxCount={16}
+            <KnockoutPredictionPicker
               teams={typedTeams}
-              selected={bracketByStage.get("round16")}
-              disabled={!mainOpen}
+              initialSelections={initialBracketSelections}
+              initialChampion={initialChampion}
+              mainDisabled={!mainOpen}
+              lateDisabled={!lateOpen}
             />
-            <TeamChecklist
-              name="quarterfinal"
-              title="Kwartfinale"
-              hint="Kies je laatste acht."
-              maxCount={8}
-              teams={typedTeams}
-              selected={bracketByStage.get("quarterfinal")}
-              disabled={!mainOpen}
-            />
-            <TeamChecklist
-              name="semifinal"
-              title="Halve finale"
-              hint="Vier landen die echt mogen dromen."
-              maxCount={4}
-              teams={typedTeams}
-              selected={bracketByStage.get("semifinal")}
-              disabled={!mainOpen}
-            />
-            <TeamChecklist
-              name="finalists"
-              title="Finale"
-              hint="Twee finalisten. Wijzigbaar t/m 28 juni 21:00."
-              maxCount={2}
-              teams={typedTeams}
-              selected={new Set((special?.finalists as string[] | undefined) ?? Array.from(bracketByStage.get("finalists") ?? []))}
-              disabled={!lateOpen}
-            />
-            <label className="grid gap-2 text-sm font-bold text-[#081634]">
-              Wereldkampioen <span className="font-medium text-[#48617f]">(wijzigbaar t/m 28 juni 21:00)</span>
-              <select
-                className="field"
-                name="champion_code"
-                defaultValue={special?.champion_code ?? Array.from(bracketByStage.get("champion") ?? [])[0] ?? ""}
-                disabled={!lateOpen}
-              >
-                <option value="">Kies kampioen</option>
-                {typedTeams.map((team) => (
-                  <option key={team.code} value={team.code}>
-                    {team.name_nl}
-                  </option>
-                ))}
-              </select>
-            </label>
           </div>
         </section>
 
         <section className="panel p-4">
           <h2 className="text-2xl font-bold text-[#081634]">Bonusvragen</h2>
-          <p className="mt-1 text-sm font-medium text-[#48617f]">Vul deze in vóór de aftrap (11 juni 21:00).</p>
+          <p className="mt-1 text-sm font-medium text-[#48617f]">
+            Start leeg: vul je eigen schatting in vóór 11 juni 21:00. Lege bonusvelden leveren geen punten op.
+          </p>
           <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!mainOpen}>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
               Team met de meeste doelpunten
@@ -225,9 +190,9 @@ export default async function PredictionsPage({
                 ))}
               </select>
             </label>
-            <NumberField name="total_goals" label="Totaal aantal goals" value={special?.total_goals ?? 172} min={100} max={400} />
-            <NumberField name="total_red_cards" label="Rode kaarten totaal" value={special?.total_red_cards ?? 8} min={0} max={50} />
-            <NumberField name="fastest_goal_minute" label="Snelste goal in minuut" value={special?.fastest_goal_minute ?? 3} min={1} max={120} />
+            <NumberField name="total_goals" label="Totaal aantal goals" value={special?.total_goals} min={100} max={400} placeholder="Bijv. 172" />
+            <NumberField name="total_red_cards" label="Rode kaarten totaal" value={special?.total_red_cards} min={0} max={50} placeholder="Bijv. 8" />
+            <NumberField name="fastest_goal_minute" label="Snelste goal in minuut" value={special?.fastest_goal_minute} min={1} max={120} placeholder="Bijv. 3" />
           </fieldset>
         </section>
 
@@ -248,8 +213,7 @@ export default async function PredictionsPage({
                 ))}
               </select>
             </label>
-            <NumberField name="penalty_shootouts_ko" label="Penaltyseries in knock-outfase" value={special?.penalty_shootouts_ko ?? 4} min={0} max={20} />
-            <NumberField name="own_goals_ko" label="Eigen goals in knock-outfase" value={special?.own_goals_ko ?? 2} min={0} max={20} />
+            <NumberField name="penalty_shootouts_ko" label="Penaltyseries in knock-outfase" value={special?.penalty_shootouts_ko} min={0} max={20} placeholder="Bijv. 4" />
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
               Meeste kaarten in knock-outs
               <select className="field" name="cards_ko_team_code" defaultValue={special?.cards_ko_team_code ?? ""}>
@@ -283,59 +247,37 @@ function groupBy<T>(items: T[] | null, keyFn: (item: T) => string) {
   return map;
 }
 
-function TeamChecklist({
-  name,
-  title,
-  hint,
-  maxCount,
-  teams,
-  selected,
-  disabled,
-}: {
-  name: string;
-  title: string;
-  hint: string;
-  maxCount: number;
-  teams: Team[];
-  selected?: Set<string>;
-  disabled?: boolean;
-}) {
-  return (
-    <fieldset className="rounded-lg border border-slate-200 p-3" disabled={disabled}>
-      <legend className="px-1 text-lg font-bold text-[#081634]">{title}</legend>
-      <p className="mb-3 text-sm font-medium text-[#48617f]">
-        {hint} Kies maximaal {maxCount}; extra keuzes tellen niet mee.
-      </p>
-      <div className="grid max-h-72 gap-2 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
-        {teams.map((team) => (
-          <label key={`${name}-${team.code}`} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-2 text-sm font-semibold text-[#081634]">
-            <input name={name} type="checkbox" value={team.code} defaultChecked={selected?.has(team.code)} />
-            <span className="font-bold text-[#064ed6]">{team.code}</span>
-            <span>{team.name_nl}</span>
-          </label>
-        ))}
-      </div>
-    </fieldset>
-  );
-}
-
 function NumberField({
   name,
   label,
   value,
   min,
   max,
+  placeholder,
 }: {
   name: string;
   label: string;
-  value: number;
+  value?: number | null;
   min: number;
   max: number;
+  placeholder: string;
 }) {
   return (
     <label className="grid gap-2 text-sm font-bold text-[#081634]">
       {label}
-      <input className="field" type="number" min={min} max={max} name={name} defaultValue={value} />
+      <input
+        className="field"
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        min={min}
+        max={max}
+        name={name}
+        defaultValue={value ?? ""}
+        placeholder={placeholder}
+        autoComplete="off"
+      />
+      <span className="text-xs font-medium text-[#48617f]">Vul in voor punten; leeg bewaren mag om later af te maken.</span>
     </label>
   );
 }

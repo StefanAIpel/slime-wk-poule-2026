@@ -28,7 +28,6 @@ type SpecialPrediction = {
   team_most_goals_code: string | null;
   oranje_stage: string | null;
   penalty_shootouts_ko: number | null;
-  own_goals_ko: number | null;
   cards_ko_team_code: string | null;
 };
 
@@ -88,7 +87,7 @@ export async function recalculateAllScores(admin: SupabaseClient): Promise<{ rec
       admin.from("stage_results").select("stage_key,team_codes"),
       admin
         .from("special_predictions")
-        .select("user_id,total_goals,total_red_cards,fastest_goal_minute,team_most_goals_code,oranje_stage,penalty_shootouts_ko,own_goals_ko,cards_ko_team_code"),
+        .select("user_id,total_goals,total_red_cards,fastest_goal_minute,team_most_goals_code,oranje_stage,penalty_shootouts_ko,cards_ko_team_code"),
       admin.from("tournament_facts").select("*").eq("id", true).maybeSingle(),
     ]);
 
@@ -113,7 +112,6 @@ export async function recalculateAllScores(admin: SupabaseClient): Promise<{ rec
       addBonus(current, scoreTextPrediction(prediction.team_most_goals_code, actualFacts.team_most_goals_code ? [actualFacts.team_most_goals_code] : [], specialScoring.teamMostGoals));
       addBonus(current, scoreOranjeStage(prediction.oranje_stage, actualFacts.oranje_stage));
       addBonus(current, scoreCloseNumber(prediction.penalty_shootouts_ko, actualFacts.penalty_shootouts_ko));
-      addBonus(current, scoreCloseNumber(prediction.own_goals_ko, actualFacts.own_goals_ko));
       addBonus(current, scoreTextPrediction(prediction.cards_ko_team_code, actualFacts.cards_ko_team_code ? [actualFacts.cards_ko_team_code] : [], specialScoring.exactStat));
       totals.set(prediction.user_id, current);
     }
