@@ -6,23 +6,35 @@ cookies en dataverkeer. Wat nog niet gebouwd is, staat als actiepunt in
 
 ## 1. Uitslagen-API (automatische koppeling)
 
-**Nu:** uitslagen, ronde-uitkomsten en bonusfeiten worden handmatig naar
+**Nu:** uitslagen, ronde-uitkomsten en bonusfeiten worden naar
 `POST /api/sync-results` gestuurd (auth via `x-result-sync-secret`); daarna
 rekent de route alle ranglijsten opnieuw door.
 
-**Aanbevolen bron:** een voetbal-data-API met WK 2026-dekking:
-- **API-Football** (api-sports.io) — volledige dekking, fixtures + statistieken, betaalbaar.
-- **Football-Data.org** — gratis tier, beperkter (geen diepe stats).
-- **SportMonks** — uitgebreid, duurder.
+**Gekozen bron:** **API-Football** (api-sports.io), plan **Pro ($19/mo)** — één API
+voor fixtures, live scores én statistieken, volledige WK 2026-dekking. (Alternatief
+gratis: football-data.org, WK zit in de gratis competities maar zonder diepe stats.)
 
-**Koppelplan:**
-1. Voeg kolom `external_id` toe aan `matches` (mapping naar de fixture-id van de API).
-2. Cron (Vercel Cron of GitHub Action) draait elke ~5 min tijdens speeldagen:
-   fetch afgeronde fixtures → vertaal naar `results[]` → `POST /api/sync-results`.
-3. Stats voor de bonusvragen komen uit de statistics-endpoints:
-   - *team met meeste goals* = som goals per team over het toernooi.
-   - *penaltyseries KO* / *eigen goals KO* / *kaarten* = aggregatie over knock-outfixtures.
-   - *hoe ver komt Oranje* = hoogste ronde die NED bereikt.
+**Gebouwde koppeling (staat "achter een vlag" tot de secrets gezet zijn):**
+- Migratie `…_apifootball_external_ids.sql`: kolommen `matches.external_id` en
+  `teams.external_id` (mapping API-Football fixture-/team-id ↔ onze id/code).
+- `src/lib/apifootball.ts`: pure vertaling van fixtures → `{ results, stage_results }`
+  (alleen **afgeronde** wedstrijden scoren; KO-rondes + finalisten/kampioen via de
+  winner-vlag, dus penalty-proof). Getest in `tests/apifootball.test.ts`.
+- `scripts/backfill-apifootball.ts` (`npm run sync:backfill`): éénmalig — koppelt de 104
+  wedstrijden op kickoff-tijd + stad en de landen op tri-code/naam.
+- `scripts/sync-apifootball.ts` (`npm run sync:results`): fetch → vertaal → POST.
+- `.github/workflows/sync-results.yml`: cron elke ~5 min (GitHub Actions, gratis — geen
+  Vercel Pro nodig). Skipt netjes buiten het toernooivenster en zolang secrets ontbreken.
+
+**Nog te doen door jou (extern):**
+1. API-Football Pro-account → key.
+2. Repository-secrets zetten: `API_FOOTBALL_KEY`, `RESULT_SYNC_SECRET`, `SYNC_RESULTS_URL`
+   (= `https://slimescore.com/api/sync-results`), `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
+3. `npm run sync:backfill` één keer draaien (vult `external_id`); eventueel niet-gematchte
+   landen handmatig nazien.
+
+**Bonusfeiten** (`facts`: totaal goals, kaarten, snelste goal, …) blijven voorlopig
+handmatig; die kunnen later uit de statistics-endpoints van API-Football komen.
 
 **Let op (schaal):** `recalculateScores()` herberekent nu **alle** spelers per sync.
 Bij 1000 spelers is dat prima (~80k voorspel-rijen). Boven ~10k spelers: maak het
