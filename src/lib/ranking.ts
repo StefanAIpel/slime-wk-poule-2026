@@ -1,4 +1,3 @@
-import { DEMO_PLAYERS, hasSafePublicProfile } from "@/lib/demo-leaderboard";
 import { displayName } from "@/lib/format";
 
 export type RankingProfile = {
@@ -15,6 +14,10 @@ export type RankedScore = {
   team_name?: string | null;
   teamName?: string | null;
 };
+
+export function hasPublicProfile(profile?: RankingProfile | null) {
+  return Boolean(profile?.nickname?.trim() || profile?.team_name?.trim());
+}
 
 function normalizeRankText(value: string) {
   return value
@@ -72,21 +75,11 @@ export function worldRankMap<T extends RankedScore>(scores: T[]) {
   return map;
 }
 
-export function demoRankScores(): RankedScore[] {
-  return DEMO_PLAYERS.map((player) => ({
-    userId: player.userId,
-    nickname: player.nickname,
-    teamName: player.teamName,
-    points: 0,
-  }));
-}
-
-export function withDemoRankScores<T extends RankedScore>(scores: T[]) {
-  const safePublicScores = scores.filter((score) => hasSafePublicProfile(firstProfile(score.profiles) ?? {
+export function withPublicRankScores<T extends RankedScore>(scores: T[]) {
+  return scores.filter((score) => hasPublicProfile(firstProfile(score.profiles) ?? {
     nickname: score.nickname ?? null,
     team_name: score.team_name ?? score.teamName ?? null,
   }));
-  return [...safePublicScores, ...demoRankScores()];
 }
 
 export function worldRankForUser<T extends RankedScore>(scores: T[], userId: string) {

@@ -11,6 +11,7 @@ const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url)
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
+const rankingPage = await readFile(new URL("../src/app/ranglijst/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
 const manifest = await readFile(new URL("../src/app/manifest.ts", import.meta.url), "utf8");
 const constants = await readFile(new URL("../src/lib/constants.ts", import.meta.url), "utf8");
@@ -256,20 +257,24 @@ test("mobile poule page prioritizes ranking and keeps share buttons visible next
   assert.match(globalsCss, /\.pool-member-team \{\n    display: none;/);
 });
 
-test("world rankings use alphabetical order and the same demo-player tie-break everywhere", () => {
+test("world rankings are real Supabase scores without demo rows or fake #1 fallback", () => {
   assert.match(rankingLib, /punten dalend, bij gelijke punten alfabetisch/);
   assert.match(rankingLib, /export function compareScoresAlphabetical/);
   assert.match(rankingLib, /b\.points - a\.points/);
   assert.match(rankingLib, /aName\.localeCompare\(bName, "nl-NL"/);
   assert.match(rankingLib, /export function worldRankMap/);
-  assert.match(rankingLib, /export function withDemoRankScores/);
-  assert.match(rankingLib, /hasSafePublicProfile/);
-  assert.match(rankingLib, /safePublicScores/);
-  assert.match(homePage, /worldRankForUser\(withDemoRankScores\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\]\), user\.id\)/);
-  assert.match(apiMeRoute, /worldRankForUser\(withDemoRankScores\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\]\), user\.id\)/);
-  assert.match(poulesPage, /withDemoRankScores\(\(scoreRows \?\? \[\]\) as unknown as RankedScore\[\]\)\.sort\(compareScoresAlphabetical\)/);
+  assert.match(rankingLib, /export function withPublicRankScores/);
+  assert.match(rankingLib, /hasPublicProfile/);
+  assert.doesNotMatch(rankingLib, /withDemoRankScores|demoRankScores|DEMO_PLAYERS|hasSafePublicProfile/);
+  assert.match(rankingPage, /hasPublicProfile\(row\.profiles\)/);
+  assert.doesNotMatch(rankingPage, /DEMO_PLAYERS|DEMO_POOLS|demoPlayers|demoPoolRankings|hasSafePublicProfile/);
+  assert.match(homePage, /worldRankForUser\(withPublicRankScores\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\]\), user\.id\)/);
+  assert.match(apiMeRoute, /worldRankForUser\(withPublicRankScores\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\]\), user\.id\)/);
+  assert.doesNotMatch(apiMeRoute, /\?\? 1/);
+  assert.match(statusBar, /typeof me\.rank === "number"/);
+  assert.match(poulesPage, /withPublicRankScores\(\(scoreRows \?\? \[\]\) as unknown as RankedScore\[\]\)\.sort\(compareScoresAlphabetical\)/);
   assert.match(poulesPage, /worldRankMap\(rankedScores\)/);
-  assert.doesNotMatch(poulesPage, /gelijke punten = gelijke wereldrang/);
+  assert.doesNotMatch(poulesPage, /withDemoRankScores|gelijke punten = gelijke wereldrang/);
 });
 
 test("small team columns use official 3-letter country abbreviations", () => {

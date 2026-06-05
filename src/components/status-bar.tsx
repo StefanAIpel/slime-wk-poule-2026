@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ENTRY_DEADLINE_ISO } from "@/lib/constants";
 
-type Me = { loggedIn: boolean; nickname?: string | null; rank?: number; progress?: number };
+type Me = { loggedIn: boolean; nickname?: string | null; rank?: number | null; progress?: number };
 
 const deadline = new Date(ENTRY_DEADLINE_ISO).getTime();
 
@@ -73,7 +73,7 @@ export function StatusBar() {
           <span className="status-me">
             <Link href="/account" className="status-chip" aria-label="Mijn account">
               <Trophy aria-hidden="true" className="size-4" />
-              {me.nickname ?? "Speler"} · #{me.rank}
+              {me.nickname ?? "Speler"}{typeof me.rank === "number" ? <> · #{me.rank}</> : null}
             </Link>
             <Link href="/voorspellingen" className="status-chip status-chip-accent status-chip-progress">
               <ListChecks aria-hidden="true" className="size-4" />

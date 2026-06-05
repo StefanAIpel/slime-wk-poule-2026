@@ -14,9 +14,8 @@ import { ShareRow } from "@/components/share-button";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
 import { UpcomingMatches } from "@/components/upcoming-matches";
 import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
-import { DEMO_PLAYERS, hasSafePublicProfile } from "@/lib/demo-leaderboard";
 import { displayName } from "@/lib/format";
-import { withDemoRankScores, worldRankForUser, type RankedScore } from "@/lib/ranking";
+import { compareScoresAlphabetical, withPublicRankScores, worldRankForUser, type RankedScore } from "@/lib/ranking";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { persistSignupProfileFromMetadata, type SignupProfileClient } from "@/lib/supabase/signup-profile";
@@ -27,6 +26,7 @@ type HomeMembership = {
 };
 
 type HomeLeaderboardRow = {
+  user_id?: string | null;
   points: number;
   profiles: { nickname: string | null; team_name: string | null } | null;
   isDemo?: boolean;
@@ -48,9 +48,9 @@ export default async function Home({
     const { data: publicLeaderboard } = admin
       ? await admin
           .from("scores")
-          .select("points,profiles(nickname,team_name)")
+          .select("user_id,points,profiles(nickname,team_name)")
           .order("points", { ascending: false })
-          .limit(3)
+          .limit(20)
       : { data: [] };
 
     return (
@@ -129,7 +129,7 @@ export default async function Home({
     const { data: rankScores } = await admin
       .from("scores")
       .select("user_id,points,profiles(nickname,team_name)");
-    myRank = worldRankForUser(withDemoRankScores((rankScores ?? []) as unknown as RankedScore[]), user.id);
+    myRank = worldRankForUser(withPublicRankScores((rankScores ?? []) as unknown as RankedScore[]), user.id);
   }
 
   return (
@@ -282,15 +282,9 @@ export default async function Home({
 
 
 function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboard: HomeLeaderboardRow[] }) {
-  const realRows = leaderboard.filter((row) => hasSafePublicProfile(row.profiles));
-  const displayRows: HomeLeaderboardRow[] = [
-    ...realRows,
-    ...DEMO_PLAYERS.map((player) => ({
-      points: 0,
-      isDemo: true,
-      profiles: { nickname: player.nickname, team_name: player.teamName },
-    })),
-  ].slice(0, 3);
+  const displayRows = withPublicRankScores(leaderboard as unknown as RankedScore[])
+    .sort(compareScoresAlphabetical)
+    .slice(0, 3) as HomeLeaderboardRow[];
 
   return (
     <main className="page-shell shell-top-tight grid gap-5">
