@@ -38,6 +38,25 @@ function webmailFor(email: string) {
   return webmail.find((w) => w.match.includes(domain)) ?? null;
 }
 
+function registrationErrorMessage(errorMessage: string) {
+  if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
+    return "Je hebt net al een bevestigingsmail aangevraagd. Gebruik de bevestigingscode uit die mail hieronder, of wacht ongeveer 1 minuut en stuur opnieuw.";
+  }
+  if (errorMessage.includes("already registered") || errorMessage.includes("already exists") || errorMessage.includes("user already")) {
+    return "Dit e-mailadres bestaat al. Log in of gebruik ‘Wachtwoord vergeten?’.";
+  }
+  if (errorMessage.includes("not authorized") || errorMessage.includes("cannot be used") || errorMessage.includes("disposable")) {
+    return "Dit e-mailadres wordt door de maildienst geweigerd. Probeer een ander e-mailadres of app Stefan even met dit adres.";
+  }
+  if (errorMessage.includes("invalid") || errorMessage.includes("validate email") || errorMessage.includes("email address")) {
+    return "Controleer je e-mailadres en probeer opnieuw.";
+  }
+  if (errorMessage.includes("sending") || errorMessage.includes("smtp") || errorMessage.includes("mailer") || errorMessage.includes("email provider")) {
+    return "De bevestigingsmail versturen lukte niet. Probeer straks opnieuw of gebruik een ander e-mailadres.";
+  }
+  return "Account maken lukte niet. Probeer straks opnieuw of gebruik een ander e-mailadres.";
+}
+
 function GmailIcon({ className = "size-5" }: { className?: string }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" className={className}>
@@ -378,11 +397,9 @@ export function LoginForm({
       if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
         rememberCurrentEmail();
         setStatus("sent");
-        setMessage("Je hebt net al een bevestigingsmail aangevraagd. Gebruik de bevestigingscode uit die mail hieronder, of wacht ongeveer 1 minuut en stuur opnieuw.");
-      } else if (errorMessage.includes("already registered") || errorMessage.includes("already exists") || errorMessage.includes("user already")) {
-        setMessage("Dit e-mailadres bestaat al. Log in of gebruik ‘Wachtwoord vergeten?’. ");
+        setMessage(registrationErrorMessage(errorMessage));
       } else {
-        setMessage("Account maken lukte niet. Controleer je gegevens en probeer het opnieuw.");
+        setMessage(registrationErrorMessage(errorMessage));
       }
       return;
     }

@@ -40,7 +40,7 @@ test("registration email template is SlimeScore-branded and supports code-first 
 });
 
 test("new players enter profile, password and legal acceptance before confirmation mail", () => {
-  assert.match(loginForm, /Nieuw SlimeScore-account maken/);
+  assert.match(loginForm, /aria-label=\"Nieuw SlimeScore-account maken\"/);
   assert.match(loginForm, /Naam of bijnaam/);
   assert.match(loginForm, /Teamnaam/);
   assert.match(loginForm, /type=\"password\"/);
@@ -49,6 +49,14 @@ test("new players enter profile, password and legal acceptance before confirmati
   assert.match(loginForm, /supabase\.auth\.signUp/);
   assert.match(loginForm, /signup_flow: \"profile_password_confirm\"/);
   assert.doesNotMatch(loginForm, /signInWithOtp/);
+});
+
+test("registration surfaces actionable Supabase mail errors instead of a vague retry message", () => {
+  assert.match(loginForm, /function registrationErrorMessage\(errorMessage: string\)/);
+  assert.match(loginForm, /e-mailadres wordt door de maildienst geweigerd/);
+  assert.match(loginForm, /bevestigingsmail versturen lukte niet/);
+  assert.match(loginForm, /Controleer je e-mailadres en probeer opnieuw/);
+  assert.doesNotMatch(loginForm, /setMessage\(\"Account maken lukte niet\. Controleer je gegevens en probeer het opnieuw\.\"\)/);
 });
 
 test("registration form cannot leak passwords through a native GET fallback", () => {
