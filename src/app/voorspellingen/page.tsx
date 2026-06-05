@@ -149,9 +149,10 @@ export default async function PredictionsPage({
         })}
 
         <section className="panel p-4">
-          <h2 className="text-2xl font-bold text-[#081634]">Rondes en eindwinnaar</h2>
+          <h2 className="text-2xl font-bold text-[#081634]">Knock-outrondes</h2>
           <p className="mt-1 text-sm font-medium text-[#48617f]">
             De laatste 32 worden uit je groepsstanden berekend. Daarna kies je simpelweg welke landen verder komen.
+            De wereldkampioen kies je los onderaan (vrij uit alle landen).
           </p>
           <div className="mt-4 rounded-lg border border-[#bce8c8] bg-[#f4fbf0] p-3 text-sm font-bold leading-6 text-[#137c35]">
             Laatste 32: automatisch uitgerekend met nummers 1 en 2 per groep plus de beste acht nummers 3.
@@ -166,7 +167,6 @@ export default async function PredictionsPage({
             <KnockoutPredictionPicker
               teams={typedTeams}
               initialSelections={initialBracketSelections}
-              initialChampion={initialChampion}
               mainDisabled={!mainOpen}
               lateDisabled={!lateOpen}
             />
@@ -199,9 +199,20 @@ export default async function PredictionsPage({
         <section className="panel p-4">
           <h2 className="text-2xl font-bold text-[#081634]">Wijzigbaar t/m 28 juni 21:00</h2>
           <p className="mt-1 text-sm font-medium text-[#48617f]">
-            Deze keuzes (samen met wereldkampioen en finalisten hierboven) mag je blijven aanpassen tot en met 28 juni 21:00 Nederlandse tijd.
+            Deze keuzes (samen met de finalisten hierboven) mag je blijven aanpassen tot en met 28 juni 21:00 Nederlandse tijd.
           </p>
           <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!lateOpen}>
+            <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
+              Wereldkampioen <span className="font-medium text-[#48617f]">(vrij uit alle landen, ongeacht je bracket)</span>
+              <select className="field" name="champion_code" defaultValue={initialChampion}>
+                <option value="">Kies kampioen</option>
+                {typedTeams.map((team) => (
+                  <option key={team.code} value={team.code}>
+                    {team.name_nl}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
               Hoe ver komt Oranje?
               <select className="field" name="oranje_stage" defaultValue={special?.oranje_stage ?? ""}>
@@ -214,17 +225,6 @@ export default async function PredictionsPage({
               </select>
             </label>
             <NumberField name="penalty_shootouts_ko" label="Penaltyseries in knock-outfase" value={special?.penalty_shootouts_ko} min={0} max={20} placeholder="Bijv. 4" />
-            <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
-              Meeste kaarten in knock-outs
-              <select className="field" name="cards_ko_team_code" defaultValue={special?.cards_ko_team_code ?? ""}>
-                <option value="">Kies land</option>
-                {typedTeams.map((team) => (
-                  <option key={team.code} value={team.code}>
-                    {team.name_nl}
-                  </option>
-                ))}
-              </select>
-            </label>
           </fieldset>
         </section>
 
