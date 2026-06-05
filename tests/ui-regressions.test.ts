@@ -9,6 +9,7 @@ const passwordChangeForm = await readFile(new URL("../src/components/password-ch
 const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
+const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
 const quickMenu = await readFile(new URL("../src/components/quick-menu.tsx", import.meta.url), "utf8");
@@ -104,6 +105,20 @@ test("logged-in dashboard only shows SlimeSoccer in the right column and no Slim
   assert.match(homePage, /lg:grid-cols-\[1\.2fr_0\.8fr\]/);
   assert.match(homePage, /<SlimeSoccerBanner includeVolley=\{false\}/);
   assert.doesNotMatch(homePage, /<SlimeSoccerBanner \/>/);
+});
+
+test("dashboard copy matches the 72-group-result progress metric and password flow", () => {
+  assert.doesNotMatch(homePage, /Vul je wedstrijden en knock-outkeuzes in/);
+  assert.match(homePage, /De voortgang hieronder telt je 72 groepsuitslagen/);
+  assert.match(homePage, /e-mail \+ wachtwoord/);
+  assert.doesNotMatch(homePage, /geen wachtwoord/);
+});
+
+test("prediction saves sync the global status bar progress without requiring reload", () => {
+  assert.match(predictionsPage, /StatusProgressSync/);
+  assert.match(predictionsPage, /<StatusProgressSync progress=\{groupProgress\} \/>/);
+  assert.match(statusBar, /slimescore:me-update/);
+  assert.match(statusBar, /setMe\(\(current\)/);
 });
 
 test("logged-in navigation emphasizes Voorspel, keeps compact account/logout actions, and uses no mobile tabbar", () => {

@@ -26,9 +26,12 @@ const webmail: WebmailProvider[] = [
   { match: ["yahoo.com", "yahoo.nl"], label: "Open Yahoo Mail", url: "https://mail.yahoo.com/" },
   { match: ["icloud.com", "me.com", "mac.com"], label: "Open iCloud Mail", url: "https://www.icloud.com/mail/" },
   { match: ["proton.me", "protonmail.com"], label: "Open Proton Mail", url: "https://mail.proton.me/" },
+  { match: ["zohomail.eu", "zoho.eu"], label: "Open Zoho Mail", url: "https://mail.zoho.eu/" },
+  { match: ["zohomail.com", "zoho.com"], label: "Open Zoho Mail", url: "https://mail.zoho.com/" },
 ];
 
 const rememberedEmailKey = "slimescore:last-email";
+const mailFolderHint = "Check ook Spam, Ongewenst of bij Zoho de map Notification als je de mail niet ziet.";
 
 function webmailFor(email: string) {
   const domain = email.split("@")[1]?.toLowerCase() ?? "";
@@ -182,7 +185,7 @@ export function LoginForm({
       return;
     }
 
-    setMessage("Nieuwe bevestigingsmail verstuurd. Check ook je spambox.");
+    setMessage(`Nieuwe bevestigingsmail verstuurd. ${mailFolderHint}`);
   }
 
   async function onResendPasswordResetMail() {
@@ -208,7 +211,7 @@ export function LoginForm({
     }
 
     setResetCodeEntry(true);
-    setMessage("Nieuwe wachtwoordcode verstuurd. Check ook je spambox.");
+    setMessage(`Nieuwe wachtwoordcode verstuurd. ${mailFolderHint}`);
   }
 
   async function onResetCodeSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -457,6 +460,9 @@ export function LoginForm({
           </p>
         ) : null}
         {provider ? <WebmailButton provider={provider} /> : null}
+        <p className="rounded-lg bg-[#fff8e6] p-2 text-xs font-bold leading-5 text-[#7a4a00]">
+          {mailFolderHint}
+        </p>
 
         {isResetMail ? (
           <form method="post" onSubmit={onResetCodeSubmit} className="grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label="Wachtwoord wijzigen met mailcode">

@@ -5,6 +5,7 @@ import { Brand } from "@/components/brand";
 import { GroupPredictionCard } from "@/components/group-prediction-card";
 import { PageHero } from "@/components/page-hero";
 import { PredictionsComplete } from "@/components/predictions-complete";
+import { StatusProgressSync } from "@/components/status-progress-sync";
 import { ENTRY_DEADLINE, groupLetters, POST_GROUP_DEADLINE } from "@/lib/constants";
 import { oranjeStageLabels, oranjeStageOrder } from "@/lib/scoring";
 import { createClient } from "@/lib/supabase/server";
@@ -71,6 +72,7 @@ export default async function PredictionsPage({
           slime="/assets/hd-voorspel.webp"
         />
       </header>
+      <StatusProgressSync progress={groupProgress} />
 
       {params.opgeslagen ? (
         <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-4 font-bold text-green-800">

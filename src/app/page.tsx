@@ -141,7 +141,7 @@ export default async function Home({
               <div>
                 <h1 className="text-2xl font-bold leading-tight md:text-4xl">Jouw Slime Score, alles op één plek.</h1>
                 <p className="mt-2 max-w-xl text-base font-medium text-blue-100">
-                  Vul je wedstrijden en knock-outkeuzes in. Aanpassen kan tot de aftrap op{" "}
+                  De voortgang hieronder telt je 72 groepsuitslagen. Knock-outkeuzes en bonusvragen kun je ook invullen tot de deadline op{" "}
                   <strong className="font-bold text-white">{deadlineLabel}</strong> — daarna staat alles vast.
                 </p>
               </div>
@@ -267,7 +267,7 @@ export default async function Home({
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-medium text-[#46566f]">
-          Gratis · 1× invullen, telt in al je groepen · geen wachtwoord · privé
+          Gratis · 1× invullen, telt in al je groepen · e-mail + wachtwoord · privé
         </p>
       </div>
 

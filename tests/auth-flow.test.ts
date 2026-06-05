@@ -118,6 +118,14 @@ test("webmail buttons open outside the SlimeScore tab instead of replacing the r
   assert.match(authRecoveryTemplate, /SlimeScore mag dicht zijn geraakt/);
 });
 
+test("confirmation and recovery screens help Zoho users find codes outside the inbox", () => {
+  assert.match(loginForm, /zohomail\.eu/);
+  assert.match(loginForm, /Open Zoho Mail/);
+  assert.match(loginForm, /Spam, Ongewenst of bij Zoho de map Notification/);
+  assert.match(authEmailTemplate, /Spam, Ongewenst of Notification/);
+  assert.match(authRecoveryTemplate, /Spam, Ongewenst of Notification/);
+});
+
 test("recovery links remain accepted by the auth callback fallback", () => {
   assert.match(finishAuth, /\"recovery\"/);
   assert.match(callbackRoute, /\"recovery\"/);
