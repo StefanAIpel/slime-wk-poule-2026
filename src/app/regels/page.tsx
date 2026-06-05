@@ -118,6 +118,7 @@ export default function RulesPage() {
               <li><strong className="text-[#081634]">Verplaatste wedstrijd:</strong> je voorspelling verhuist mee en blijft in de oorspronkelijke ronde meetellen.</li>
               <li><strong className="text-[#081634]">Afgelast of gestaakt:</strong> zonder officiële eindstand geven we geen wedstrijdpunten; met een officiële eindstand gebruiken we die stand.</li>
               <li><strong className="text-[#081634]">Correcties achteraf:</strong> als een officiële uitslag of toernooifeit wijzigt, herberekenen we de ranglijst.</li>
+              <li><strong className="text-[#081634]">Bonusstatistieken:</strong> penaltyseries tellen mee als penaltyserie, maar shoot-out-goals tellen niet mee voor totaal goals of team met meeste goals.</li>
               <li><strong className="text-[#081634]">Groepsstand-tiebreak:</strong> voor jouw automatische laatste 32 sorteren we op punten, doelsaldo, goals voor, goals tegen en daarna landcode.</li>
               <li><strong className="text-[#081634]">Knock-out:</strong> landen die een ronde halen tellen op basis van de officiële winnaar, dus inclusief eventuele verlenging of penalty&rsquo;s.</li>
             </ul>
