@@ -145,22 +145,33 @@ test("create-pool card uses Mexico green contrast styling", () => {
   assert.match(globalsCss, /\.create-pool-title,[\s\S]*\.create-pool-copy \{\n  color: #ffffff;/);
 });
 
-test("pool banner upload helper appears before file input and uses a narrow 7:1 header strip", () => {
+test("pool banner upload helper appears before file input and uses a 16:9 source crop", () => {
   const uploadBlock = poulesPage.match(/<form action=\{uploadPoolImage\}[\s\S]*?<PendingButton/)?.[0] ?? "";
-  assert.match(uploadBlock, /Wordt automatisch bijgesneden en verkleind naar max 1050 × 150 px \(7:1\)\. Max 6 MB\./);
-  assert.ok(uploadBlock.indexOf("1050 × 150 px") < uploadBlock.indexOf('type="file"'));
-  assert.match(actions, /const POOL_BANNER_WIDTH = 1050/);
-  assert.match(actions, /const POOL_BANNER_HEIGHT = 150/);
+  assert.match(uploadBlock, /Aanbevolen: 1600 × 900 px \(16:9\)\. De kaart gebruikt dezelfde banner en snijdt het midden per scherm passend bij\./);
+  assert.ok(uploadBlock.indexOf("1600 × 900 px") < uploadBlock.indexOf('type="file"'));
+  assert.match(actions, /const POOL_BANNER_WIDTH = 1600/);
+  assert.match(actions, /const POOL_BANNER_HEIGHT = 900/);
   assert.match(actions, /resize\(POOL_BANNER_WIDTH, POOL_BANNER_HEIGHT, \{ fit: "cover"/);
-  assert.doesNotMatch(uploadBlock, /1600 × 900|16:9/);
+  assert.doesNotMatch(uploadBlock, /1050 × 150|7:1/);
+});
+
+test("pool banner uploads use versioned storage paths so replacements show immediately", () => {
+  assert.match(poulesPage, /function poolBannerUrl\(poolId: string, bannerPath\?: string \| null, version\?: string \| null\)/);
+  assert.match(poulesPage, /banner_updated_at/);
+  assert.match(poulesPage, /poolBannerUrl\(pool\.id, pool\.bannerPath, pool\.bannerUpdatedAt\)/);
+  assert.match(actions, /const bannerVersion = Date\.now\(\)\.toString\(36\)/);
+  assert.match(actions, /const bannerPath = `pools\/\$\{poolId\}-\$\{bannerVersion\}\.webp`/);
+  assert.match(actions, /\.upload\(bannerPath, webp,/);
+  assert.match(actions, /\.update\(\{ banner_path: bannerPath, banner_updated_at:/);
 });
 
 test("pool card uses the uploaded banner as the full hero background instead of a separate color strip", () => {
   assert.match(poulesPage, /"--pool-accent": pool\.accentColor/);
-  assert.match(poulesPage, /"--pool-banner-image": `url\("\$\{poolBannerUrl\(pool\.id\)\}"\)`/);
+  assert.match(poulesPage, /"--pool-banner-image": `url\("\$\{poolBannerUrl\(pool\.id, pool\.bannerPath, pool\.bannerUpdatedAt\)\}"\)`/);
   assert.match(poulesPage, /<div className="pool-card-hero text-white" style=\{poolHeroStyle\}>/);
   assert.doesNotMatch(poulesPage, /<PoolBanner/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*border-top: 4px solid var\(--pool-accent/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*aspect-ratio: 16 \/ 9;/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*var\(--pool-banner-image, none\)[\s\S]*var\(--pool-accent/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*background-size: cover, cover, auto;/);
 });

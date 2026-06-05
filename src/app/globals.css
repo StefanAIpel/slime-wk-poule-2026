@@ -3544,7 +3544,9 @@ textarea {
 .pool-card-hero {
   position: relative;
   display: grid;
-  min-height: clamp(156px, 27vw, 230px);
+  aspect-ratio: 16 / 9;
+  min-height: 188px;
+  max-height: 330px;
   grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   align-items: end;

@@ -4,7 +4,7 @@ import { Check, ExternalLink, KeyRound, LogIn, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { kidEmail } from "@/lib/kid";
 import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH, TEAM_NAME_MAX_LENGTH, TEAM_NAME_MIN_LENGTH } from "@/lib/limits";
-import { buildEmailRedirectTo } from "@/lib/supabase/auth-redirect";
+import { buildEmailRedirectTo, safeRedirectTarget } from "@/lib/supabase/auth-redirect";
 import { createClient } from "@/lib/supabase/browser";
 
 type WebmailProvider = {
@@ -149,6 +149,14 @@ export function LoginForm({
     }
   }
 
+  function openScorecard(reason: string) {
+    const redirectUrl = new URL(safeRedirectTarget(next ?? null), window.location.origin);
+    redirectUrl.searchParams.set("login", reason);
+    redirectUrl.searchParams.set("_auth", Date.now().toString(36));
+    const target = `${redirectUrl.pathname}${redirectUrl.search}${redirectUrl.hash}`;
+    window.location.replace(target);
+  }
+
   async function sendPasswordResetMail() {
     setStatus("loading");
     setResetCodeEntry(false);
@@ -280,7 +288,7 @@ export function LoginForm({
 
     setMessage("Wachtwoord opgeslagen. Je scorekaart wordt geopend.");
     window.setTimeout(() => {
-      window.location.href = "/?login=wachtwoord";
+      openScorecard("wachtwoord");
     }, 700);
   }
 
@@ -311,7 +319,7 @@ export function LoginForm({
     rememberCurrentEmail();
     setMessage("Registratie bevestigd. Je scorekaart wordt geopend.");
     window.setTimeout(() => {
-      window.location.href = "/?login=registratie";
+      openScorecard("registratie");
     }, 700);
   }
 
@@ -341,7 +349,7 @@ export function LoginForm({
     rememberCurrentEmail();
     setStatus("success");
     setMessage("Ingelogd. Je scorekaart wordt geopend.");
-    window.location.href = next ?? "/";
+    openScorecard("wachtwoord");
   }
 
   async function onRegisterSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -424,7 +432,9 @@ export function LoginForm({
       setMessage("Die code klopt niet. Vraag je ouder/beheerder om de juiste code.");
       return;
     }
-    window.location.href = next ?? "/";
+    setStatus("success");
+    setMessage("Ingelogd. Je scorekaart wordt geopend.");
+    openScorecard("code");
   }
 
   if (mode === "code") {

@@ -28,8 +28,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-function poolBannerUrl(poolId: string) {
-  return `${supabaseUrl}/storage/v1/object/public/pool-media/pools/${poolId}.webp`;
+function poolBannerUrl(poolId: string, bannerPath?: string | null, version?: string | null) {
+  const objectPath = bannerPath ?? `pools/${poolId}.webp`;
+  const url = `${supabaseUrl}/storage/v1/object/public/pool-media/${objectPath}`;
+  return version ? `${url}?v=${encodeURIComponent(version)}` : url;
 }
 
 const poolErrors: Record<string, string> = {
@@ -59,6 +61,8 @@ type MemberRow = {
     description: string | null;
     badge_emoji: string;
     accent_color: string;
+    banner_path: string | null;
+    banner_updated_at: string | null;
   } | null;
 };
 
@@ -104,7 +108,7 @@ export default async function PoolsPage({
   const [{ data }, { data: messages }] = await Promise.all([
     supabase
       .from("pool_members")
-      .select("pool_id,user_id,role,profiles(nickname,team_name,avatar_key),pools(id,name,code,owner_id,description,badge_emoji,accent_color)")
+      .select("pool_id,user_id,role,profiles(nickname,team_name,avatar_key),pools(id,name,code,owner_id,description,badge_emoji,accent_color,banner_path,banner_updated_at)")
       .order("joined_at"),
     supabase
       .from("pool_messages")
@@ -224,7 +228,7 @@ export default async function PoolsPage({
             const inviteText = `Doe je mee met onze gratis WK 2026-poule "${pool.name}"? 1 keer ~10 minuten invullen en je strijdt het hele WK mee. 👇`;
             const poolHeroStyle = {
               "--pool-accent": pool.accentColor,
-              "--pool-banner-image": `url("${poolBannerUrl(pool.id)}")`,
+              "--pool-banner-image": `url("${poolBannerUrl(pool.id, pool.bannerPath, pool.bannerUpdatedAt)}")`,
             } as CSSProperties;
             return (
               <article key={pool.id} className="panel pool-card overflow-hidden">
@@ -356,7 +360,7 @@ export default async function PoolsPage({
                         WK-poulebanner uploaden
                       </div>
                       <p className="text-xs font-medium text-[#4c5a70]">
-                        Wordt automatisch bijgesneden en verkleind naar max 1050 × 150 px (7:1). Max 6 MB.
+                        Aanbevolen: 1600 × 900 px (16:9). De kaart gebruikt dezelfde banner en snijdt het midden per scherm passend bij.
                       </p>
                       <input className="field" type="file" name="image" accept="image/*" required />
                       <PendingButton className="button-secondary w-fit" pendingText="Uploaden…">
@@ -456,6 +460,8 @@ function groupMembers(rows: MemberRow[]) {
       description: string | null;
       badgeEmoji: string;
       accentColor: string;
+      bannerPath: string | null;
+      bannerUpdatedAt: string | null;
       members: MemberRow[];
     }
   >();
@@ -469,6 +475,8 @@ function groupMembers(rows: MemberRow[]) {
       description: row.pools.description,
       badgeEmoji: row.pools.badge_emoji,
       accentColor: row.pools.accent_color,
+      bannerPath: row.pools.banner_path,
+      bannerUpdatedAt: row.pools.banner_updated_at,
       members: [],
     };
     existing.members.push(row);

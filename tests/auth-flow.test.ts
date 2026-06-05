@@ -20,6 +20,14 @@ test("FrontPage has email-password login as the primary returning-player flow", 
   assert.match(loginForm, /mail en wachtwoord/);
 });
 
+test("successful login always leaves the same homepage URL to avoid mobile auth hangs", () => {
+  assert.match(loginForm, /function openScorecard\(reason: string\)/);
+  assert.match(loginForm, /redirectUrl\.searchParams\.set\(\"login\", reason\)/);
+  assert.match(loginForm, /redirectUrl\.searchParams\.set\(\"_auth\", Date\.now\(\)\.toString\(36\)\)/);
+  assert.match(loginForm, /window\.location\.replace\(target\)/);
+  assert.doesNotMatch(loginForm, /window\.location\.href = next \?\? \"\/\"/);
+});
+
 test("registration page is honest that account details are chosen before email confirmation", () => {
   assert.doesNotMatch(aanmeldenPage, /geen wachtwoord nodig|zonder wachtwoordgedoe/i);
   assert.match(loginForm, /naam, teamnaam en wachtwoord/i);

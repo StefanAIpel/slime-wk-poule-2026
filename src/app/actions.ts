@@ -470,8 +470,8 @@ export async function deletePoolMessage(formData: FormData) {
 }
 
 const POOL_MEDIA_BUCKET = "pool-media";
-const POOL_BANNER_WIDTH = 1050;
-const POOL_BANNER_HEIGHT = 150;
+const POOL_BANNER_WIDTH = 1600;
+const POOL_BANNER_HEIGHT = 900;
 
 export async function uploadPoolImage(formData: FormData) {
   const { user } = await requireUser();
@@ -492,7 +492,10 @@ export async function uploadPoolImage(formData: FormData) {
     .maybeSingle();
   if (!manager) redirect("/poules?fout=rechten");
 
-  // Auto-conversie: crop als smalle poule-headerstrip (7:1) en comprimeer naar WebP.
+  const { data: poolBefore } = await admin.from("pools").select("banner_path").eq("id", poolId).maybeSingle();
+  const oldBannerPath = typeof poolBefore?.banner_path === "string" ? poolBefore.banner_path : null;
+
+  // Auto-conversie: bewaar een 16:9 bronbeeld voor de responsieve poule-hero.
   const sharp = (await import("sharp")).default;
   const input = Buffer.from(await file.arrayBuffer());
   const webp = await sharp(input)
@@ -502,10 +505,23 @@ export async function uploadPoolImage(formData: FormData) {
     .toBuffer();
 
   await admin.storage.createBucket(POOL_MEDIA_BUCKET, { public: true }).catch(() => null);
+  const bannerVersion = Date.now().toString(36);
+  const bannerPath = `pools/${poolId}-${bannerVersion}.webp`;
   const { error } = await admin.storage
     .from(POOL_MEDIA_BUCKET)
-    .upload(`pools/${poolId}.webp`, webp, { contentType: "image/webp", upsert: true });
+    .upload(bannerPath, webp, { contentType: "image/webp", cacheControl: "31536000", upsert: false });
   if (error) throw new Error(error.message);
+
+  const bannerUpdatedAt = new Date().toISOString();
+  const { error: updateError } = await admin
+    .from("pools")
+    .update({ banner_path: bannerPath, banner_updated_at: bannerUpdatedAt })
+    .eq("id", poolId);
+  if (updateError) throw new Error(updateError.message);
+
+  if (oldBannerPath && oldBannerPath !== bannerPath) {
+    await admin.storage.from(POOL_MEDIA_BUCKET).remove([oldBannerPath]).catch(() => null);
+  }
 
   revalidatePath("/poules");
   redirect("/poules?bijgewerkt=1");
