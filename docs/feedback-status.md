@@ -111,7 +111,7 @@ Prioriteit: **P1** launch-blocker · **P2** belangrijk · **P3** later/nice-to-h
 | 68 | Safari prefix + iOS safe-area | P2 | ✅ | |
 | 69 | WhatsApp/in-app-browser scroll + nudge | P1 | ✅ | nudge + analyse (zie hieronder) |
 | 70 | API-koppeling deepdive | P2 | ✅ | doc |
-| 71 | Automatische uitslagen-API | P2 | ⬜ | actielijst (API-Football + cron) |
+| 71 | Automatische uitslagen-API | P2 | 🟡 | **Gebouwd (slapend):** API-Football-koppeling — migratie `external_id`, `src/lib/apifootball.ts` (+tests), backfill- & sync-script, GitHub Action (cron 5 min). **Extern (jij):** Pro-key + repo-secrets + `npm run sync:backfill`. Zie api-en-techniek.md §1 |
 | 72 | Live scores in schema | P3 | ⬜ | hangt aan #71 |
 | 73 | Push-notificaties wedstrijden | P3 | ⬜ | vereist VAPID+cron; **.ics-alternatief** aangeboden |
 | 74 | Sanity 1000 users/dag | P2 | ✅ | doc; **e-mailplan** is het schaalpunt |

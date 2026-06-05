@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test tests/*.test.ts"
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "sync:results": "node --experimental-strip-types scripts/sync-apifootball.ts",
+    "sync:backfill": "node --experimental-strip-types scripts/backfill-apifootball.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
