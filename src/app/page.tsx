@@ -302,8 +302,8 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             <span>Mexico</span>
           </div>
           <div className="hero-home-title-block">
-            <h1 className="mt-4 text-[1.5rem] font-bold leading-[1.12] text-white sm:whitespace-nowrap sm:text-[1.8rem] md:text-[2rem]">
-              Gratis WK voetbal 2026 poule
+            <h1 className="mt-4 text-[1.6rem] font-bold leading-[1.12] text-white sm:whitespace-nowrap sm:text-[2rem] md:text-[2.4rem]">
+              Gratis WK Poule
             </h1>
             <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-blue-50 sm:text-[0.95rem] md:text-base">
               In tien minuten vul je voorspellingen voor het hele WK. Speel met en tegen je vrienden en familie en maak
