@@ -1216,6 +1216,22 @@ textarea {
   color: #fff;
 }
 
+.install-card-title {
+  color: #081634;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.install-card-copy {
+  margin-top: 3px;
+  color: #48617f;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
 .install-card-close {
   display: inline-grid;
   flex: 0 0 auto;

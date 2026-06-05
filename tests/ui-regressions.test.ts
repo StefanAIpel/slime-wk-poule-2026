@@ -12,6 +12,8 @@ const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url),
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
+const manifest = await readFile(new URL("../src/app/manifest.ts", import.meta.url), "utf8");
+const constants = await readFile(new URL("../src/lib/constants.ts", import.meta.url), "utf8");
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
 const quickMenu = await readFile(new URL("../src/components/quick-menu.tsx", import.meta.url), "utf8");
 const statusBar = await readFile(new URL("../src/components/status-bar.tsx", import.meta.url), "utf8");
@@ -82,7 +84,8 @@ test("public login panel is compact on mobile", () => {
 test("public FrontPage shows the PWA install instructions card near login", () => {
   assert.match(homePage, /import \{ InstallAppCard \} from "@\/components\/install-app-card"/);
   assert.match(homePage, /<LoginForm surface=\"inline\" \/>[\s\S]*<InstallAppCard \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\}/);
-  assert.match(installAppCard, /Zet Slime Score op je beginscherm/);
+  assert.match(installAppCard, /Voeg toe als app/);
+  assert.match(globalsCss, /\.install-card-title \{[\s\S]*font-size: 0\.95rem;[\s\S]*white-space: nowrap;/);
   assert.match(installAppCard, /Zo installeer je|Installeren/);
   assert.match(installAppCard, /iPhone \(Safari\)/);
   assert.match(installAppCard, /Android \(Chrome\)/);
@@ -118,7 +121,14 @@ test("account page keeps name/team fixed but lets players change avatar and pass
 });
 
 test("shared SlimeScore links use the app icon instead of the wide banner", () => {
+  assert.match(constants, /SITE_NAME = "SlimeScore"/);
+  assert.match(manifest, /name: "SlimeScore"/);
+  assert.match(manifest, /short_name: "SlimeScore"/);
+  assert.match(manifest, /src: "\/icons\/slimescore-app-icon-v3-512\.png"/);
+  assert.match(manifest, /purpose: "any"/);
+  assert.match(manifest, /purpose: "maskable"/);
   assert.match(layout, /const ogImage = appIcon/);
+  assert.match(layout, /slimescore-app-icon-v3-512\.png/);
   assert.match(layout, /width: 512, height: 512/);
   assert.doesNotMatch(layout, /og-slimescore-wk2026-v2\.png/);
 });
