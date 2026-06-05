@@ -168,7 +168,7 @@ test("share panel keeps the Deel SlimeScore label before icons and stacks it abo
   assert.match(homePage, /<p className=\"share-panel-title\">Deel SlimeScore<\/p>[\s\S]*<ShareRow/);
   assert.match(globalsCss, /\.share-panel-strip \{[\s\S]*display: grid;[\s\S]*justify-items: center;/);
   assert.match(globalsCss, /\.share-panel-strip \.share-actions \{[\s\S]*justify-content: center;/);
-  assert.match(globalsCss, /@media \(min-width: 640px\) \{[\s\S]*\.share-panel-strip \{[\s\S]*grid-template-columns: auto minmax\(0, 1fr\);/);
+  assert.match(globalsCss, /@media \(min-width: 640px\) \{[\s\S]*\.share-panel-strip \{[\s\S]*grid-template-columns: auto auto;[\s\S]*justify-content: start;/);
 });
 
 test("prediction saves sync the global status bar progress without requiring reload", () => {
@@ -183,8 +183,11 @@ test("knockout predictions flow from last 16 to later rounds without scroll boxe
   assert.match(predictionsPage, /Typ je verwachte uitslag\. Je kunt tussentijds opslaan en later verdergaan/);
   assert.match(knockoutPredictionPicker, /round16: 16/);
   assert.match(knockoutPredictionPicker, /quarterfinal: 8/);
-  assert.match(knockoutPredictionPicker, /Kies precies 16 landen\. Meer kan niet; minder geeft een waarschuwing\./);
-  assert.match(knockoutPredictionPicker, /round16: teams/);
+  assert.match(knockoutPredictionPicker, /Kies precies 16 landen uit jouw berekende laatste 32\./);
+  assert.match(knockoutPredictionPicker, /round16: round16Teams/);
+  // De achtste-finale pool is de berekende laatste 32 uit de groepsvoorspellingen.
+  assert.match(predictionsPage, /calculateRound32/);
+  assert.match(predictionsPage, /round16Pool=\{qualifiedRound16\}/);
   assert.match(knockoutPredictionPicker, /quarterfinal: teams\.filter\(\(team\) => state\.round16\.includes\(team\.code\)\)/);
   assert.match(knockoutPredictionPicker, /semifinal: teams\.filter\(\(team\) => state\.quarterfinal\.includes\(team\.code\)\)/);
   assert.match(knockoutPredictionPicker, /finalists: teams\.filter\(\(team\) => state\.semifinal\.includes\(team\.code\)\)/);
@@ -283,7 +286,7 @@ test("match rows always reserve right-side API score boxes with fixed home-separ
   assert.match(scheduleExplorer, /<ResultBoxes match=\{match\} \/>/);
   assert.match(globalsCss, /grid-template-columns: var\(--match-home-col, minmax\(118px, 160px\)\) 30px minmax\(0, 1fr\) 62px;/);
   assert.match(globalsCss, /\.schedule-team-grid-knockout \{[\s\S]*--match-home-col: minmax\(160px, 1fr\);/);
-  assert.match(globalsCss, /\.schedule-team-cell-home \{[\s\S]*justify-content: flex-end;[\s\S]*text-align: right;/);
+  assert.match(globalsCss, /\.schedule-team-cell-home \{[\s\S]*justify-content: flex-start;[\s\S]*text-align: left;/);
   assert.match(globalsCss, /\.schedule-team-cell-away \{[\s\S]*justify-content: flex-start;/);
   assert.doesNotMatch(globalsCss, /grid-template-columns: minmax\(0, auto\) auto minmax\(0, 1fr\) (?:58|70)px;/);
   assert.match(globalsCss, /\.score-box \{/);

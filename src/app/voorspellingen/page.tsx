@@ -8,6 +8,7 @@ import { PageHero } from "@/components/page-hero";
 import { PredictionsComplete } from "@/components/predictions-complete";
 import { StatusProgressSync } from "@/components/status-progress-sync";
 import { ENTRY_DEADLINE, groupLetters, POST_GROUP_DEADLINE } from "@/lib/constants";
+import { calculateRound32 } from "@/lib/group-standings";
 import { oranjeStageLabels, oranjeStageOrder } from "@/lib/scoring";
 import { createClient } from "@/lib/supabase/server";
 import type { MatchWithTeams, Team } from "@/lib/types";
@@ -62,6 +63,22 @@ export default async function PredictionsPage({
     groupDone.set(group, groupMatches.length > 0 && groupMatches.every((match) => isMatchFilled(match.id)));
   }
   const typedTeams = (teams ?? []) as Team[];
+  // Laatste 32 uit de opgeslagen groepsvoorspellingen — dat is de pool voor de achtste finale.
+  const scoreLookup = new Map<number, { home: number; away: number }>();
+  for (const prediction of predictions ?? []) {
+    if (prediction.home_score !== null && prediction.away_score !== null) {
+      scoreLookup.set(prediction.match_id, { home: prediction.home_score, away: prediction.away_score });
+    }
+  }
+  const qualifiedRound16 = calculateRound32(
+    (matches ?? []).map((match) => ({
+      id: match.id,
+      group_letter: match.group_letter,
+      home_code: match.home_code,
+      away_code: match.away_code,
+    })),
+    scoreLookup,
+  );
   const initialBracketSelections = {
     round16: Array.from(bracketByStage.get("round16") ?? []),
     quarterfinal: Array.from(bracketByStage.get("quarterfinal") ?? []),
@@ -167,6 +184,7 @@ export default async function PredictionsPage({
             <KnockoutPredictionPicker
               teams={typedTeams}
               initialSelections={initialBracketSelections}
+              round16Pool={qualifiedRound16}
               mainDisabled={!mainOpen}
               lateDisabled={!lateOpen}
             />

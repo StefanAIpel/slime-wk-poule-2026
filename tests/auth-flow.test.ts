@@ -22,9 +22,11 @@ test("FrontPage has email-password login as the primary returning-player flow", 
 
 test("registration page is honest that account details are chosen before email confirmation", () => {
   assert.doesNotMatch(aanmeldenPage, /geen wachtwoord nodig|zonder wachtwoordgedoe/i);
-  assert.match(aanmeldenPage, /naam, teamnaam en wachtwoord/i);
-  assert.match(aanmeldenPage, /registratiemail/i);
-  assert.match(aanmeldenPage, /initialMode=\"register\"/);
+  assert.match(loginForm, /naam, teamnaam en wachtwoord/i);
+  assert.match(loginForm, /Check daarna je mailbox om je account te bevestigen/);
+  // De "Registratiemail"-banner is weg; de pagina opent standaard op de inlog-tab.
+  assert.doesNotMatch(aanmeldenPage, /registratiemail/i);
+  assert.match(aanmeldenPage, /initialMode=\"login\"/);
 });
 
 test("registration email template is SlimeScore-branded and supports code-first confirmation on every device", () => {

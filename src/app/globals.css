@@ -418,7 +418,7 @@ textarea {
 .auth-flow-card {
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.96);
-  padding: 20px;
+  padding: 20px 20px 20px 26px;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
 }
 
@@ -450,14 +450,16 @@ textarea {
 
 @media (min-width: 640px) {
   .share-panel-strip {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto auto;
+    justify-content: start;
     align-items: center;
+    column-gap: 14px;
     justify-items: start;
     text-align: left;
   }
 
   .share-panel-strip .share-row {
-    justify-self: end;
+    justify-self: start;
   }
 }
 
@@ -1785,8 +1787,8 @@ textarea {
 }
 
 .schedule-team-cell-home {
-  justify-content: flex-end;
-  text-align: right;
+  justify-content: flex-start;
+  text-align: left;
 }
 
 .upcoming-team-grid .schedule-team-cell-home {
