@@ -16,8 +16,9 @@ type ShareTarget = {
   icon: ComponentType<GlyphProps>;
   className: string;
 } & (
-  | { appHref: string; webHref: string; href?: never }
-  | { href: string; appHref?: never; webHref?: never }
+  | { appHref: string; webHref: string; href?: never; action?: never }
+  | { href: string; appHref?: never; webHref?: never; action?: never }
+  | { action: ShareChannel; appHref?: never; webHref?: never; href?: never }
 );
 
 /** Merk-glyph als inline SVG (lucide-react bevat geen merklogo's meer). */
@@ -145,7 +146,6 @@ export function ShareRow({
   const encodedWhatsApp = encodeURIComponent(withUrl(messageFor("whatsapp"), url));
   const encodedFacebookQuote = encodeURIComponent(messageFor("facebook"));
   const encodedTelegramText = encodeURIComponent(messageFor("telegram"));
-  const encodedSignal = encodeURIComponent(withUrl(messageFor("signal"), url));
   const encodedMailBody = encodeURIComponent(withUrl(messageFor("mail"), url));
   const whatsappWebHref = `https://wa.me/?text=${encodedWhatsApp}`;
   const facebookWebHref = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedFacebookQuote}`;
@@ -179,7 +179,7 @@ export function ShareRow({
     {
       key: "signal",
       label: "Signal",
-      href: `sgnl://send?text=${encodedSignal}`,
+      action: "signal",
       icon: SignalGlyph,
       className: "share-link share-link-signal",
     },
@@ -234,6 +234,21 @@ export function ShareRow({
                 <Icon aria-hidden="true" className="size-5" />
                 <span className={compact ? "sr-only" : undefined}>{target.label}</span>
               </AppFirstShareLink>
+            );
+          }
+          if (target.action) {
+            return (
+              <button
+                key={target.key}
+                type="button"
+                className={target.className}
+                onClick={() => onNativeShare(target.action)}
+                aria-label={label}
+                title={label}
+              >
+                <Icon aria-hidden="true" className="size-5" />
+                <span className={compact ? "sr-only" : undefined}>{target.label}</span>
+              </button>
             );
           }
           return (
