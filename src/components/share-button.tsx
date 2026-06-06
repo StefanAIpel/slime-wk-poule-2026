@@ -259,20 +259,10 @@ export function ShareRow({
           <InstagramGlyph aria-hidden="true" className="size-5" />
           <span className={compact ? "sr-only" : undefined}>Instagram</span>
         </button>
-        <button
-          type="button"
-          className="share-link share-link-more"
-          onClick={() => onNativeShare("native")}
-          aria-label="Meer delen"
-          title="Meer delen"
-        >
-          {copied ? <Check aria-hidden="true" className="size-5" /> : <Share2 aria-hidden="true" className="size-5" />}
-          <span className={compact ? "sr-only" : undefined}>{copied ? "Gekopieerd" : "Meer"}</span>
-        </button>
       </div>
       {compact ? null : (
         <p aria-live="polite" className="text-xs font-medium text-[#46566f]">
-          {copied ? "Link gekopieerd." : "Deel via WhatsApp, Facebook, Telegram, Signal, mail, Instagram of je telefoon."}
+          {copied ? "Link gekopieerd." : "Deel via WhatsApp, Facebook, Telegram, Signal, mail of Instagram/native share."}
         </p>
       )}
     </div>

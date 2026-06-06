@@ -277,11 +277,15 @@ test("dashboard copy matches the 72-group-result progress metric and password fl
   assert.doesNotMatch(homePage, /geen wachtwoord/);
 });
 
-test("share panel keeps the Deel SlimeScore label before icons and stacks it above on mobile", () => {
+test("share panel keeps the Deel SlimeScore label above a single icon row on every breakpoint", () => {
+  assert.match(homePage, /<div className=\"create-pool-share share-panel-strip\" aria-label=\"SlimeScore delen\">[\s\S]*<ShareRow/);
+  assert.match(homePage, /<div className=\"dark-panel poule-share-panel[\s\S]*<div className=\"share-panel-strip\">[\s\S]*<ShareRow/);
   assert.match(homePage, /<p className=\"share-panel-title\">Deel SlimeScore<\/p>[\s\S]*<ShareRow/);
   assert.match(globalsCss, /\.share-panel-strip \{[\s\S]*display: grid;[\s\S]*justify-items: center;/);
   assert.match(globalsCss, /\.share-panel-strip \.share-actions \{[\s\S]*justify-content: center;/);
-  assert.match(globalsCss, /@media \(min-width: 640px\) \{[\s\S]*\.share-panel-strip \{[\s\S]*grid-template-columns: auto auto;[\s\S]*justify-content: start;/);
+  assert.match(globalsCss, /\.share-row-compact \.share-actions \{[\s\S]*flex-wrap: nowrap;/);
+  assert.doesNotMatch(shareButton, /className=\"share-link share-link-more\"/);
+  assert.match(globalsCss, /@media \(min-width: 640px\) \{[\s\S]*\.share-panel-strip \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);[\s\S]*justify-content: center;/);
 });
 
 test("prediction saves sync the global status bar progress without requiring reload", () => {
@@ -338,27 +342,26 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
 
 test("mobile poule page prioritizes ranking and keeps share buttons visible next to the pool name", () => {
   assert.match(poulesPage, /<div className=\"pool-card-title-row\">[\s\S]*<PoolQuickShare/);
-  assert.match(poulesPage, /isManager=\{isManager\}/);
+  assert.doesNotMatch(poulesPage, /isManager=\{isManager\}/);
   assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} \/>[\s\S]*Prikbord[\s\S]*Deelopties &amp; QR[\s\S]*WK-poule-instellingen &amp; opmaak \(beheer\)/);
   assert.match(poolMembers, /Ranglijst &amp; deelnemers/);
   assert.match(poolMembers, /pool-members-count/);
   assert.match(poolQuickShare, /<div className=\"pool-quick-share\" aria-label=\"Poule delen\">/);
-  assert.match(poolQuickShare, /pool-share-inline-label/);
   assert.match(poolQuickShare, /label="Deel via WhatsApp"/);
-  assert.match(poolQuickShare, /aria-label="Deel via Signal"/);
-  assert.match(poolQuickShare, /Kopieer link/);
-  assert.match(poolQuickShare, /aria-label=\"Deel via mail\"/);
-  assert.match(poolQuickShare, /aria-label=\"Deel QR-code\"/);
-  assert.match(poolQuickShare, /isManager \? \(/);
-  assert.match(poolQuickShare, /label=\"Deel via Facebook\"/);
-  assert.match(poolQuickShare, /Deel via Instagram of native deelmenu/);
+  assert.match(poolQuickShare, /label="Deel via Facebook"/);
   assert.match(poolQuickShare, /label=\"Deel via Telegram\"/);
+  assert.match(poolQuickShare, /aria-label="Deel via Signal"/);
+  assert.match(poolQuickShare, /aria-label=\"Deel via mail\"/);
+  assert.match(poolQuickShare, /Deel via Instagram\/native share/);
+  assert.doesNotMatch(poolQuickShare, /Kopieer link|Deel via QR-code|aria-label=\"Deel QR-code\"/);
+  assert.doesNotMatch(poolQuickShare, /isManager \? \(/);
   assert.match(poolQuickShare, /whatsapp:\/\/send\?text=\$\{encodedMessage\}/);
   assert.match(poolQuickShare, /https:\/\/wa\.me\/\?text=\$\{encodedMessage\}/);
   assert.match(poolQuickShare, /sgnl:\/\/send\?text=\$\{encodedSignalMessage\}/);
-  assert.match(poolQuickShare, /async function nativeShare\(shareText = inviteText\)/);
-  assert.match(poolQuickShare, /await nativeShare\(groupMessageText\)/);
-  assert.match(poolQuickShare, /navigator\.share\(\{ title: `Doe mee met \$\{poolName\}`, text: groupMessageText, url: joinUrl \}\)/);
+  assert.match(poolQuickShare, /fb:\/\/facewebmodal\/f\?href=\$\{encodeURIComponent\(facebookWebHref\)\}/);
+  assert.match(poolQuickShare, /tg:\/\/msg_url\?url=\$\{encodedUrl\}&text=\$\{encodedInvite\}/);
+  assert.match(poolQuickShare, /async function nativeShare\(shareText = groupMessageText\)/);
+  assert.match(poolQuickShare, /navigator\.share\(\{ title: `Doe mee met \$\{poolName\}`, text: shareText, url: joinUrl \}\)/);
   assert.match(shareButton, /type ShareChannel = "whatsapp" \| "facebook" \| "telegram" \| "signal" \| "mail" \| "instagram" \| "native"/);
   assert.match(shareButton, /whatsapp:\/\/send\?text=\$\{encodedWhatsApp\}/);
   assert.match(shareButton, /tg:\/\/msg_url\?url=\$\{encodedUrl\}&text=\$\{encodedTelegramText\}/);
@@ -370,6 +373,7 @@ test("mobile poule page prioritizes ranking and keeps share buttons visible next
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);/);
   assert.match(globalsCss, /\.pool-card-title-row \{[\s\S]*display: flex;[\s\S]*flex-wrap: wrap;[\s\S]*gap: 8px;/);
   assert.match(globalsCss, /\.pool-quick-share \{[\s\S]*display: inline-flex;[\s\S]*align-items: center;/);
+  assert.match(globalsCss, /\.pool-share-actions \{[\s\S]*flex-wrap: nowrap;/);
   assert.match(globalsCss, /\.pool-quick-share-button \{[\s\S]*width: 31px;[\s\S]*height: 31px;/);
   assert.doesNotMatch(poolQuickShare, /<details className=\"pool-quick-share\">/);
   assert.doesNotMatch(globalsCss, /\.pool-share-menu \{[\s\S]*position: absolute;/);

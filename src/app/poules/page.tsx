@@ -243,11 +243,9 @@ Nog geen account? Maak eerst gratis een SlimeScore-account aan; daarna kom je vi
                       <h2 className="pool-card-title"><span aria-hidden="true">{pool.badgeEmoji}</span> {pool.name}</h2>
                       <PoolQuickShare
                         joinUrl={joinAssets.joinUrl}
-                        qrDataUrl={joinAssets.qrDataUrl}
                         poolName={pool.name}
                         poolCode={pool.code}
                         inviteText={inviteText}
-                        isManager={isManager}
                       />
                     </div>
                     <p className="pool-code-line">
