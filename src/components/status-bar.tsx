@@ -4,8 +4,9 @@ import { ArrowRight, CalendarClock, ListChecks, Trophy } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useActiveLocale } from "@/hooks/use-active-locale";
 import { ENTRY_DEADLINE_ISO } from "@/lib/constants";
-import { localeFromPathname, type Locale } from "@/lib/i18n";
+import { localizedHref, type Locale } from "@/lib/i18n";
 
 type Me = { loggedIn: boolean; nickname?: string | null; rank?: number | null; progress?: number };
 
@@ -24,10 +25,10 @@ function countdown(now: number, locale: Locale) {
 
 export function StatusBar() {
   const pathname = usePathname();
-  const locale = localeFromPathname(pathname || "/");
+  const locale = useActiveLocale(pathname || "/");
   const [me, setMe] = useState<Me | null>(null);
   const [left, setLeft] = useState<string | null>(() => countdown(Date.now(), locale));
-  const predictHref = locale === "en" && !me?.loggedIn ? "/en#login" : "/voorspellingen";
+  const predictHref = locale === "en" && !me?.loggedIn ? "/en#login" : localizedHref("/voorspellingen", locale);
 
   useEffect(() => {
     let mounted = true;
@@ -81,17 +82,17 @@ export function StatusBar() {
         </Link>
         {me?.loggedIn ? (
           <span className="status-me">
-            <Link href="/account" className="status-chip" aria-label={locale === "en" ? "My account" : "Mijn account"}>
+            <Link href={localizedHref("/account", locale)} className="status-chip" aria-label={locale === "en" ? "My account" : "Mijn account"}>
               <Trophy aria-hidden="true" className="size-4" />
               {me.nickname ?? (locale === "en" ? "Player" : "Speler")}{typeof me.rank === "number" ? <> · #{me.rank}</> : null}
             </Link>
-            <Link href="/voorspellingen" className="status-chip status-chip-accent status-chip-progress">
+            <Link href={localizedHref("/voorspellingen", locale)} className="status-chip status-chip-accent status-chip-progress">
               <ListChecks aria-hidden="true" className="size-4" />
               {me.progress ?? 0}% {locale === "en" ? "completed" : "ingevuld"}
             </Link>
           </span>
         ) : me && !me.loggedIn ? (
-          <Link href={locale === "en" ? "/en#login" : "/aanmelden"} className="status-cta">
+          <Link href={locale === "en" ? "/en#login" : localizedHref("/aanmelden", locale)} className="status-cta">
             {locale === "en" ? "Join for free" : "Gratis meedoen"}
             <ArrowRight aria-hidden="true" className="size-4" />
           </Link>

@@ -6,7 +6,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { localeFromPathname } from "@/lib/i18n";
+import { useActiveLocale } from "@/hooks/use-active-locale";
+import { localizedHref } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/browser";
 
 const publicLinks = [
@@ -27,7 +28,7 @@ export function QuickMenu() {
   const [open, setOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const pathname = usePathname();
-  const locale = localeFromPathname(pathname || "/");
+  const locale = useActiveLocale(pathname || "/");
 
   useEffect(() => {
     const handleOpenMenu = () => setOpen(true);
@@ -91,7 +92,7 @@ export function QuickMenu() {
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <Image
-                  src="/icons/slimescore-app-icon-v2-192.png"
+                  src="/icons/slimescore-app-icon-v4-192.png"
                   alt=""
                   width={44}
                   height={44}
@@ -99,7 +100,7 @@ export function QuickMenu() {
                 />
                 <div>
                   <div className="text-xl font-bold text-[#081634]">{locale === "en" ? "Menu" : "Menu"}</div>
-                  <div className="text-sm font-bold text-[#128f47]">{locale === "en" ? "Slime Score World Cup 2026" : "Slime Score WK 2026"}</div>
+                  <div className="text-sm font-bold text-[#128f47]">{locale === "en" ? "Slime Score WC 2026" : "Slime Score WK 2026"}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -114,25 +115,25 @@ export function QuickMenu() {
               {links.map((link) => {
                 const Icon = link.icon;
                 return (
-                  <Link key={link.href} href={link.href} className="quick-menu-link" onClick={() => setOpen(false)}>
+                  <Link key={link.href} href={localizedHref(link.href, locale)} className="quick-menu-link" onClick={() => setOpen(false)}>
                     <Icon aria-hidden="true" className="size-5" />
                     <span>{locale === "en" ? link.labelEn : link.label}</span>
                   </Link>
                 );
               })}
               {!loggedIn ? (
-                <Link className="quick-menu-link" href="/aanmelden" onClick={() => setOpen(false)}>
+                <Link className="quick-menu-link" href={localizedHref("/aanmelden", locale)} onClick={() => setOpen(false)}>
                   <Users aria-hidden="true" className="size-5" />
                   <span>{locale === "en" ? "Sign in" : "Log in"}</span>
                 </Link>
               ) : null}
-              <Link className="quick-menu-link slime-link" href="/games?game=soccer" onClick={() => setOpen(false)}>
+              <Link className="quick-menu-link slime-link" href={localizedHref("/games?game=soccer", locale)} onClick={() => setOpen(false)}>
                 <Image src="/slime-soccer-icon.webp" alt="" width={28} height={28} className="quick-menu-link-image" />
                 <span>Slime Soccer</span>
               </Link>
               {loggedIn ? (
                 <div className="quick-menu-account-actions" aria-label={locale === "en" ? "Account actions" : "Account acties"}>
-                  <Link href={accountLink.href} className="quick-menu-link quick-menu-link-compact" onClick={() => setOpen(false)}>
+                  <Link href={localizedHref(accountLink.href, locale)} className="quick-menu-link quick-menu-link-compact" onClick={() => setOpen(false)}>
                     <AccountIcon aria-hidden="true" className="size-4" />
                     <span>{locale === "en" ? accountLink.labelEn : accountLink.label}</span>
                   </Link>
