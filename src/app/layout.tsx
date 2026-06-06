@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { cookies } from "next/headers";
 import { AuthLinkBridge } from "@/components/auth-link-bridge";
 import { InAppHint } from "@/components/in-app-hint";
 import { PwaRegister } from "@/components/pwa-register";
@@ -8,6 +9,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StatusBar } from "@/components/status-bar";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { LOCALE_COOKIE, isSupportedLocale } from "@/lib/i18n";
 import "./globals.css";
 
 // Plus Jakarta Sans: vriendelijk maar volwassener en beter leesbaar dan Poppins.
@@ -107,9 +109,13 @@ const structuredData = [
   },
 ];
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
+  const htmlLang = isSupportedLocale(cookieLocale) ? cookieLocale : "nl";
+
   return (
-    <html lang="nl" className={appFont.variable}>
+    <html lang={htmlLang} className={appFont.variable}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <div className="stadium-bg" />
@@ -120,7 +126,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <QuickMenu />
         <InAppHint />
         {children}
-        <SiteFooter />
+        <SiteFooter locale={htmlLang} />
       </body>
     </html>
   );

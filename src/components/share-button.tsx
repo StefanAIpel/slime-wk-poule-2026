@@ -4,6 +4,7 @@ import { Check, Copy, Mail, Send, Share2 } from "lucide-react";
 import { useState, type ComponentType } from "react";
 
 import { AppFirstShareLink } from "@/components/app-first-share-link";
+import type { Locale } from "@/lib/i18n";
 
 type Variant = "primary" | "secondary";
 
@@ -86,12 +87,14 @@ export function ShareButton({
   title = "Slime Score WK 2026",
   label = "Delen",
   variant = "primary",
+  locale = "nl",
 }: {
   url: string;
   text: string;
   title?: string;
   label?: string;
   variant?: Variant;
+  locale?: Locale;
 }) {
   const [copied, setCopied] = useState(false);
   const buttonClass = variant === "primary" ? "button-primary" : "button-secondary";
@@ -118,7 +121,7 @@ export function ShareButton({
   return (
     <button type="button" className={buttonClass} onClick={onShare}>
       {copied ? <Check aria-hidden="true" className="size-5" /> : <Share2 aria-hidden="true" className="size-5" />}
-      {copied ? "Link gekopieerd" : label}
+      {copied ? (locale === "en" ? "Link copied" : "Link gekopieerd") : label}
     </button>
   );
 }
@@ -131,6 +134,7 @@ export function ShareRow({
   compact = false,
   onDark = false,
   messages,
+  locale = "nl",
 }: {
   url: string;
   text: string;
@@ -138,9 +142,15 @@ export function ShareRow({
   compact?: boolean;
   onDark?: boolean;
   messages?: ShareMessages;
+  locale?: Locale;
 }) {
   const [copied, setCopied] = useState(false);
   const messageFor = (channel: ShareChannel) => messages?.[channel] ?? text;
+  const sharePrefix = locale === "en" ? "Share via" : "Delen via";
+  const copiedText = locale === "en" ? "Copied." : "Link gekopieerd.";
+  const helperText = locale === "en"
+    ? "Share via WhatsApp, Facebook, Telegram, Signal, email or Instagram/native share."
+    : "Deel via WhatsApp, Facebook, Telegram, Signal, mail of Instagram/native share.";
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
   const encodedWhatsApp = encodeURIComponent(withUrl(messageFor("whatsapp"), url));
@@ -185,7 +195,7 @@ export function ShareRow({
     },
     {
       key: "mail",
-      label: "Mail",
+      label: locale === "en" ? "Email" : "Mail",
       href: `mailto:?subject=${encodedTitle}&body=${encodedMailBody}`,
       icon: Mail,
       className: "share-link share-link-mail",
@@ -220,7 +230,7 @@ export function ShareRow({
       <div className="share-actions">
         {targets.map((target) => {
           const Icon = target.icon;
-          const label = `Delen via ${target.label}`;
+          const label = `${sharePrefix} ${target.label}`;
           if (target.appHref && target.webHref) {
             return (
               <AppFirstShareLink
@@ -268,8 +278,8 @@ export function ShareRow({
           type="button"
           className="share-link share-link-instagram"
           onClick={() => onNativeShare("instagram")}
-          aria-label="Delen via Instagram"
-          title="Delen via Instagram"
+          aria-label={`${sharePrefix} Instagram`}
+          title={`${sharePrefix} Instagram`}
         >
           <InstagramGlyph aria-hidden="true" className="size-5" />
           <span className={compact ? "sr-only" : undefined}>Instagram</span>
@@ -277,7 +287,7 @@ export function ShareRow({
       </div>
       {compact ? null : (
         <p aria-live="polite" className="text-xs font-medium text-[#46566f]">
-          {copied ? "Link gekopieerd." : "Deel via WhatsApp, Facebook, Telegram, Signal, mail of Instagram/native share."}
+          {copied ? copiedText : helperText}
         </p>
       )}
     </div>

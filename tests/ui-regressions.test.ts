@@ -2,6 +2,14 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
+async function readOptional(path: string) {
+  try {
+    return await readFile(new URL(path, import.meta.url), "utf8");
+  } catch {
+    return "";
+  }
+}
+
 const loginForm = await readFile(new URL("../src/components/login-form.tsx", import.meta.url), "utf8");
 const profileForm = await readFile(new URL("../src/components/profile-form.tsx", import.meta.url), "utf8");
 const accountPage = await readFile(new URL("../src/app/account/page.tsx", import.meta.url), "utf8");
@@ -17,6 +25,9 @@ const manifest = await readFile(new URL("../src/app/manifest.ts", import.meta.ur
 const constants = await readFile(new URL("../src/lib/constants.ts", import.meta.url), "utf8");
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
 const quickMenu = await readFile(new URL("../src/components/quick-menu.tsx", import.meta.url), "utf8");
+const languageSwitcher = await readOptional("../src/components/language-switcher.tsx");
+const i18nLib = await readOptional("../src/lib/i18n.ts");
+const middleware = await readFile(new URL("../middleware.ts", import.meta.url), "utf8");
 const statusBar = await readFile(new URL("../src/components/status-bar.tsx", import.meta.url), "utf8");
 const shareButton = await readFile(new URL("../src/components/share-button.tsx", import.meta.url), "utf8");
 const brandWordmark = await readFile(new URL("../src/components/brand-wordmark.tsx", import.meta.url), "utf8");
@@ -35,6 +46,8 @@ const poolQuickShare = await readFile(new URL("../src/components/pool-quick-shar
 const poolTabs = await readFile(new URL("../src/components/pool-tabs.tsx", import.meta.url), "utf8");
 const appFirstShareLink = await readFile(new URL("../src/components/app-first-share-link.tsx", import.meta.url), "utf8");
 const installAppCard = await readFile(new URL("../src/components/install-app-card.tsx", import.meta.url), "utf8");
+const siteFooter = await readFile(new URL("../src/components/site-footer.tsx", import.meta.url), "utf8");
+const teamFlag = await readFile(new URL("../src/components/team-flag.tsx", import.meta.url), "utf8");
 const knockoutPredictionPicker = await readFile(new URL("../src/components/knockout-prediction-picker.tsx", import.meta.url), "utf8");
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
@@ -45,6 +58,7 @@ const uniqueMigration = await readFile(new URL("../supabase/migrations/202606051
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
 const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
 const recoveryEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
+const englishHomePage = await readOptional("../src/app/en/page.tsx");
 
 test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
   const heroPrimaryBlock = globalsCss.match(/\.button-primary\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";
@@ -337,7 +351,85 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(globalsCss, /\.quick-menu-logout \{/);
   assert.match(bottomNav, /return null;/);
   assert.doesNotMatch(bottomNav, /bottom-nav-emphasis/);
-  assert.match(statusBar, /href=\"\/voorspellingen\" className=\"status-chip status-chip-countdown/);
+  assert.match(statusBar, /const predictHref = locale === "en" && !me\?\.loggedIn \? "\/en#login" : "\/voorspellingen"/);
+  assert.match(statusBar, /href=\{predictHref\} className=\"status-chip status-chip-countdown/);
+});
+
+test("English locale has a top-menu flag switch and defaults to English outside NL/BE", () => {
+  assert.match(i18nLib, /export const LOCALE_COOKIE = "slimescore-locale"/);
+  assert.match(i18nLib, /SUPPORTED_LOCALES = \["nl", "en"\]/);
+  assert.match(i18nLib, /countryCode === "NL" \|\| countryCode === "BE"/);
+  assert.match(i18nLib, /const acceptedLanguages = acceptLanguage \?\? ""/);
+  assert.match(i18nLib, /acceptedLanguages\.toLowerCase\(\)\.includes\("nl"\)/);
+  assert.match(middleware, /request\.nextUrl\.searchParams\.get\("lang"\)/);
+  assert.match(middleware, /request\.headers\.get\("x-vercel-ip-country"\)/);
+  assert.match(middleware, /preferredLocaleFromRequest/);
+  assert.match(middleware, /NextResponse\.redirect\(new URL\("\/en"/);
+  assert.match(middleware, /response\.cookies\.set\(LOCALE_COOKIE, locale/);
+  assert.match(languageSwitcher, /🇳🇱/);
+  assert.match(languageSwitcher, /🇬🇧/);
+  assert.match(languageSwitcher, /aria-label=\{locale === "nl" \? "Nederlands actief" : "Switch to Dutch"\}/);
+  assert.match(languageSwitcher, /aria-label=\{locale === "en" \? "Language switch" : "Taalkeuze \/ language switch"\}/);
+  assert.match(languageSwitcher, /aria-label=\{locale === "en" \? "English active" : "Switch to English"\}/);
+  assert.match(languageSwitcher, /document\.cookie = `\$\{LOCALE_COOKIE\}=\$\{nextLocale\}/);
+  assert.match(siteHeader, /import \{ LanguageSwitcher \} from "@\/components\/language-switcher"/);
+  assert.match(siteHeader, /<LanguageSwitcher \/>/);
+  assert.match(quickMenu, /<LanguageSwitcher className=\"quick-menu-language-switcher\" \/>/);
+  assert.match(globalsCss, /\.language-switcher \{/);
+  assert.match(globalsCss, /\.language-switcher-option\.is-active/);
+});
+
+test("English landing page translates the public signup flow without changing the Dutch home", () => {
+  assert.match(englishHomePage, /Free World Cup 2026 pool/);
+  assert.match(englishHomePage, /Fill in your predictions for the full World Cup in about ten minutes/);
+  assert.match(englishHomePage, /Create your World Cup pool/);
+  assert.match(englishHomePage, /Share SlimeScore/);
+  assert.match(englishHomePage, /<LoginForm surface=\"inline\" locale=\"en\" \/>/);
+  assert.match(loginForm, /locale = "nl"/);
+  assert.match(loginForm, /const copy = loginCopy\[locale\]/);
+  assert.match(loginForm, /Sign in/);
+  assert.match(loginForm, /Create account/);
+  assert.match(loginForm, /Forgot password\?/);
+  assert.match(upcomingMatches, /locale = "nl"/);
+  assert.match(upcomingMatches, /locale === "en" \? "Upcoming World Cup matches" : "Eerstvolgende WK-wedstrijden"/);
+  assert.match(homePage, /Gratis WK 2026 Poule/);
+  assert.match(homePage, /<LoginForm surface=\"inline\" \/>/);
+});
+
+test("English route translates all visible shared fields and labels", () => {
+  assert.match(statusBar, /const locale = localeFromPathname\(pathname \|\| "\/"\)/);
+  assert.match(statusBar, /locale === "en" \? `\$\{d\}d \$\{h\}h` : `\$\{d\}d \$\{h\}u`/);
+  assert.match(statusBar, /Time left to predict/);
+  assert.match(statusBar, /Entries closed/);
+  assert.match(statusBar, /Player/);
+  assert.match(statusBar, /completed/);
+  assert.match(statusBar, /Join for free/);
+  assert.match(statusBar, /href=\{locale === "en" \? "\/en#login" : "\/aanmelden"\}/);
+  assert.match(siteHeader, /aria-label=\{locale === "en" \? "Main menu" : "Hoofdmenu"\}/);
+  assert.match(quickMenu, /\{locale === "en" \? "Open menu" : "Menu openen"\}/);
+  assert.match(quickMenu, /aria-label=\{locale === "en" \? "Quick navigation" : "Snelle navigatie"\}/);
+  assert.match(quickMenu, /aria-label=\{locale === "en" \? "Account actions" : "Account acties"\}/);
+  assert.match(siteFooter, /locale === "en" \? "Terms" : "Voorwaarden"/);
+  assert.match(siteFooter, /locale === "en" \? "beta" : "bèta"/);
+  assert.match(layout, /<SiteFooter locale=\{htmlLang\} \/>/);
+  assert.match(shareButton, /locale = "nl"/);
+  assert.match(shareButton, /const sharePrefix = locale === "en" \? "Share via" : "Delen via"/);
+  assert.match(shareButton, /Copied/);
+  assert.match(shareButton, /Share via WhatsApp, Facebook, Telegram, Signal, email or Instagram\/native share\./);
+  assert.match(englishHomePage, /<ShareRow[\s\S]*locale=\"en\"/);
+  assert.match(teamFlag, /locale = "nl"/);
+  assert.match(teamFlag, /locale === "en" \? `Flag of \$\{name\}` : `Vlag van \$\{name\}`/);
+  assert.match(upcomingMatches, /<TeamFlag code=\{m\.home_code\} name=\{teamNameForLocale\(m\.home_code, m\.home\?\.name_nl, locale\)\} locale=\{locale\}/);
+  assert.match(formatLib, /RSA: "South Africa"/);
+  assert.match(formatLib, /BIH: "Bosnia and Herzegovina"/);
+  assert.match(upcomingMatches, /locale === "en" \? "Result not known yet" : "Uitslag nog niet bekend"/);
+  assert.match(loginForm, /aria-label=\{copy\.containerLabel\}/);
+  assert.match(loginForm, /aria-label=\{copy\.codeLoginAria\}/);
+  assert.match(loginForm, /aria-label=\{copy\.resetCodeFormAria\}/);
+  assert.match(loginForm, /aria-label=\{copy\.signupCodeFormAria\}/);
+  assert.match(loginForm, /aria-label=\{copy\.passwordLoginAria\}/);
+  assert.match(loginForm, /aria-label=\{copy\.registerAria\}/);
+  assert.match(loginForm, /aria-label=\{copy\.emailResetAria\}/);
 });
 
 test("mobile poule page prioritizes ranking and keeps share buttons visible next to the pool name", () => {
@@ -414,7 +506,7 @@ test("small team columns use official 3-letter country abbreviations", () => {
 });
 
 test("match rows always reserve right-side API score boxes with fixed home-separator-away columns", () => {
-  assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} \/>/);
+  assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} locale=\{locale\} \/>/);
   assert.match(scheduleExplorer, /<ResultBoxes match=\{match\} \/>/);
   assert.match(globalsCss, /grid-template-columns: var\(--match-home-col, minmax\(118px, 160px\)\) 30px minmax\(0, 1fr\) 62px;/);
   assert.match(globalsCss, /\.schedule-team-grid-knockout \{[\s\S]*--match-home-col: minmax\(160px, 1fr\);/);

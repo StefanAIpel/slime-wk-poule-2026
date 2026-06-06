@@ -14,7 +14,8 @@ const authEmailTemplate = await readFile(new URL("../supabase/templates/slimesco
 const authRecoveryTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
 
 test("FrontPage has email-password login as the primary returning-player flow", () => {
-  assert.match(loginForm, /aria-label=\"Inloggen met mail en wachtwoord\"/);
+  assert.match(loginForm, /passwordLoginAria: "Inloggen met mail en wachtwoord"/);
+  assert.match(loginForm, /aria-label=\{copy\.passwordLoginAria\}/);
   assert.match(loginForm, /type=\"password\"/);
   assert.match(loginForm, /autoComplete=\"current-password\"/);
   assert.match(loginForm, /mail en wachtwoord/);
@@ -71,7 +72,8 @@ test("registration email template is SlimeScore-branded and supports code-first 
 });
 
 test("new players enter profile, password and legal acceptance before confirmation mail", () => {
-  assert.match(loginForm, /aria-label=\"Nieuw SlimeScore-account maken\"/);
+  assert.match(loginForm, /registerAria: "Nieuw SlimeScore-account maken"/);
+  assert.match(loginForm, /aria-label=\{copy\.registerAria\}/);
   assert.match(loginForm, /Naam of bijnaam/);
   assert.match(loginForm, /Teamnaam/);
   assert.match(loginForm, /type=\"password\"/);
@@ -146,7 +148,8 @@ test("password recovery survives mobile mail-app roundtrips without the original
   assert.match(loginForm, /Ik heb de resetmail al ontvangen/);
   assert.match(loginForm, /setResetCodeEntry\(true\)/);
   assert.match(loginForm, /status === \"sent\" \|\| resetCodeEntry/);
-  assert.match(loginForm, /aria-label=\"E-mailadres voor resetmail\"/);
+  assert.match(loginForm, /emailResetAria: "E-mailadres voor resetmail"/);
+  assert.match(loginForm, /aria-label=\{copy\.emailResetAria\}/);
   assert.match(loginForm, /niet de vaste inlogcode die een kind van de beheerder krijgt/);
   assert.doesNotMatch(loginForm, /window\.location\.href = provider\.(?:appUrl|url)/);
 });

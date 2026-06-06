@@ -1,4 +1,5 @@
 import { cityTimeZone, stadiumByCity } from "@/lib/constants";
+import type { Locale } from "@/lib/i18n";
 
 function tzOffsetMinutes(date: Date, timeZone: string): number | null {
   try {
@@ -27,10 +28,10 @@ export function venueHourOffset(iso: string | null | undefined, city: string | n
   return Math.round((venue - nl) / 60);
 }
 
-export function formatAmsterdam(value: string | Date | null | undefined) {
-  if (!value) return "Nog niet bekend";
+export function formatAmsterdam(value: string | Date | null | undefined, locale = "nl-NL") {
+  if (!value) return locale.startsWith("en") ? "TBC" : "Nog niet bekend";
 
-  return new Intl.DateTimeFormat("nl-NL", {
+  return new Intl.DateTimeFormat(locale, {
     timeZone: "Europe/Amsterdam",
     weekday: "short",
     day: "numeric",
@@ -67,6 +68,62 @@ const shortVenueByCity: Record<string, string> = {
 export function venueShortLabel(city: string | null | undefined) {
   if (!city) return "";
   return shortVenueByCity[city] ?? city;
+}
+
+const englishTeamNameByCode: Record<string, string> = {
+  MEX: "Mexico",
+  RSA: "South Africa",
+  KOR: "South Korea",
+  CZE: "Czechia",
+  CAN: "Canada",
+  BIH: "Bosnia and Herzegovina",
+  QAT: "Qatar",
+  SUI: "Switzerland",
+  BRA: "Brazil",
+  MAR: "Morocco",
+  HAI: "Haiti",
+  SCO: "Scotland",
+  USA: "United States",
+  PAR: "Paraguay",
+  AUS: "Australia",
+  TUR: "Türkiye",
+  GER: "Germany",
+  CUW: "Curaçao",
+  CIV: "Ivory Coast",
+  ECU: "Ecuador",
+  NED: "Netherlands",
+  JPN: "Japan",
+  SWE: "Sweden",
+  TUN: "Tunisia",
+  BEL: "Belgium",
+  EGY: "Egypt",
+  IRN: "Iran",
+  NZL: "New Zealand",
+  ESP: "Spain",
+  CPV: "Cape Verde",
+  KSA: "Saudi Arabia",
+  URU: "Uruguay",
+  FRA: "France",
+  SEN: "Senegal",
+  IRQ: "Iraq",
+  NOR: "Norway",
+  ARG: "Argentina",
+  ALG: "Algeria",
+  AUT: "Austria",
+  JOR: "Jordan",
+  POR: "Portugal",
+  COD: "DR Congo",
+  UZB: "Uzbekistan",
+  COL: "Colombia",
+  ENG: "England",
+  CRO: "Croatia",
+  GHA: "Ghana",
+  PAN: "Panama",
+};
+
+export function teamNameForLocale(code: string | null | undefined, fallback: string | null | undefined, locale: Locale = "nl") {
+  if (locale === "en" && code) return englishTeamNameByCode[code.toUpperCase()] ?? fallback ?? code.toUpperCase();
+  return fallback ?? code?.toUpperCase() ?? "";
 }
 
 export function teamAbbrev(code: string | null | undefined, label?: string | null) {

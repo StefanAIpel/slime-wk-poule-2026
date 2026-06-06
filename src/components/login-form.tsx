@@ -3,6 +3,7 @@
 import { Check, ExternalLink, KeyRound, LogIn, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { kidEmail } from "@/lib/kid";
+import type { Locale } from "@/lib/i18n";
 import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH, TEAM_NAME_MAX_LENGTH, TEAM_NAME_MIN_LENGTH } from "@/lib/limits";
 import { buildEmailRedirectTo, safeRedirectTarget } from "@/lib/supabase/auth-redirect";
 import { createClient } from "@/lib/supabase/browser";
@@ -31,6 +32,147 @@ const webmail: WebmailProvider[] = [
 
 const rememberedEmailKey = "slimescore:last-email";
 const mailFolderHint = "Niet gezien? Check Spam of Ongewenst.";
+
+const loginCopy = {
+  nl: {
+    choiceLabel: "Account keuze",
+    containerLabel: "Inloggen of registreren",
+    loginTab: "Inloggen",
+    registerTab: "Nieuw account",
+    noAccount: "Nog geen account?",
+    registerOneMinute: "Registreer je in 1 minuut",
+    haveAccount: "Heb je al een account?",
+    loginDirect: "Log direct in",
+    forgotAria: "Wachtwoord opnieuw aanvragen",
+    passwordLoginAria: "Inloggen met mail en wachtwoord",
+    email: "E-mailadres",
+    emailResetAria: "E-mailadres voor resetmail",
+    emailPlaceholder: "jij@example.nl",
+    password: "Wachtwoord",
+    currentPasswordPlaceholder: "Je gekozen wachtwoord",
+    rememberEmail: "Onthoud mijn e-mailadres op dit apparaat",
+    loginLoading: "Inloggen…",
+    loginButton: "Inloggen",
+    forgotPassword: "Wachtwoord vergeten?",
+    loginHint: "Al geregistreerd? Log in met mail + wachtwoord.",
+    resetSending: "Versturen…",
+    sendResetMail: "Stuur resetmail",
+    resetAlreadyReceived: "Ik heb de resetmail al ontvangen",
+    forgotHelper: "Nog nooit een wachtwoord gekozen of vergeten? Stuur jezelf een resetmail en kies met de code uit die mail direct een nieuw wachtwoord.",
+    backToLogin: "Terug naar inloggen",
+    registerAria: "Nieuw SlimeScore-account maken",
+    nickname: "Naam of bijnaam",
+    nicknamePlaceholder: "Stefan",
+    teamName: "Teamnaam",
+    teamPlaceholder: "VARschrikkelijk goed",
+    newPassword: "Wachtwoord",
+    newPasswordPlaceholder: "Minstens 8 tekens",
+    passwordAgain: "Wachtwoord nog een keer",
+    passwordAgainPlaceholder: "Nogmaals je wachtwoord",
+    termsPrefix: "Ik ga akkoord met de",
+    terms: "voorwaarden",
+    privacyPrefix: "en het",
+    privacy: "privacybeleid",
+    createLoading: "Account maken…",
+    signupButton: "Aanmelden",
+    registerHint: "Vul je e-mail, naam, teamnaam en wachtwoord in. Check daarna je mailbox om je account te bevestigen.",
+    fixedCode: "Ik heb een vaste code zonder e-mail",
+    codeLoginAria: "Inloggen met code",
+    poolCode: "Pincode van je poule",
+    poolCodePlaceholder: "BIJV. ABCD2345",
+    codeLoginButton: "Inloggen met code",
+    codeHint: "Deze vaste inlogcode krijg je van de beheerder. Je hebt hiervoor geen e-mail nodig.",
+    backToMail: "Terug naar mail en wachtwoord",
+    mailFolderHint,
+    resetSent: "Resetmail verstuurd",
+    resetCode: "Code uit resetmail",
+    signupSent: "Bevestigingsmail verstuurd",
+    resetCodeFormAria: "Wachtwoord wijzigen met mailcode",
+    resetCodeInfo: "Gebruik de code uit je resetmail om hier een nieuw wachtwoord te kiezen. Dit is niet de vaste inlogcode die een kind van de beheerder krijgt.",
+    resetCodeLabel: "Code uit de resetmail",
+    newPasswordLabel: "Nieuw wachtwoord",
+    newPasswordAgain: "Nieuw wachtwoord nog een keer",
+    savePasswordLoading: "Opslaan…",
+    savePassword: "Nieuw wachtwoord opslaan",
+    resendReset: "Resetmail opnieuw sturen",
+    signupCodeFormAria: "Registratie bevestigen met mailcode",
+    signupCodeLabel: "Code uit de mail",
+    confirmLoading: "Bevestigen…",
+    confirmSignup: "Registratie bevestigen",
+    resendLoading: "Opnieuw sturen…",
+    resendMail: "Mail opnieuw sturen",
+    otherEmail: "Ander e-mailadres",
+  },
+  en: {
+    choiceLabel: "Account choice",
+    containerLabel: "Sign in or create account",
+    loginTab: "Sign in",
+    registerTab: "Create account",
+    noAccount: "No account yet?",
+    registerOneMinute: "Create one in 1 minute",
+    haveAccount: "Already have an account?",
+    loginDirect: "Sign in directly",
+    forgotAria: "Request password reset",
+    passwordLoginAria: "Sign in with email and password",
+    email: "Email address",
+    emailResetAria: "Email address for reset mail",
+    emailPlaceholder: "you@example.com",
+    password: "Password",
+    currentPasswordPlaceholder: "Your chosen password",
+    rememberEmail: "Remember my email on this device",
+    loginLoading: "Signing in…",
+    loginButton: "Sign in",
+    forgotPassword: "Forgot password?",
+    loginHint: "Already registered? Sign in with email + password.",
+    resetSending: "Sending…",
+    sendResetMail: "Send reset email",
+    resetAlreadyReceived: "I already received the reset email",
+    forgotHelper: "Never chose a password, or forgot it? Send yourself a reset email and use the code in that email to choose a new password.",
+    backToLogin: "Back to sign in",
+    registerAria: "Create a new SlimeScore account",
+    nickname: "Name or nickname",
+    nicknamePlaceholder: "Alex",
+    teamName: "Team name",
+    teamPlaceholder: "VAR-tastic",
+    newPassword: "Password",
+    newPasswordPlaceholder: "At least 8 characters",
+    passwordAgain: "Password again",
+    passwordAgainPlaceholder: "Repeat your password",
+    termsPrefix: "I agree to the",
+    terms: "terms",
+    privacyPrefix: "and the",
+    privacy: "privacy policy",
+    createLoading: "Creating account…",
+    signupButton: "Sign up",
+    registerHint: "Enter your email, name, team name and password. Then check your inbox to confirm your account.",
+    fixedCode: "I have a fixed code without email",
+    codeLoginAria: "Sign in with code",
+    poolCode: "Pool PIN code",
+    poolCodePlaceholder: "E.G. ABCD2345",
+    codeLoginButton: "Sign in with code",
+    codeHint: "You get this fixed login code from the pool manager. No email needed.",
+    backToMail: "Back to email and password",
+    mailFolderHint: "Nothing there? Check Spam or Junk.",
+    resetSent: "Reset email sent",
+    resetCode: "Reset email code",
+    signupSent: "Confirmation email sent",
+    resetCodeFormAria: "Change password with email code",
+    resetCodeInfo: "Use the code from your reset email to choose a new password here. This is not the fixed login code a child gets from a manager.",
+    resetCodeLabel: "Code from the reset email",
+    newPasswordLabel: "New password",
+    newPasswordAgain: "New password again",
+    savePasswordLoading: "Saving…",
+    savePassword: "Save new password",
+    resendReset: "Send reset email again",
+    signupCodeFormAria: "Confirm registration with email code",
+    signupCodeLabel: "Code from the email",
+    confirmLoading: "Confirming…",
+    confirmSignup: "Confirm registration",
+    resendLoading: "Sending again…",
+    resendMail: "Send email again",
+    otherEmail: "Use another email address",
+  },
+} satisfies Record<Locale, Record<string, string>>;
 
 function webmailFor(email: string) {
   const domain = email.split("@")[1]?.toLowerCase() ?? "";
@@ -104,10 +246,12 @@ export function LoginForm({
   surface = "panel",
   next,
   initialMode = "login",
+  locale = "nl",
 }: {
   surface?: "panel" | "inline";
   next?: string;
   initialMode?: Extract<LoginMode, "login" | "register">;
+  locale?: Locale;
 }) {
   const [mode, setMode] = useState<LoginMode>(initialMode);
   const [email, setEmail] = useState("");
@@ -129,6 +273,7 @@ export function LoginForm({
   const [signupSubmitting, setSignupSubmitting] = useState(false);
   const [resetSubmitting, setResetSubmitting] = useState(false);
   const surfaceClass = surface === "inline" ? "login-form-inline grid gap-3" : "panel grid gap-3 p-4";
+  const copy = loginCopy[locale];
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -452,9 +597,9 @@ export function LoginForm({
 
   if (mode === "code") {
     return (
-      <form method="post" onSubmit={onCodeSubmit} className={surfaceClass} aria-label="Inloggen met code">
+      <form method="post" onSubmit={onCodeSubmit} className={surfaceClass} aria-label={copy.codeLoginAria}>
         <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
-          Pincode van je poule
+          {copy.poolCode}
           <input
             className="field uppercase tracking-widest"
             inputMode="text"
@@ -463,18 +608,18 @@ export function LoginForm({
             required
             value={code}
             onChange={(event) => setCode(event.target.value.toUpperCase())}
-            placeholder="BIJV. ABCD2345"
+            placeholder={copy.poolCodePlaceholder}
           />
         </label>
         <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
           <KeyRound aria-hidden="true" className="size-5" />
-          {status === "loading" ? "Inloggen…" : "Inloggen met code"}
+          {status === "loading" ? copy.loginLoading : copy.codeLoginButton}
         </button>
         <p aria-live="polite" className={`text-sm font-medium ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-          {message || "Deze vaste inlogcode krijg je van de beheerder. Je hebt hiervoor geen e-mail nodig."}
+          {message || copy.codeHint}
         </p>
         <button type="button" className="text-sm font-bold text-[#0e7a44] underline" onClick={() => resetMode("login")}>
-          Terug naar mail en wachtwoord
+          {copy.backToMail}
         </button>
       </form>
     );
@@ -490,9 +635,9 @@ export function LoginForm({
           <span>
             {isResetMail
               ? status === "sent"
-                ? "Resetmail verstuurd"
-                : "Code uit resetmail"
-              : "Bevestigingsmail verstuurd"}
+                ? copy.resetSent
+                : copy.resetCode
+              : copy.signupSent}
           </span>
         </div>
         {message ? (
@@ -502,15 +647,15 @@ export function LoginForm({
         ) : null}
         {provider ? <WebmailButton provider={provider} /> : null}
         <p className="auth-mail-hint rounded-lg bg-[#fff8e6] p-2 text-xs font-bold leading-5 text-[#7a4a00]">
-          {mailFolderHint}
+          {copy.mailFolderHint}
         </p>
 
         {isResetMail ? (
-          <form method="post" onSubmit={onResetCodeSubmit} className="auth-code-panel grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label="Wachtwoord wijzigen met mailcode">
+          <form method="post" onSubmit={onResetCodeSubmit} className="auth-code-panel grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label={copy.resetCodeFormAria}>
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
-              E-mailadres
+              {copy.email}
               <input
-                aria-label="E-mailadres voor resetmail"
+                aria-label={copy.emailResetAria}
                 className="field"
                 type="email"
                 inputMode="email"
@@ -518,14 +663,14 @@ export function LoginForm({
                 required
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="jij@example.nl"
+                placeholder={copy.emailPlaceholder}
               />
             </label>
             <p className="rounded-lg bg-[#eef6ff] p-2 text-xs font-bold leading-5 text-[#305074]">
-              Gebruik de code uit je resetmail om hier een nieuw wachtwoord te kiezen. Dit is niet de vaste inlogcode die een kind van de beheerder krijgt.
+              {copy.resetCodeInfo}
             </p>
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
-              Code uit de resetmail
+              {copy.resetCodeLabel}
               <input
                 className="auth-code-field field text-center text-lg font-black tracking-[0.3em]"
                 inputMode="numeric"
@@ -537,7 +682,7 @@ export function LoginForm({
               />
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
-              Nieuw wachtwoord
+              {copy.newPasswordLabel}
               <input
                 className="field"
                 type="password"
@@ -546,11 +691,11 @@ export function LoginForm({
                 minLength={8}
                 value={resetNewPassword}
                 onChange={(event) => setResetNewPassword(event.target.value)}
-                placeholder="Minstens 8 tekens"
+                placeholder={copy.newPasswordPlaceholder}
               />
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
-              Nieuw wachtwoord nog een keer
+              {copy.newPasswordAgain}
               <input
                 className="field"
                 type="password"
@@ -559,21 +704,21 @@ export function LoginForm({
                 minLength={8}
                 value={resetPasswordConfirm}
                 onChange={(event) => setResetPasswordConfirm(event.target.value)}
-                placeholder="Nogmaals"
+                placeholder={copy.passwordAgainPlaceholder}
               />
             </label>
             <button className="button-primary w-full" type="submit" disabled={resetSubmitting}>
               <KeyRound aria-hidden="true" className="size-5" />
-              {resetSubmitting ? "Opslaan…" : "Nieuw wachtwoord opslaan"}
+              {resetSubmitting ? copy.savePasswordLoading : copy.savePassword}
             </button>
             <button className="button-secondary w-full" type="button" onClick={onResendPasswordResetMail} disabled={resetSubmitting}>
-              Resetmail opnieuw sturen
+              {copy.resendReset}
             </button>
           </form>
         ) : (
-          <form method="post" onSubmit={onSignupCodeSubmit} className="auth-code-panel grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label="Registratie bevestigen met mailcode">
+          <form method="post" onSubmit={onSignupCodeSubmit} className="auth-code-panel grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label={copy.signupCodeFormAria}>
             <label className="grid gap-2 text-sm font-bold text-[#081634]">
-              Code uit de mail
+              {copy.signupCodeLabel}
               <input
                 className="auth-code-field field text-center text-lg font-black tracking-[0.3em]"
                 inputMode="numeric"
@@ -586,24 +731,24 @@ export function LoginForm({
             </label>
             <button className="button-primary w-full" type="submit" disabled={signupSubmitting}>
               <Check aria-hidden="true" className="size-5" />
-              {signupSubmitting ? "Bevestigen…" : "Registratie bevestigen"}
+              {signupSubmitting ? copy.confirmLoading : copy.confirmSignup}
             </button>
             <button className="button-secondary w-full" type="button" onClick={onResendSignupConfirmation} disabled={resendSubmitting || signupSubmitting}>
-              {resendSubmitting ? "Opnieuw sturen…" : "Mail opnieuw sturen"}
+              {resendSubmitting ? copy.resendLoading : copy.resendMail}
             </button>
           </form>
         )}
 
         <button className="text-sm font-bold text-[#0e7a44] underline" type="button" onClick={() => { setStatus("idle"); setResetCodeEntry(false); setMessage(""); }}>
-          Ander e-mailadres
+          {copy.otherEmail}
         </button>
       </div>
     );
   }
 
   return (
-    <div className={surfaceClass} aria-label="Inloggen of registreren">
-      <div className="auth-mode-tabs" role="tablist" aria-label="Account keuze">
+    <div className={surfaceClass} aria-label={copy.containerLabel}>
+      <div className="auth-mode-tabs" role="tablist" aria-label={copy.choiceLabel}>
         <button
           type="button"
           role="tab"
@@ -612,7 +757,7 @@ export function LoginForm({
           onClick={() => resetMode("login")}
         >
           <span aria-hidden="true" className="auth-mode-tab-marker" />
-          Inloggen
+          {copy.loginTab}
         </button>
         <button
           type="button"
@@ -622,7 +767,7 @@ export function LoginForm({
           onClick={() => resetMode("register")}
         >
           <span aria-hidden="true" className="auth-mode-tab-marker" />
-          Nieuw account
+          {copy.registerTab}
         </button>
       </div>
 
@@ -630,16 +775,16 @@ export function LoginForm({
         <p className="auth-switch-hint text-center text-xs font-semibold text-[#475670]">
           {mode === "login" ? (
             <>
-              Nog geen account?{" "}
+              {copy.noAccount}{" "}
               <button type="button" className="font-bold text-[#0e7a44] underline" onClick={() => resetMode("register")}>
-                Registreer je in 1 minuut
+                {copy.registerOneMinute}
               </button>
             </>
           ) : (
             <>
-              Heb je al een account?{" "}
+              {copy.haveAccount}{" "}
               <button type="button" className="font-bold text-[#0e7a44] underline" onClick={() => resetMode("login")}>
-                Log direct in
+                {copy.loginDirect}
               </button>
             </>
           )}
@@ -647,9 +792,9 @@ export function LoginForm({
       ) : null}
 
       {mode === "forgot" ? (
-        <form method="post" onSubmit={onForgotSubmit} className="grid gap-3" aria-label="Wachtwoord opnieuw aanvragen">
+        <form method="post" onSubmit={onForgotSubmit} className="grid gap-3" aria-label={copy.forgotAria}>
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
-            E-mailadres
+            {copy.email}
             <input
               className="field"
               type="email"
@@ -658,12 +803,12 @@ export function LoginForm({
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="jij@example.nl"
+              placeholder={copy.emailPlaceholder}
             />
           </label>
           <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
             <Mail aria-hidden="true" className="size-5" />
-            {status === "loading" ? "Versturen…" : "Stuur resetmail"}
+            {status === "loading" ? copy.resetSending : copy.sendResetMail}
           </button>
           <button
             className="button-secondary w-full"
@@ -672,22 +817,22 @@ export function LoginForm({
               rememberCurrentEmail();
               setResetCodeEntry(true);
               setStatus("idle");
-              setMessage("Vul je e-mailadres, de code uit de resetmail en je nieuwe wachtwoord in. Je hoeft je mail-app niet open te houden.");
+              setMessage(locale === "en" ? "Enter your email, the code from the reset email and your new password. You do not need to keep your mail app open." : "Vul je e-mailadres, de code uit de resetmail en je nieuwe wachtwoord in. Je hoeft je mail-app niet open te houden.");
             }}
           >
-            Ik heb de resetmail al ontvangen
+            {copy.resetAlreadyReceived}
           </button>
           <p aria-live="polite" className={`auth-forgot-helper font-medium ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-            {message || "Nog nooit een wachtwoord gekozen of vergeten? Stuur jezelf een resetmail en kies met de code uit die mail direct een nieuw wachtwoord."}
+            {message || copy.forgotHelper}
           </p>
           <button type="button" className="text-sm font-bold text-[#0e7a44] underline" onClick={() => resetMode("login")}>
-            Terug naar inloggen
+            {copy.backToLogin}
           </button>
         </form>
       ) : mode === "login" ? (
-        <form method="post" onSubmit={onPasswordSubmit} className="grid gap-3" aria-label="Inloggen met mail en wachtwoord">
+        <form method="post" onSubmit={onPasswordSubmit} className="grid gap-3" aria-label={copy.passwordLoginAria}>
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
-            E-mailadres
+            {copy.email}
             <input
               className="field"
               type="email"
@@ -696,11 +841,11 @@ export function LoginForm({
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="jij@example.nl"
+              placeholder={copy.emailPlaceholder}
             />
           </label>
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
-            Wachtwoord
+            {copy.password}
             <input
               className="field"
               type="password"
@@ -709,7 +854,7 @@ export function LoginForm({
               minLength={8}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Je gekozen wachtwoord"
+              placeholder={copy.currentPasswordPlaceholder}
             />
           </label>
           <label className="flex items-center gap-2 text-[0.7rem] font-semibold text-[#475670]">
@@ -719,26 +864,26 @@ export function LoginForm({
               checked={rememberEmail}
               onChange={(event) => setRememberEmail(event.target.checked)}
             />
-            Onthoud mijn e-mailadres op dit apparaat
+            {copy.rememberEmail}
           </label>
           <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
             <LogIn aria-hidden="true" className="size-5" />
-            {status === "loading" ? "Inloggen…" : "Inloggen"}
+            {status === "loading" ? copy.loginLoading : copy.loginButton}
           </button>
           <button type="button" className="text-center text-xs font-semibold text-[#0e7a44] underline" onClick={() => resetMode("forgot")}>
-            Wachtwoord vergeten?
+            {copy.forgotPassword}
           </button>
           <p
             aria-live="polite"
             className={status === "error" ? "text-center text-xs font-medium leading-5 text-red-700" : "auth-login-hint text-[#475670]"}
           >
-            {message || "Al geregistreerd? Log in met mail + wachtwoord."}
+            {message || copy.loginHint}
           </p>
         </form>
       ) : (
-        <form method="post" onSubmit={onRegisterSubmit} className="grid gap-3" aria-label="Nieuw SlimeScore-account maken">
+        <form method="post" onSubmit={onRegisterSubmit} className="grid gap-3" aria-label={copy.registerAria}>
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
-            E-mailadres
+            {copy.email}
             <input
               className="field"
               type="email"
@@ -747,11 +892,11 @@ export function LoginForm({
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="jij@example.nl"
+              placeholder={copy.emailPlaceholder}
             />
           </label>
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
-            Naam of bijnaam
+            {copy.nickname}
             <input
               className="field"
               autoComplete="name"
@@ -760,11 +905,11 @@ export function LoginForm({
               maxLength={NICKNAME_MAX_LENGTH}
               value={nickname}
               onChange={(event) => setNickname(event.target.value)}
-              placeholder="Stefan"
+              placeholder={copy.nicknamePlaceholder}
             />
           </label>
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
-            Teamnaam
+            {copy.teamName}
             <input
               className="field"
               required
@@ -772,11 +917,11 @@ export function LoginForm({
               maxLength={TEAM_NAME_MAX_LENGTH}
               value={teamName}
               onChange={(event) => setTeamName(event.target.value)}
-              placeholder="VARschrikkelijk goed"
+              placeholder={copy.teamPlaceholder}
             />
           </label>
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
-            Wachtwoord
+            {copy.newPassword}
             <input
               className="field"
               type="password"
@@ -785,11 +930,11 @@ export function LoginForm({
               minLength={8}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Minstens 8 tekens"
+              placeholder={copy.newPasswordPlaceholder}
             />
           </label>
           <label className="grid gap-2 text-sm font-semibold text-[#101a2b]">
-            Wachtwoord nog een keer
+            {copy.passwordAgain}
             <input
               className="field"
               type="password"
@@ -798,7 +943,7 @@ export function LoginForm({
               minLength={8}
               value={passwordConfirm}
               onChange={(event) => setPasswordConfirm(event.target.value)}
-              placeholder="Nogmaals je wachtwoord"
+              placeholder={copy.passwordAgainPlaceholder}
             />
           </label>
           <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3 text-sm font-semibold leading-5 text-[#48617f]">
@@ -811,18 +956,18 @@ export function LoginForm({
               onChange={(event) => setTermsAccepted(event.target.checked)}
             />
             <span>
-              Ik ga akkoord met de{" "}
-              <a className="font-bold text-[#064ed6]" href="/voorwaarden" target="_blank" rel="noopener noreferrer">voorwaarden</a>{" "}
-              en het{" "}
-              <a className="font-bold text-[#064ed6]" href="/privacy" target="_blank" rel="noopener noreferrer">privacybeleid</a>.
+              {copy.termsPrefix}{" "}
+              <a className="font-bold text-[#064ed6]" href="/voorwaarden" target="_blank" rel="noopener noreferrer">{copy.terms}</a>{" "}
+              {copy.privacyPrefix}{" "}
+              <a className="font-bold text-[#064ed6]" href="/privacy" target="_blank" rel="noopener noreferrer">{copy.privacy}</a>.
             </span>
           </label>
           <button className="button-primary w-full" type="submit" disabled={status === "loading"}>
             <Mail aria-hidden="true" className="size-5" />
-            {status === "loading" ? "Account maken…" : "Aanmelden"}
+            {status === "loading" ? copy.createLoading : copy.signupButton}
           </button>
           <p aria-live="polite" className={`text-sm font-medium leading-5 ${status === "error" ? "text-red-700" : "text-[#475670]"}`}>
-            {message || "Vul je e-mail, naam, teamnaam en wachtwoord in. Check daarna je mailbox om je account te bevestigen."}
+            {message || copy.registerHint}
           </p>
         </form>
       )}
@@ -833,7 +978,7 @@ export function LoginForm({
         onClick={() => resetMode("code")}
       >
         <KeyRound aria-hidden="true" className="size-4" />
-        Ik heb een vaste code zonder e-mail
+        {copy.fixedCode}
       </button>
     </div>
   );
