@@ -29,7 +29,7 @@ export function PoolQuickShare({
   poolCode: string;
   inviteText: string;
 }) {
-  const [nativeCopied, setNativeCopied] = useState(false);
+  const [nativeCopied, setNativeCopied] = useState<string | null>(null);
   const message = `${inviteText}\n\n${joinUrl}`.trim();
   const poolInviteHeadline = `Doe mee met onze 100% gratis WK-poule "${poolName}" ⚽`;
   const poolInviteCode = `Poulecode: ${poolCode}`;
@@ -40,21 +40,20 @@ export function PoolQuickShare({
   const instagramMessage = `100% gratis WK-poule "${poolName}". ${poolInviteCode}. ${poolInviteValue}`;
   const encodedMessage = encodeURIComponent(groupMessage);
   const encodedInvite = encodeURIComponent(socialMessage);
-  const encodedSignalMessage = encodeURIComponent(groupMessage);
   const encodedUrl = encodeURIComponent(joinUrl);
   const encodedTitle = encodeURIComponent(`Doe mee met ${poolName}`);
   const encodedBody = encodeURIComponent(message);
   const facebookWebHref = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedInvite}`;
 
-  async function nativeShare(shareText = groupMessageText) {
+  async function nativeShare(shareText = groupMessageText, channelLabel = "native share") {
     try {
       if (navigator.share) {
         await navigator.share({ title: `Doe mee met ${poolName}`, text: shareText, url: joinUrl });
         return;
       }
       await navigator.clipboard.writeText(`${shareText}\n${joinUrl}`.trim());
-      setNativeCopied(true);
-      setTimeout(() => setNativeCopied(false), 1800);
+      setNativeCopied(channelLabel);
+      setTimeout(() => setNativeCopied(null), 1800);
     } catch {
       // Gebruiker annuleerde of apparaat ondersteunt dit niet.
     }
@@ -90,14 +89,15 @@ export function PoolQuickShare({
         >
           <span aria-hidden="true" className="pool-share-brand-letter">TG</span>
         </AppFirstShareLink>
-        <a
+        <button
           className="pool-quick-share-button pool-quick-share-signal"
-          href={`sgnl://send?text=${encodedSignalMessage}`}
-          aria-label="Deel via Signal"
-          title="Deel via Signal"
+          type="button"
+          onClick={() => nativeShare(groupMessageText, "Signal")}
+          aria-label={nativeCopied === "Signal" ? "Link gekopieerd voor Signal" : "Deel via Signal"}
+          title={nativeCopied === "Signal" ? "Link gekopieerd voor Signal" : "Deel via Signal"}
         >
-          <span aria-hidden="true" className="pool-share-brand-letter">S</span>
-        </a>
+          {nativeCopied === "Signal" ? <Check aria-hidden="true" className="size-4" /> : <span aria-hidden="true" className="pool-share-brand-letter">S</span>}
+        </button>
         <a
           className="pool-quick-share-button pool-quick-share-mail"
           href={`mailto:?subject=${encodedTitle}&body=${encodedBody}`}
@@ -109,11 +109,11 @@ export function PoolQuickShare({
         <button
           className="pool-quick-share-button pool-quick-share-instagram"
           type="button"
-          onClick={() => nativeShare(instagramMessage)}
-          aria-label={nativeCopied ? "Link gekopieerd voor Instagram/native share" : "Deel via Instagram/native share"}
-          title={nativeCopied ? "Link gekopieerd voor Instagram/native share" : "Deel via Instagram/native share"}
+          onClick={() => nativeShare(instagramMessage, "Instagram/native share")}
+          aria-label={nativeCopied === "Instagram/native share" ? "Link gekopieerd voor Instagram/native share" : "Deel via Instagram/native share"}
+          title={nativeCopied === "Instagram/native share" ? "Link gekopieerd voor Instagram/native share" : "Deel via Instagram/native share"}
         >
-          {nativeCopied ? <Check aria-hidden="true" className="size-4" /> : <InstagramGlyph aria-hidden="true" className="size-4" />}
+          {nativeCopied === "Instagram/native share" ? <Check aria-hidden="true" className="size-4" /> : <InstagramGlyph aria-hidden="true" className="size-4" />}
         </button>
       </div>
     </div>
