@@ -33,6 +33,18 @@ type HomeLeaderboardRow = {
   isDemo?: boolean;
 };
 
+const generalShareTitle = "SlimeScore · gratis WK-poule";
+const generalShareText = "Maak je eigen 100% gratis vrienden-WK-poule. 1x ±10 min invullen; volg speelschema en uitslagen.";
+const generalShareMessages = {
+  whatsapp: "100% gratis WK-poule voor vrienden ⚽\nMaak je eigen poule. 1x ±10 min invullen; volg speelschema + uitslagen.",
+  facebook: "Maak je eigen 100% gratis vrienden-WK-poule. 1x ±10 min invullen; volg speelschema en uitslagen.",
+  telegram: "100% gratis WK-poule voor vrienden. 1x ±10 min invullen; volg speelschema + uitslagen.",
+  signal: "100% gratis WK-poule voor vrienden ⚽\nMaak je eigen poule. 1x ±10 min invullen; volg speelschema + uitslagen.",
+  mail: "Maak je eigen 100% gratis WK-poule voor vrienden, familie of collega’s. 1x ±10 min invullen; daarna volg je speelschema en uitslagen.",
+  instagram: "100% gratis WK-poule voor vrienden. 1x ±10 min invullen. Volg speelschema & uitslagen.",
+  native: "Maak je eigen 100% gratis vrienden-WK-poule. 1x ±10 min invullen; volg speelschema en uitslagen.",
+};
+
 export default async function Home({
   searchParams,
 }: {
@@ -221,6 +233,17 @@ export default async function Home({
               />
               <button type="submit" className="button-primary create-pool-button justify-center px-5">Maken</button>
             </div>
+            <div className="create-pool-share share-panel-strip" aria-label="SlimeScore delen">
+              <p className="share-panel-title">Deel SlimeScore</p>
+              <ShareRow
+                url={SITE_URL}
+                text={generalShareText}
+                title={generalShareTitle}
+                messages={generalShareMessages}
+                compact
+                onDark
+              />
+            </div>
           </form>
         </div>
 
@@ -349,7 +372,9 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
               <p className="share-panel-title">Deel SlimeScore</p>
               <ShareRow
                 url={SITE_URL}
-                text="Doe je mee met de gratis Slime Score WK 2026-poule?"
+                text={generalShareText}
+                title={generalShareTitle}
+                messages={generalShareMessages}
                 compact
                 onDark
               />

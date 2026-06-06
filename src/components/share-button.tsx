@@ -7,7 +7,9 @@ import { AppFirstShareLink } from "@/components/app-first-share-link";
 
 type Variant = "primary" | "secondary";
 
-type GlyphProps = { className?: string };
+type GlyphProps = { className?: string; "aria-hidden"?: boolean | "true" | "false" };
+type ShareChannel = "whatsapp" | "facebook" | "telegram" | "signal" | "mail" | "instagram" | "native";
+type ShareMessages = Partial<Record<ShareChannel, string>>;
 type ShareTarget = {
   key: string;
   label: string;
@@ -43,6 +45,34 @@ function InstagramGlyph({ className }: GlyphProps) {
       <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
     </svg>
   );
+}
+
+function TelegramGlyph({ className }: GlyphProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M21.9 4.16c.26-1.2-.9-1.86-1.94-1.45L2.66 9.44c-1.18.46-1.16 1.1-.2 1.4l4.43 1.38 1.7 5.17c.22.62.11.87.75.87.49 0 .7-.22.98-.49l2.35-2.29 4.9 3.62c.9.5 1.55.24 1.78-.83L21.9 4.16ZM7.58 11.9l10.28-6.48c.5-.3.95-.14.58.2L9.64 13.56l-.34 3.63-1.72-5.3Z" />
+    </svg>
+  );
+}
+
+function SignalGlyph({ className }: GlyphProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
+      <circle cx="12" cy="12" r="7.1" fill="currentColor" opacity="0.14" />
+      <path
+        d="M5.6 17.6A8.7 8.7 0 0 1 4 12a8 8 0 1 1 3.3 6.48L4.2 19.4l.92-2.82"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M9 14.35c.63.57 1.53.9 2.57.9 1.47 0 2.47-.65 2.47-1.72 0-1-.72-1.37-2.4-1.76-1.4-.33-2.33-.9-2.33-2.03 0-1.15 1.04-1.95 2.55-1.95.93 0 1.68.23 2.3.7" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function withUrl(message: string, url: string) {
+  return `${message.trim()}\n${url}`.trim();
 }
 
 /**
@@ -99,26 +129,33 @@ export function ShareRow({
   title = "Slime Score WK 2026",
   compact = false,
   onDark = false,
+  messages,
 }: {
   url: string;
   text: string;
   title?: string;
   compact?: boolean;
   onDark?: boolean;
+  messages?: ShareMessages;
 }) {
   const [copied, setCopied] = useState(false);
-  const encodedBoth = encodeURIComponent(`${text} ${url}`.trim());
+  const messageFor = (channel: ShareChannel) => messages?.[channel] ?? text;
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
-  const encodedBody = encodeURIComponent(`${text}\n\n${url}`.trim());
-  const whatsappWebHref = `https://wa.me/?text=${encodedBoth}`;
-  const facebookWebHref = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedBoth}`;
+  const encodedWhatsApp = encodeURIComponent(withUrl(messageFor("whatsapp"), url));
+  const encodedFacebookQuote = encodeURIComponent(messageFor("facebook"));
+  const encodedTelegramText = encodeURIComponent(messageFor("telegram"));
+  const encodedSignal = encodeURIComponent(withUrl(messageFor("signal"), url));
+  const encodedMailBody = encodeURIComponent(withUrl(messageFor("mail"), url));
+  const whatsappWebHref = `https://wa.me/?text=${encodedWhatsApp}`;
+  const facebookWebHref = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedFacebookQuote}`;
+  const telegramWebHref = `https://t.me/share/url?url=${encodedUrl}&text=${encodedTelegramText}`;
 
   const targets: ShareTarget[] = [
     {
       key: "whatsapp",
       label: "WhatsApp",
-      appHref: `whatsapp://send?text=${encodedBoth}`,
+      appHref: `whatsapp://send?text=${encodedWhatsApp}`,
       webHref: whatsappWebHref,
       icon: WhatsappGlyph,
       className: "share-link share-link-whatsapp",
@@ -132,24 +169,32 @@ export function ShareRow({
       className: "share-link share-link-facebook",
     },
     {
+      key: "telegram",
+      label: "Telegram",
+      appHref: `tg://msg_url?url=${encodedUrl}&text=${encodedTelegramText}`,
+      webHref: telegramWebHref,
+      icon: TelegramGlyph,
+      className: "share-link share-link-telegram",
+    },
+    {
       key: "signal",
       label: "Signal",
-      href: `sgnl://send?text=${encodedBoth}`,
-      icon: Send,
+      href: `sgnl://send?text=${encodedSignal}`,
+      icon: SignalGlyph,
       className: "share-link share-link-signal",
     },
     {
       key: "mail",
       label: "Mail",
-      href: `mailto:?subject=${encodedTitle}&body=${encodedBody}`,
+      href: `mailto:?subject=${encodedTitle}&body=${encodedMailBody}`,
       icon: Mail,
       className: "share-link share-link-mail",
     },
   ];
 
-  async function onCopy() {
+  async function copyShareText(channel: ShareChannel = "native") {
     try {
-      await navigator.clipboard.writeText(`${text} ${url}`.trim());
+      await navigator.clipboard.writeText(withUrl(messageFor(channel), url));
       setCopied(true);
       setTimeout(() => setCopied(false), 2200);
     } catch {
@@ -157,16 +202,17 @@ export function ShareRow({
     }
   }
 
-  async function onNativeShare() {
+  async function onNativeShare(channel: ShareChannel = "native") {
+    const shareText = messageFor(channel);
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title, text, url });
+        await navigator.share({ title, text: shareText, url });
         return;
       } catch {
         // afgebroken — geen actie nodig
       }
     }
-    onCopy();
+    copyShareText(channel);
   }
 
   return (
@@ -206,7 +252,7 @@ export function ShareRow({
         <button
           type="button"
           className="share-link share-link-instagram"
-          onClick={onNativeShare}
+          onClick={() => onNativeShare("instagram")}
           aria-label="Delen via Instagram"
           title="Delen via Instagram"
         >
@@ -216,7 +262,7 @@ export function ShareRow({
         <button
           type="button"
           className="share-link share-link-more"
-          onClick={onNativeShare}
+          onClick={() => onNativeShare("native")}
           aria-label="Meer delen"
           title="Meer delen"
         >
@@ -226,7 +272,7 @@ export function ShareRow({
       </div>
       {compact ? null : (
         <p aria-live="polite" className="text-xs font-medium text-[#46566f]">
-          {copied ? "Link gekopieerd." : "Deel via WhatsApp, Signal, mail, Instagram of je telefoon."}
+          {copied ? "Link gekopieerd." : "Deel via WhatsApp, Facebook, Telegram, Signal, mail, Instagram of je telefoon."}
         </p>
       )}
     </div>

@@ -95,6 +95,10 @@ function WebmailButton({ provider }: { provider: WebmailProvider }) {
 }
 
 type LoginMode = "login" | "register" | "code" | "forgot";
+type LoginReason = "wachtwoord" | "code";
+type PasswordLoginResult =
+  | { ok: true; redirectTo: string }
+  | { ok: false; message: string };
 
 export function LoginForm({
   surface = "panel",
@@ -155,6 +159,27 @@ export function LoginForm({
     redirectUrl.searchParams.set("_auth", Date.now().toString(36));
     const target = `${redirectUrl.pathname}${redirectUrl.search}${redirectUrl.hash}`;
     window.location.replace(target);
+  }
+
+  async function submitPasswordLogin(emailAddress: string, passwordValue: string, reason: LoginReason): Promise<PasswordLoginResult> {
+    try {
+      const response = await fetch("/auth/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          email: emailAddress.trim(),
+          password: passwordValue,
+          next: next ?? "/",
+          reason,
+        }),
+      });
+      const result = (await response.json().catch(() => null)) as PasswordLoginResult | null;
+      if (result?.ok) return result;
+      return { ok: false, message: result?.message ?? "Inloggen lukte niet. Controleer je gegevens en probeer het opnieuw." };
+    } catch {
+      return { ok: false, message: "Inloggen lukte niet. Controleer je verbinding en probeer opnieuw." };
+    }
   }
 
   async function sendPasswordResetMail() {
@@ -328,28 +353,17 @@ export function LoginForm({
     setStatus("loading");
     setMessage("");
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
-    if (error) {
+    const result = await submitPasswordLogin(email, password, "wachtwoord");
+    if (!result.ok) {
       setStatus("error");
-      const errorMessage = error.message.toLowerCase();
-      if (errorMessage.includes("invalid login") || errorMessage.includes("invalid credentials")) {
-        setMessage("Mail of wachtwoord klopt niet. Nog nooit een wachtwoord gekozen? Gebruik ‘Wachtwoord vergeten?’.");
-      } else if (errorMessage.includes("email not confirmed")) {
-        setMessage("Open eerst de bevestigingsmail. Daarna kun je inloggen met je e-mail en wachtwoord.");
-      } else {
-        setMessage("Inloggen lukte niet. Controleer je gegevens en probeer het opnieuw.");
-      }
+      setMessage(result.message);
       return;
     }
 
     rememberCurrentEmail();
     setStatus("success");
     setMessage("Ingelogd. Je scorekaart wordt geopend.");
-    openScorecard("wachtwoord");
+    window.location.replace(result.redirectTo);
   }
 
   async function onRegisterSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -424,17 +438,16 @@ export function LoginForm({
     event.preventDefault();
     setStatus("loading");
     setMessage("");
-    const supabase = createClient();
     const normalized = code.trim().toLowerCase();
-    const { error } = await supabase.auth.signInWithPassword({ email: kidEmail(normalized), password: normalized });
-    if (error) {
+    const result = await submitPasswordLogin(kidEmail(normalized), normalized, "code");
+    if (!result.ok) {
       setStatus("error");
       setMessage("Die code klopt niet. Vraag je ouder/beheerder om de juiste code.");
       return;
     }
     setStatus("success");
     setMessage("Ingelogd. Je scorekaart wordt geopend.");
-    openScorecard("code");
+    window.location.replace(result.redirectTo);
   }
 
   if (mode === "code") {

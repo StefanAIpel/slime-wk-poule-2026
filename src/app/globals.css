@@ -348,6 +348,21 @@ textarea {
   background: #b30f21;
 }
 
+.create-pool-share {
+  margin-top: 4px;
+  border-top-color: rgba(255, 255, 255, 0.22);
+}
+
+.create-pool-share .share-actions {
+  gap: 8px;
+}
+
+.create-pool-share .share-row-compact .share-link {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 8px;
+}
+
 .dark-panel {
   color: #fff;
   background:
@@ -2373,6 +2388,11 @@ textarea {
   color: #1877f2;
 }
 
+.share-link-telegram,
+.share-row-on-dark .share-link-telegram {
+  color: #229ed9;
+}
+
 .share-link-more,
 .share-row-on-dark .share-link-more {
   color: #114b82;
@@ -3700,6 +3720,10 @@ textarea {
 
 .pool-quick-share-whatsapp {
   color: #168f4a;
+}
+
+.pool-quick-share-signal {
+  color: #3a76f0;
 }
 
 .pool-quick-share-mail {

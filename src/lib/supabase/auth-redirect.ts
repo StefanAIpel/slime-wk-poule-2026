@@ -1,10 +1,26 @@
 export const AUTH_CONFIRM_PATH = "/auth/confirm";
 export const AUTH_CALLBACK_PATH = "/auth/callback";
+export const DEFAULT_LOGIN_REDIRECT = "/?login=gelukt";
+
+function hasEncodedPathTraversal(pathname: string) {
+  const lower = pathname.toLowerCase();
+  return lower.includes("%2e") || lower.includes("%2f") || lower.includes("%5c");
+}
 
 export function safeRedirectTarget(value: string | null) {
-  if (!value) return "/?login=gelukt";
-  if (value.startsWith("/") && !value.startsWith("//")) return value;
-  return "/?login=gelukt";
+  if (!value) return DEFAULT_LOGIN_REDIRECT;
+  if (!value.startsWith("/") || value.startsWith("//") || value.includes("\\")) return DEFAULT_LOGIN_REDIRECT;
+
+  try {
+    const parsed = new URL(value, "https://slimescore.local");
+    const target = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+    if (parsed.origin !== "https://slimescore.local") return DEFAULT_LOGIN_REDIRECT;
+    if (!target.startsWith("/") || target.startsWith("//") || target.includes("\\")) return DEFAULT_LOGIN_REDIRECT;
+    if (hasEncodedPathTraversal(parsed.pathname)) return DEFAULT_LOGIN_REDIRECT;
+    return target;
+  } catch {
+    return DEFAULT_LOGIN_REDIRECT;
+  }
 }
 
 export function buildEmailRedirectTo(origin: string, next?: string | null) {

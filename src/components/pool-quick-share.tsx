@@ -10,12 +10,14 @@ export function PoolQuickShare({
   joinUrl,
   qrDataUrl,
   poolName,
+  poolCode,
   inviteText,
   isManager = false,
 }: {
   joinUrl: string;
   qrDataUrl: string;
   poolName: string;
+  poolCode: string;
   inviteText: string;
   isManager?: boolean;
 }) {
@@ -23,12 +25,20 @@ export function PoolQuickShare({
   const [qrBusy, setQrBusy] = useState(false);
   const [nativeCopied, setNativeCopied] = useState(false);
   const message = `${inviteText}\n\n${joinUrl}`.trim();
-  const encodedMessage = encodeURIComponent(message);
-  const encodedInvite = encodeURIComponent(inviteText);
+  const poolInviteHeadline = `Doe mee met onze 100% gratis WK-poule "${poolName}" ⚽`;
+  const poolInviteCode = `Poulecode: ${poolCode}`;
+  const poolInviteValue = "1x ±10 min invullen. Speelschema + uitslagen volgen.";
+  const groupMessageText = `${poolInviteHeadline}\n${poolInviteCode}\nMaak evt. eerst gratis een account. ${poolInviteValue}`;
+  const groupMessage = `${groupMessageText}\n\n${joinUrl}`;
+  const socialMessage = `${poolInviteHeadline}\n${poolInviteCode}\n${poolInviteValue}`;
+  const instagramMessage = `100% gratis WK-poule "${poolName}". ${poolInviteCode}. ${poolInviteValue}`;
+  const encodedMessage = encodeURIComponent(groupMessage);
+  const encodedInvite = encodeURIComponent(socialMessage);
+  const encodedSignalMessage = encodeURIComponent(groupMessage);
   const encodedUrl = encodeURIComponent(joinUrl);
   const encodedTitle = encodeURIComponent(`Doe mee met ${poolName}`);
-  const encodedBody = encodedMessage;
-  const facebookWebHref = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedMessage}`;
+  const encodedBody = encodeURIComponent(message);
+  const facebookWebHref = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedInvite}`;
   const fileName = `qr-${poolName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "wk-poule"}.png`;
 
   async function copyText(text = joinUrl) {
@@ -41,13 +51,13 @@ export function PoolQuickShare({
     }
   }
 
-  async function nativeShare() {
+  async function nativeShare(shareText = inviteText) {
     try {
       if (navigator.share) {
-        await navigator.share({ title: `Doe mee met ${poolName}`, text: inviteText, url: joinUrl });
+        await navigator.share({ title: `Doe mee met ${poolName}`, text: shareText, url: joinUrl });
         return;
       }
-      await navigator.clipboard.writeText(message);
+      await navigator.clipboard.writeText(`${shareText}\n${joinUrl}`.trim());
       setNativeCopied(true);
       setTimeout(() => setNativeCopied(false), 1800);
     } catch {
@@ -59,7 +69,7 @@ export function PoolQuickShare({
     setQrBusy(true);
     try {
       if (!qrDataUrl) {
-        await nativeShare();
+        await nativeShare(groupMessageText);
         return;
       }
       const blob = await (await fetch(qrDataUrl)).blob();
@@ -68,7 +78,7 @@ export function PoolQuickShare({
       if (nav.canShare?.({ files: [file] })) {
         await nav.share({ files: [file], title: `Doe mee met ${poolName}`, text: `Scan de QR of ga naar ${joinUrl}` });
       } else if (navigator.share) {
-        await navigator.share({ title: `Doe mee met ${poolName}`, text: inviteText, url: joinUrl });
+        await navigator.share({ title: `Doe mee met ${poolName}`, text: groupMessageText, url: joinUrl });
       } else {
         window.open(qrDataUrl, "_blank", "noopener,noreferrer");
       }
@@ -95,6 +105,14 @@ export function PoolQuickShare({
         >
           <Send aria-hidden="true" className="size-4" />
         </AppFirstShareLink>
+        <a
+          className="pool-quick-share-button pool-quick-share-signal"
+          href={`sgnl://send?text=${encodedSignalMessage}`}
+          aria-label="Deel via Signal"
+          title="Deel via Signal"
+        >
+          <span aria-hidden="true" className="pool-share-brand-letter">S</span>
+        </a>
         <button
           className="pool-quick-share-button pool-quick-share-copy"
           type="button"
@@ -137,7 +155,7 @@ export function PoolQuickShare({
             <button
               className="pool-quick-share-button pool-quick-share-instagram pool-quick-share-admin-button"
               type="button"
-              onClick={nativeShare}
+              onClick={() => nativeShare(instagramMessage)}
               aria-label={nativeCopied ? "Link gekopieerd voor Instagram" : "Deel via Instagram of native deelmenu"}
               title={nativeCopied ? "Link gekopieerd voor Instagram" : "Deel via Instagram/native deelmenu"}
             >

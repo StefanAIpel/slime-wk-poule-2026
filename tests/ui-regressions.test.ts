@@ -203,9 +203,14 @@ test("mobile pool navigation uses a dropdown selector instead of wrapping all po
 });
 
 test("pool share text includes the poulecode and account-before-join guidance", () => {
-  assert.match(poulesPage, /Poulecode: \$\{pool\.code\} 👇/);
+  assert.match(poulesPage, /Doe je mee met onze 100% gratis WK-poule/);
+  assert.match(poulesPage, /Poulecode: \$\{pool\.code\}/);
   assert.match(poulesPage, /Nog geen account\? Maak eerst gratis een SlimeScore-account aan; daarna kom je via deze link\/code in de poule\./);
+  assert.match(poulesPage, /1x ±10 min invullen\. Daarna volg je het speelschema en de uitslagen\./);
   assert.match(poolQuickShare, /const message = `\$\{inviteText\}\\n\\n\$\{joinUrl\}`\.trim\(\)/);
+  assert.match(poolQuickShare, /const groupMessageText = `\$\{poolInviteHeadline\}\\n\$\{poolInviteCode\}\\nMaak evt\. eerst gratis een account\. \$\{poolInviteValue\}`/);
+  assert.match(poolQuickShare, /const groupMessage = `\$\{groupMessageText\}\\n\\n\$\{joinUrl\}`/);
+  assert.match(poolQuickShare, /const poolInviteCode = `Poulecode: \$\{poolCode\}`/);
   assert.match(joinPoolPage, /Nog geen account\? Maak eerst gratis een SlimeScore-account aan; daarna kom je terug bij deze poule\./);
   assert.doesNotMatch(joinPoolPage, /Geen wachtwoord\. Link klikken/);
 });
@@ -340,6 +345,7 @@ test("mobile poule page prioritizes ranking and keeps share buttons visible next
   assert.match(poolQuickShare, /<div className=\"pool-quick-share\" aria-label=\"Poule delen\">/);
   assert.match(poolQuickShare, /pool-share-inline-label/);
   assert.match(poolQuickShare, /label="Deel via WhatsApp"/);
+  assert.match(poolQuickShare, /aria-label="Deel via Signal"/);
   assert.match(poolQuickShare, /Kopieer link/);
   assert.match(poolQuickShare, /aria-label=\"Deel via mail\"/);
   assert.match(poolQuickShare, /aria-label=\"Deel QR-code\"/);
@@ -349,9 +355,16 @@ test("mobile poule page prioritizes ranking and keeps share buttons visible next
   assert.match(poolQuickShare, /label=\"Deel via Telegram\"/);
   assert.match(poolQuickShare, /whatsapp:\/\/send\?text=\$\{encodedMessage\}/);
   assert.match(poolQuickShare, /https:\/\/wa\.me\/\?text=\$\{encodedMessage\}/);
-  assert.match(shareButton, /whatsapp:\/\/send\?text=\$\{encodedBoth\}/);
+  assert.match(poolQuickShare, /sgnl:\/\/send\?text=\$\{encodedSignalMessage\}/);
+  assert.match(poolQuickShare, /async function nativeShare\(shareText = inviteText\)/);
+  assert.match(poolQuickShare, /await nativeShare\(groupMessageText\)/);
+  assert.match(poolQuickShare, /navigator\.share\(\{ title: `Doe mee met \$\{poolName\}`, text: groupMessageText, url: joinUrl \}\)/);
+  assert.match(shareButton, /type ShareChannel = "whatsapp" \| "facebook" \| "telegram" \| "signal" \| "mail" \| "instagram" \| "native"/);
+  assert.match(shareButton, /whatsapp:\/\/send\?text=\$\{encodedWhatsApp\}/);
+  assert.match(shareButton, /tg:\/\/msg_url\?url=\$\{encodedUrl\}&text=\$\{encodedTelegramText\}/);
+  assert.match(shareButton, /sgnl:\/\/send\?text=\$\{encodedSignal\}/);
   assert.match(shareButton, /fb:\/\/facewebmodal\/f\?href=\$\{encodeURIComponent\(facebookWebHref\)\}/);
-  assert.match(shareButton, /https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=\$\{encodedUrl\}&quote=\$\{encodedBoth\}/);
+  assert.match(shareButton, /https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=\$\{encodedUrl\}&quote=\$\{encodedFacebookQuote\}/);
   assert.match(appFirstShareLink, /window\.location\.href = appHref/);
   assert.match(appFirstShareLink, /window\.open\(webHref, "_blank", "noopener,noreferrer"\)/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);/);
