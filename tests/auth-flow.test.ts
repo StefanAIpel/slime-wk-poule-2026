@@ -8,6 +8,7 @@ const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url),
 const aanmeldenPage = await readFile(new URL("../src/app/aanmelden/page.tsx", import.meta.url), "utf8");
 const finishAuth = await readFile(new URL("../src/lib/supabase/finish-auth.ts", import.meta.url), "utf8");
 const callbackRoute = await readFile(new URL("../src/app/auth/callback/route.ts", import.meta.url), "utf8");
+const passwordRoute = await readFile(new URL("../src/app/auth/password/route.ts", import.meta.url), "utf8").catch(() => "");
 const signupProfile = await readFile(new URL("../src/lib/supabase/signup-profile.ts", import.meta.url), "utf8");
 const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
 const authRecoveryTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
@@ -16,8 +17,28 @@ test("FrontPage has email-password login as the primary returning-player flow", 
   assert.match(loginForm, /aria-label=\"Inloggen met mail en wachtwoord\"/);
   assert.match(loginForm, /type=\"password\"/);
   assert.match(loginForm, /autoComplete=\"current-password\"/);
-  assert.match(loginForm, /signInWithPassword\(\{[\s\S]*email:/);
   assert.match(loginForm, /mail en wachtwoord/);
+});
+
+test("password login is finalized by a server route before the homepage reloads", () => {
+  assert.match(loginForm, /function openScorecard\(reason: string\)/);
+  assert.match(loginForm, /async function submitPasswordLogin\(/);
+  assert.match(loginForm, /fetch\(\"\/auth\/password\"/);
+  assert.match(loginForm, /credentials: \"same-origin\"/);
+  assert.match(loginForm, /window\.location\.replace\(result\.redirectTo\)/);
+  assert.doesNotMatch(loginForm, /supabase\.auth\.signInWithPassword/);
+  assert.match(passwordRoute, /export async function POST\(request: NextRequest\)/);
+  assert.match(passwordRoute, /const supabase = await createClient\(\)/);
+  assert.match(passwordRoute, /supabase\.auth\.signInWithPassword\(\{[\s\S]*email,[\s\S]*password/);
+  assert.match(passwordRoute, /allowedRequestOrigins\(request\)/);
+  assert.match(passwordRoute, /safeRedirectTarget\(target\) === target/);
+  assert.match(passwordRoute, /DEFAULT_LOGIN_REDIRECT/);
+  assert.match(passwordRoute, /SITE_URL, SITE_URL_APP/);
+  assert.match(passwordRoute, /requestFromSameOrigin\(request\)/);
+  assert.match(passwordRoute, /isJsonRequest\(request\)/);
+  assert.match(passwordRoute, /status: 403/);
+  assert.match(passwordRoute, /status: 415/);
+  assert.match(passwordRoute, /NextResponse\.json\(\{ ok: true, redirectTo: target \}\)/);
 });
 
 test("successful login always leaves the same homepage URL to avoid mobile auth hangs", () => {

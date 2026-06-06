@@ -225,11 +225,12 @@ export default async function PoolsPage({
             const isOwner = currentMember?.role === "owner";
             const isManager = currentMember?.role === "owner" || currentMember?.role === "moderator";
             const joinAssets = poolJoinAssets.get(pool.id) ?? { joinUrl: SITE_URL, qrDataUrl: "" };
-            const inviteText = `Doe je mee met onze gratis WK 2026-poule "${pool.name}"? Poulecode: ${pool.code} 👇
+            const inviteText = `Doe je mee met onze 100% gratis WK-poule "${pool.name}"?
 
+Poulecode: ${pool.code}
 Nog geen account? Maak eerst gratis een SlimeScore-account aan; daarna kom je via deze link/code in de poule.
 
-Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
+1x ±10 min invullen. Daarna volg je het speelschema en de uitslagen.`;
             const poolHeroStyle = {
               "--pool-accent": pool.accentColor,
               "--pool-banner-image": `url("${poolBannerUrl(pool.id, pool.bannerPath, pool.bannerUpdatedAt)}")`,
@@ -242,10 +243,9 @@ Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
                       <h2 className="pool-card-title"><span aria-hidden="true">{pool.badgeEmoji}</span> {pool.name}</h2>
                       <PoolQuickShare
                         joinUrl={joinAssets.joinUrl}
-                        qrDataUrl={joinAssets.qrDataUrl}
                         poolName={pool.name}
+                        poolCode={pool.code}
                         inviteText={inviteText}
-                        isManager={isManager}
                       />
                     </div>
                     <p className="pool-code-line">
