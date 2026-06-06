@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
-import { LOCALE_COOKIE, isSupportedLocale, preferredLocaleFromRequest, type Locale } from "@/lib/i18n";
+import { LOCALE_COOKIE, isSupportedLocale, preferredLocaleFromRequest, stripLocaleFromPath, type Locale } from "@/lib/i18n";
 
 const localeCookieOptions = {
   path: "/",
@@ -18,21 +18,27 @@ export async function middleware(request: NextRequest) {
   const acceptLanguage = request.headers.get("accept-language");
   const pathLocale: Locale = request.nextUrl.pathname === "/en" || request.nextUrl.pathname.startsWith("/en/") ? "en" : "nl";
   const requestedLocale = isSupportedLocale(langParam) ? langParam : null;
-  const locale = requestedLocale ?? (isSupportedLocale(cookieLocale) ? cookieLocale : pathLocale === "en" ? "en" : preferredLocaleFromRequest({ cookieLocale, country: countryCode, acceptLanguage }));
+  const locale = requestedLocale ?? (pathLocale === "en" ? "en" : isSupportedLocale(cookieLocale) ? cookieLocale : preferredLocaleFromRequest({ cookieLocale, country: countryCode, acceptLanguage }));
 
   if (requestedLocale) {
     const url = request.nextUrl.clone();
     url.searchParams.delete("lang");
-    if (requestedLocale === "en") {
-      const response = NextResponse.redirect(new URL("/en", request.url));
-      response.cookies.set(LOCALE_COOKIE, locale, localeCookieOptions);
-      return response;
+    if (requestedLocale === "en" && url.pathname === "/") {
+      url.pathname = "/en";
     }
-    if (request.nextUrl.pathname === "/en") {
-      url.pathname = "/";
+    if (requestedLocale === "nl") {
+      url.pathname = stripLocaleFromPath(url.pathname);
     }
     const response = NextResponse.redirect(url);
     response.cookies.set(LOCALE_COOKIE, locale, localeCookieOptions);
+    return response;
+  }
+
+  if (!requestedLocale && request.nextUrl.pathname.startsWith("/en/")) {
+    const url = request.nextUrl.clone();
+    url.pathname = stripLocaleFromPath(url.pathname);
+    const response = NextResponse.redirect(url);
+    response.cookies.set(LOCALE_COOKIE, "en", localeCookieOptions);
     return response;
   }
 

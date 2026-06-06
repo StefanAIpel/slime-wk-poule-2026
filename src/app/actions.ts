@@ -2,12 +2,14 @@
 
 import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { isAdminEmail } from "@/lib/admin";
 import { isAvatarKey } from "@/lib/avatars";
 import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
+import { LOCALE_COOKIE, isSupportedLocale } from "@/lib/i18n";
 import { kidEmail } from "@/lib/kid";
 import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH, POOL_NAME_MAX_LENGTH, POOL_NAME_MIN_LENGTH, TEAM_NAME_MAX_LENGTH, TEAM_NAME_MIN_LENGTH } from "@/lib/limits";
 import { logError } from "@/lib/log";
@@ -122,17 +124,31 @@ export async function saveProfile(formData: FormData) {
 
 export async function updateAccount(formData: FormData) {
   const { supabase, user } = await requireUser();
+  const payload: { avatar_key?: string | null; preferred_locale?: "nl" | "en" } = {};
   const avatarKey = cleanText(formData.get("avatar_key"), 64);
-  const avatarPayload = { avatar_key: isAvatarKey(avatarKey) ? avatarKey : null };
+  const preferredLocale = cleanText(formData.get("preferred_locale"), 8);
 
-  // Naam en teamnaam blijven vast; avatar mag de speler zelf aanpassen.
-  const { error } = await supabase.from("profiles").update(avatarPayload).eq("id", user.id);
-  if (error) throw new Error(error.message);
+  // Naam en teamnaam blijven vast; avatar en taalvoorkeur mag de speler zelf aanpassen.
+  if (formData.has("avatar_key")) {
+    payload.avatar_key = isAvatarKey(avatarKey) ? avatarKey : null;
+  }
+  if (isSupportedLocale(preferredLocale)) {
+    payload.preferred_locale = preferredLocale;
+  }
+
+  if (Object.keys(payload).length) {
+    const { error } = await supabase.from("profiles").update(payload).eq("id", user.id);
+    if (error) throw new Error(error.message);
+  }
+
+  if (payload.preferred_locale) {
+    (await cookies()).set(LOCALE_COOKIE, preferredLocale, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
+  }
 
   revalidatePath("/account");
   revalidatePath("/ranglijst");
   revalidatePath("/poules");
-  redirect("/account?opgeslagen=avatar");
+  redirect(`/account?opgeslagen=${payload.preferred_locale ? "taal" : "avatar"}`);
 }
 
 export async function deleteAccount(formData: FormData) {

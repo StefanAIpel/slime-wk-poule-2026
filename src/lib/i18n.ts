@@ -1,4 +1,5 @@
 export const LOCALE_COOKIE = "slimescore-locale";
+export const LOCALE_STORAGE_KEY = "slimescore-locale";
 export const SUPPORTED_LOCALES = ["nl", "en"] as const;
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
@@ -42,6 +43,48 @@ export function stripLocaleFromPath(pathname: string) {
 }
 
 export function pathForLocale(pathname: string, locale: Locale) {
-  if (locale === "en") return "/en";
-  return stripLocaleFromPath(pathname);
+  const strippedPathname = stripLocaleFromPath(pathname || "/");
+  if (locale === "en") return strippedPathname === "/" ? "/en" : strippedPathname;
+  return strippedPathname;
+}
+
+export function localizedHref(href: string, locale: Locale) {
+  if (!href.startsWith("/") || href.startsWith("//")) return href;
+
+  const [beforeHash, hash] = href.split("#", 2);
+  const [pathname, query] = beforeHash.split("?", 2);
+  const localizedPath = pathForLocale(pathname || "/", locale);
+  return `${localizedPath}${query ? `?${query}` : ""}${hash ? `#${hash}` : ""}`;
+}
+
+export function localeFromCookieString(cookieString: string | null | undefined): Locale | null {
+  if (!cookieString) return null;
+  const cookies = cookieString.split(";").map((part) => part.trim());
+  for (const cookie of cookies) {
+    const [name, value] = cookie.split("=", 2);
+    if (name === LOCALE_COOKIE && isSupportedLocale(decodeURIComponent(value ?? ""))) return decodeURIComponent(value) as Locale;
+  }
+  return null;
+}
+
+export function localeFromBrowserPreference(pathname = "/"): Locale {
+  const pathLocale = localeFromPathname(pathname);
+  if (pathLocale === "en") return "en";
+
+  if (typeof window !== "undefined") {
+    try {
+      const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+      if (isSupportedLocale(stored)) return stored;
+    } catch {
+      // localStorage can be unavailable in private contexts; fall back to cookies/html lang.
+    }
+  }
+
+  if (typeof document !== "undefined") {
+    const cookieLocale = localeFromCookieString(document.cookie);
+    if (cookieLocale) return cookieLocale;
+    if (isSupportedLocale(document.documentElement.lang)) return document.documentElement.lang;
+  }
+
+  return pathLocale;
 }

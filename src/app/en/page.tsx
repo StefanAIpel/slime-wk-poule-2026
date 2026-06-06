@@ -20,6 +20,7 @@ type HomeLeaderboardRow = {
 
 const generalShareTitle = "SlimeScore · free World Cup pool";
 const generalShareText = "Create your own 100% free World Cup pool for friends. Fill in your predictions once in about ten minutes; follow the schedule and results.";
+const appIcon = "/icons/slimescore-app-icon-v4-512.png";
 const generalShareMessages = {
   whatsapp: "100% free World Cup pool for friends ⚽\nCreate your own pool. Fill in predictions once in about ten minutes; follow fixtures + results.",
   facebook: "Create your own 100% free World Cup pool for friends. Fill in predictions once in about ten minutes; follow fixtures and results.",
@@ -45,6 +46,13 @@ export const metadata: Metadata = {
     url: `${SITE_URL}/en`,
     title: "SlimeScore · Free World Cup 2026 pool",
     description: "Create a free World Cup 2026 pool for friends, family or colleagues.",
+    images: [{ url: appIcon, width: 512, height: 512, alt: "SlimeScore app icon" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "SlimeScore · Free World Cup 2026 pool",
+    description: "Create a free World Cup 2026 pool for friends, family or colleagues.",
+    images: [appIcon],
   },
 };
 

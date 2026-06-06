@@ -1,4 +1,4 @@
-import { AtSign, LifeBuoy, ShieldCheck, Trash2, Trophy, UserCog } from "lucide-react";
+import { AtSign, Languages, LifeBuoy, ShieldCheck, Trash2, Trophy, UserCog } from "lucide-react";
 import { redirect } from "next/navigation";
 import { deleteAccount, updateAccount } from "@/app/actions";
 import { AvatarPicker } from "@/components/avatar-picker";
@@ -8,14 +8,115 @@ import { PageHero } from "@/components/page-hero";
 import { PasswordChangeForm } from "@/components/password-change-form";
 import { APP_VERSION, CONTACT_EMAIL } from "@/lib/constants";
 import { formatAmsterdam } from "@/lib/format";
+import { isSupportedLocale, localizedHref, type Locale } from "@/lib/i18n";
+import { getServerLocale } from "@/lib/server-locale";
 import { createClient } from "@/lib/supabase/server";
 
-const accountErrors: Record<string, string> = {
-  "te-kort": "Vul bij naam én teamnaam minstens 4 tekens in.",
-  bezet: "Die naam is al bezet. Kies een andere.",
-  gereserveerd: "Kies een echte naam of bijnaam.",
-  bevestig: "Typ VERWIJDER om je account definitief te verwijderen.",
+const accountErrors: Record<Locale, Record<string, string>> = {
+  nl: {
+    "te-kort": "Vul bij naam én teamnaam minstens 4 tekens in.",
+    bezet: "Die naam is al bezet. Kies een andere.",
+    gereserveerd: "Kies een echte naam of bijnaam.",
+    bevestig: "Typ VERWIJDER om je account definitief te verwijderen.",
+  },
+  en: {
+    "te-kort": "Use at least 4 characters for both name and team name.",
+    bezet: "That name is already taken. Choose another one.",
+    gereserveerd: "Choose a real name or nickname.",
+    bevestig: "Type DELETE to permanently delete your account.",
+  },
 };
+
+const accountCopy = {
+  nl: {
+    title: "Mijn account",
+    subtitle: "Beheer je profiel, avatar, wachtwoord, taal en account.",
+    saved: "Opgeslagen.",
+    fallbackError: "Er ging iets mis. Probeer het opnieuw.",
+    profile: "Profiel",
+    fixedProfile: "Je naam en teamnaam staan vast na aanmelding. Je slime-avatar en taalvoorkeur kun je wél aanpassen.",
+    name: "Naam of bijnaam",
+    teamName: "Teamnaam",
+    player: "Speler",
+    avatar: "Avatar aanpassen",
+    saveAvatar: "Avatar opslaan",
+    languageTitle: "Taal instellen",
+    languageIntro: "Kies de taal voor je hele SlimeScore-bezoek. We bewaren dit in je account en browser.",
+    accountLanguage: "Accounttaal",
+    dutch: "Nederlands",
+    english: "Engels",
+    saveLanguage: "Taal opslaan",
+    emailPrivate: "Je e-mail is privé en alleen voor inloggen. Andere spelers zien dit niet.",
+    deleteTitle: "Account verwijderen",
+    deleteCopy:
+      "Dit verwijdert je profiel, voorspellingen, scores en je deelname aan WK-poules. WK-poules waarvan jij beheerder bent worden ook verwijderd. Dit kan niet ongedaan worden gemaakt.",
+    deleteConfirm: "Typ",
+    deleteConfirmSuffix: "om te bevestigen",
+    deleteButton: "Verwijder mijn account",
+    pointsTitle: "Mijn punten",
+    total: "Totaal",
+    progress: "Voortgang",
+    filled: "ingevuld",
+    exactScores: "Exacte uitslagen",
+    correctResults: "Juiste uitslagen",
+    bonusPoints: "Bonuspunten",
+    lastCalculated: "Laatst berekend",
+    notYet: "nog niet",
+    scoreExplanation: "Transparant: je totaal is de som van wedstrijdpunten, rondekeuzes en bonusvragen. Zie",
+    scoringLink: "de puntentelling",
+    supportTitle: "Support-info",
+    supportIntro: "Handig als je ons iets vraagt: deel deze gegevens via",
+    userId: "Gebruikers-id",
+    predictions: "Voorspellingen",
+    lastScoreUpdate: "Laatste score-update",
+    appVersion: "App-versie",
+    beta: "bèta",
+  },
+  en: {
+    title: "My account",
+    subtitle: "Manage your profile, avatar, password, language and account.",
+    saved: "Saved.",
+    fallbackError: "Something went wrong. Please try again.",
+    profile: "Profile",
+    fixedProfile: "Your name and team name are locked after signup. You can still change your slime avatar and language preference.",
+    name: "Name or nickname",
+    teamName: "Team name",
+    player: "Player",
+    avatar: "Change avatar",
+    saveAvatar: "Save avatar",
+    languageTitle: "Language settings",
+    languageIntro: "Choose the language for your full SlimeScore visit. We store it in your account and browser.",
+    accountLanguage: "Account language",
+    dutch: "Dutch",
+    english: "English",
+    saveLanguage: "Save language",
+    emailPrivate: "Your email is private and only used for signing in. Other players cannot see it.",
+    deleteTitle: "Delete account",
+    deleteCopy:
+      "This deletes your profile, predictions, scores and WC pool memberships. WC pools where you are the manager will also be deleted. This cannot be undone.",
+    deleteConfirm: "Type",
+    deleteConfirmSuffix: "to confirm",
+    deleteButton: "Delete my account",
+    pointsTitle: "My points",
+    total: "Total",
+    progress: "Progress",
+    filled: "filled in",
+    exactScores: "Exact scores",
+    correctResults: "Correct results",
+    bonusPoints: "Bonus points",
+    lastCalculated: "Last calculated",
+    notYet: "not yet",
+    scoreExplanation: "Transparent: your total is the sum of match points, round picks and bonus questions. See",
+    scoringLink: "the scoring rules",
+    supportTitle: "Support info",
+    supportIntro: "Useful when you ask us something: share these details via",
+    userId: "User ID",
+    predictions: "Predictions",
+    lastScoreUpdate: "Last score update",
+    appVersion: "App version",
+    beta: "beta",
+  },
+} as const;
 
 export default async function AccountPage({
   searchParams,
@@ -23,6 +124,7 @@ export default async function AccountPage({
   searchParams: Promise<{ opgeslagen?: string; fout?: string }>;
 }) {
   const params = await searchParams;
+  const requestLocale = await getServerLocale();
   const supabase = await createClient();
   const {
     data: { user },
@@ -31,11 +133,14 @@ export default async function AccountPage({
   if (!user) redirect("/");
 
   const [{ data: profile }, { data: score }, { count: predictionCount }] = await Promise.all([
-    supabase.from("profiles").select("nickname,team_name,avatar_key").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("nickname,team_name,avatar_key,preferred_locale").eq("id", user.id).maybeSingle(),
     supabase.from("scores").select("points,exact_scores,correct_results,bonus_points,updated_at").eq("user_id", user.id).maybeSingle(),
     supabase.from("predictions").select("match_id", { count: "exact", head: true }).eq("user_id", user.id),
   ]);
 
+  const locale: Locale = requestLocale;
+  const copy = accountCopy[locale];
+  const preferredLocale: Locale = isSupportedLocale(profile?.preferred_locale) ? profile.preferred_locale : locale;
   const nickname = profile?.nickname ?? "";
   const teamName = profile?.team_name ?? "";
   const filled = predictionCount ?? 0;
@@ -43,18 +148,18 @@ export default async function AccountPage({
   return (
     <main className="page-shell">
       <header className="mb-6 grid gap-4">
-        <Brand />
-        <PageHero title="Mijn account" subtitle="Beheer je profiel, avatar, wachtwoord en account." slime="/assets/hd-account.webp" />
+        <Brand locale={locale} />
+        <PageHero title={copy.title} subtitle={copy.subtitle} slime="/assets/hd-account.webp" />
       </header>
 
       {params.opgeslagen ? (
         <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-4 font-bold text-green-800">
-          Opgeslagen.
+          {copy.saved}
         </div>
       ) : null}
       {params.fout ? (
         <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-4 font-bold text-red-800">
-          {accountErrors[params.fout] ?? "Er ging iets mis. Probeer het opnieuw."}
+          {accountErrors[locale][params.fout] ?? copy.fallbackError}
         </div>
       ) : null}
 
@@ -63,23 +168,39 @@ export default async function AccountPage({
           <div className="panel grid gap-4 p-5">
             <div className="flex items-center gap-3">
               <UserCog aria-hidden="true" className="size-7 text-[#064ed6]" />
-              <h2 className="text-2xl font-bold text-[#081634]">Profiel</h2>
+              <h2 className="text-2xl font-bold text-[#081634]">{copy.profile}</h2>
             </div>
-            <p className="text-sm font-medium leading-6 text-[#48617f]">
-              Je naam en teamnaam staan vast na aanmelding. Je slime-avatar kun je wél aanpassen.
-            </p>
+            <p className="text-sm font-medium leading-6 text-[#48617f]">{copy.fixedProfile}</p>
             <div className="grid gap-3 sm:grid-cols-2">
-              <ReadOnlyProfileField label="Naam of bijnaam" value={nickname || "Speler"} />
-              <ReadOnlyProfileField label="Teamnaam" value={teamName || "—"} />
+              <ReadOnlyProfileField label={copy.name} value={nickname || copy.player} />
+              <ReadOnlyProfileField label={copy.teamName} value={teamName || "—"} />
             </div>
             <form action={updateAccount} className="grid gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3">
-              <div className="text-sm font-bold text-[#081634]">Avatar aanpassen</div>
-              <AvatarPicker initialKey={profile?.avatar_key} name={nickname || "Speler"} />
+              <div className="text-sm font-bold text-[#081634]">{copy.avatar}</div>
+              <AvatarPicker initialKey={profile?.avatar_key} name={nickname || copy.player} />
               <button className="button-secondary w-fit" type="submit">
-                Avatar opslaan
+                {copy.saveAvatar}
               </button>
             </form>
           </div>
+
+          <form action={updateAccount} className="panel grid gap-3 p-5">
+            <div className="flex items-center gap-3">
+              <Languages aria-hidden="true" className="size-7 text-[#0e8a49]" />
+              <h2 className="text-xl font-bold text-[#081634]">{copy.languageTitle}</h2>
+            </div>
+            <p className="text-sm font-medium leading-6 text-[#48617f]">{copy.languageIntro}</p>
+            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+              {copy.accountLanguage}
+              <select className="field" name="preferred_locale" defaultValue={preferredLocale}>
+                <option value="nl">🇳🇱 {copy.dutch}</option>
+                <option value="en">🇬🇧 {copy.english}</option>
+              </select>
+            </label>
+            <button className="button-secondary w-fit" type="submit">
+              {copy.saveLanguage}
+            </button>
+          </form>
 
           <details className="panel p-5">
             <summary className="flex cursor-pointer items-center gap-3">
@@ -91,68 +212,65 @@ export default async function AccountPage({
             </p>
             <p className="mt-2 flex items-center gap-2 text-xs font-medium text-[#48617f]">
               <ShieldCheck aria-hidden="true" className="size-4 text-[#25a84a]" />
-              Je e-mail is privé en alleen voor inloggen. Andere spelers zien dit niet.
+              {copy.emailPrivate}
             </p>
           </details>
 
           <details className="panel border-red-200 p-5">
             <summary className="flex cursor-pointer items-center gap-3">
               <Trash2 aria-hidden="true" className="size-6 text-[#b23b46]" />
-              <span className="text-lg font-bold text-[#081634]">Account verwijderen</span>
+              <span className="text-lg font-bold text-[#081634]">{copy.deleteTitle}</span>
             </summary>
             <form action={deleteAccount} className="mt-3 grid gap-3">
-              <p className="text-sm font-medium leading-6 text-[#48617f]">
-                Dit verwijdert je profiel, voorspellingen, scores en je deelname aan WK-poules. WK-poules waarvan jij beheerder
-                bent worden ook verwijderd. Dit kan niet ongedaan worden gemaakt.
-              </p>
+              <p className="text-sm font-medium leading-6 text-[#48617f]">{copy.deleteCopy}</p>
               <label className="grid gap-2 text-sm font-bold text-[#081634]">
-                Typ <span className="text-[#b23b46]">VERWIJDER</span> om te bevestigen
+                {copy.deleteConfirm} <span className="text-[#b23b46]">VERWIJDER</span> {copy.deleteConfirmSuffix}
                 <input className="field" name="confirm" placeholder="VERWIJDER" autoComplete="off" />
               </label>
               <button className="button-secondary w-fit text-[#b23b46]" type="submit">
                 <Trash2 aria-hidden="true" className="size-4" />
-                Verwijder mijn account
+                {copy.deleteButton}
               </button>
             </form>
           </details>
         </div>
 
         <div className="grid gap-4">
-          <PasswordChangeForm />
+          <PasswordChangeForm locale={locale} />
 
           <div className="panel grid gap-3 p-5">
             <div className="flex items-center gap-3">
               <Trophy aria-hidden="true" className="size-7 text-[#e1a93a]" />
-              <h2 className="text-xl font-bold text-[#081634]">Mijn punten</h2>
+              <h2 className="text-xl font-bold text-[#081634]">{copy.pointsTitle}</h2>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <ScoreStat label="Totaal" value={`${score?.points ?? 0} pt`} highlight />
-              <ScoreStat label="Voortgang" value={`${filled}/72 ingevuld`} />
-              <ScoreStat label="Exacte uitslagen" value={String(score?.exact_scores ?? 0)} />
-              <ScoreStat label="Juiste uitslagen" value={String(score?.correct_results ?? 0)} />
-              <ScoreStat label="Bonuspunten" value={String(score?.bonus_points ?? 0)} />
-              <ScoreStat label="Laatst berekend" value={score?.updated_at ? formatAmsterdam(score.updated_at) : "nog niet"} />
+              <ScoreStat label={copy.total} value={`${score?.points ?? 0} pt`} highlight />
+              <ScoreStat label={copy.progress} value={`${filled}/72 ${copy.filled}`} />
+              <ScoreStat label={copy.exactScores} value={String(score?.exact_scores ?? 0)} />
+              <ScoreStat label={copy.correctResults} value={String(score?.correct_results ?? 0)} />
+              <ScoreStat label={copy.bonusPoints} value={String(score?.bonus_points ?? 0)} />
+              <ScoreStat label={copy.lastCalculated} value={score?.updated_at ? formatAmsterdam(score.updated_at, locale === "en" ? "en-GB" : "nl-NL") : copy.notYet} />
             </div>
             <p className="text-xs font-medium leading-5 text-[#48617f]">
-              Transparant: je totaal is de som van wedstrijdpunten, rondekeuzes en bonusvragen. Zie{" "}
-              <a className="font-bold text-[#0e7a44]" href="/regels">de puntentelling</a>.
+              {copy.scoreExplanation}{" "}
+              <a className="font-bold text-[#0e7a44]" href={localizedHref("/regels", locale)}>{copy.scoringLink}</a>.
             </p>
           </div>
 
           <details className="panel p-5">
             <summary className="flex cursor-pointer items-center gap-3">
               <LifeBuoy aria-hidden="true" className="size-6 text-[#064ed6]" />
-              <span className="text-lg font-bold text-[#081634]">Support-info</span>
+              <span className="text-lg font-bold text-[#081634]">{copy.supportTitle}</span>
             </summary>
             <p className="mt-2 text-xs font-medium leading-5 text-[#48617f]">
-              Handig als je ons iets vraagt: deel deze gegevens via{" "}
+              {copy.supportIntro}{" "}
               <a className="font-bold text-[#0e7a44]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
             </p>
             <dl className="mt-3 grid gap-1 text-xs text-[#48617f]">
-              <div className="flex justify-between gap-3"><dt>Gebruikers-id</dt><dd className="font-mono text-[#081634]">{user.id.slice(0, 8)}…</dd></div>
-              <div className="flex justify-between gap-3"><dt>Voorspellingen</dt><dd className="text-[#081634]">{filled}/72</dd></div>
-              <div className="flex justify-between gap-3"><dt>Laatste score-update</dt><dd className="text-[#081634]">{score?.updated_at ? formatAmsterdam(score.updated_at) : "—"}</dd></div>
-              <div className="flex justify-between gap-3"><dt>App-versie</dt><dd className="text-[#081634]">bèta {APP_VERSION}</dd></div>
+              <div className="flex justify-between gap-3"><dt>{copy.userId}</dt><dd className="font-mono text-[#081634]">{user.id.slice(0, 8)}…</dd></div>
+              <div className="flex justify-between gap-3"><dt>{copy.predictions}</dt><dd className="text-[#081634]">{filled}/72</dd></div>
+              <div className="flex justify-between gap-3"><dt>{copy.lastScoreUpdate}</dt><dd className="text-[#081634]">{score?.updated_at ? formatAmsterdam(score.updated_at, locale === "en" ? "en-GB" : "nl-NL") : "—"}</dd></div>
+              <div className="flex justify-between gap-3"><dt>{copy.appVersion}</dt><dd className="text-[#081634]">{copy.beta} {APP_VERSION}</dd></div>
             </dl>
           </details>
         </div>

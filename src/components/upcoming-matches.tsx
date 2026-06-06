@@ -1,7 +1,7 @@
 import { CalendarDays, MapPin } from "lucide-react";
 import { TeamFlag } from "@/components/team-flag";
 import { formatAmsterdam, teamAbbrev, teamNameForLocale, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
-import type { Locale } from "@/lib/i18n";
+import { localizedHref, type Locale } from "@/lib/i18n";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
 type Row = {
@@ -56,9 +56,9 @@ export async function UpcomingMatches({ limit = 3, locale = "nl" }: { limit?: nu
       <div className="mb-1 flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-base font-bold text-[var(--ink)]">
           <CalendarDays aria-hidden="true" className="size-5 text-[var(--blue)]" />
-          {locale === "en" ? "Upcoming World Cup matches" : "Eerstvolgende WK-wedstrijden"}
+          {locale === "en" ? "Upcoming WC matches" : "Eerstvolgende WK-wedstrijden"}
         </h2>
-        <a href="/schema" className="text-sm font-semibold text-[var(--blue)]">
+        <a href={localizedHref("/schema", locale)} className="text-sm font-semibold text-[var(--blue)]">
           {locale === "en" ? "Full schedule" : "Hele schema"}
         </a>
       </div>

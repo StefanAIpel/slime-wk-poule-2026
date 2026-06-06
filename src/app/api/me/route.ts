@@ -15,7 +15,7 @@ export async function GET() {
 
   const admin = createAdminClient();
   const [{ data: profile }, { data: myScore }, { count: predictionCount }] = await Promise.all([
-    supabase.from("profiles").select("nickname,team_name").eq("id", user.id).single(),
+    supabase.from("profiles").select("nickname,team_name,preferred_locale").eq("id", user.id).single(),
     admin.from("scores").select("points").eq("user_id", user.id).maybeSingle(),
     supabase.from("predictions").select("match_id", { count: "exact", head: true }).eq("user_id", user.id),
   ]);
@@ -31,5 +31,6 @@ export async function GET() {
     points: myPoints,
     rank: worldRankForUser(withPublicRankScores((rankScores ?? []) as unknown as RankedScore[]), user.id),
     progress: Math.round(((predictionCount ?? 0) / 72) * 100),
+    preferredLocale: profile?.preferred_locale ?? null,
   });
 }
