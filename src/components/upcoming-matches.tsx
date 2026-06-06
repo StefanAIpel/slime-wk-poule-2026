@@ -1,6 +1,7 @@
 import { CalendarDays, MapPin } from "lucide-react";
 import { TeamFlag } from "@/components/team-flag";
-import { formatAmsterdam, teamAbbrev, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
+import { formatAmsterdam, teamAbbrev, teamNameForLocale, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
+import type { Locale } from "@/lib/i18n";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
 type Row = {
@@ -19,10 +20,13 @@ type Row = {
   away: { name_nl: string | null } | null;
 };
 
-function ResultBoxes({ home, away }: { home: number | null; away: number | null }) {
+function ResultBoxes({ home, away, locale }: { home: number | null; away: number | null; locale: Locale }) {
   const complete = home !== null && away !== null;
+  const label = complete
+    ? (locale === "en" ? `Result ${home}-${away}` : `Uitslag ${home}-${away}`)
+    : (locale === "en" ? "Result not known yet" : "Uitslag nog niet bekend");
   return (
-    <span className="match-score-boxes" aria-label={complete ? `Uitslag ${home}-${away}` : "Uitslag nog niet bekend"}>
+    <span className="match-score-boxes" aria-label={label}>
       <span className={complete ? "score-box score-box-filled" : "score-box"}>{home ?? ""}</span>
       <span className="score-dash" aria-hidden="true">-</span>
       <span className={complete ? "score-box score-box-filled" : "score-box"}>{away ?? ""}</span>
@@ -31,7 +35,7 @@ function ResultBoxes({ home, away }: { home: number | null; away: number | null 
 }
 
 /** Compact lijstje met de eerstvolgende wedstrijden — ook nuttig zonder login. */
-export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
+export async function UpcomingMatches({ limit = 3, locale = "nl" }: { limit?: number; locale?: Locale }) {
   const admin = createOptionalAdminClient();
   if (!admin) return null;
 
@@ -52,10 +56,10 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
       <div className="mb-1 flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-base font-bold text-[var(--ink)]">
           <CalendarDays aria-hidden="true" className="size-5 text-[var(--blue)]" />
-          Eerstvolgende WK-wedstrijden
+          {locale === "en" ? "Upcoming World Cup matches" : "Eerstvolgende WK-wedstrijden"}
         </h2>
         <a href="/schema" className="text-sm font-semibold text-[var(--blue)]">
-          Hele schema
+          {locale === "en" ? "Full schedule" : "Hele schema"}
         </a>
       </div>
       <div className="divide-y divide-slate-200">
@@ -66,10 +70,10 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
             </div>
             <div className="min-w-0 flex-1">
               <div className="match-meta match-meta-compact">
-                <span className="match-time">{formatAmsterdam(m.starts_at)}</span>
+                <span className="match-time">{formatAmsterdam(m.starts_at, locale === "en" ? "en-GB" : "nl-NL")}</span>
                 {venueHourOffset(m.starts_at, m.venue) !== null ? (
-                  <span className="match-time-offset" title="Tijdverschil met Nederland">
-                    ({(() => { const o = venueHourOffset(m.starts_at, m.venue)!; return o === 0 ? "gelijk" : `${o > 0 ? "+" : "−"}${Math.abs(o)}u`; })()})
+                  <span className="match-time-offset" title={locale === "en" ? "Time difference with the Netherlands" : "Tijdverschil met Nederland"}>
+                    ({(() => { const o = venueHourOffset(m.starts_at, m.venue)!; return o === 0 ? (locale === "en" ? "same" : "gelijk") : `${o > 0 ? "+" : "−"}${Math.abs(o)}${locale === "en" ? "h" : "u"}`; })()})
                   </span>
                 ) : null}
                 {m.venue ? (
@@ -82,22 +86,22 @@ export async function UpcomingMatches({ limit = 3 }: { limit?: number }) {
               </div>
               <div className="upcoming-team-grid mt-2 text-sm">
                 <div className="schedule-team-cell schedule-team-cell-home">
-                  <TeamFlag code={m.home_code} name={m.home?.name_nl} />
-                  <span className="schedule-team-name font-medium tracking-wide text-[var(--ink)]" title={m.home?.name_nl ?? m.home_label ?? m.home_code ?? undefined}>
+                  <TeamFlag code={m.home_code} name={teamNameForLocale(m.home_code, m.home?.name_nl, locale)} locale={locale} />
+                  <span className="schedule-team-name font-medium tracking-wide text-[var(--ink)]" title={teamNameForLocale(m.home_code, m.home?.name_nl ?? m.home_label, locale) || undefined}>
                     {teamAbbrev(m.home_code, m.home_label ?? m.home?.name_nl)}
                   </span>
                 </div>
                 <span className="upcoming-team-separator">
                   <span aria-hidden="true">-</span>
-                  <span className="sr-only">tegen</span>
+                  <span className="sr-only">{locale === "en" ? "versus" : "tegen"}</span>
                 </span>
                 <div className="schedule-team-cell schedule-team-cell-away">
-                  <TeamFlag code={m.away_code} name={m.away?.name_nl} />
-                  <span className="schedule-team-name font-medium tracking-wide text-[var(--ink)]" title={m.away?.name_nl ?? m.away_label ?? m.away_code ?? undefined}>
+                  <TeamFlag code={m.away_code} name={teamNameForLocale(m.away_code, m.away?.name_nl, locale)} locale={locale} />
+                  <span className="schedule-team-name font-medium tracking-wide text-[var(--ink)]" title={teamNameForLocale(m.away_code, m.away?.name_nl ?? m.away_label, locale) || undefined}>
                     {teamAbbrev(m.away_code, m.away_label ?? m.away?.name_nl)}
                   </span>
                 </div>
-                <ResultBoxes home={m.home_score} away={m.away_score} />
+                <ResultBoxes home={m.home_score} away={m.away_score} locale={locale} />
               </div>
             </div>
           </div>

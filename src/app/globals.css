@@ -1452,6 +1452,44 @@ textarea {
     inset 0 -2px 0 rgba(0, 0, 0, 0.22);
 }
 
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 18px rgba(8, 22, 52, 0.08);
+}
+
+.language-switcher-option {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  min-height: 30px;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  line-height: 1;
+  text-decoration: none;
+  filter: grayscale(0.35);
+}
+
+.language-switcher-option:hover {
+  background: #eef3fc;
+  filter: none;
+}
+
+.language-switcher-option.is-active {
+  background: linear-gradient(135deg, var(--blue), var(--blue-2));
+  filter: none;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.quick-menu-language-switcher {
+  flex: 0 0 auto;
+}
+
 /* Geïntegreerde header-balk bovenin de stadion-hero. */
 .hero-topbar {
   position: absolute;
@@ -1519,6 +1557,10 @@ textarea {
     gap: 2px;
     flex-wrap: wrap;
     justify-content: flex-end;
+  }
+
+  .site-header-nav .language-switcher {
+    margin-left: 4px;
   }
 
   .site-header-link {
