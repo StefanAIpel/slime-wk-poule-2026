@@ -372,6 +372,9 @@ test("English locale has a top-menu flag switch and defaults to English outside 
   assert.match(languageSwitcher, /aria-label=\{locale === "en" \? "Language switch" : "Taalkeuze \/ language switch"\}/);
   assert.match(languageSwitcher, /aria-label=\{locale === "en" \? "English active" : "Switch to English"\}/);
   assert.match(languageSwitcher, /document\.cookie = `\$\{LOCALE_COOKIE\}=\$\{nextLocale\}/);
+  assert.doesNotMatch(languageSwitcher, /next\/link/);
+  assert.match(languageSwitcher, /<a\s+[\s\S]*href=\{nlHref\}/);
+  assert.match(languageSwitcher, /<a\s+[\s\S]*href=\{englishHref\}/);
   assert.match(siteHeader, /import \{ LanguageSwitcher \} from "@\/components\/language-switcher"/);
   assert.match(siteHeader, /<LanguageSwitcher \/>/);
   assert.match(quickMenu, /<LanguageSwitcher className=\"quick-menu-language-switcher\" \/>/);

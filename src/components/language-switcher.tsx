@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LOCALE_COOKIE, localeFromPathname, pathForLocale, type Locale } from "@/lib/i18n";
 
@@ -18,7 +17,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
 
   return (
     <div className={`language-switcher ${className}`} aria-label={locale === "en" ? "Language switch" : "Taalkeuze / language switch"}>
-      <Link
+      <a
         href={nlHref}
         className={`language-switcher-option ${locale === "nl" ? "is-active" : ""}`}
         aria-label={locale === "nl" ? "Nederlands actief" : "Switch to Dutch"}
@@ -27,8 +26,8 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
       >
         <span aria-hidden="true">🇳🇱</span>
         <span className="sr-only">Nederlands</span>
-      </Link>
-      <Link
+      </a>
+      <a
         href={englishHref}
         className={`language-switcher-option ${locale === "en" ? "is-active" : ""}`}
         aria-label={locale === "en" ? "English active" : "Switch to English"}
@@ -37,7 +36,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
       >
         <span aria-hidden="true">🇬🇧</span>
         <span className="sr-only">English</span>
-      </Link>
+      </a>
     </div>
   );
 }
