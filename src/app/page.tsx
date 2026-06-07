@@ -435,12 +435,15 @@ function PublicHome({ authError, leaderboard, locale }: { authError: boolean; le
 
   return (
     <main className="page-shell shell-top-tight grid gap-5">
-      {/* LCP-versneller: de hero-achtergrond is een CSS-::after background, die wordt
-          anders pas ná het parsen van de CSS ontdekt. Met een responsive preload haalt
-          de browser precies de juiste variant meteen op (geen layout-impact → geen CLS). */}
-      <link rel="preload" as="image" href="/assets/hero-home-portrait.webp" media="(max-width: 759px)" fetchPriority="high" />
-      <link rel="preload" as="image" href="/assets/hero-home-landscape.webp" media="(min-width: 760px)" fetchPriority="high" />
       <div className="hero-band hero-band-visual hero-home hero-band-topbar">
+        {/* LCP-element als echt <img> achter de tekst: de preload-scanner vindt 'm meteen
+            in de HTML (vóór CSS-parsing), met fetchPriority high. <picture> kiest de juiste
+            crop (portrait mobiel / landscape desktop). Absoluut achter de scrim → geen
+            layout-impact, CLS blijft 0. */}
+        <picture className="hero-photo">
+          <source media="(min-width: 760px)" srcSet="/assets/hero-home-landscape.webp" />
+          <img src="/assets/hero-home-portrait.webp" alt="" aria-hidden="true" fetchPriority="high" decoding="async" />
+        </picture>
         <div className="hero-topbar md:hidden">
           <BrandWordmark onDark />
         </div>
