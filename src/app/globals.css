@@ -2147,6 +2147,135 @@ textarea {
   width: 100%;
 }
 
+/* ---- Live-subsite (live.slimescore.com) ---- */
+.live-subsite {
+  min-height: 100vh;
+}
+
+.live-subsite-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #1e73b8 0%, #114b82 55%, #0e7a44 100%);
+  box-shadow: 0 8px 22px rgba(8, 22, 52, 0.18);
+}
+
+.live-subsite-brand {
+  text-decoration: none;
+}
+
+.live-subsite-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.live-subsite-tab {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.live-subsite-tab.is-active {
+  background: #ff9800;
+  color: #fff;
+}
+
+.live-subsite-main {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.live-subsite-footer {
+  margin: 8px auto 28px;
+  width: min(700px, 100%);
+  padding: 0 16px;
+}
+
+.live-subsite-footer-title {
+  margin-bottom: 8px;
+  color: #48617f;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.live-row {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  color: #0b1f4d;
+  text-decoration: none;
+}
+
+.live-row:hover {
+  background: #f7faff;
+}
+
+.live-row-status {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #48617f;
+}
+
+.live-row-status.is-live {
+  color: #e11d48;
+}
+
+.live-row-teams {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.live-row-team {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.live-row-team-away {
+  justify-content: flex-start;
+}
+
+.live-row-logo {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.live-row-name {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-row-score {
+  font-weight: 1000;
+  font-variant-numeric: tabular-nums;
+}
+
 .rules-side-banners .slime-link-banners {
   width: min(460px, 100%);
   margin-inline: 0;
