@@ -22,7 +22,9 @@ const appFont = Plus_Jakarta_Sans({
 });
 
 const description =
-  "Gratis Nederlandse WK 2026-poule. Eén keer invullen, maak een WK-poule met vrienden en familie en zie wie er wint. Jouw data privé.";
+  "Gratis WK 2026-poule voor Nederland en België. Voorspel wedstrijden, maak een poule met vrienden of collega's en volg de ranglijst live.";
+const englishDescription =
+  "Free World Cup 2026 prediction pool for international fans. Create a football pool for friends, family or colleagues and follow live rankings.";
 
 const appIcon = "/icons/slimescore-app-icon-v4-512.png";
 const appleTouchIcon = "/icons/slimescore-apple-touch-icon-v4-180.png";
@@ -44,6 +46,17 @@ export const metadata: Metadata = {
     "gratis WK poule",
     "wereldkampioenschap 2026",
     "poule maken",
+    "Oranje WK 2026",
+    "Nederland WK poule",
+    "België WK poule",
+    "World Cup 2026 pool",
+    "free World Cup pool",
+    "FIFA World Cup 2026 predictions",
+    "football pool",
+    "soccer pool",
+    "office football pool",
+    "USA Canada Mexico 2026",
+    "SlimeScore",
     "Slime Score",
   ],
   applicationName: SITE_NAME,
@@ -62,10 +75,16 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   alternates: {
     canonical: SITE_URL,
+    languages: {
+      nl: SITE_URL,
+      en: `${SITE_URL}/en`,
+      "x-default": `${SITE_URL}/en`,
+    },
   },
   openGraph: {
     type: "website",
     locale: "nl_NL",
+    alternateLocale: ["en_GB", "en_US"],
     url: SITE_URL,
     siteName: SITE_NAME,
     title: "Slime Score · Gratis WK 2026-poule",
@@ -98,13 +117,31 @@ const structuredData = [
   },
   {
     "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    alternateName: ["Slime Score", "World Cup 2026 pool", "WK 2026 poule"],
+    url: SITE_URL,
+    inLanguage: ["nl-NL", "en"],
+    keywords: "World Cup 2026 pool, free World Cup pool, WK 2026 poule, voetbalpoule, football pool, soccer pool",
+    description: englishDescription,
+    potentialAction: {
+      "@type": "RegisterAction",
+      target: `${SITE_URL}/en#login`,
+      name: "Join a free World Cup 2026 pool",
+    },
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "WebApplication",
     name: SITE_NAME,
     url: SITE_URL,
     applicationCategory: "GameApplication",
     operatingSystem: "Web, iOS, Android",
-    inLanguage: "nl-NL",
+    inLanguage: ["nl-NL", "en"],
     description,
+    alternateName: ["Free World Cup 2026 prediction pool", "Gratis WK 2026-poule"],
+    keywords: "World Cup 2026, football predictions, soccer pool, office pool, WK poule, Oranje, Netherlands, Belgium, USA, Canada, Mexico",
+    areaServed: ["NL", "BE", "US", "CA", "MX", "GB", "Global"],
     offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
     publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}${appIcon}` },
   },

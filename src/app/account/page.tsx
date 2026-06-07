@@ -10,19 +10,19 @@ import { PasswordChangeForm } from "@/components/password-change-form";
 import { APP_VERSION, CONTACT_EMAIL } from "@/lib/constants";
 import { formatAmsterdam } from "@/lib/format";
 import { isSupportedLocale, localizedHref, type Locale } from "@/lib/i18n";
-import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH, TEAM_NAME_MAX_LENGTH, TEAM_NAME_MIN_LENGTH } from "@/lib/limits";
+import { TEAM_NAME_MAX_LENGTH, TEAM_NAME_MIN_LENGTH } from "@/lib/limits";
 import { getServerLocale } from "@/lib/server-locale";
 import { createClient } from "@/lib/supabase/server";
 
 const accountErrors: Record<Locale, Record<string, string>> = {
   nl: {
-    "te-kort": "Vul bij naam én teamnaam minstens 4 tekens in.",
+    "te-kort": "Vul een teamnaam van minstens 4 tekens in.",
     bezet: "Die naam is al bezet. Kies een andere.",
     gereserveerd: "Kies een echte naam of bijnaam.",
     bevestig: "Typ VERWIJDER om je account definitief te verwijderen.",
   },
   en: {
-    "te-kort": "Use at least 4 characters for both name and team name.",
+    "te-kort": "Use at least 4 characters for your team name.",
     bezet: "That name is already taken. Choose another one.",
     gereserveerd: "Choose a real name or nickname.",
     bevestig: "Type DELETE to permanently delete your account.",
@@ -36,8 +36,8 @@ const accountCopy = {
     saved: "Opgeslagen.",
     fallbackError: "Er ging iets mis. Probeer het opnieuw.",
     profile: "Profiel",
-    fixedProfile: "Werk je naam, teamnaam, slime-avatar en taalvoorkeur bij. Deze waarden komen uit je Supabase-profiel en worden overal in SlimeScore gebruikt.",
-    name: "Naam of bijnaam",
+    fixedProfile: "Werk je teamnaam, slime-avatar en taalvoorkeur bij. Je SlimeScore naam blijft vast zodat ranglijsten en poules herkenbaar blijven.",
+    playerName: "SlimeScore naam",
     teamName: "Teamnaam",
     player: "Speler",
     avatar: "Avatar aanpassen",
@@ -80,8 +80,8 @@ const accountCopy = {
     saved: "Saved.",
     fallbackError: "Something went wrong. Please try again.",
     profile: "Profile",
-    fixedProfile: "Update your name, team name, slime avatar and language preference. These values come from your Supabase profile and are used across SlimeScore.",
-    name: "Name or nickname",
+    fixedProfile: "Update your team name, slime avatar and language preference. Your SlimeScore name stays fixed so rankings and pools remain recognizable.",
+    playerName: "SlimeScore name",
     teamName: "Team name",
     player: "Player",
     avatar: "Change avatar",
@@ -186,19 +186,12 @@ export default async function AccountPage({
             <p className="text-sm font-medium leading-6 text-[#48617f]">{copy.fixedProfile}</p>
             <form action={updateAccount} className="grid gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3">
               <div className="grid gap-3 sm:grid-cols-2">
-                <label className="grid gap-2 text-sm font-bold text-[#081634]">
-                  {copy.name}
-                  <input
-                    className="field"
-                    name="nickname"
-                    required
-                    minLength={NICKNAME_MIN_LENGTH}
-                    maxLength={NICKNAME_MAX_LENGTH}
-                    defaultValue={nickname}
-                    placeholder={copy.player}
-                    autoComplete="nickname"
-                  />
-                </label>
+                <div className="grid gap-2 text-sm font-bold text-[#081634]">
+                  {copy.playerName}
+                  <div className="field flex items-center bg-slate-100 text-[#48617f]" aria-label={`${copy.playerName}: ${nickname || copy.player}`}>
+                    {nickname || copy.player}
+                  </div>
+                </div>
                 <label className="grid gap-2 text-sm font-bold text-[#081634]">
                   {copy.teamName}
                   <input

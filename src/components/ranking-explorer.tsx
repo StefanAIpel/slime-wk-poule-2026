@@ -25,6 +25,8 @@ const rankingExplorerCopy = {
     tabListLabel: "Kies ranglijst",
     worldTitle: "Wereldranglijst",
     poolsTitle: "WK-poules",
+    playerTab: "Per speler",
+    poolTab: "Per poule",
     playerSearchPlaceholder: "Zoek een speler of team…",
     poolSearchPlaceholder: "Zoek een WK-poule of code…",
     playerFallback: "Speler",
@@ -43,6 +45,8 @@ const rankingExplorerCopy = {
     tabListLabel: "Choose ranking",
     worldTitle: "World rankings",
     poolsTitle: "World Cup pools",
+    playerTab: "Per player",
+    poolTab: "Per pool",
     playerSearchPlaceholder: "Search for a player or team…",
     poolSearchPlaceholder: "Search for a World Cup pool or code…",
     playerFallback: "Player",
@@ -102,7 +106,7 @@ export function RankingExplorer({ players, pools, locale = "nl" }: { players: Pl
           onClick={() => setView("wereld")}
         >
           <Trophy aria-hidden="true" className="size-4" />
-          {copy.worldTitle}
+          {copy.playerTab}
         </button>
         <button
           type="button"
@@ -112,7 +116,7 @@ export function RankingExplorer({ players, pools, locale = "nl" }: { players: Pl
           onClick={() => setView("subpoules")}
         >
           <Users aria-hidden="true" className="size-4" />
-          {copy.poolsTitle}
+          {copy.poolTab}
         </button>
       </div>
 
