@@ -348,6 +348,21 @@ textarea {
   background: #b30f21;
 }
 
+.create-pool-share {
+  margin-top: 4px;
+  border-top-color: rgba(255, 255, 255, 0.22);
+}
+
+.create-pool-share .share-actions {
+  gap: 8px;
+}
+
+.create-pool-share .share-row-compact .share-link {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 8px;
+}
+
 .dark-panel {
   color: #fff;
   background:
@@ -490,16 +505,15 @@ textarea {
 
 @media (min-width: 640px) {
   .share-panel-strip {
-    grid-template-columns: auto auto;
-    justify-content: start;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: center;
     align-items: center;
-    column-gap: 14px;
-    justify-items: start;
-    text-align: left;
+    justify-items: center;
+    text-align: center;
   }
 
   .share-panel-strip .share-row {
-    justify-self: start;
+    justify-self: center;
   }
 }
 
@@ -1438,6 +1452,44 @@ textarea {
     inset 0 -2px 0 rgba(0, 0, 0, 0.22);
 }
 
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 18px rgba(8, 22, 52, 0.08);
+}
+
+.language-switcher-option {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  min-height: 30px;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  line-height: 1;
+  text-decoration: none;
+  filter: grayscale(0.35);
+}
+
+.language-switcher-option:hover {
+  background: #eef3fc;
+  filter: none;
+}
+
+.language-switcher-option.is-active {
+  background: linear-gradient(135deg, var(--blue), var(--blue-2));
+  filter: none;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.quick-menu-language-switcher {
+  flex: 0 0 auto;
+}
+
 /* Geïntegreerde header-balk bovenin de stadion-hero. */
 .hero-topbar {
   position: absolute;
@@ -1505,6 +1557,10 @@ textarea {
     gap: 2px;
     flex-wrap: wrap;
     justify-content: flex-end;
+  }
+
+  .site-header-nav .language-switcher {
+    margin-left: 4px;
   }
 
   .site-header-link {
@@ -2167,6 +2223,22 @@ textarea {
 }
 
 @media (max-width: 420px) {
+  .hero-home .world-cup-kicker {
+    flex-wrap: nowrap;
+    gap: 4px;
+    font-size: 0.56rem;
+    letter-spacing: 0.03em;
+  }
+
+  .hero-home .world-cup-kicker span {
+    padding: 3px 5px;
+  }
+
+  .hero-home-title-block h1 {
+    font-size: clamp(1.95rem, 12vw, 2.55rem);
+    line-height: 0.96;
+  }
+
   .game-tab-pill,
   .game-open-link {
     padding-inline: 10px;
@@ -2318,7 +2390,9 @@ textarea {
 }
 
 .share-row-compact .share-actions {
-  gap: 10px;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: clamp(6px, 2vw, 10px);
 }
 
 .share-link {
@@ -2341,9 +2415,11 @@ textarea {
 }
 
 .share-row-compact .share-link {
-  min-width: 44px;
-  min-height: 44px;
-  padding: 10px;
+  width: clamp(38px, 11.2vw, 44px);
+  min-width: clamp(38px, 11.2vw, 44px);
+  height: clamp(38px, 11.2vw, 44px);
+  min-height: clamp(38px, 11.2vw, 44px);
+  padding: 0;
 }
 
 .share-row-on-dark .share-link {
@@ -2373,9 +2449,24 @@ textarea {
   color: #1877f2;
 }
 
-.share-link-more,
-.share-row-on-dark .share-link-more {
-  color: #114b82;
+.share-link-telegram,
+.share-row-on-dark .share-link-telegram {
+  color: #229ed9;
+}
+
+.share-link-signal,
+.share-row-on-dark .share-link-signal {
+  color: #3a76f0;
+}
+
+.share-link-mail,
+.share-row-on-dark .share-link-mail {
+  color: #a85b00;
+}
+
+.share-link-instagram,
+.share-row-on-dark .share-link-instagram {
+  color: #c13584;
 }
 
 .slime-banner {
@@ -3647,35 +3738,16 @@ textarea {
 .pool-quick-share {
   display: inline-flex;
   flex: 0 1 auto;
+  max-width: 100%;
   min-width: 0;
   align-items: center;
   gap: 5px;
 }
 
-.pool-share-inline-label {
-  display: inline-grid;
-  width: 22px;
-  height: 22px;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.pool-share-menu-title {
-  margin: 0;
-  color: #48617f;
-  font-size: 0.72rem;
-  font-weight: 850;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
 .pool-share-actions {
   display: flex;
-  flex-wrap: wrap;
+  max-width: 100%;
+  flex-wrap: nowrap;
   gap: 5px;
 }
 
@@ -3702,12 +3774,12 @@ textarea {
   color: #168f4a;
 }
 
-.pool-quick-share-mail {
-  color: #a85b00;
+.pool-quick-share-signal {
+  color: #3a76f0;
 }
 
-.pool-quick-share-qr {
-  color: #114b82;
+.pool-quick-share-mail {
+  color: #a85b00;
 }
 
 .pool-quick-share-facebook {
@@ -3720,10 +3792,6 @@ textarea {
 
 .pool-quick-share-telegram {
   color: #229ed9;
-}
-
-.pool-quick-share-admin-button {
-  background: rgba(255, 255, 255, 0.9);
 }
 
 .pool-share-brand-letter {
@@ -3922,7 +3990,7 @@ textarea {
   }
 
   .pool-member-world {
-    display: none;
+    font-size: 0.62rem;
   }
 }
 

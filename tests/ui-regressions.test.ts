@@ -1,6 +1,14 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { test } from "node:test";
+
+async function readOptional(path: string) {
+  try {
+    return await readFile(new URL(path, import.meta.url), "utf8");
+  } catch {
+    return "";
+  }
+}
 
 const loginForm = await readFile(new URL("../src/components/login-form.tsx", import.meta.url), "utf8");
 const profileForm = await readFile(new URL("../src/components/profile-form.tsx", import.meta.url), "utf8");
@@ -12,14 +20,20 @@ const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url),
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
 const rankingPage = await readFile(new URL("../src/app/ranglijst/page.tsx", import.meta.url), "utf8");
+const rankingExplorer = await readFile(new URL("../src/components/ranking-explorer.tsx", import.meta.url), "utf8");
+const rulesPage = await readFile(new URL("../src/app/regels/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
 const manifest = await readFile(new URL("../src/app/manifest.ts", import.meta.url), "utf8");
 const constants = await readFile(new URL("../src/lib/constants.ts", import.meta.url), "utf8");
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
 const quickMenu = await readFile(new URL("../src/components/quick-menu.tsx", import.meta.url), "utf8");
+const languageSwitcher = await readOptional("../src/components/language-switcher.tsx");
+const i18nLib = await readOptional("../src/lib/i18n.ts");
+const middleware = await readFile(new URL("../middleware.ts", import.meta.url), "utf8");
 const statusBar = await readFile(new URL("../src/components/status-bar.tsx", import.meta.url), "utf8");
 const shareButton = await readFile(new URL("../src/components/share-button.tsx", import.meta.url), "utf8");
 const brandWordmark = await readFile(new URL("../src/components/brand-wordmark.tsx", import.meta.url), "utf8");
+const brand = await readFile(new URL("../src/components/brand.tsx", import.meta.url), "utf8");
 const bottomNav = await readFile(new URL("../src/components/bottom-nav.tsx", import.meta.url), "utf8");
 const upcomingMatches = await readFile(new URL("../src/components/upcoming-matches.tsx", import.meta.url), "utf8");
 const scheduleExplorer = await readFile(new URL("../src/components/schedule-explorer.tsx", import.meta.url), "utf8");
@@ -33,10 +47,16 @@ const joinPoolPage = await readFile(new URL("../src/app/poules/join/[code]/page.
 const poolMembers = await readFile(new URL("../src/components/pool-members.tsx", import.meta.url), "utf8");
 const poolQuickShare = await readFile(new URL("../src/components/pool-quick-share.tsx", import.meta.url), "utf8");
 const poolTabs = await readFile(new URL("../src/components/pool-tabs.tsx", import.meta.url), "utf8");
+const poolQr = await readFile(new URL("../src/components/pool-qr.tsx", import.meta.url), "utf8");
 const appFirstShareLink = await readFile(new URL("../src/components/app-first-share-link.tsx", import.meta.url), "utf8");
 const installAppCard = await readFile(new URL("../src/components/install-app-card.tsx", import.meta.url), "utf8");
+const siteFooter = await readFile(new URL("../src/components/site-footer.tsx", import.meta.url), "utf8");
+const localePreferenceSync = await readOptional("../src/components/locale-preference-sync.tsx");
+const localeApiRoute = await readOptional("../src/app/api/locale/route.ts");
+const teamFlag = await readFile(new URL("../src/components/team-flag.tsx", import.meta.url), "utf8");
 const knockoutPredictionPicker = await readFile(new URL("../src/components/knockout-prediction-picker.tsx", import.meta.url), "utf8");
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
+const predictionsComplete = await readFile(new URL("../src/components/predictions-complete.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
 const rankingLib = await readFile(new URL("../src/lib/ranking.ts", import.meta.url), "utf8");
 const limitsLib = await readFile(new URL("../src/lib/limits.ts", import.meta.url), "utf8");
@@ -45,7 +65,95 @@ const uniqueMigration = await readFile(new URL("../supabase/migrations/202606051
 const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
 const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
 const recoveryEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
+const englishHomePage = await readOptional("../src/app/en/page.tsx");
+const sitemapRoute = await readOptional("../src/app/sitemap.ts");
+const robotsRoute = await readOptional("../src/app/robots.ts");
+const aanmeldenPage = await readFile(new URL("../src/app/aanmelden/page.tsx", import.meta.url), "utf8");
+const privacyPage = await readFile(new URL("../src/app/privacy/page.tsx", import.meta.url), "utf8");
+const termsPage = await readFile(new URL("../src/app/voorwaarden/page.tsx", import.meta.url), "utf8");
+const migrationFiles = await readdir(new URL("../supabase/migrations/", import.meta.url));
+const preferredLocaleMigrations = (await Promise.all(
+  migrationFiles
+    .filter((file) => file.endsWith(".sql") && file.includes("preferred_locale"))
+    .map((file) => readFile(new URL(`../supabase/migrations/${file}`, import.meta.url), "utf8")),
+)).join("\n");
 
+test("SEO and indexation expose NL/EN alternates, English keywords, sitemap and robots", () => {
+  assert.match(layout, /World Cup 2026 pool/);
+  assert.match(layout, /free World Cup pool/);
+  assert.match(layout, /USA Canada Mexico 2026/);
+  assert.match(layout, /"x-default": `\$\{SITE_URL\}\/en`/);
+  assert.match(layout, /"@type": "WebSite"/);
+  assert.match(layout, /areaServed: \["NL", "BE", "US", "CA", "MX", "GB", "Global"\]/);
+  assert.match(englishHomePage, /keywords: \[/);
+  assert.match(englishHomePage, /FIFA World Cup 2026 predictions/);
+  assert.match(englishHomePage, /football pool/);
+  assert.match(englishHomePage, /"x-default": `\$\{SITE_URL\}\/en`/);
+  assert.match(sitemapRoute, /export default function sitemap/);
+  assert.match(sitemapRoute, /"\/en"/);
+  assert.match(sitemapRoute, /"\/games"/);
+  assert.match(robotsRoute, /sitemap\.xml/);
+  assert.match(robotsRoute, /export default function robots/);
+  assert.match(robotsRoute, /disallow: \["\/admin", "\/api\/", "\/auth\/"\]/);
+});
+
+test("English authenticated home reuses the logged-in dashboard instead of the public landing page", () => {
+  assert.match(englishHomePage, /HomeContent/);
+  assert.match(homePage, /export async function HomeContent/);
+  assert.match(homePage, /locale:\s*Locale/);
+  assert.match(homePage, /persistSignupProfileFromMetadata/);
+  assert.match(homePage, /copy\.dashboardTitle/);
+  assert.match(homePage, /<Brand locale=\{locale\}/);
+  assert.match(homePage, /<BottomNav current=\"\/\" \/>/);
+});
+
+test("account settings save team, avatar and language through Supabase without editing the SlimeScore name", () => {
+  assert.doesNotMatch(accountPage, /name=\"nickname\"/);
+  assert.match(accountPage, /copy\.playerName/);
+  assert.match(accountPage, /name=\"team_name\"/);
+  assert.match(accountPage, /defaultValue=\{teamName\}/);
+  assert.match(accountPage, /<AvatarPicker initialKey=\{profile\?\.avatar_key\} name=\{nickname \|\| copy\.player\} locale=\{locale\}/);
+  assert.match(actions, /const hasNickname = formData\.has\("nickname"\)/);
+  assert.match(actions, /const hasTeamName = formData\.has\("team_name"\)/);
+  assert.match(actions, /if \(hasTeamName\) \{[\s\S]*payload\.team_name = teamName;[\s\S]*\}/);
+  assert.match(actions, /payload:\s*\{[\s\S]*nickname\?: string;[\s\S]*team_name\?: string;[\s\S]*avatar_key\?: string \| null;[\s\S]*preferred_locale\?: \"nl\" \| \"en\"/);
+  assert.match(actions, /\.from\(\"profiles\"\)\.upsert\(\{ id: user\.id, \.\.\.payload \}/);
+  assert.match(actions, /revalidatePath\(\"\/en\"\)/);
+  assert.match(actions, /redirect\(`\$\{localizedHref\(\"\/account\", redirectLocale\)\}\?opgeslagen=\$\{savedKind\}`\)/);
+});
+
+test("signup, terms and privacy pages render in the active locale instead of 404 or Dutch-only copy", () => {
+  for (const source of [aanmeldenPage, privacyPage, termsPage]) {
+    assert.match(source, /getServerLocale/);
+    assert.match(source, /const locale = await getServerLocale\(\)/);
+    assert.match(source, /<Brand locale=\{locale\}/);
+  }
+  assert.match(aanmeldenPage, /LoginForm surface=\"inline\" initialMode=\"login\" locale=\{locale\}/);
+  assert.match(aanmeldenPage, /Sign up/);
+  assert.match(privacyPage, /Privacy policy/);
+  assert.match(termsPage, /Terms of use/);
+  assert.match(siteFooter, /localizedHref\(\"\/privacy\", locale\)/);
+  assert.match(siteFooter, /localizedHref\(\"\/voorwaarden\", locale\)/);
+});
+
+test("mobile rankings distinguish individual players from sub-pools", () => {
+  assert.match(rankingExplorer, /ranking-row-player/);
+  assert.match(rankingExplorer, /ranking-row-pool/);
+  assert.match(rankingExplorer, /playerRankLabel/);
+  assert.match(rankingExplorer, /poolRankLabel/);
+  assert.match(rankingExplorer, /playerTab: "Per speler"/);
+  assert.match(rankingExplorer, /playerTab: "Per player"/);
+  assert.match(rankingExplorer, /poolTab: "Per poule"/);
+  assert.match(rankingExplorer, /poolTab: "Per pool"/);
+  assert.match(rankingExplorer, /top 4 total/i);
+  assert.match(poolMembers, /poolRankLabel/);
+  assert.match(poolMembers, /Pool rank/);
+  assert.doesNotMatch(globalsCss, /\.pool-member-world \{\n\s*display: none;\n\s*\}/);
+});
+
+test("footer version is bumped for this high-priority deploy", () => {
+  assert.match(constants, /APP_VERSION = "0\.21"/);
+});
 test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
   const heroPrimaryBlock = globalsCss.match(/\.button-primary\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";
   const mobileHeroBlock = globalsCss.match(/@media \(max-width: 759px\) \{[\s\S]*?\.button-primary\.hero-primary-cta \{[\s\S]*?\}\n\}/)?.[0] ?? "";
@@ -148,8 +256,9 @@ test("create-pool card uses Mexico green contrast styling", () => {
 
 test("pool banner upload helper appears before file input and keeps the original image ratio visible", () => {
   const uploadBlock = poulesPage.match(/<form action=\{uploadPoolImage\}[\s\S]*?<PendingButton/)?.[0] ?? "";
-  assert.match(uploadBlock, /Aanbevolen: breed beeld, liefst 1600 × 900 px \(16:9\)\. We slaan uploads op als \.webp en tonen ze in originele verhouding, zonder crop of uitrekken\./);
-  assert.ok(uploadBlock.indexOf("1600 × 900 px") < uploadBlock.indexOf('type="file"'));
+  assert.match(poulesPage, /uploadHint:[\s\S]*Aanbevolen: breed beeld, liefst 1600 × 900 px \(16:9\)\. We slaan uploads op als \.webp en tonen ze in originele verhouding, zonder crop of uitrekken\./);
+  assert.match(poulesPage, /uploadHint:[\s\S]*Recommended: a wide image, preferably 1600 × 900 px \(16:9\)\. Uploads are stored as \.webp and shown in their original ratio, without cropping or stretching\./);
+  assert.match(uploadBlock, /\{copy\.uploadHint\}[\s\S]*type="file"/);
   assert.match(actions, /const POOL_BANNER_MAX_WIDTH = 1600/);
   assert.match(actions, /const POOL_BANNER_MAX_HEIGHT = 900/);
   assert.match(actions, /resize\(\{[\s\S]*width: POOL_BANNER_MAX_WIDTH,[\s\S]*height: POOL_BANNER_MAX_HEIGHT,[\s\S]*fit: "inside"/);
@@ -158,7 +267,7 @@ test("pool banner upload helper appears before file input and keeps the original
 });
 
 test("create-pool placeholder uses a neutral local example instead of a personal family name", () => {
-  assert.match(homePage, /placeholder="Bijv\. FC Vathorst"/);
+  assert.match(homePage, /createPoolPlaceholder: "Bijv\. FC Vathorst"/);
   assert.doesNotMatch(homePage, /Familie Dijkstra/);
 });
 
@@ -203,41 +312,59 @@ test("mobile pool navigation uses a dropdown selector instead of wrapping all po
 });
 
 test("pool share text includes the poulecode and account-before-join guidance", () => {
-  assert.match(poulesPage, /Poulecode: \$\{pool\.code\} 👇/);
+  assert.match(poulesPage, /Doe je mee met onze 100% gratis WK-poule/);
+  assert.match(poulesPage, /Poulecode: \$\{poolCode\}/);
   assert.match(poulesPage, /Nog geen account\? Maak eerst gratis een SlimeScore-account aan; daarna kom je via deze link\/code in de poule\./);
+  assert.match(poulesPage, /1x ±10 min invullen\. Daarna volg je het speelschema en de uitslagen\./);
+  assert.match(poulesPage, /Join our 100% free World Cup pool/);
+  assert.match(poulesPage, /Pool code: \$\{poolCode\}/);
+  assert.match(poulesPage, /No account yet\? Create a free SlimeScore account first; then this link\/code takes you into the pool\./);
+  assert.match(poulesPage, /Fill in once in about 10 minutes\. Then follow the schedule and results\./);
   assert.match(poolQuickShare, /const message = `\$\{inviteText\}\\n\\n\$\{joinUrl\}`\.trim\(\)/);
+  assert.match(poolQuickShare, /const groupMessageText = `\$\{poolInviteHeadline\}\\n\$\{poolInviteCode\}\\n\$\{copy\.accountHint\} \$\{poolInviteValue\}`/);
+  assert.match(poolQuickShare, /const groupMessage = `\$\{groupMessageText\}\\n\\n\$\{joinUrl\}`/);
+  assert.match(poolQuickShare, /code: \(poolCode: string\) => `Poulecode: \$\{poolCode\}`/);
+  assert.match(poolQuickShare, /code: \(poolCode: string\) => `Pool code: \$\{poolCode\}`/);
   assert.match(joinPoolPage, /Nog geen account\? Maak eerst gratis een SlimeScore-account aan; daarna kom je terug bij deze poule\./);
   assert.doesNotMatch(joinPoolPage, /Geen wachtwoord\. Link klikken/);
 });
 
-test("account page keeps name/team fixed but lets players change avatar and password safely", () => {
+test("account page saves profile, avatar, password and language safely", () => {
   assert.match(profileForm, /name=\"nickname\"/);
   assert.match(profileForm, /name=\"team_name\"/);
   assert.match(profileForm, /avatar_key/);
-  assert.doesNotMatch(accountPage, /name=\"nickname\"|name=\"team_name\"/);
+  assert.doesNotMatch(accountPage, /name=\"nickname\"/);
+  assert.match(accountPage, /copy\.playerName/);
+  assert.match(accountPage, /name=\"team_name\"/);
+  assert.doesNotMatch(accountPage, /defaultValue=\{nickname\}/);
+  assert.match(accountPage, /defaultValue=\{teamName\}/);
   assert.match(accountPage, /<form action=\{updateAccount\}/);
-  assert.match(accountPage, /<AvatarPicker initialKey=\{profile\?\.avatar_key\} name=\{nickname \|\| \"Speler\"\}/);
+  assert.match(accountPage, /<AvatarPicker initialKey=\{profile\?\.avatar_key\} name=\{nickname \|\| copy\.player\} locale=\{locale\}/);
   assert.match(accountPage, /Avatar opslaan/);
-  assert.match(accountPage, /<PasswordChangeForm \/>/);
+  assert.match(accountPage, /name=\"preferred_locale\"/);
+  assert.match(accountPage, /Account language/);
+  assert.match(accountPage, /<PasswordChangeForm locale=\{locale\} \/>/);
   assert.match(accountPage, /<details className=\"panel p-5\">[\s\S]*E-mail/);
-  assert.match(accountPage, /<details className=\"panel border-red-200 p-5\">[\s\S]*Account verwijderen/);
+  assert.match(accountPage, /deleteTitle: \"Account verwijderen\"/);
+  assert.match(accountPage, /deleteTitle: \"Delete account\"/);
+  assert.match(accountPage, /<details className=\"panel border-red-200 p-5\">[\s\S]*\{copy\.deleteTitle\}/);
   assert.match(actions, /avatar_key: isAvatarKey\(avatarKey\) \? avatarKey : null/);
-  assert.match(actions, /from\(\"profiles\"\)\.update\(avatarPayload\)\.eq\(\"id\", user\.id\)/);
+  assert.match(actions, /payload\.preferred_locale = preferredLocale/);
+  assert.match(actions, /from\(\"profiles\"\)\.upsert\(\{ id: user\.id, \.\.\.payload \}\)/);
   assert.match(avatarPicker, /name=\"avatar_key\"/);
   assert.match(passwordChangeForm, /supabase\.auth\.getSession\(\)/);
   assert.match(passwordChangeForm, /supabase\.auth\.updateUser\(\{ password \}\)/);
-  assert.match(passwordChangeForm, /autoComplete=\"new-password\"/);
 });
 
 test("shared SlimeScore links use the app icon instead of the wide banner", () => {
   assert.match(constants, /SITE_NAME = "SlimeScore"/);
   assert.match(manifest, /name: "SlimeScore"/);
   assert.match(manifest, /short_name: "SlimeScore"/);
-  assert.match(manifest, /src: "\/icons\/slimescore-app-icon-v3-512\.png"/);
+  assert.match(manifest, /src: "\/icons\/slimescore-app-icon-v4-512\.png"/);
   assert.match(manifest, /purpose: "any"/);
   assert.match(manifest, /purpose: "maskable"/);
   assert.match(layout, /const ogImage = appIcon/);
-  assert.match(layout, /slimescore-app-icon-v3-512\.png/);
+  assert.match(layout, /slimescore-app-icon-v4-512\.png/);
   assert.match(layout, /width: 512, height: 512/);
   assert.doesNotMatch(layout, /og-slimescore-wk2026-v2\.png/);
 });
@@ -272,11 +399,17 @@ test("dashboard copy matches the 72-group-result progress metric and password fl
   assert.doesNotMatch(homePage, /geen wachtwoord/);
 });
 
-test("share panel keeps the Deel SlimeScore label before icons and stacks it above on mobile", () => {
-  assert.match(homePage, /<p className=\"share-panel-title\">Deel SlimeScore<\/p>[\s\S]*<ShareRow/);
+test("share panel keeps the Deel SlimeScore label above a single icon row on every breakpoint", () => {
+  assert.match(homePage, /sharePanelLabel: "SlimeScore delen"/);
+  assert.match(homePage, /sharePanelTitle: "Deel SlimeScore"/);
+  assert.match(homePage, /<div className=\"create-pool-share share-panel-strip\" aria-label=\{copy\.sharePanelLabel\}>[\s\S]*<ShareRow/);
+  assert.match(homePage, /<div className=\"dark-panel poule-share-panel[\s\S]*<div className=\"share-panel-strip\">[\s\S]*<ShareRow/);
+  assert.match(homePage, /<p className=\"share-panel-title\">\{copy\.sharePanelTitle\}<\/p>[\s\S]*<ShareRow/);
   assert.match(globalsCss, /\.share-panel-strip \{[\s\S]*display: grid;[\s\S]*justify-items: center;/);
   assert.match(globalsCss, /\.share-panel-strip \.share-actions \{[\s\S]*justify-content: center;/);
-  assert.match(globalsCss, /@media \(min-width: 640px\) \{[\s\S]*\.share-panel-strip \{[\s\S]*grid-template-columns: auto auto;[\s\S]*justify-content: start;/);
+  assert.match(globalsCss, /\.share-row-compact \.share-actions \{[\s\S]*flex-wrap: nowrap;/);
+  assert.doesNotMatch(shareButton, /className=\"share-link share-link-more\"/);
+  assert.match(globalsCss, /@media \(min-width: 640px\) \{[\s\S]*\.share-panel-strip \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);[\s\S]*justify-content: center;/);
 });
 
 test("prediction saves sync the global status bar progress without requiring reload", () => {
@@ -328,35 +461,185 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(globalsCss, /\.quick-menu-logout \{/);
   assert.match(bottomNav, /return null;/);
   assert.doesNotMatch(bottomNav, /bottom-nav-emphasis/);
-  assert.match(statusBar, /href=\"\/voorspellingen\" className=\"status-chip status-chip-countdown/);
+  assert.match(statusBar, /const predictHref = locale === "en" && !me\?\.loggedIn \? "\/en#login" : localizedHref\("\/voorspellingen", locale\)/);
+  assert.match(statusBar, /href=\{predictHref\} className=\"status-chip status-chip-countdown/);
+});
+
+test("English locale has a top-menu flag switch and defaults to English outside NL/BE", () => {
+  assert.match(i18nLib, /export const LOCALE_COOKIE = "slimescore-locale"/);
+  assert.match(i18nLib, /SUPPORTED_LOCALES = \["nl", "en"\]/);
+  assert.match(i18nLib, /countryCode === "NL" \|\| countryCode === "BE"/);
+  assert.match(i18nLib, /const acceptedLanguages = acceptLanguage \?\? ""/);
+  assert.match(i18nLib, /acceptedLanguages\.toLowerCase\(\)\.includes\("nl"\)/);
+  assert.match(middleware, /request\.nextUrl\.searchParams\.get\("lang"\)/);
+  assert.match(middleware, /request\.headers\.get\("x-vercel-ip-country"\)/);
+  assert.match(middleware, /preferredLocaleFromRequest/);
+  assert.match(middleware, /NextResponse\.redirect\(new URL\("\/en"/);
+  assert.match(middleware, /response\.cookies\.set\(LOCALE_COOKIE, locale/);
+  assert.match(languageSwitcher, /🇳🇱/);
+  assert.match(languageSwitcher, /🇬🇧/);
+  assert.match(languageSwitcher, /useActiveLocale\(pathname\)/);
+  assert.doesNotMatch(languageSwitcher, /localeFromBrowserPreference\(pathname\)/);
+  assert.match(languageSwitcher, /aria-label=\{locale === "nl" \? "Nederlands actief" : "Switch to Dutch"\}/);
+  assert.match(languageSwitcher, /aria-label=\{locale === "en" \? "Language switch" : "Taalkeuze \/ language switch"\}/);
+  assert.match(languageSwitcher, /aria-label=\{locale === "en" \? "English active" : "Switch to English"\}/);
+  assert.match(languageSwitcher, /document\.cookie = `\$\{LOCALE_COOKIE\}=\$\{nextLocale\}/);
+  assert.doesNotMatch(languageSwitcher, /next\/link/);
+  assert.match(languageSwitcher, /<a\s+[\s\S]*href=\{nlHref\}/);
+  assert.match(languageSwitcher, /<a\s+[\s\S]*href=\{englishHref\}/);
+  assert.match(siteHeader, /import \{ LanguageSwitcher \} from "@\/components\/language-switcher"/);
+  assert.match(siteHeader, /<LanguageSwitcher \/>/);
+  assert.match(quickMenu, /<LanguageSwitcher className=\"quick-menu-language-switcher\" \/>/);
+  assert.match(globalsCss, /\.language-switcher \{/);
+  assert.match(globalsCss, /\.language-switcher-option\.is-active/);
+});
+
+test("English landing page translates the public signup flow without changing the Dutch home", () => {
+  assert.match(englishHomePage, /Free World Cup 2026 pool/);
+  assert.match(englishHomePage, /const appIcon = "\/icons\/slimescore-app-icon-v4-512\.png"/);
+  assert.match(englishHomePage, /images: \[\{ url: appIcon, width: 512, height: 512, alt: "SlimeScore app icon" \}\]/);
+  assert.match(englishHomePage, /twitter: \{[\s\S]*images: \[appIcon\]/);
+  assert.match(homePage, /Fill in your predictions for the full World Cup in about ten minutes/);
+  assert.match(homePage, /Create your World Cup pool/);
+  assert.match(homePage, /Share SlimeScore/);
+  assert.match(homePage, /<LoginForm surface=\"inline\" locale=\"en\" \/>/);
+  assert.match(loginForm, /locale = "nl"/);
+  assert.match(loginForm, /const copy = loginCopy\[locale\]/);
+  assert.match(loginForm, /Sign in/);
+  assert.match(loginForm, /Create account/);
+  assert.match(loginForm, /Forgot password\?/);
+  assert.match(upcomingMatches, /locale = "nl"/);
+  assert.match(upcomingMatches, /locale === "en" \? "Upcoming WC matches" : "Eerstvolgende WK-wedstrijden"/);
+  assert.match(homePage, /Gratis WK 2026 Poule/);
+  assert.match(homePage, /<LoginForm surface=\"inline\" \/>/);
+});
+
+test("English preference persists sitewide in browser storage and Supabase account", () => {
+  assert.match(i18nLib, /export const LOCALE_STORAGE_KEY = "slimescore-locale"/);
+  assert.match(i18nLib, /export function localeFromBrowserPreference/);
+  assert.match(i18nLib, /export function localizedHref/);
+  assert.match(languageSwitcher, /window\.localStorage\.setItem\(LOCALE_STORAGE_KEY, nextLocale\)/);
+  assert.match(languageSwitcher, /fetch\("\/api\/locale"/);
+  assert.match(localeApiRoute, /export async function POST/);
+  assert.match(localeApiRoute, /response\.cookies\.set\(LOCALE_COOKIE, locale/);
+  assert.match(localeApiRoute, /from\("profiles"\)\.update\(\{ preferred_locale: locale \}\)/);
+  assert.match(localePreferenceSync, /fetch\("\/api\/me"/);
+  assert.match(localePreferenceSync, /preferredLocale/);
+  assert.match(localePreferenceSync, /const cookieLocale = localeFromCookieString\(document\.cookie\)/);
+  assert.match(localePreferenceSync, /if \(cookieLocale\) return cookieLocale/);
+  assert.match(localePreferenceSync, /window\.localStorage\.getItem\(LOCALE_STORAGE_KEY\)/);
+  assert.match(localePreferenceSync, /reloadIfRenderedLocaleDiffers\(me\.preferredLocale\)/);
+  assert.match(localePreferenceSync, /fetch\("\/api\/me"[\s\S]*fetch\("\/api\/locale"/);
+  assert.match(layout, /<LocalePreferenceSync \/>/);
+  assert.match(apiMeRoute, /select\("nickname,team_name,preferred_locale"\)/);
+  assert.match(apiMeRoute, /preferredLocale: profile\?\.preferred_locale/);
+  assert.match(accountPage, /name="preferred_locale"/);
+  assert.match(accountPage, /Account language/);
+  assert.match(actions, /payload\.preferred_locale = preferredLocale/);
+  assert.match(actions, /cookieStore\.set\(LOCALE_COOKIE, preferredLocale/);
+  assert.match(preferredLocaleMigrations, /add column if not exists preferred_locale text/);
+  assert.match(preferredLocaleMigrations, /check \(preferred_locale in \('nl', 'en'\)\)/);
+});
+
+test("English preference keeps schedule and shared navigation in English without returning to Dutch schema copy", () => {
+  assert.match(middleware, /if \(requestedLocale === "en" && url\.pathname === "\/"\)/);
+  assert.doesNotMatch(middleware, /requestedLocale === "en"\)[\s\S]*new URL\("\/en"/);
+  assert.match(siteHeader, /const locale = useActiveLocale\(pathname \|\| "\/"\)/);
+  assert.match(siteHeader, /href=\{localizedHref\(link\.href, locale\)\}/);
+  assert.match(quickMenu, /const locale = useActiveLocale\(pathname \|\| "\/"\)/);
+  assert.match(quickMenu, /href=\{localizedHref\(link\.href, locale\)\}/);
+  assert.match(statusBar, /localizedHref\("\/voorspellingen", locale\)/);
+  assert.match(upcomingMatches, /href=\{localizedHref\("\/schema", locale\)\}/);
+  assert.match(brand, /locale = "nl"/);
+  assert.match(brand, /locale === "en" \? "WC pool 2026" : "WK-poule 2026"/);
+  assert.match(schemaPage, /const locale = await getServerLocale\(\)/);
+  assert.match(schemaPage, /locale === "en" \? "WC 2026 schedule" : "WK 2026 speelschema"/);
+  assert.match(schemaPage, /<ScheduleExplorer matches=\{scheduleMatches\} initialView="groups" locale=\{locale\} \/>/);
+  assert.match(schemaGroupsPage, /const locale = await getServerLocale\(\)/);
+  assert.match(schemaKnockoutPage, /const locale = await getServerLocale\(\)/);
+  assert.match(scheduleExplorer, /locale = "nl"/);
+  assert.match(scheduleExplorer, /groups: "Groups"/);
+  assert.match(scheduleExplorer, /allGroups: "All groups"/);
+  assert.match(scheduleExplorer, /noMatches: "No matches for this selection\."/);
+  assert.match(scheduleExplorer, /\{scheduleCopy\[locale\]\.noMatches\}/);
+  assert.match(scheduleExplorer, /formatAmsterdam\(match\.startsAt, locale === "en" \? "en-GB" : "nl-NL"\)/);
+  assert.doesNotMatch(scheduleExplorer, /aria-label="Speelschema onderdelen"/);
+});
+
+test("English route translates all visible shared fields and labels", () => {
+  assert.match(statusBar, /const locale = useActiveLocale\(pathname \|\| "\/"\)/);
+  assert.match(statusBar, /locale === "en" \? `\$\{d\}d \$\{h\}h` : `\$\{d\}d \$\{h\}u`/);
+  assert.match(statusBar, /Time left to predict/);
+  assert.match(statusBar, /Entries closed/);
+  assert.match(statusBar, /Player/);
+  assert.match(statusBar, /completed/);
+  assert.match(statusBar, /Join for free/);
+  assert.match(statusBar, /href=\{locale === "en" \? "\/en#login" : localizedHref\("\/aanmelden", locale\)\}/);
+  assert.match(siteHeader, /aria-label=\{locale === "en" \? "Main menu" : "Hoofdmenu"\}/);
+  assert.match(quickMenu, /\{locale === "en" \? "Open menu" : "Menu openen"\}/);
+  assert.match(quickMenu, /aria-label=\{locale === "en" \? "Quick navigation" : "Snelle navigatie"\}/);
+  assert.match(quickMenu, /aria-label=\{locale === "en" \? "Account actions" : "Account acties"\}/);
+  assert.match(siteFooter, /locale === "en" \? "Terms" : "Voorwaarden"/);
+  assert.match(siteFooter, /locale === "en" \? "beta" : "bèta"/);
+  assert.match(layout, /<SiteFooter locale=\{htmlLang\} \/>/);
+  assert.match(shareButton, /locale = "nl"/);
+  assert.match(shareButton, /const sharePrefix = locale === "en" \? "Share via" : "Delen via"/);
+  assert.match(shareButton, /Copied/);
+  assert.match(shareButton, /Share via WhatsApp, Facebook, Telegram, Signal, email or Instagram\/native share\./);
+  assert.match(homePage, /<ShareRow[\s\S]*locale=\{locale\}/);
+  assert.match(teamFlag, /locale = "nl"/);
+  assert.match(teamFlag, /locale === "en" \? `Flag of \$\{name\}` : `Vlag van \$\{name\}`/);
+  assert.match(upcomingMatches, /<TeamFlag code=\{m\.home_code\} name=\{teamNameForLocale\(m\.home_code, m\.home\?\.name_nl, locale\)\} locale=\{locale\}/);
+  assert.match(formatLib, /RSA: "South Africa"/);
+  assert.match(formatLib, /BIH: "Bosnia and Herzegovina"/);
+  assert.match(upcomingMatches, /locale === "en" \? "Result not known yet" : "Uitslag nog niet bekend"/);
+  assert.match(loginForm, /aria-label=\{copy\.containerLabel\}/);
+  assert.match(loginForm, /aria-label=\{copy\.codeLoginAria\}/);
+  assert.match(loginForm, /aria-label=\{copy\.resetCodeFormAria\}/);
+  assert.match(loginForm, /aria-label=\{copy\.signupCodeFormAria\}/);
+  assert.match(loginForm, /aria-label=\{copy\.passwordLoginAria\}/);
+  assert.match(loginForm, /aria-label=\{copy\.registerAria\}/);
+  assert.match(loginForm, /aria-label=\{copy\.emailResetAria\}/);
 });
 
 test("mobile poule page prioritizes ranking and keeps share buttons visible next to the pool name", () => {
   assert.match(poulesPage, /<div className=\"pool-card-title-row\">[\s\S]*<PoolQuickShare/);
-  assert.match(poulesPage, /isManager=\{isManager\}/);
-  assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} \/>[\s\S]*Prikbord[\s\S]*Deelopties &amp; QR[\s\S]*WK-poule-instellingen &amp; opmaak \(beheer\)/);
-  assert.match(poolMembers, /Ranglijst &amp; deelnemers/);
+  assert.doesNotMatch(poulesPage, /isManager=\{isManager\}/);
+  assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} locale=\{locale\} \/>[\s\S]*\{copy\.board\}[\s\S]*\{copy\.shareOptions\}[\s\S]*\{copy\.settings\}/);
+  assert.match(poolMembers, /title: "Ranglijst & deelnemers"/);
+  assert.match(poolMembers, /title: "Ranking & participants"/);
   assert.match(poolMembers, /pool-members-count/);
-  assert.match(poolQuickShare, /<div className=\"pool-quick-share\" aria-label=\"Poule delen\">/);
-  assert.match(poolQuickShare, /pool-share-inline-label/);
-  assert.match(poolQuickShare, /label="Deel via WhatsApp"/);
-  assert.match(poolQuickShare, /Kopieer link/);
-  assert.match(poolQuickShare, /aria-label=\"Deel via mail\"/);
-  assert.match(poolQuickShare, /aria-label=\"Deel QR-code\"/);
-  assert.match(poolQuickShare, /isManager \? \(/);
-  assert.match(poolQuickShare, /label=\"Deel via Facebook\"/);
-  assert.match(poolQuickShare, /Deel via Instagram of native deelmenu/);
-  assert.match(poolQuickShare, /label=\"Deel via Telegram\"/);
+  assert.match(poolQuickShare, /<div className=\"pool-quick-share\" aria-label=\{copy\.containerLabel\}>/);
+  assert.match(poolQuickShare, /label=\{copy\.shareVia\("WhatsApp"\)\}/);
+  assert.match(poolQuickShare, /label=\{copy\.shareVia\("Facebook"\)\}/);
+  assert.match(poolQuickShare, /label=\{copy\.shareVia\("Telegram"\)\}/);
+  assert.match(poolQuickShare, /aria-label=\{nativeCopied === "Signal" \? copy\.copied\("Signal"\) : copy\.shareVia\("Signal"\)\}/);
+  assert.match(poolQuickShare, /aria-label=\{copy\.shareVia\("mail"\)\}/);
+  assert.match(poolQuickShare, /copy\.shareVia\("Instagram\/native share"\)/);
+  assert.doesNotMatch(poolQuickShare, /Kopieer link|Deel via QR-code|aria-label=\"Deel QR-code\"/);
+  assert.doesNotMatch(poolQuickShare, /isManager \? \(/);
   assert.match(poolQuickShare, /whatsapp:\/\/send\?text=\$\{encodedMessage\}/);
   assert.match(poolQuickShare, /https:\/\/wa\.me\/\?text=\$\{encodedMessage\}/);
-  assert.match(shareButton, /whatsapp:\/\/send\?text=\$\{encodedBoth\}/);
+  assert.match(poolQuickShare, /onClick=\{\(\) => nativeShare\(groupMessageText, "Signal"\)\}/);
+  assert.doesNotMatch(poolQuickShare, /sgnl:\/\/send\?text=/);
+  assert.match(poolQuickShare, /fb:\/\/facewebmodal\/f\?href=\$\{encodeURIComponent\(facebookWebHref\)\}/);
+  assert.match(poolQuickShare, /tg:\/\/msg_url\?url=\$\{encodedUrl\}&text=\$\{encodedInvite\}/);
+  assert.match(poolQuickShare, /async function nativeShare\(shareText = groupMessageText, channelLabel = "native share"\)/);
+  assert.match(poolQuickShare, /navigator\.share\(\{ title: copy\.nativeTitle\(poolName\), text: shareText, url: joinUrl \}\)/);
+  assert.match(shareButton, /type ShareChannel = "whatsapp" \| "facebook" \| "telegram" \| "signal" \| "mail" \| "instagram" \| "native"/);
+  assert.match(shareButton, /whatsapp:\/\/send\?text=\$\{encodedWhatsApp\}/);
+  assert.match(shareButton, /tg:\/\/msg_url\?url=\$\{encodedUrl\}&text=\$\{encodedTelegramText\}/);
+  assert.match(shareButton, /action: "signal"/);
+  assert.match(shareButton, /onClick=\{\(\) => onNativeShare\(target\.action\)\}/);
+  assert.doesNotMatch(shareButton, /sgnl:\/\/send\?text=/);
   assert.match(shareButton, /fb:\/\/facewebmodal\/f\?href=\$\{encodeURIComponent\(facebookWebHref\)\}/);
-  assert.match(shareButton, /https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=\$\{encodedUrl\}&quote=\$\{encodedBoth\}/);
+  assert.match(shareButton, /https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=\$\{encodedUrl\}&quote=\$\{encodedFacebookQuote\}/);
   assert.match(appFirstShareLink, /window\.location\.href = appHref/);
   assert.match(appFirstShareLink, /window\.open\(webHref, "_blank", "noopener,noreferrer"\)/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);/);
   assert.match(globalsCss, /\.pool-card-title-row \{[\s\S]*display: flex;[\s\S]*flex-wrap: wrap;[\s\S]*gap: 8px;/);
   assert.match(globalsCss, /\.pool-quick-share \{[\s\S]*display: inline-flex;[\s\S]*align-items: center;/);
+  assert.match(globalsCss, /\.pool-share-actions \{[\s\S]*flex-wrap: nowrap;/);
   assert.match(globalsCss, /\.pool-quick-share-button \{[\s\S]*width: 31px;[\s\S]*height: 31px;/);
   assert.doesNotMatch(poolQuickShare, /<details className=\"pool-quick-share\">/);
   assert.doesNotMatch(globalsCss, /\.pool-share-menu \{[\s\S]*position: absolute;/);
@@ -394,8 +677,8 @@ test("small team columns use official 3-letter country abbreviations", () => {
 });
 
 test("match rows always reserve right-side API score boxes with fixed home-separator-away columns", () => {
-  assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} \/>/);
-  assert.match(scheduleExplorer, /<ResultBoxes match=\{match\} \/>/);
+  assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} locale=\{locale\} \/>/);
+  assert.match(scheduleExplorer, /<ResultBoxes match=\{match\} locale=\{locale\} \/>/);
   assert.match(globalsCss, /grid-template-columns: var\(--match-home-col, minmax\(118px, 160px\)\) 30px minmax\(0, 1fr\) 62px;/);
   assert.match(globalsCss, /\.schedule-team-grid-knockout \{[\s\S]*--match-home-col: minmax\(160px, 1fr\);/);
   assert.match(globalsCss, /\.schedule-team-cell-home \{[\s\S]*justify-content: flex-start;[\s\S]*text-align: left;/);
@@ -421,7 +704,9 @@ test("schema defaults to groups, keeps knockout separate, and removes the all-ma
 test("schema copy is public-facing and group/date are chosen via pickers", () => {
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Alle WK-wedstrijden op een rij met datum, tijd en stadion/);
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Geen account nodig — deel het schema gerust in je groepsapp/);
-  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /<ShareButton url=\{scheduleShareUrl\} text=\{scheduleIntro\} title="WK 2026 speelschema" label="Deel schema" \/>/);
+  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /shareTitle: "WK 2026 speelschema"/);
+  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /shareTitle: "WC 2026 schedule"/);
+  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /<ShareButton[\s\S]*title=\{[^}]+shareTitle|title=\{scheduleTitle\}[\s\S]*label=\{[^}]+shareLabel|label=\{scheduleCopy\[locale\]\.shareLabel\}[\s\S]*locale=\{locale\}/);
   assert.doesNotMatch(schemaPage + schemaGroupsPage + schemaKnockoutPage, /AI-score|API-score|feedback|pagina staat/i);
   assert.match(scheduleExplorer, /Nederland - Oranje/);
   assert.match(scheduleExplorer, /schedule-picker-pop/);
@@ -448,10 +733,16 @@ test("desktop schedule cards are compact and match rows use a visible aligned te
   assert.doesNotMatch(scheduleExplorer, /dark-panel rounded-2xl/);
 });
 
-test("game embed is larger and left-aligned on desktop while mobile defaults to new-tab play", () => {
-  assert.match(gameFrames, /Open spel in nieuw tabblad/);
-  assert.match(gameFrames, /Mobiel speelt dit het best schermvullend/);
-  assert.match(gameFrames, /Laadt het spel niet\? Open het in een nieuw tabblad\./);
+test("game embed is larger, locale-aware and left-aligned on desktop while mobile defaults to new-tab play", () => {
+  assert.match(gameFrames, /open: "Open spel in nieuw tabblad"/);
+  assert.match(gameFrames, /open: "Open game in a new tab"/);
+  assert.match(gameFrames, /mobileNote: "Mobiel speelt dit het best schermvullend/);
+  assert.match(gameFrames, /mobileNote: "On mobile this plays best full-screen/);
+  assert.match(gameFrames, /embedNote: "Laadt het spel niet\? Open het in een nieuw tabblad\."/);
+  assert.match(gameFrames, /embedNote: "Game not loading\? Open it in a new tab\."/);
+  assert.match(gamesPage, /getServerLocale/);
+  assert.match(gamesPage, /Slime games/);
+  assert.match(gamesPage, /<GameFrames[\s\S]*locale=\{locale\}/);
   assert.doesNotMatch(gameFrames, /game-site moet inbedden toestaan/);
   assert.doesNotMatch(gameFrames, />Nieuw tabblad</);
   assert.match(gamesPage, /page-shell game-page-shell/);
@@ -459,4 +750,58 @@ test("game embed is larger and left-aligned on desktop while mobile defaults to 
   assert.match(globalsCss, /\.game-frame \{[\s\S]*width: min\(1120px, 100%\);[\s\S]*aspect-ratio: 16 \/ 9;[\s\S]*margin-inline: 0 auto;/);
   assert.match(globalsCss, /@media \(max-width: 639px\) \{[\s\S]*\.game-frame,\n  \.game-embed-note \{\n    display: none;/);
   assert.match(globalsCss, /\.game-open-link \{[\s\S]*linear-gradient\(135deg, #19b85d, #0e8a49 62%, #0a6b38\)/);
+});
+
+test("English mode is wired through rankings, rules, pools and predictions pages", () => {
+  assert.match(rankingPage, /getServerLocale/);
+  assert.match(rankingPage, /const locale = await getServerLocale\(\)/);
+  assert.match(rankingPage, /<Brand locale=\{locale\} \/>/);
+  assert.match(rankingPage, /<RankingExplorer players=\{players\} pools=\{poolRankings\} locale=\{locale\} \/>/);
+  assert.match(rankingExplorer, /locale = "nl"/);
+  assert.match(rankingExplorer, /World rankings/);
+  assert.match(rankingExplorer, /Search for a player or team/);
+
+  assert.match(rulesPage, /getServerLocale/);
+  assert.match(rulesPage, /rulesCopy\[locale\]/);
+  assert.match(rulesPage, /Rules and explanation/);
+  assert.match(rulesPage, /World Cup pools/);
+  assert.match(rulesPage, /Frequently asked questions/);
+
+  assert.match(poulesPage, /getServerLocale/);
+  assert.match(poulesPage, /poolCopy\[locale\]/);
+  assert.match(poulesPage, /<PoolTabs tabs=\{tabs\} initialId=\{params\.pool\} locale=\{locale\}>/);
+  assert.match(poulesPage, /<PoolQuickShare[\s\S]*locale=\{locale\}/);
+  assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} locale=\{locale\} \/>/);
+  assert.match(poulesPage, /buildPoolMembers\([\s\S]*locale\)/);
+  assert.match(poulesPage, /locale === "en" \? `\$\{SITE_URL\}\/poules\/join\/\$\{pool\.code\}\?lang=en`/);
+  assert.match(poolMembers, /locale = "nl"/);
+  assert.match(poolQuickShare, /locale = "nl"/);
+  assert.match(poolTabs, /locale = "nl"/);
+  assert.match(poolQr, /locale = "nl"/);
+  assert.match(joinPoolPage, /getServerLocale/);
+  assert.match(joinPoolPage, /joinPoolCopy\[locale\]/);
+  assert.match(joinPoolPage, /<Brand locale=\{locale\} \/>/);
+  assert.match(joinPoolPage, /<LoginForm[\s\S]*locale=\{locale\}/);
+  assert.match(joinPoolPage, /copy\.notLoggedInTitle/);
+  const englishJoinCopy = joinPoolPage.match(/en: \{[\s\S]*?\n  \},\n\} as const;/)?.[0] ?? "";
+  assert.match(englishJoinCopy, /Join this World Cup pool/);
+  assert.match(englishJoinCopy, /Copy link/);
+  assert.doesNotMatch(englishJoinCopy, /Eerst aanmelden|Uitnodiging|Kopieer link/);
+
+  assert.match(predictionsPage, /getServerLocale/);
+  assert.match(predictionsPage, /predictionCopy\[locale\]/);
+  assert.match(predictionsPage, /<GroupPredictionCard[\s\S]*locale=\{locale\}/);
+  assert.match(predictionsPage, /<KnockoutPredictionPicker[\s\S]*locale=\{locale\}/);
+  assert.match(predictionsPage, /<PredictionsComplete locale=\{locale\} \/>/);
+  assert.match(groupPredictionCard, /locale = "nl"/);
+  assert.match(groupPredictionCard, /teamNameForLocale/);
+  assert.match(knockoutPredictionPicker, /stageCopy\[locale\]/);
+  assert.match(knockoutPredictionPicker, /teamNameForLocale/);
+  assert.match(predictionsComplete, /locale = "nl"/);
+});
+
+test("mobile landing hero keeps title and host pills compact on one line", () => {
+  assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home \.world-cup-kicker \{[\s\S]*flex-wrap: nowrap;[\s\S]*font-size: 0\.56rem;/);
+  assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home \.world-cup-kicker span \{[\s\S]*padding: 3px 5px;/);
+  assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home-title-block h1 \{[\s\S]*font-size: clamp\(1\.95rem, 12vw, 2\.55rem\);/);
 });

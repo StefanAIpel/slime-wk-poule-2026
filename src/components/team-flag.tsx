@@ -3,15 +3,18 @@
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
 import { flagEmoji, flagUrl } from "@/lib/flags";
+import type { Locale } from "@/lib/i18n";
 
 export function TeamFlag({
   code,
   name,
   size = "md",
+  locale = "nl",
 }: {
   code: string | null | undefined;
   name?: string | null;
   size?: "sm" | "md";
+  locale?: Locale;
 }) {
   const [broken, setBroken] = useState(false);
   const url = flagUrl(code);
@@ -22,6 +25,7 @@ export function TeamFlag({
       : "h-6 w-9 rounded-[4px] border border-slate-200 object-cover shadow-sm";
 
   const title = name ?? code ?? undefined;
+  const alt = name ? (locale === "en" ? `Flag of ${name}` : `Vlag van ${name}`) : "";
 
   if (!url || broken) {
     return (
@@ -35,5 +39,5 @@ export function TeamFlag({
     );
   }
 
-  return <img className={className} src={url} alt={name ? `Vlag van ${name}` : ""} title={title} loading="lazy" onError={() => setBroken(true)} />;
+  return <img className={className} src={url} alt={alt} title={title} loading="lazy" onError={() => setBroken(true)} />;
 }

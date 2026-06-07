@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import type { Metadata } from "next";
 import { ImagePlus, Megaphone, Palette, RefreshCw, Trash2 } from "lucide-react";
 import QRCode from "qrcode";
 import Link from "next/link";
@@ -21,9 +22,11 @@ import { PoolQr } from "@/components/pool-qr";
 import { PoolQuickShare } from "@/components/pool-quick-share";
 import { PoolTabs } from "@/components/pool-tabs";
 import { ENTRY_DEADLINE, SITE_URL } from "@/lib/constants";
-import { displayName, formatAmsterdam } from "@/lib/format";
+import { displayName, formatAmsterdam, teamNameForLocale } from "@/lib/format";
+import { localizedHref, type Locale } from "@/lib/i18n";
 import { compareScoresAlphabetical, withPublicRankScores, worldRankMap, type RankedScore } from "@/lib/ranking";
 import { scoreMatchPrediction } from "@/lib/scoring";
+import { getServerLocale } from "@/lib/server-locale";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -34,19 +37,134 @@ function poolBannerUrl(poolId: string, bannerPath?: string | null, version?: str
   return version ? `${url}?v=${encodeURIComponent(version)}` : url;
 }
 
-const poolErrors: Record<string, string> = {
-  code: "Die WK-poulecode klopt niet. Controleer de code.",
-  rechten: "Je hebt hier geen rechten voor.",
-  naam: "Kies een geldige WK-poulenaam (min. 2 tekens).",
-  limiet: "Je zit al aan het maximum aantal WK-poules (20).",
-  kleur: "Kies een geldige kleur.",
-  rol: "Die rol kan niet worden ingesteld.",
-  "bericht-kort": "Je bericht is te kort (minimaal 10 tekens).",
-  "naam-bezet": "Er bestaat al een WK-poule met deze naam. Kies een nét andere naam.",
-  "te-snel": "Even rustig aan — je doet dit te vaak achter elkaar. Probeer het zo nog eens.",
-  afbeelding: "Kies een geldige afbeelding.",
-  "afbeelding-groot": "De afbeelding is te groot (max 6 MB).",
-};
+const poolCopy = {
+  nl: {
+    metaTitle: "Mijn WK-poules",
+    metaDescription: "Bekijk, deel en beheer je SlimeScore WK 2026-poules.",
+    errors: {
+      code: "Die WK-poulecode klopt niet. Controleer de code.",
+      rechten: "Je hebt hier geen rechten voor.",
+      naam: "Kies een geldige WK-poulenaam (min. 2 tekens).",
+      limiet: "Je zit al aan het maximum aantal WK-poules (20).",
+      kleur: "Kies een geldige kleur.",
+      rol: "Die rol kan niet worden ingesteld.",
+      "bericht-kort": "Je bericht is te kort (minimaal 10 tekens).",
+      "naam-bezet": "Er bestaat al een WK-poule met deze naam. Kies een nét andere naam.",
+      "te-snel": "Even rustig aan — je doet dit te vaak achter elkaar. Probeer het zo nog eens.",
+      afbeelding: "Kies een geldige afbeelding.",
+      "afbeelding-groot": "De afbeelding is te groot (max 6 MB).",
+    },
+    fallbackError: "Er ging iets mis. Probeer het opnieuw.",
+    updated: (params: { aangemaakt?: string; joined?: string; bijgewerkt?: string }) =>
+      `Bijgewerkt${params.aangemaakt ? `: code ${params.aangemaakt}` : ""}${params.joined ? `: je doet mee met ${params.joined}` : ""}.`,
+    inviteText: (poolName: string, poolCode: string) => `Doe je mee met onze 100% gratis WK-poule "${poolName}"?\n\nPoulecode: ${poolCode}\nNog geen account? Maak eerst gratis een SlimeScore-account aan; daarna kom je via deze link/code in de poule.\n\n1x ±10 min invullen. Daarna volg je het speelschema en de uitslagen.`,
+    codeLabel: "Code",
+    board: "Prikbord",
+    boardPlaceholder: "Schrijf iets voor je WK-poule… (min. 10 tekens)",
+    pin: "Vastzetten bovenaan",
+    posting: "Plaatsen…",
+    post: "Plaats",
+    pinned: "Vastgezet",
+    delete: "Verwijder",
+    noMessages: "Nog geen berichten.",
+    shareOptions: "Deelopties & QR",
+    inviteLink: "Uitnodigingslink",
+    settings: "WK-poule-instellingen & opmaak (beheer)",
+    dressUp: "WK-poule aankleden",
+    color: "Kleur",
+    groupLine: "Groepszin",
+    groupLinePlaceholder: "Bijv. iedereen tegen oom Jan",
+    save: "Opslaan",
+    uploadBanner: "WK-poulebanner uploaden",
+    uploadHint:
+      "Aanbevolen: breed beeld, liefst 1600 × 900 px (16:9). We slaan uploads op als .webp en tonen ze in originele verhouding, zonder crop of uitrekken.",
+    uploading: "Uploaden…",
+    upload: "Upload banner",
+    manageCode: "Deelcode beheren",
+    resetHint: "Maakt een nieuwe code; de oude uitnodigingslink werkt daarna niet meer.",
+    resetTitle: "Maak een nieuwe deelcode",
+    newCode: "Nieuwe code",
+    manageMembers: "Leden beheren (beheer)",
+    memberRole: "Deelnemer",
+    roleButton: "Rol",
+    noPoolsTitle: "Nog geen WK-poules",
+    noPoolsText: "Maak er een aan of sluit aan met een code op de",
+    homeLink: "startpagina",
+    soccerLead: "Even pauze?",
+    soccerText: "Speel een potje Slime Soccer tegen de computer of je vrienden.",
+    play: "Spelen →",
+    owner: "Beheerder",
+    moderator: "Moderator",
+    player: "Speler",
+  },
+  en: {
+    metaTitle: "My World Cup pools",
+    metaDescription: "View, share and manage your SlimeScore World Cup 2026 pools.",
+    errors: {
+      code: "That World Cup pool code is not correct. Please check the code.",
+      rechten: "You do not have permission for this.",
+      naam: "Choose a valid World Cup pool name (min. 2 characters).",
+      limiet: "You have reached the maximum number of World Cup pools (20).",
+      kleur: "Choose a valid colour.",
+      rol: "That role cannot be set.",
+      "bericht-kort": "Your message is too short (minimum 10 characters).",
+      "naam-bezet": "A World Cup pool with this name already exists. Choose a slightly different name.",
+      "te-snel": "Easy there — you are doing this too often. Try again in a moment.",
+      afbeelding: "Choose a valid image.",
+      "afbeelding-groot": "The image is too large (max 6 MB).",
+    },
+    fallbackError: "Something went wrong. Please try again.",
+    updated: (params: { aangemaakt?: string; joined?: string; bijgewerkt?: string }) =>
+      `Updated${params.aangemaakt ? `: code ${params.aangemaakt}` : ""}${params.joined ? `: you joined ${params.joined}` : ""}.`,
+    inviteText: (poolName: string, poolCode: string) => `Join our 100% free World Cup pool "${poolName}"?\n\nPool code: ${poolCode}\nNo account yet? Create a free SlimeScore account first; then this link/code takes you into the pool.\n\nFill in once in about 10 minutes. Then follow the schedule and results.`,
+    codeLabel: "Code",
+    board: "Message board",
+    boardPlaceholder: "Write something for your World Cup pool… (min. 10 characters)",
+    pin: "Pin to the top",
+    posting: "Posting…",
+    post: "Post",
+    pinned: "Pinned",
+    delete: "Delete",
+    noMessages: "No messages yet.",
+    shareOptions: "Share options & QR",
+    inviteLink: "Invitation link",
+    settings: "World Cup pool settings & styling (admin)",
+    dressUp: "Style World Cup pool",
+    color: "Colour",
+    groupLine: "Group tagline",
+    groupLinePlaceholder: "E.g. everyone against Uncle John",
+    save: "Save",
+    uploadBanner: "Upload World Cup pool banner",
+    uploadHint:
+      "Recommended: a wide image, preferably 1600 × 900 px (16:9). Uploads are stored as .webp and shown in their original ratio, without cropping or stretching.",
+    uploading: "Uploading…",
+    upload: "Upload banner",
+    manageCode: "Manage share code",
+    resetHint: "Creates a new code; the old invitation link stops working.",
+    resetTitle: "Create a new share code",
+    newCode: "New code",
+    manageMembers: "Manage members (admin)",
+    memberRole: "Participant",
+    roleButton: "Role",
+    noPoolsTitle: "No World Cup pools yet",
+    noPoolsText: "Create one or join with a code on the",
+    homeLink: "home page",
+    soccerLead: "Need a break?",
+    soccerText: "Play Slime Soccer against the computer or your friends.",
+    play: "Play →",
+    owner: "Manager",
+    moderator: "Moderator",
+    player: "Player",
+  },
+} as const;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getServerLocale();
+  return {
+    title: poolCopy[locale].metaTitle,
+    description: poolCopy[locale].metaDescription,
+  };
+}
 
 type MemberRow = {
   pool_id: string;
@@ -94,16 +212,19 @@ export default async function PoolsPage({
   searchParams: Promise<{ aangemaakt?: string; joined?: string; fout?: string; bijgewerkt?: string; pool?: string }>;
 }) {
   const params = await searchParams;
+  const locale = await getServerLocale();
+  const copy = poolCopy[locale];
+  const dateLocale = locale === "en" ? "en-GB" : "nl-NL";
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/");
+  if (!user) redirect(localizedHref("/", locale));
 
   // Meedoen vereist een complete scorekaart (naam + teamnaam, min. 4 tekens).
   const { data: ownProfile } = await supabase.from("profiles").select("nickname,team_name").eq("id", user.id).maybeSingle();
-  if (!ownProfile?.nickname || !ownProfile.team_name) redirect("/");
+  if (!ownProfile?.nickname || !ownProfile.team_name) redirect(localizedHref("/", locale));
 
   const [{ data }, { data: messages }] = await Promise.all([
     supabase
@@ -137,7 +258,7 @@ export default async function PoolsPage({
     const [{ data: matchRows }, { data: predictionRows }, { data: scoreRows }] = await Promise.all([
       admin
         .from("matches")
-        .select("id,starts_at,status,home_score,away_score,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)")
+        .select("id,starts_at,status,home_code,away_code,home_score,away_score,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)")
         .order("starts_at"),
       admin.from("predictions").select("user_id,match_id,home_score,away_score").in("user_id", memberIds),
       admin.from("scores").select("user_id,points,profiles(nickname,team_name)"),
@@ -158,6 +279,8 @@ export default async function PoolsPage({
       status: string | null;
       home_score: number | null;
       away_score: number | null;
+      home_code: string | null;
+      away_code: string | null;
       home: { name_nl: string | null } | null;
       away: { name_nl: string | null } | null;
     }>) {
@@ -165,8 +288,8 @@ export default async function PoolsPage({
         id: row.id,
         startsAt: row.starts_at,
         status: row.status,
-        homeName: row.home?.name_nl ?? "?",
-        awayName: row.away?.name_nl ?? "?",
+        homeName: teamNameForLocale(row.home_code, row.home?.name_nl, locale),
+        awayName: teamNameForLocale(row.away_code, row.away?.name_nl, locale),
         homeScore: row.home_score,
         awayScore: row.away_score,
       });
@@ -180,14 +303,14 @@ export default async function PoolsPage({
   for (const pool of pools) {
     poolMembersById.set(
       pool.id,
-      buildPoolMembers(pool.members, user.id, revealOthers, matchInfoById, predictionsByUser, pointsByUser, worldRankByUser),
+      buildPoolMembers(pool.members, user.id, revealOthers, matchInfoById, predictionsByUser, pointsByUser, worldRankByUser, locale),
     );
   }
 
   const poolJoinAssets = new Map<string, { joinUrl: string; qrDataUrl: string }>();
   await Promise.all(
     pools.map(async (pool) => {
-      const joinUrl = `${SITE_URL}/poules/join/${pool.code}`;
+      const joinUrl = locale === "en" ? `${SITE_URL}/poules/join/${pool.code}?lang=en` : `${SITE_URL}/poules/join/${pool.code}`;
       const qrDataUrl = await QRCode.toDataURL(joinUrl, {
         errorCorrectionLevel: "M",
         margin: 1,
@@ -203,33 +326,29 @@ export default async function PoolsPage({
   return (
     <main className="page-shell poules-page-shell">
       <header className="mb-5 grid gap-4">
-        <Brand />
+        <Brand locale={locale} />
       </header>
 
       {params.aangemaakt || params.joined || params.bijgewerkt ? (
         <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-4 font-bold text-green-800">
-          Bijgewerkt{params.aangemaakt ? `: code ${params.aangemaakt}` : ""}{params.joined ? `: je doet mee met ${params.joined}` : ""}.
+          {copy.updated(params)}
         </div>
       ) : null}
       {params.fout ? (
         <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-4 font-bold text-red-800">
-          {poolErrors[params.fout] ?? "Er ging iets mis. Probeer het opnieuw."}
+          {copy.errors[params.fout as keyof typeof copy.errors] ?? copy.fallbackError}
         </div>
       ) : null}
 
       <section className="mt-1">
         {pools.length ? (
-          <PoolTabs tabs={tabs} initialId={params.pool}>
+          <PoolTabs tabs={tabs} initialId={params.pool} locale={locale}>
           {pools.map((pool) => {
             const currentMember = pool.members.find((member) => member.user_id === user.id);
             const isOwner = currentMember?.role === "owner";
             const isManager = currentMember?.role === "owner" || currentMember?.role === "moderator";
             const joinAssets = poolJoinAssets.get(pool.id) ?? { joinUrl: SITE_URL, qrDataUrl: "" };
-            const inviteText = `Doe je mee met onze gratis WK 2026-poule "${pool.name}"? Poulecode: ${pool.code} 👇
-
-Nog geen account? Maak eerst gratis een SlimeScore-account aan; daarna kom je via deze link/code in de poule.
-
-Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
+            const inviteText = copy.inviteText(pool.name, pool.code);
             const poolHeroStyle = {
               "--pool-accent": pool.accentColor,
               "--pool-banner-image": `url("${poolBannerUrl(pool.id, pool.bannerPath, pool.bannerUpdatedAt)}")`,
@@ -242,21 +361,21 @@ Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
                       <h2 className="pool-card-title"><span aria-hidden="true">{pool.badgeEmoji}</span> {pool.name}</h2>
                       <PoolQuickShare
                         joinUrl={joinAssets.joinUrl}
-                        qrDataUrl={joinAssets.qrDataUrl}
                         poolName={pool.name}
+                        poolCode={pool.code}
                         inviteText={inviteText}
-                        isManager={isManager}
+                        locale={locale}
                       />
                     </div>
                     <p className="pool-code-line">
-                      Code: <span className="pool-code-pill">{pool.code}</span>
+                      {copy.codeLabel}: <span className="pool-code-pill">{pool.code}</span>
                     </p>
                     {pool.description ? <p className="pool-card-description">{pool.description}</p> : null}
                   </div>
                 </div>
-                <PoolMembers members={poolMembersById.get(pool.id) ?? []} />
+                <PoolMembers members={poolMembersById.get(pool.id) ?? []} locale={locale} />
                 <div className="border-b border-slate-200 p-4 pool-board-section">
-                  <h3 className="text-lg font-bold text-[#101a2b]">Prikbord</h3>
+                  <h3 className="text-lg font-bold text-[#101a2b]">{copy.board}</h3>
                   <form action={postPoolMessage} className="mt-3 grid gap-2">
                     <input type="hidden" name="pool_id" value={pool.id} />
                     <textarea
@@ -265,19 +384,19 @@ Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
                       minLength={10}
                       maxLength={500}
                       required
-                      placeholder="Schrijf iets voor je WK-poule… (min. 10 tekens)"
+                      placeholder={copy.boardPlaceholder}
                     />
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       {isManager ? (
                         <label className="flex items-center gap-2 text-sm font-medium text-[#101a2b]">
-                          <input type="checkbox" name="pinned" /> Vastzetten bovenaan
+                          <input type="checkbox" name="pinned" /> {copy.pin}
                         </label>
                       ) : (
                         <span />
                       )}
-                      <PendingButton className="button-primary min-h-9 px-3 text-sm" pendingText="Plaatsen…">
+                      <PendingButton className="button-primary min-h-9 px-3 text-sm" pendingText={copy.posting}>
                         <Megaphone aria-hidden="true" className="size-4" />
-                        Plaats
+                        {copy.post}
                       </PendingButton>
                     </div>
                   </form>
@@ -290,15 +409,15 @@ Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
                           className={`rounded-lg border p-3 pool-board-message ${message.pinned ? "border-[#e0b23a] bg-amber-50" : "border-slate-200 bg-white"}`}
                         >
                           <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-normal text-[#4c5a70]">
-                            {message.pinned ? <span className="text-[#9a6b12]">Vastgezet</span> : null}
+                            {message.pinned ? <span className="text-[#9a6b12]">{copy.pinned}</span> : null}
                             <span>{displayName(message.profiles)}</span>
-                            <span>{new Intl.DateTimeFormat("nl-NL", { dateStyle: "short", timeStyle: "short" }).format(new Date(message.created_at))}</span>
+                            <span>{new Intl.DateTimeFormat(dateLocale, { dateStyle: "short", timeStyle: "short" }).format(new Date(message.created_at))}</span>
                             {canDelete ? (
                               <form action={deletePoolMessage} className="ml-auto">
                                 <input type="hidden" name="pool_id" value={pool.id} />
                                 <input type="hidden" name="message_id" value={message.id} />
                                 <button className="font-bold text-[#b23b46] hover:underline" type="submit">
-                                  Verwijder
+                                  {copy.delete}
                                 </button>
                               </form>
                             ) : null}
@@ -308,33 +427,33 @@ Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
                       );
                     })}
                     {!messagesByPool.get(pool.id)?.length ? (
-                      <p className="text-sm font-medium text-[#4c5a70]">Nog geen berichten.</p>
+                      <p className="text-sm font-medium text-[#4c5a70]">{copy.noMessages}</p>
                     ) : null}
                   </div>
                 </div>
                 <details className="pool-share-details border-b border-slate-200 bg-[#fffaf0]">
-                  <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">Deelopties &amp; QR</summary>
+                  <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">{copy.shareOptions}</summary>
                   <div className="pool-invite-strip pool-invite-strip-hidden">
                     <div className="pool-invite-copy">
-                      <p className="pool-invite-kicker">Uitnodigingslink</p>
+                      <p className="pool-invite-kicker">{copy.inviteLink}</p>
                       <a className="pool-invite-url" href={joinAssets.joinUrl}>
                         {joinAssets.joinUrl.replace(/^https?:\/\//, "")}
                       </a>
                     </div>
-                    <PoolQr qrDataUrl={joinAssets.qrDataUrl} poolName={pool.name} joinUrl={joinAssets.joinUrl} />
+                    <PoolQr qrDataUrl={joinAssets.qrDataUrl} poolName={pool.name} joinUrl={joinAssets.joinUrl} locale={locale} />
                   </div>
                 </details>
                 {isManager ? (
                   <details className="border-b border-slate-200 bg-slate-50">
                     <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">
-                      WK-poule-instellingen &amp; opmaak (beheer)
+                      {copy.settings}
                     </summary>
                   <div className="grid items-start gap-4 p-4 pt-0 md:grid-cols-2">
                     <form action={updatePoolStyle} className="grid gap-3">
                       <input type="hidden" name="pool_id" value={pool.id} />
                       <div className="flex items-center gap-2 font-bold text-[#101a2b]">
                         <Palette aria-hidden="true" className="size-5 text-[#2c4a72]" />
-                        WK-poule aankleden
+                        {copy.dressUp}
                       </div>
                       <div className="grid gap-2 sm:grid-cols-[72px_110px_1fr]">
                         <label className="grid gap-1 text-xs font-bold text-[#101a2b]">
@@ -347,38 +466,38 @@ Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
                           </datalist>
                         </label>
                         <label className="grid gap-1 text-xs font-bold text-[#101a2b]">
-                          Kleur
+                          {copy.color}
                           <input className="field h-[46px]" name="accent_color" type="color" defaultValue={pool.accentColor} />
                         </label>
                         <label className="grid gap-1 text-xs font-bold text-[#101a2b]">
-                          Groepszin
-                          <input className="field" name="description" maxLength={180} defaultValue={pool.description ?? ""} placeholder="Bijv. iedereen tegen oom Jan" />
+                          {copy.groupLine}
+                          <input className="field" name="description" maxLength={180} defaultValue={pool.description ?? ""} placeholder={copy.groupLinePlaceholder} />
                         </label>
                       </div>
-                      <button className="button-secondary w-fit" type="submit">Opslaan</button>
+                      <button className="button-secondary w-fit" type="submit">{copy.save}</button>
                     </form>
                     <form action={uploadPoolImage} className="grid gap-3">
                       <input type="hidden" name="pool_id" value={pool.id} />
                       <div className="flex items-center gap-2 font-bold text-[#101a2b]">
                         <ImagePlus aria-hidden="true" className="size-5 text-[#2f7a60]" />
-                        WK-poulebanner uploaden
+                        {copy.uploadBanner}
                       </div>
                       <p className="text-xs font-medium text-[#4c5a70]">
-                        Aanbevolen: breed beeld, liefst 1600 × 900 px (16:9). We slaan uploads op als .webp en tonen ze in originele verhouding, zonder crop of uitrekken.
+                        {copy.uploadHint}
                       </p>
                       <input className="field" type="file" name="image" accept="image/*" required />
-                      <PendingButton className="button-secondary w-fit" pendingText="Uploaden…">
-                        Upload banner
+                      <PendingButton className="button-secondary w-fit" pendingText={copy.uploading}>
+                        {copy.upload}
                       </PendingButton>
                     </form>
                     {isOwner ? (
                       <form action={resetPoolCode} className="grid gap-2 rounded-xl border border-slate-200 bg-white p-3 md:col-span-2">
                         <input type="hidden" name="pool_id" value={pool.id} />
-                        <div className="font-bold text-[#101a2b]">Deelcode beheren</div>
-                        <p className="text-xs font-medium text-[#4c5a70]">Maakt een nieuwe code; de oude uitnodigingslink werkt daarna niet meer.</p>
-                        <button className="button-plain button-compact w-fit" type="submit" title="Maak een nieuwe deelcode">
+                        <div className="font-bold text-[#101a2b]">{copy.manageCode}</div>
+                        <p className="text-xs font-medium text-[#4c5a70]">{copy.resetHint}</p>
+                        <button className="button-plain button-compact w-fit" type="submit" title={copy.resetTitle}>
                           <RefreshCw aria-hidden="true" className="size-4" />
-                          Nieuwe code
+                          {copy.newCode}
                         </button>
                       </form>
                     ) : null}
@@ -387,7 +506,7 @@ Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
                 ) : null}
                 {isManager ? (
                 <details className="border-b border-slate-200 bg-slate-50">
-                  <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">Leden beheren (beheer)</summary>
+                  <summary className="cursor-pointer p-4 text-sm font-bold text-[#101a2b]">{copy.manageMembers}</summary>
                   <div className="px-4 pb-4 divide-y divide-slate-200">
                   {pool.members.map((member) => (
                     <div key={member.user_id} className="grid gap-3 py-3 md:grid-cols-[1fr_auto] md:items-center">
@@ -395,7 +514,7 @@ Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
                         <Avatar name={displayName(member.profiles)} avatarKey={member.profiles?.avatar_key} />
                         <div className="min-w-0">
                           <div className="truncate font-bold text-[#081634]">{displayName(member.profiles)}</div>
-                          <div className="text-sm font-semibold text-[#48617f]">{roleLabel(member.role)}</div>
+                          <div className="text-sm font-semibold text-[#48617f]">{roleLabel(member.role, locale)}</div>
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -404,10 +523,10 @@ Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
                             <input type="hidden" name="pool_id" value={pool.id} />
                             <input type="hidden" name="user_id" value={member.user_id} />
                             <select className="field min-h-11 w-auto" name="role" defaultValue={member.role}>
-                              <option value="member">Deelnemer</option>
+                              <option value="member">{copy.memberRole}</option>
                               <option value="moderator">Moderator</option>
                             </select>
-                            <button className="button-secondary" type="submit">Rol</button>
+                            <button className="button-secondary" type="submit">{copy.roleButton}</button>
                           </form>
                         ) : null}
                         {(isOwner || member.user_id === user.id) && member.role !== "owner" ? (
@@ -416,7 +535,7 @@ Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
                             <input type="hidden" name="user_id" value={member.user_id} />
                             <button className="button-secondary" type="submit">
                               <Trash2 aria-hidden="true" className="size-4" />
-                              Verwijder
+                              {copy.delete}
                             </button>
                           </form>
                         ) : null}
@@ -432,21 +551,21 @@ Invullen kost ongeveer 10 minuten en je strijdt het hele WK mee.`;
           </PoolTabs>
         ) : (
           <div className="panel p-5">
-            <h2 className="text-2xl font-bold text-[#081634]">Nog geen WK-poules</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">{copy.noPoolsTitle}</h2>
             <p className="mt-2 font-medium text-[#48617f]">
-              Maak er een aan of sluit aan met een code op de{" "}
-              <Link className="font-bold text-[#064ed6]" href="/">startpagina</Link>.
+              {copy.noPoolsText}{" "}
+              <Link className="font-bold text-[#064ed6]" href={localizedHref("/", locale)}>{copy.homeLink}</Link>.
             </p>
           </div>
         )}
       </section>
 
-      <Link href="/games?game=soccer" className="poule-soccer-mini">
+      <Link href={localizedHref("/games?game=soccer", locale)} className="poule-soccer-mini">
         <span aria-hidden="true" className="poule-soccer-mini-ball">⚽</span>
         <span className="poule-soccer-mini-text">
-          <strong>Even pauze?</strong> Speel een potje Slime Soccer tegen de computer of je vrienden.
+          <strong>{copy.soccerLead}</strong> {copy.soccerText}
         </span>
-        <span className="poule-soccer-mini-cta">Spelen →</span>
+        <span className="poule-soccer-mini-cta">{copy.play}</span>
       </Link>
 
       <BottomNav current="/poules" />
@@ -498,10 +617,11 @@ function groupMessages(rows: MessageRow[]) {
   return map;
 }
 
-function roleLabel(role: MemberRow["role"]) {
-  if (role === "owner") return "Beheerder";
-  if (role === "moderator") return "Moderator";
-  return "Deelnemer";
+function roleLabel(role: MemberRow["role"], locale: Locale) {
+  const copy = poolCopy[locale];
+  if (role === "owner") return copy.owner;
+  if (role === "moderator") return copy.moderator;
+  return copy.memberRole;
 }
 
 function buildPoolMembers(
@@ -512,7 +632,10 @@ function buildPoolMembers(
   predictionsByUser: Map<string, PredictionRow[]>,
   pointsByUser: Map<string, number>,
   worldRankByUser: Map<string, number>,
+  locale: Locale,
 ): PoolMember[] {
+  const dateLocale = locale === "en" ? "en-GB" : "nl-NL";
+  const playerFallback = poolCopy[locale].player;
   const built = members.map((member) => {
     const isYou = member.user_id === currentUserId;
     const visible = isYou || revealOthers;
@@ -529,7 +652,7 @@ function buildPoolMembers(
         const finished = match.status === "finished" && match.homeScore !== null && match.awayScore !== null;
         const line: MatchLine = {
           matchId: match.id,
-          when: formatAmsterdam(match.startsAt),
+          when: formatAmsterdam(match.startsAt, dateLocale),
           home: match.homeName,
           away: match.awayName,
           predHome: prediction.home_score,
@@ -556,7 +679,7 @@ function buildPoolMembers(
       rank: 0,
       worldRank: worldRankByUser.get(member.user_id) ?? null,
       isOwner: member.role === "owner",
-      name: member.profiles?.nickname ?? "Speler",
+      name: member.profiles?.nickname ?? playerFallback,
       teamName: member.profiles?.team_name ?? null,
       avatarKey: member.profiles?.avatar_key ?? null,
       points: pointsByUser.get(member.user_id) ?? 0,

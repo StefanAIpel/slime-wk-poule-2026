@@ -1,24 +1,24 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/constants";
 
+const publicRoutes = ["", "/en", "/schema", "/schema/groepen", "/schema/knockout", "/ranglijst", "/regels", "/games", "/privacy", "/voorwaarden"] as const;
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
-  // Alleen publieke pagina's; de privé-app (/voorspellingen, /poules, /account)
-  // blijft bewust buiten de sitemap en wordt geweerd via robots.ts.
-  const high = ["", "/schema", "/schema/groepen", "/schema/knockout", "/ranglijst", "/regels", "/games"];
-  const low = ["/privacy", "/voorwaarden"];
-  return [
-    ...high.map((route) => ({
-      url: `${SITE_URL}${route}`,
-      lastModified: now,
-      changeFrequency: (route === "" ? "daily" : "weekly") as "daily" | "weekly",
-      priority: route === "" ? 1 : 0.7,
-    })),
-    ...low.map((route) => ({
-      url: `${SITE_URL}${route}`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.3,
-    })),
-  ];
+  const lastModified = new Date();
+  return publicRoutes.map((route) => ({
+    url: `${SITE_URL}${route}`,
+    lastModified,
+    changeFrequency: route === "" || route === "/en" ? "daily" : "weekly",
+    priority: route === "" || route === "/en" ? 1 : route === "/schema" || route === "/ranglijst" ? 0.8 : 0.6,
+    alternates:
+      route === "" || route === "/en"
+        ? {
+            languages: {
+              nl: SITE_URL,
+              en: `${SITE_URL}/en`,
+              "x-default": `${SITE_URL}/en`,
+            },
+          }
+        : undefined,
+  }));
 }

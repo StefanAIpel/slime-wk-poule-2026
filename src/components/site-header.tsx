@@ -5,18 +5,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useActiveLocale } from "@/hooks/use-active-locale";
+import { localizedHref, stripLocaleFromPath } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/browser";
 
-const homeLink = { href: "/", label: "Home", icon: Home };
-const schemaLink = { href: "/schema", label: "Schema", icon: CalendarDays };
+const homeLink = { href: "/", label: "Home", labelEn: "Home", icon: Home };
+const schemaLink = { href: "/schema", label: "Schema", labelEn: "Schedule", icon: CalendarDays };
 const publicTail = [
-  { href: "/ranglijst", label: "Ranglijst", icon: Trophy },
-  { href: "/games", label: "Spelletjes", icon: Gamepad2 },
-  { href: "/regels", label: "Regels", icon: ListChecks },
+  { href: "/ranglijst", label: "Ranglijst", labelEn: "Rankings", icon: Trophy },
+  { href: "/games", label: "Spelletjes", labelEn: "Games", icon: Gamepad2 },
+  { href: "/regels", label: "Regels", labelEn: "Rules", icon: ListChecks },
 ];
 const privateLinks = [
-  { href: "/voorspellingen", label: "Voorspel", icon: ClipboardList, emphasis: true },
-  { href: "/poules", label: "WK-poules", icon: Users },
+  { href: "/voorspellingen", label: "Voorspel", labelEn: "Predict", icon: ClipboardList, emphasis: true },
+  { href: "/poules", label: "WK-poules", labelEn: "Pools", icon: Users },
 ];
 
 /**
@@ -27,6 +30,7 @@ const privateLinks = [
 export function SiteHeader() {
   const [loggedIn, setLoggedIn] = useState(false);
   const pathname = usePathname();
+  const locale = useActiveLocale(pathname || "/");
 
   useEffect(() => {
     const supabase = createClient();
@@ -44,7 +48,7 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="site-header-inner">
-        <Link href="/" className="site-header-logo" aria-label="Slime Score home">
+        <Link href={localizedHref("/", locale)} className="site-header-logo" aria-label="Slime Score home">
           <Image
             className="site-header-avatar header-slime-avatar"
             src="/assets/transparant-avatar/wk_slime_700_transparant.webp"
@@ -62,40 +66,41 @@ export function SiteHeader() {
             </span>
           </span>
         </Link>
-        <nav className="site-header-nav" aria-label="Hoofdmenu">
+        <nav className="site-header-nav" aria-label={locale === "en" ? "Main menu" : "Hoofdmenu"}>
           {links.map((link) => {
             const Icon = link.icon;
-            const active = pathname === link.href;
+            const active = stripLocaleFromPath(pathname || "/") === link.href;
             const emphasized = "emphasis" in link && link.emphasis;
             return (
               <Link
                 key={link.href}
-                href={link.href}
+                href={localizedHref(link.href, locale)}
                 className={`site-header-link ${emphasized ? "site-header-link-emphasis" : ""} ${active ? "is-active" : ""}`}
                 aria-current={active ? "page" : undefined}
               >
                 <Icon aria-hidden="true" className="size-4" />
-                {link.label}
+                {locale === "en" ? link.labelEn : link.label}
               </Link>
             );
           })}
+          <LanguageSwitcher />
           {loggedIn ? (
             <>
-              <Link href="/account" className="site-header-mini-action">
+              <Link href={localizedHref("/account", locale)} className="site-header-mini-action">
                 <UserCog aria-hidden="true" className="size-3.5" />
-                Account
+                {locale === "en" ? "Account" : "Account"}
               </Link>
               <form action="/logout" method="post">
                 <button className="site-header-mini-action" type="submit">
                   <LogOut aria-hidden="true" className="size-3.5" />
-                  Uitloggen
+                  {locale === "en" ? "Log out" : "Uitloggen"}
                 </button>
               </form>
             </>
           ) : (
-            <Link href="/aanmelden" className="site-header-cta site-header-cta-primary">
+            <Link href={localizedHref("/aanmelden", locale)} className="site-header-cta site-header-cta-primary">
               <LogIn aria-hidden="true" className="size-4" />
-              Aanmelden
+              {locale === "en" ? "Sign up" : "Aanmelden"}
             </Link>
           )}
         </nav>

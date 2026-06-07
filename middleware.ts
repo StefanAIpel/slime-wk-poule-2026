@@ -1,8 +1,57 @@
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { LOCALE_COOKIE, isSupportedLocale, preferredLocaleFromRequest, stripLocaleFromPath, type Locale } from "@/lib/i18n";
+
+const localeCookieOptions = {
+  path: "/",
+  maxAge: 60 * 60 * 24 * 365,
+  sameSite: "lax" as const,
+};
 
 export async function middleware(request: NextRequest) {
-  return updateSession(request);
+  const langParam = request.nextUrl.searchParams.get("lang");
+  const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value;
+  const countryCode =
+    request.headers.get("x-vercel-ip-country") ??
+    request.headers.get("cf-ipcountry") ??
+    request.headers.get("x-country");
+  const acceptLanguage = request.headers.get("accept-language");
+  const pathLocale: Locale = request.nextUrl.pathname === "/en" || request.nextUrl.pathname.startsWith("/en/") ? "en" : "nl";
+  const requestedLocale = isSupportedLocale(langParam) ? langParam : null;
+  const locale = requestedLocale ?? (pathLocale === "en" ? "en" : isSupportedLocale(cookieLocale) ? cookieLocale : preferredLocaleFromRequest({ cookieLocale, country: countryCode, acceptLanguage }));
+
+  if (requestedLocale) {
+    const url = request.nextUrl.clone();
+    url.searchParams.delete("lang");
+    if (requestedLocale === "en" && url.pathname === "/") {
+      url.pathname = "/en";
+    }
+    if (requestedLocale === "nl") {
+      url.pathname = stripLocaleFromPath(url.pathname);
+    }
+    const response = NextResponse.redirect(url);
+    response.cookies.set(LOCALE_COOKIE, locale, localeCookieOptions);
+    return response;
+  }
+
+  if (!requestedLocale && request.nextUrl.pathname.startsWith("/en/")) {
+    const url = request.nextUrl.clone();
+    url.pathname = stripLocaleFromPath(url.pathname);
+    const response = NextResponse.redirect(url);
+    response.cookies.set(LOCALE_COOKIE, "en", localeCookieOptions);
+    return response;
+  }
+
+  if (request.nextUrl.pathname === "/" && locale === "en") {
+    const response = NextResponse.redirect(new URL("/en", request.url));
+    response.cookies.set(LOCALE_COOKIE, locale, localeCookieOptions);
+    return response;
+  }
+
+  request.cookies.set(LOCALE_COOKIE, locale);
+  const response = await updateSession(request);
+  response.cookies.set(LOCALE_COOKIE, locale, localeCookieOptions);
+  return response;
 }
 
 export const config = {

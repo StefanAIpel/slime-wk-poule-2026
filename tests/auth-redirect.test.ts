@@ -15,6 +15,9 @@ test("magic-link callback bewaart alleen veilige interne next redirects", () => 
   assert.equal(buildEmailRedirectTo("https://slimescore.com", "/poules"), "https://slimescore.com/auth/confirm?next=%2Fpoules");
   assert.equal(safeRedirectTarget("/poules"), "/poules");
   assert.equal(safeRedirectTarget("//evil.test"), "/?login=gelukt");
+  assert.equal(safeRedirectTarget("/..//evil.com"), "/?login=gelukt");
+  assert.equal(safeRedirectTarget("/%2e%2e//evil.com"), "/?login=gelukt");
+  assert.equal(safeRedirectTarget("/\\\\evil.com"), "/?login=gelukt");
   assert.equal(safeRedirectTarget("https://evil.test"), "/?login=gelukt");
   assert.equal(safeRedirectTarget(null), "/?login=gelukt");
 });

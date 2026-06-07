@@ -4,69 +4,129 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
 import { CONTACT_EMAIL } from "@/lib/constants";
+import { localizedHref, type Locale } from "@/lib/i18n";
+import { getServerLocale } from "@/lib/server-locale";
 
-export const metadata: Metadata = {
-  title: "Voorwaarden",
-  description: "De spelregels voor het gebruik van Slime Score: gratis, eerlijk en voor de lol.",
-  alternates: { canonical: "/voorwaarden" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getServerLocale();
+  return {
+    title: locale === "en" ? "Terms of use" : "Voorwaarden",
+    description: locale === "en"
+      ? "The rules for using Slime Score: free, fair and for fun."
+      : "De spelregels voor het gebruik van Slime Score: gratis, eerlijk en voor de lol.",
+    alternates: { canonical: "/voorwaarden" },
+  };
+}
 
-export default function TermsPage() {
+const termsCopy = {
+  nl: {
+    title: "Voorwaarden",
+    subtitle: "Slime Score is een gratis WK-poule voor de lol. Hou het sportief, dan houdt iedereen het leuk.",
+    fairTitle: "Eerlijk spel",
+    fairItems: [
+      "Slime Score is gratis voor deelnemers.",
+      "Eén account per persoon; geen nepaccounts om de ranglijst te beïnvloeden.",
+      "Kies een nette bijnaam en teamnaam. Kwetsende namen kunnen worden verwijderd.",
+      "Bij misbruik kunnen we toegang of een WK-poule-account intrekken.",
+    ],
+    deadlinesTitle: "Deadlines en uitslagen",
+    deadlinesItems: [
+      "Voorspellingen tellen alleen mee als ze vóór de deadline zijn opgeslagen.",
+      "Uitslagen en punten worden zo zorgvuldig mogelijk verwerkt.",
+      "Bij een fout of onduidelijkheid beslist de organisatie; we corrigeren waar nodig.",
+    ],
+    scoringBefore: "De puntentelling staat uitgelegd op de",
+    scoringLink: "regelspagina",
+    poolsTitle: "WK-poules en berichten",
+    poolItems: [
+      "Beheerders en moderators zijn verantwoordelijk voor de berichten in hun WK-poule.",
+      "Deel je geheime WK-poulecode alleen met mensen die je vertrouwt.",
+      "We kunnen deze voorwaarden aanpassen; grote wijzigingen melden we in de app.",
+    ],
+    questions: "Vragen? Mail",
+    readPrivacy: "Lees ook ons",
+    privacy: "privacybeleid",
+  },
+  en: {
+    title: "Terms of use",
+    subtitle: "Slime Score is a free World Cup pool for fun. Keep it sporty so everyone can enjoy it.",
+    fairTitle: "Fair play",
+    fairItems: [
+      "Slime Score is free for participants.",
+      "One account per person; no fake accounts to influence the ranking.",
+      "Choose a decent nickname and team name. Offensive names may be removed.",
+      "In case of abuse, we may revoke access or a World Cup pool account.",
+    ],
+    deadlinesTitle: "Deadlines and results",
+    deadlinesItems: [
+      "Predictions count only if they are saved before the deadline.",
+      "Results and points are processed as carefully as possible.",
+      "If there is an error or ambiguity, the organisation decides; we correct where needed.",
+    ],
+    scoringBefore: "The scoring system is explained on the",
+    scoringLink: "rules page",
+    poolsTitle: "World Cup pools and messages",
+    poolItems: [
+      "Managers and moderators are responsible for the messages in their World Cup pool.",
+      "Share your secret World Cup pool code only with people you trust.",
+      "We may update these terms; major changes are announced in the app.",
+    ],
+    questions: "Questions? Email",
+    readPrivacy: "Also read our",
+    privacy: "privacy policy",
+  },
+} satisfies Record<Locale, Record<string, string | string[]>>;
+
+export default async function TermsPage() {
+  const locale = await getServerLocale();
+  const copy = termsCopy[locale];
+  const fairItems = copy.fairItems as string[];
+  const deadlinesItems = copy.deadlinesItems as string[];
+  const poolItems = copy.poolItems as string[];
+
   return (
     <main className="page-shell">
       <header className="mb-6 grid gap-4">
-        <Brand />
-        <PageHero
-          title="Voorwaarden"
-          subtitle="Slime Score is een gratis WK-poule voor de lol. Hou het sportief, dan houdt iedereen het leuk."
-        />
+        <Brand locale={locale} />
+        <PageHero title={copy.title as string} subtitle={copy.subtitle as string} />
       </header>
 
       <section className="grid gap-4 lg:grid-cols-2 lg:items-start">
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <Scale aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-bold text-[#081634]">Eerlijk spel</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">{copy.fairTitle as string}</h2>
           </div>
           <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
-            <li>Slime Score is gratis voor deelnemers.</li>
-            <li>Eén account per persoon; geen nepaccounts om de ranglijst te beïnvloeden.</li>
-            <li>Kies een nette bijnaam en teamnaam. Kwetsende namen kunnen worden verwijderd.</li>
-            <li>Bij misbruik kunnen we toegang of een WK-poule-account intrekken.</li>
+            {fairItems.map((item) => <li key={item}>{item}</li>)}
           </ul>
         </article>
 
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <CalendarClock aria-hidden="true" className="size-7 text-[#25a84a]" />
-            <h2 className="text-2xl font-bold text-[#081634]">Deadlines en uitslagen</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">{copy.deadlinesTitle as string}</h2>
           </div>
           <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
-            <li>Voorspellingen tellen alleen mee als ze vóór de deadline zijn opgeslagen.</li>
-            <li>Uitslagen en punten worden zo zorgvuldig mogelijk verwerkt.</li>
-            <li>Bij een fout of onduidelijkheid beslist de organisatie; we corrigeren waar nodig.</li>
-            <li>De puntentelling staat uitgelegd op de <a className="font-bold text-[#064ed6]" href="/regels">regelspagina</a>.</li>
+            {deadlinesItems.map((item) => <li key={item}>{item}</li>)}
+            <li>{copy.scoringBefore as string} <a className="font-bold text-[#064ed6]" href={localizedHref("/regels", locale)}>{copy.scoringLink as string}</a>.</li>
           </ul>
         </article>
 
         <article className="panel p-5 lg:col-span-2">
           <div className="flex items-center gap-3">
             <Users aria-hidden="true" className="size-7 text-[#e1262f]" />
-            <h2 className="text-2xl font-bold text-[#081634]">WK-poules en berichten</h2>
+            <h2 className="text-2xl font-bold text-[#081634]">{copy.poolsTitle as string}</h2>
           </div>
           <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
-            <li>Beheerders en moderators zijn verantwoordelijk voor de berichten in hun WK-poule.</li>
-            <li>Deel je geheime WK-poulecode alleen met mensen die je vertrouwt.</li>
-            <li>We kunnen deze voorwaarden aanpassen; grote wijzigingen melden we in de app.</li>
-            <li>
-              Vragen? Mail <a className="font-bold text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
-            </li>
+            {poolItems.map((item) => <li key={item}>{item}</li>)}
+            <li>{copy.questions as string} <a className="font-bold text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</li>
           </ul>
         </article>
       </section>
 
       <p className="mt-5 text-sm font-medium text-[#48617f]">
-        Lees ook ons <a className="font-bold text-[#064ed6]" href="/privacy">privacybeleid</a>.
+        {copy.readPrivacy as string} <a className="font-bold text-[#064ed6]" href={localizedHref("/privacy", locale)}>{copy.privacy as string}</a>.
       </p>
 
       <BottomNav current="/voorwaarden" />

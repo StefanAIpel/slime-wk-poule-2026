@@ -1,13 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { cookies } from "next/headers";
 import { AuthLinkBridge } from "@/components/auth-link-bridge";
 import { InAppHint } from "@/components/in-app-hint";
+import { LocalePreferenceSync } from "@/components/locale-preference-sync";
 import { PwaRegister } from "@/components/pwa-register";
 import { QuickMenu } from "@/components/quick-menu";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StatusBar } from "@/components/status-bar";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { LOCALE_COOKIE, isSupportedLocale } from "@/lib/i18n";
 import "./globals.css";
 
 // Plus Jakarta Sans: vriendelijk maar volwassener en beter leesbaar dan Poppins.
@@ -19,10 +22,12 @@ const appFont = Plus_Jakarta_Sans({
 });
 
 const description =
-  "Gratis Nederlandse WK 2026-poule. Eén keer invullen, maak een WK-poule met vrienden en familie en zie wie er wint. Jouw data privé.";
+  "Gratis WK 2026-poule voor Nederland en België. Voorspel wedstrijden, maak een poule met vrienden of collega's en volg de ranglijst live.";
+const englishDescription =
+  "Free World Cup 2026 prediction pool for international fans. Create a football pool for friends, family or colleagues and follow live rankings.";
 
-const appIcon = "/icons/slimescore-app-icon-v3-512.png";
-const appleTouchIcon = "/icons/slimescore-apple-touch-icon-v3-180.png";
+const appIcon = "/icons/slimescore-app-icon-v4-512.png";
+const appleTouchIcon = "/icons/slimescore-apple-touch-icon-v4-180.png";
 // Vierkant app-icon voor gedeelde links: duidelijker in WhatsApp/Telegram dan de brede banner.
 const ogImage = appIcon;
 
@@ -41,6 +46,17 @@ export const metadata: Metadata = {
     "gratis WK poule",
     "wereldkampioenschap 2026",
     "poule maken",
+    "Oranje WK 2026",
+    "Nederland WK poule",
+    "België WK poule",
+    "World Cup 2026 pool",
+    "free World Cup pool",
+    "FIFA World Cup 2026 predictions",
+    "football pool",
+    "soccer pool",
+    "office football pool",
+    "USA Canada Mexico 2026",
+    "SlimeScore",
     "Slime Score",
   ],
   applicationName: SITE_NAME,
@@ -52,17 +68,23 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: appIcon, sizes: "512x512", type: "image/png" },
-      { url: "/icons/slimescore-app-icon-v3-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/slimescore-app-icon-v4-192.png", sizes: "192x192", type: "image/png" },
     ],
     apple: [{ url: appleTouchIcon, sizes: "180x180", type: "image/png" }],
   },
   manifest: "/manifest.webmanifest",
   alternates: {
     canonical: SITE_URL,
+    languages: {
+      nl: SITE_URL,
+      en: `${SITE_URL}/en`,
+      "x-default": `${SITE_URL}/en`,
+    },
   },
   openGraph: {
     type: "website",
     locale: "nl_NL",
+    alternateLocale: ["en_GB", "en_US"],
     url: SITE_URL,
     siteName: SITE_NAME,
     title: "Slime Score · Gratis WK 2026-poule",
@@ -95,32 +117,55 @@ const structuredData = [
   },
   {
     "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    alternateName: ["Slime Score", "World Cup 2026 pool", "WK 2026 poule"],
+    url: SITE_URL,
+    inLanguage: ["nl-NL", "en"],
+    keywords: "World Cup 2026 pool, free World Cup pool, WK 2026 poule, voetbalpoule, football pool, soccer pool",
+    description: englishDescription,
+    potentialAction: {
+      "@type": "RegisterAction",
+      target: `${SITE_URL}/en#login`,
+      name: "Join a free World Cup 2026 pool",
+    },
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "WebApplication",
     name: SITE_NAME,
     url: SITE_URL,
     applicationCategory: "GameApplication",
     operatingSystem: "Web, iOS, Android",
-    inLanguage: "nl-NL",
+    inLanguage: ["nl-NL", "en"],
     description,
+    alternateName: ["Free World Cup 2026 prediction pool", "Gratis WK 2026-poule"],
+    keywords: "World Cup 2026, football predictions, soccer pool, office pool, WK poule, Oranje, Netherlands, Belgium, USA, Canada, Mexico",
+    areaServed: ["NL", "BE", "US", "CA", "MX", "GB", "Global"],
     offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
     publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}${appIcon}` },
   },
 ];
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
+  const htmlLang = isSupportedLocale(cookieLocale) ? cookieLocale : "nl";
+
   return (
-    <html lang="nl" className={appFont.variable}>
+    <html lang={htmlLang} className={appFont.variable}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <div className="stadium-bg" />
         <PwaRegister />
+        <LocalePreferenceSync />
         <AuthLinkBridge />
         <StatusBar />
         <SiteHeader />
         <QuickMenu />
         <InAppHint />
         {children}
-        <SiteFooter />
+        <SiteFooter locale={htmlLang} />
       </body>
     </html>
   );

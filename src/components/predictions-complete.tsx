@@ -2,13 +2,36 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { localizedHref, type Locale } from "@/lib/i18n";
 
-const QUOTES = [
-  "Helemaal ingevuld! Slime is trots op je. 🟢",
-  "Klaar is Kees. Nu nog gewoon gelijk krijgen. 😎",
-  "Top! De rest van je poule mag zich zorgen maken. 🏆",
-  "Alles erin. Achterover leunen en genieten. ⚽",
-];
+const completeCopy = {
+  nl: {
+    quotes: [
+      "Helemaal ingevuld! Slime is trots op je. 🟢",
+      "Klaar is Kees. Nu nog gewoon gelijk krijgen. 😎",
+      "Top! De rest van je poule mag zich zorgen maken. 🏆",
+      "Alles erin. Achterover leunen en genieten. ⚽",
+    ],
+    celebrateAria: "Vier het feestje nog een keer",
+    title: "Alles ingevuld — lekker bezig!",
+    relax: "Tijd voor ontspanning: speel een potje Slime Soccer tegen de computer of je vrienden (online).",
+    play: "⚽ Speel Slime Soccer",
+    confetti: "🎉 Nog wat confetti",
+  },
+  en: {
+    quotes: [
+      "All filled in! Slime is proud of you. 🟢",
+      "Done and dusted. Now you just have to be right. 😎",
+      "Nice! The rest of your pool should start worrying. 🏆",
+      "Everything is in. Sit back and enjoy. ⚽",
+    ],
+    celebrateAria: "Celebrate one more time",
+    title: "Everything filled in — nice work!",
+    relax: "Time to relax: play Slime Soccer against the computer or your friends online.",
+    play: "⚽ Play Slime Soccer",
+    confetti: "🎉 More confetti",
+  },
+} as const;
 
 const PIECES = ["⚽", "🎉", "🟢", "🏆", "🧡", "✨"];
 
@@ -17,14 +40,15 @@ const PIECES = ["⚽", "🎉", "🟢", "🏆", "🧡", "✨"];
  * met confetti (opnieuw te triggeren) en stuurt je vrolijk door naar een potje
  * Slime Soccer.
  */
-export function PredictionsComplete() {
+export function PredictionsComplete({ locale = "nl" }: { locale?: Locale }) {
+  const copy = completeCopy[locale];
   // Confetti vuurt meteen bij de eerste render (burst = 1) en opnieuw bij elke klik.
   const [burst, setBurst] = useState(1);
   const [quote, setQuote] = useState(0);
 
   function celebrate() {
     setBurst((value) => value + 1);
-    setQuote((value) => (value + 1) % QUOTES.length);
+    setQuote((value) => (value + 1) % copy.quotes.length);
   }
 
   return (
@@ -41,21 +65,19 @@ export function PredictionsComplete() {
           ))}
         </div>
       ) : null}
-      <button type="button" onClick={celebrate} className="celebration-slime" aria-label="Vier het feestje nog een keer">
+      <button type="button" onClick={celebrate} className="celebration-slime" aria-label={copy.celebrateAria}>
         🐮🏆
       </button>
       <div className="celebration-copy">
-        <h3>Alles ingevuld — lekker bezig!</h3>
-        <p>{QUOTES[quote]}</p>
-        <p className="celebration-relax">
-          Tijd voor ontspanning: speel een potje Slime Soccer tegen de computer of je vrienden (online).
-        </p>
+        <h3>{copy.title}</h3>
+        <p>{copy.quotes[quote]}</p>
+        <p className="celebration-relax">{copy.relax}</p>
         <div className="celebration-actions">
-          <Link href="/games?game=soccer" className="button-primary">
-            ⚽ Speel Slime Soccer
+          <Link href={localizedHref("/games?game=soccer", locale)} className="button-primary">
+            {copy.play}
           </Link>
           <button type="button" onClick={celebrate} className="button-secondary">
-            🎉 Nog wat confetti
+            {copy.confetti}
           </button>
         </div>
       </div>

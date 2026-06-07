@@ -1,159 +1,153 @@
 "use client";
 
-import { Check, Link as LinkIcon, Mail, QrCode, Send, Share2 } from "lucide-react";
+import { Check, Mail, Send } from "lucide-react";
 import { useState } from "react";
 
 import { AppFirstShareLink } from "@/components/app-first-share-link";
+import type { Locale } from "@/lib/i18n";
+
+type GlyphProps = { className?: string; "aria-hidden"?: boolean | "true" | "false" };
+
+const poolQuickShareCopy = {
+  nl: {
+    containerLabel: "Poule delen",
+    actionsLabel: "Deel deze poule",
+    headline: (poolName: string) => `Doe mee met onze 100% gratis WK-poule "${poolName}" ⚽`,
+    code: (poolCode: string) => `Poulecode: ${poolCode}`,
+    value: "1x ±10 min invullen. Speelschema + uitslagen volgen.",
+    accountHint: "Maak evt. eerst gratis een account.",
+    instagram: (poolName: string, poolInviteCode: string, poolInviteValue: string) =>
+      `100% gratis WK-poule "${poolName}". ${poolInviteCode}. ${poolInviteValue}`,
+    nativeTitle: (poolName: string) => `Doe mee met ${poolName}`,
+    shareVia: (channel: string) => `Deel via ${channel}`,
+    copied: (channel: string) => `Link gekopieerd voor ${channel}`,
+  },
+  en: {
+    containerLabel: "Share pool",
+    actionsLabel: "Share this pool",
+    headline: (poolName: string) => `Join our 100% free World Cup pool "${poolName}" ⚽`,
+    code: (poolCode: string) => `Pool code: ${poolCode}`,
+    value: "Fill in once in about 10 minutes. Follow the schedule and results.",
+    accountHint: "Create a free account first if needed.",
+    instagram: (poolName: string, poolInviteCode: string, poolInviteValue: string) =>
+      `100% free World Cup pool "${poolName}". ${poolInviteCode}. ${poolInviteValue}`,
+    nativeTitle: (poolName: string) => `Join ${poolName}`,
+    shareVia: (channel: string) => `Share via ${channel}`,
+    copied: (channel: string) => `Link copied for ${channel}`,
+  },
+} as const;
+
+function InstagramGlyph({ className }: GlyphProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
 
 /** Inline deelknoppen naast de poulenaam: zichtbaar, compact en zonder zwevende popover. */
 export function PoolQuickShare({
   joinUrl,
-  qrDataUrl,
   poolName,
+  poolCode,
   inviteText,
-  isManager = false,
+  locale = "nl",
 }: {
   joinUrl: string;
-  qrDataUrl: string;
   poolName: string;
+  poolCode: string;
   inviteText: string;
-  isManager?: boolean;
+  locale?: Locale;
 }) {
-  const [copied, setCopied] = useState(false);
-  const [qrBusy, setQrBusy] = useState(false);
-  const [nativeCopied, setNativeCopied] = useState(false);
+  const [nativeCopied, setNativeCopied] = useState<string | null>(null);
+  const copy = poolQuickShareCopy[locale];
   const message = `${inviteText}\n\n${joinUrl}`.trim();
-  const encodedMessage = encodeURIComponent(message);
-  const encodedInvite = encodeURIComponent(inviteText);
+  const poolInviteHeadline = copy.headline(poolName);
+  const poolInviteCode = copy.code(poolCode);
+  const poolInviteValue = copy.value;
+  const groupMessageText = `${poolInviteHeadline}\n${poolInviteCode}\n${copy.accountHint} ${poolInviteValue}`;
+  const groupMessage = `${groupMessageText}\n\n${joinUrl}`;
+  const socialMessage = `${poolInviteHeadline}\n${poolInviteCode}\n${poolInviteValue}`;
+  const instagramMessage = copy.instagram(poolName, poolInviteCode, poolInviteValue);
+  const encodedMessage = encodeURIComponent(groupMessage);
+  const encodedInvite = encodeURIComponent(socialMessage);
   const encodedUrl = encodeURIComponent(joinUrl);
-  const encodedTitle = encodeURIComponent(`Doe mee met ${poolName}`);
-  const encodedBody = encodedMessage;
-  const facebookWebHref = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedMessage}`;
-  const fileName = `qr-${poolName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "wk-poule"}.png`;
+  const encodedTitle = encodeURIComponent(copy.nativeTitle(poolName));
+  const encodedBody = encodeURIComponent(message);
+  const facebookWebHref = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedInvite}`;
 
-  async function copyText(text = joinUrl) {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {
-      setCopied(false);
-    }
-  }
-
-  async function nativeShare() {
+  async function nativeShare(shareText = groupMessageText, channelLabel = "native share") {
     try {
       if (navigator.share) {
-        await navigator.share({ title: `Doe mee met ${poolName}`, text: inviteText, url: joinUrl });
+        await navigator.share({ title: copy.nativeTitle(poolName), text: shareText, url: joinUrl });
         return;
       }
-      await navigator.clipboard.writeText(message);
-      setNativeCopied(true);
-      setTimeout(() => setNativeCopied(false), 1800);
+      await navigator.clipboard.writeText(`${shareText}\n${joinUrl}`.trim());
+      setNativeCopied(channelLabel);
+      setTimeout(() => setNativeCopied(null), 1800);
     } catch {
       // Gebruiker annuleerde of apparaat ondersteunt dit niet.
-    }
-  }
-
-  async function shareQr() {
-    setQrBusy(true);
-    try {
-      if (!qrDataUrl) {
-        await nativeShare();
-        return;
-      }
-      const blob = await (await fetch(qrDataUrl)).blob();
-      const file = new File([blob], fileName, { type: "image/png" });
-      const nav = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
-      if (nav.canShare?.({ files: [file] })) {
-        await nav.share({ files: [file], title: `Doe mee met ${poolName}`, text: `Scan de QR of ga naar ${joinUrl}` });
-      } else if (navigator.share) {
-        await navigator.share({ title: `Doe mee met ${poolName}`, text: inviteText, url: joinUrl });
-      } else {
-        window.open(qrDataUrl, "_blank", "noopener,noreferrer");
-      }
-    } catch {
-      // Gebruiker annuleerde of apparaat ondersteunt dit niet.
-    } finally {
-      setQrBusy(false);
     }
   }
 
   return (
-    <div className="pool-quick-share" aria-label="Poule delen">
-      <span className="pool-share-inline-label" title="Poule delen">
-        <Share2 aria-hidden="true" className="size-3.5" />
-        <span className="sr-only">Poule delen</span>
-      </span>
-      <div className="pool-share-actions" aria-label="Deel deze poule">
+    <div className="pool-quick-share" aria-label={copy.containerLabel}>
+      <div className="pool-share-actions" aria-label={copy.actionsLabel}>
         <AppFirstShareLink
           className="pool-quick-share-button pool-quick-share-whatsapp"
           appHref={`whatsapp://send?text=${encodedMessage}`}
           webHref={`https://wa.me/?text=${encodedMessage}`}
-          label="Deel via WhatsApp"
-          title="Deel via WhatsApp"
+          label={copy.shareVia("WhatsApp")}
+          title={copy.shareVia("WhatsApp")}
         >
           <Send aria-hidden="true" className="size-4" />
         </AppFirstShareLink>
-        <button
-          className="pool-quick-share-button pool-quick-share-copy"
-          type="button"
-          onClick={() => copyText(joinUrl)}
-          aria-label={copied ? "Link gekopieerd" : "Kopieer link"}
-          title={copied ? "Link gekopieerd" : "Kopieer link"}
+        <AppFirstShareLink
+          className="pool-quick-share-button pool-quick-share-facebook"
+          appHref={`fb://facewebmodal/f?href=${encodeURIComponent(facebookWebHref)}`}
+          webHref={facebookWebHref}
+          label={copy.shareVia("Facebook")}
+          title={copy.shareVia("Facebook")}
         >
-          {copied ? <Check aria-hidden="true" className="size-4" /> : <LinkIcon aria-hidden="true" className="size-4" />}
+          <span aria-hidden="true" className="pool-share-brand-letter">f</span>
+        </AppFirstShareLink>
+        <AppFirstShareLink
+          className="pool-quick-share-button pool-quick-share-telegram"
+          appHref={`tg://msg_url?url=${encodedUrl}&text=${encodedInvite}`}
+          webHref={`https://t.me/share/url?url=${encodedUrl}&text=${encodedInvite}`}
+          label={copy.shareVia("Telegram")}
+          title={copy.shareVia("Telegram")}
+        >
+          <span aria-hidden="true" className="pool-share-brand-letter">TG</span>
+        </AppFirstShareLink>
+        <button
+          className="pool-quick-share-button pool-quick-share-signal"
+          type="button"
+          onClick={() => nativeShare(groupMessageText, "Signal")}
+          aria-label={nativeCopied === "Signal" ? copy.copied("Signal") : copy.shareVia("Signal")}
+          title={nativeCopied === "Signal" ? copy.copied("Signal") : copy.shareVia("Signal")}
+        >
+          {nativeCopied === "Signal" ? <Check aria-hidden="true" className="size-4" /> : <span aria-hidden="true" className="pool-share-brand-letter">S</span>}
         </button>
         <a
           className="pool-quick-share-button pool-quick-share-mail"
           href={`mailto:?subject=${encodedTitle}&body=${encodedBody}`}
-          aria-label="Deel via mail"
-          title="Deel via mail"
+          aria-label={copy.shareVia("mail")}
+          title={copy.shareVia("mail")}
         >
           <Mail aria-hidden="true" className="size-4" />
         </a>
         <button
-          className="pool-quick-share-button pool-quick-share-qr"
+          className="pool-quick-share-button pool-quick-share-instagram"
           type="button"
-          onClick={shareQr}
-          disabled={qrBusy}
-          aria-label="Deel QR-code"
-          title="Deel QR-code"
+          onClick={() => nativeShare(instagramMessage, "Instagram/native share")}
+          aria-label={nativeCopied === "Instagram/native share" ? copy.copied("Instagram/native share") : copy.shareVia("Instagram/native share")}
+          title={nativeCopied === "Instagram/native share" ? copy.copied("Instagram/native share") : copy.shareVia("Instagram/native share")}
         >
-          <QrCode aria-hidden="true" className="size-4" />
+          {nativeCopied === "Instagram/native share" ? <Check aria-hidden="true" className="size-4" /> : <InstagramGlyph aria-hidden="true" className="size-4" />}
         </button>
-
-        {isManager ? (
-          <>
-            <AppFirstShareLink
-              className="pool-quick-share-button pool-quick-share-facebook pool-quick-share-admin-button"
-              appHref={`fb://facewebmodal/f?href=${encodeURIComponent(facebookWebHref)}`}
-              webHref={facebookWebHref}
-              label="Deel via Facebook"
-              title="Deel via Facebook"
-            >
-              <span aria-hidden="true" className="pool-share-brand-letter">f</span>
-            </AppFirstShareLink>
-            <button
-              className="pool-quick-share-button pool-quick-share-instagram pool-quick-share-admin-button"
-              type="button"
-              onClick={nativeShare}
-              aria-label={nativeCopied ? "Link gekopieerd voor Instagram" : "Deel via Instagram of native deelmenu"}
-              title={nativeCopied ? "Link gekopieerd voor Instagram" : "Deel via Instagram/native deelmenu"}
-            >
-              <span aria-hidden="true" className="pool-share-brand-letter">IG</span>
-            </button>
-            <AppFirstShareLink
-              className="pool-quick-share-button pool-quick-share-telegram pool-quick-share-admin-button"
-              appHref={`tg://msg_url?url=${encodedUrl}&text=${encodedInvite}`}
-              webHref={`https://t.me/share/url?url=${encodedUrl}&text=${encodedInvite}`}
-              label="Deel via Telegram"
-              title="Deel via Telegram"
-            >
-              <span aria-hidden="true" className="pool-share-brand-letter">TG</span>
-            </AppFirstShareLink>
-          </>
-        ) : null}
       </div>
     </div>
   );
