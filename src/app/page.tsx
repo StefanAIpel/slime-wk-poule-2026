@@ -435,6 +435,11 @@ function PublicHome({ authError, leaderboard, locale }: { authError: boolean; le
 
   return (
     <main className="page-shell shell-top-tight grid gap-5">
+      {/* LCP-versneller: de hero-achtergrond is een CSS-::after background, die wordt
+          anders pas ná het parsen van de CSS ontdekt. Met een responsive preload haalt
+          de browser precies de juiste variant meteen op (geen layout-impact → geen CLS). */}
+      <link rel="preload" as="image" href="/assets/hero-home-portrait.webp" media="(max-width: 759px)" fetchPriority="high" />
+      <link rel="preload" as="image" href="/assets/hero-home-landscape.webp" media="(min-width: 760px)" fetchPriority="high" />
       <div className="hero-band hero-band-visual hero-home hero-band-topbar">
         <div className="hero-topbar md:hidden">
           <BrandWordmark onDark />
