@@ -1,0 +1,29 @@
+name: Backfill API-Football koppeling
+
+# Eenmalige/herhaalbare koppeling van matches.external_id en teams.external_id
+# aan de API-Football fixtures. Handmatig te starten (geen cron). Draai dit
+# opnieuw zodra het knock-outschema definitief is, zodat ook wedstrijden 73-104
+# gekoppeld worden.
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  group: backfill-apifootball
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/backfill-apifootball.ts
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
