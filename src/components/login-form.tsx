@@ -250,7 +250,7 @@ export function LoginForm({
 }: {
   surface?: "panel" | "inline";
   next?: string;
-  initialMode?: Extract<LoginMode, "login" | "register">;
+  initialMode?: Extract<LoginMode, "login" | "register" | "code">;
   locale?: Locale;
 }) {
   const [mode, setMode] = useState<LoginMode>(initialMode);
