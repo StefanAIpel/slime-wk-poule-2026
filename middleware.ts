@@ -43,7 +43,9 @@ export async function middleware(request: NextRequest) {
   }
 
   if (request.nextUrl.pathname === "/" && locale === "en") {
-    const response = NextResponse.redirect(new URL("/en", request.url));
+    const url = request.nextUrl.clone();
+    url.pathname = "/en";
+    const response = NextResponse.redirect(url);
     response.cookies.set(LOCALE_COOKIE, locale, localeCookieOptions);
     return response;
   }

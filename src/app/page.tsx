@@ -22,7 +22,7 @@ import { createOptionalAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { persistSignupProfileFromMetadata, type SignupProfileClient } from "@/lib/supabase/signup-profile";
 
-type HomeSearchParams = { auth?: string; login?: string; profiel?: string; reset?: string };
+type HomeSearchParams = { auth?: string; login?: string; profiel?: string; reset?: string; next?: string };
 
 type HomeMembership = {
   role: string;
@@ -194,8 +194,10 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
     return (
       <PublicHome
         authError={params.auth === "fout"}
+        initialLoginMode={params.login === "code" ? "code" : "login"}
         leaderboard={(publicLeaderboard ?? []) as unknown as HomeLeaderboardRow[]}
         locale={locale}
+        loginNext={params.next}
       />
     );
   }
@@ -426,7 +428,19 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
 }
 
 
-function PublicHome({ authError, leaderboard, locale }: { authError: boolean; leaderboard: HomeLeaderboardRow[]; locale: Locale }) {
+function PublicHome({
+  authError,
+  initialLoginMode,
+  leaderboard,
+  locale,
+  loginNext,
+}: {
+  authError: boolean;
+  initialLoginMode: "login" | "code";
+  leaderboard: HomeLeaderboardRow[];
+  locale: Locale;
+  loginNext?: string;
+}) {
   const copy = homeCopy[locale];
   const displayRows = withPublicRankScores(leaderboard as unknown as RankedScore[])
     .sort(compareScoresAlphabetical)
@@ -550,7 +564,11 @@ function PublicHome({ authError, leaderboard, locale }: { authError: boolean; le
                 <h2 className="public-login-title text-2xl font-black text-[#101a2b]">{copy.signupTitle}</h2>
               </div>
             </div>
-            {locale === "en" ? <LoginForm surface="inline" locale="en" /> : <LoginForm surface="inline" />}
+            {locale === "en" ? (
+              <LoginForm surface="inline" initialMode={initialLoginMode} locale="en" next={loginNext} />
+            ) : (
+              <LoginForm surface="inline" initialMode={initialLoginMode} next={loginNext} />
+            )}
           </section>
           {locale === "en" ? <InstallAppCard locale="en" /> : <InstallAppCard />}
         </aside>

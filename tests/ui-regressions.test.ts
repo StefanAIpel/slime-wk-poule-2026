@@ -152,7 +152,7 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0\.21"/);
+  assert.match(constants, /APP_VERSION = "0\.22"/);
 });
 test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
   const heroPrimaryBlock = globalsCss.match(/\.button-primary\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";
@@ -196,9 +196,17 @@ test("public login panel is compact on mobile", () => {
   assert.match(globalsCss, /\.auth-flow-note span \{\n  min-width: 0;\n\}/);
 });
 
+test("fixed-code login can be opened directly without email from a safe query link", () => {
+  assert.match(homePage, /type HomeSearchParams = \{ auth\?: string; login\?: string; profiel\?: string; reset\?: string; next\?: string \}/);
+  assert.match(homePage, /initialLoginMode=\{params\.login === "code" \? "code" : "login"\}/);
+  assert.match(homePage, /loginNext=\{params\.next\}/);
+  assert.match(loginForm, /initialMode\?: Extract<LoginMode, "login" \| "register" \| "code">/);
+  assert.match(loginForm, /submitPasswordLogin\(kidEmail\(normalized\), normalized, "code"\)/);
+});
+
 test("public FrontPage shows the PWA install instructions card near login", () => {
   assert.match(homePage, /import \{ InstallAppCard \} from "@\/components\/install-app-card"/);
-  assert.match(homePage, /<LoginForm surface=\"inline\" \/>[\s\S]*<InstallAppCard \/>/);
+  assert.match(homePage, /<LoginForm surface=\"inline\" initialMode=\{initialLoginMode\} next=\{loginNext\} \/>[\s\S]*<InstallAppCard \/>/);
   assert.match(installAppCard, /Voeg toe als app/);
   assert.match(globalsCss, /\.install-card-title \{[\s\S]*font-size: 0\.95rem;[\s\S]*white-space: nowrap;/);
   assert.match(installAppCard, /Zo installeer je|Installeren/);
@@ -474,7 +482,8 @@ test("English locale has a top-menu flag switch and defaults to English outside 
   assert.match(middleware, /request\.nextUrl\.searchParams\.get\("lang"\)/);
   assert.match(middleware, /request\.headers\.get\("x-vercel-ip-country"\)/);
   assert.match(middleware, /preferredLocaleFromRequest/);
-  assert.match(middleware, /NextResponse\.redirect\(new URL\("\/en"/);
+  assert.match(middleware, /url\.pathname = "\/en"/);
+  assert.match(middleware, /NextResponse\.redirect\(url\)/);
   assert.match(middleware, /response\.cookies\.set\(LOCALE_COOKIE, locale/);
   assert.match(languageSwitcher, /🇳🇱/);
   assert.match(languageSwitcher, /🇬🇧/);
@@ -502,7 +511,7 @@ test("English landing page translates the public signup flow without changing th
   assert.match(homePage, /Fill in your predictions for the full World Cup in about ten minutes/);
   assert.match(homePage, /Create your World Cup pool/);
   assert.match(homePage, /Share SlimeScore/);
-  assert.match(homePage, /<LoginForm surface=\"inline\" locale=\"en\" \/>/);
+  assert.match(homePage, /<LoginForm surface=\"inline\" initialMode=\{initialLoginMode\} locale=\"en\" next=\{loginNext\} \/>/);
   assert.match(loginForm, /locale = "nl"/);
   assert.match(loginForm, /const copy = loginCopy\[locale\]/);
   assert.match(loginForm, /Sign in/);
@@ -511,7 +520,7 @@ test("English landing page translates the public signup flow without changing th
   assert.match(upcomingMatches, /locale = "nl"/);
   assert.match(upcomingMatches, /locale === "en" \? "Upcoming WC matches" : "Eerstvolgende WK-wedstrijden"/);
   assert.match(homePage, /Gratis WK 2026 Poule/);
-  assert.match(homePage, /<LoginForm surface=\"inline\" \/>/);
+  assert.match(homePage, /<LoginForm surface=\"inline\" initialMode=\{initialLoginMode\} next=\{loginNext\} \/>/);
 });
 
 test("English preference persists sitewide in browser storage and Supabase account", () => {
