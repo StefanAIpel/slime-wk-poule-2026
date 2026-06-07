@@ -9,7 +9,7 @@ import { isAvatarKey } from "@/lib/avatars";
 import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
-import { LOCALE_COOKIE, isSupportedLocale } from "@/lib/i18n";
+import { LOCALE_COOKIE, isSupportedLocale, localizedHref, type Locale } from "@/lib/i18n";
 import { kidEmail } from "@/lib/kid";
 import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH, POOL_NAME_MAX_LENGTH, POOL_NAME_MIN_LENGTH, TEAM_NAME_MAX_LENGTH, TEAM_NAME_MIN_LENGTH } from "@/lib/limits";
 import { logError } from "@/lib/log";
@@ -124,11 +124,36 @@ export async function saveProfile(formData: FormData) {
 
 export async function updateAccount(formData: FormData) {
   const { supabase, user } = await requireUser();
-  const payload: { avatar_key?: string | null; preferred_locale?: "nl" | "en" } = {};
+  const payload: {
+    nickname?: string;
+    team_name?: string;
+    avatar_key?: string | null;
+    preferred_locale?: "nl" | "en";
+  } = {};
   const avatarKey = cleanText(formData.get("avatar_key"), 64);
   const preferredLocale = cleanText(formData.get("preferred_locale"), 8);
+  const nickname = cleanText(formData.get("nickname"), NICKNAME_MAX_LENGTH);
+  const teamName = cleanText(formData.get("team_name"), TEAM_NAME_MAX_LENGTH);
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
+  const redirectLocale: Locale = isSupportedLocale(preferredLocale)
+    ? preferredLocale
+    : isSupportedLocale(cookieLocale)
+      ? cookieLocale
+      : "nl";
 
-  // Naam en teamnaam blijven vast; avatar en taalvoorkeur mag de speler zelf aanpassen.
+  if (formData.has("nickname") || formData.has("team_name")) {
+    if (nickname.length < NICKNAME_MIN_LENGTH || teamName.length < TEAM_NAME_MIN_LENGTH) {
+      redirect(`${localizedHref("/account", redirectLocale)}?fout=te-kort`);
+    }
+    if (reservedNames.includes(nickname.toLowerCase())) {
+      redirect(`${localizedHref("/account", redirectLocale)}?fout=gereserveerd`);
+    }
+    payload.nickname = nickname;
+    payload.team_name = teamName;
+  }
+
+  // Avatar en taalvoorkeur mag de speler zelf aanpassen; naam/team gaan mee wanneer het profiel-formulier ze post.
   if (formData.has("avatar_key")) {
     payload.avatar_key = isAvatarKey(avatarKey) ? avatarKey : null;
   }
@@ -136,19 +161,34 @@ export async function updateAccount(formData: FormData) {
     payload.preferred_locale = preferredLocale;
   }
 
+  if (payload.nickname) {
+    const admin = createAdminClient();
+    const { data: taken } = await admin
+      .from("profiles")
+      .select("id")
+      .ilike("nickname", payload.nickname)
+      .neq("id", user.id)
+      .maybeSingle();
+    if (taken) redirect(`${localizedHref("/account", redirectLocale)}?fout=bezet`);
+  }
+
   if (Object.keys(payload).length) {
-    const { error } = await supabase.from("profiles").update(payload).eq("id", user.id);
+    const { error } = await supabase.from("profiles").upsert({ id: user.id, ...payload });
+    if (isUniqueViolation(error, "profiles_nickname_unique_lower")) redirect(`${localizedHref("/account", redirectLocale)}?fout=bezet`);
     if (error) throw new Error(error.message);
   }
 
   if (payload.preferred_locale) {
-    (await cookies()).set(LOCALE_COOKIE, preferredLocale, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
+    cookieStore.set(LOCALE_COOKIE, preferredLocale, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
   }
 
+  revalidatePath("/");
+  revalidatePath("/en");
   revalidatePath("/account");
   revalidatePath("/ranglijst");
   revalidatePath("/poules");
-  redirect(`/account?opgeslagen=${payload.preferred_locale ? "taal" : "avatar"}`);
+  const savedKind = payload.preferred_locale ? "taal" : payload.nickname || payload.team_name ? "profiel" : "avatar";
+  redirect(`${localizedHref("/account", redirectLocale)}?opgeslagen=${savedKind}`);
 }
 
 export async function deleteAccount(formData: FormData) {

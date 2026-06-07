@@ -30,6 +30,9 @@ const rankingExplorerCopy = {
     playerFallback: "Speler",
     noPlayers: "Geen spelers gevonden.",
     noPools: "Geen WK-poules gevonden.",
+    playerRankLabel: "Spelerrang",
+    poolRankLabel: "Poule-rang",
+    poolTotalHint: "Top 4 totaal",
     exactSuffix: "exact",
     pointsSuffix: "pt",
     previousPage: "Vorige 100 spelers",
@@ -45,6 +48,9 @@ const rankingExplorerCopy = {
     playerFallback: "Player",
     noPlayers: "No players found.",
     noPools: "No World Cup pools found.",
+    playerRankLabel: "Player rank",
+    poolRankLabel: "Pool rank",
+    poolTotalHint: "Top 4 total",
     exactSuffix: "exact",
     pointsSuffix: "pts",
     previousPage: "Previous 100 players",
@@ -120,8 +126,8 @@ export function RankingExplorer({ players, pools, locale = "nl" }: { players: Pl
           <div className="divide-y divide-slate-100">
             {pagedPlayers.length ? (
               pagedPlayers.map((row) => (
-                <div key={row.userId} className="flex items-center gap-2 px-2.5 py-1.5 text-[#101a2b]">
-                  <RankBadge rank={row.rank} />
+                <div key={row.userId} className="ranking-row-player flex items-center gap-2 px-2.5 py-1.5 text-[#101a2b]">
+                  <RankBadge rank={row.rank} label={copy.playerRankLabel} />
                   <Avatar name={row.nickname || row.teamName || copy.playerFallback} avatarKey={row.avatarKey} size={24} />
                   <div className="min-w-0 flex-1 truncate text-sm leading-tight">
                     <span className="font-semibold">{row.nickname || copy.playerFallback}</span>
@@ -156,13 +162,13 @@ export function RankingExplorer({ players, pools, locale = "nl" }: { players: Pl
           <div className="divide-y divide-slate-100">
             {filteredPools.length ? (
               filteredPools.map((pool) => (
-                <div key={pool.id} className="flex items-center gap-2 px-2.5 py-1.5 text-[#101a2b]">
-                  <RankBadge rank={pool.rank} />
+                <div key={pool.id} className="ranking-row-pool flex items-center gap-2 px-2.5 py-1.5 text-[#101a2b]">
+                  <RankBadge rank={pool.rank} label={copy.poolRankLabel} />
                   <div className="min-w-0 flex-1 truncate text-sm leading-tight">
                     <span className="font-semibold">{pool.name}</span>
                     <span className="font-medium text-[#5a6b82]"> · {pool.code}</span>
                   </div>
-                  <span className="text-sm font-bold tabular-nums">{pool.points} {copy.pointsSuffix}</span>
+                  <span className="text-sm font-bold tabular-nums" title={copy.poolTotalHint}>{pool.points} {copy.pointsSuffix}</span>
                 </div>
               ))
             ) : (
@@ -236,10 +242,10 @@ function TableSearch({ value, onChange, placeholder }: { value: string; onChange
   );
 }
 
-function RankBadge({ rank }: { rank: number }) {
+function RankBadge({ rank, label }: { rank: number; label: string }) {
   const color = rank === 1 ? "bg-[#efa820]" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-[#f4661e]" : "bg-[#20508c]";
   return (
-    <div className={`grid size-6 flex-none place-items-center rounded-full ${color} text-[11px] font-bold tabular-nums text-white`}>
+    <div className={`grid size-6 flex-none place-items-center rounded-full ${color} text-[11px] font-bold tabular-nums text-white`} aria-label={`${label} #${rank}`}>
       {rank <= 3 ? <Medal aria-hidden="true" className="size-3.5" /> : rank}
     </div>
   );
