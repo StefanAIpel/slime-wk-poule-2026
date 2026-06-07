@@ -29,6 +29,18 @@ const securityHeaders = [
   { key: "Content-Security-Policy-Report-Only", value: cspReportOnly },
 ];
 
+// LCP-versneller voor de publieke homepage: de hero-achtergrond is een CSS-::after
+// background-image, die de browser anders pas ná HTML/CSS-parsing ontdekt (~1s te laat
+// onder Lighthouse-mobiel). Met een HTTP Link-preload start de fetch zodra de
+// response-headers binnen zijn, parallel aan HTML/CSS. Media-condities zorgen dat mobiel
+// alleen de portrait en desktop alleen de landscape ophaalt.
+const heroPreloadLink = [
+  '</assets/hero-home-portrait.webp>; rel=preload; as=image; media="(max-width: 759px)"; fetchpriority=high',
+  '</assets/hero-home-landscape.webp>; rel=preload; as=image; media="(min-width: 760px)"; fetchpriority=high',
+].join(", ");
+
+const heroPreloadHeader = [{ key: "Link", value: heroPreloadLink }];
+
 const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd(),
@@ -67,6 +79,15 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: securityHeaders,
+      },
+      // Hero-preload alleen op de twee homepage-routes (NL + EN).
+      {
+        source: "/",
+        headers: heroPreloadHeader,
+      },
+      {
+        source: "/en",
+        headers: heroPreloadHeader,
       },
     ];
   },
