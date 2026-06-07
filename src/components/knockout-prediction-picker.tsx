@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 
 import { TeamFlag } from "@/components/team-flag";
+import { teamNameForLocale } from "@/lib/format";
+import type { Locale } from "@/lib/i18n";
 import type { Team } from "@/lib/types";
 
 type StageKey = "round16" | "quarterfinal" | "semifinal" | "finalists";
@@ -16,28 +18,69 @@ const stageLimits: Record<StageKey, number> = {
   finalists: 2,
 };
 
-const stageCopy: Record<StageKey, { title: string; hint: string; empty: string }> = {
-  round16: {
-    title: "Achtste finale",
-    hint: "Kies precies 16 landen uit jouw berekende laatste 32. Meer kan niet; minder geeft een waarschuwing.",
-    empty: "Vul eerst je groepswedstrijden in; daaruit rollen je laatste 32 landen.",
+const stageCopy: Record<Locale, Record<StageKey, { title: string; hint: string; empty: string }>> = {
+  nl: {
+    round16: {
+      title: "Achtste finale",
+      hint: "Kies precies 16 landen uit jouw berekende laatste 32. Meer kan niet; minder geeft een waarschuwing.",
+      empty: "Vul eerst je groepswedstrijden in; daaruit rollen je laatste 32 landen.",
+    },
+    quarterfinal: {
+      title: "Kwartfinale",
+      hint: "Kies precies 8 kwartfinalisten uit jouw 16 landen hierboven.",
+      empty: "Kies eerst landen bij de achtste finale; daarna verschijnen hier je opties.",
+    },
+    semifinal: {
+      title: "Halve finale",
+      hint: "Kies precies 4 halvefinalisten uit jouw kwartfinalisten.",
+      empty: "Kies eerst kwartfinalisten; daarna verschijnen hier je opties.",
+    },
+    finalists: {
+      title: "Finale",
+      hint: "Kies precies 2 finalisten. Wijzigbaar t/m 28 juni 21:00.",
+      empty: "Kies eerst halvefinalisten; daarna verschijnen hier je opties.",
+    },
   },
-  quarterfinal: {
-    title: "Kwartfinale",
-    hint: "Kies precies 8 kwartfinalisten uit jouw 16 landen hierboven.",
-    empty: "Kies eerst landen bij de achtste finale; daarna verschijnen hier je opties.",
-  },
-  semifinal: {
-    title: "Halve finale",
-    hint: "Kies precies 4 halvefinalisten uit jouw kwartfinalisten.",
-    empty: "Kies eerst kwartfinalisten; daarna verschijnen hier je opties.",
-  },
-  finalists: {
-    title: "Finale",
-    hint: "Kies precies 2 finalisten. Wijzigbaar t/m 28 juni 21:00.",
-    empty: "Kies eerst halvefinalisten; daarna verschijnen hier je opties.",
+  en: {
+    round16: {
+      title: "Round of 16",
+      hint: "Choose exactly 16 countries from your calculated last 32. You cannot pick more; fewer gives a warning.",
+      empty: "Fill in your group matches first; they produce your last 32 countries.",
+    },
+    quarterfinal: {
+      title: "Quarter-final",
+      hint: "Choose exactly 8 quarter-finalists from your 16 countries above.",
+      empty: "Choose countries in the round of 16 first; then your options appear here.",
+    },
+    semifinal: {
+      title: "Semi-final",
+      hint: "Choose exactly 4 semi-finalists from your quarter-finalists.",
+      empty: "Choose quarter-finalists first; then your options appear here.",
+    },
+    finalists: {
+      title: "Final",
+      hint: "Choose exactly 2 finalists. Editable until 28 June 21:00.",
+      empty: "Choose semi-finalists first; then your options appear here.",
+    },
   },
 };
+
+const pickerCopy = {
+  nl: {
+    good: (count: number, expected: number) => `Goed: ${count}/${expected} gekozen.`,
+    none: (expected: number) => `Nog niets gekozen — kies precies ${expected}.`,
+    remaining: (count: number, expected: number) => `Nog ${expected - count} kiezen (${count}/${expected}).`,
+    tooMany: (count: number, expected: number) => `Te veel gekozen: haal er ${count - expected} weg.`,
+    maxReached: (limit: number) => `Max ${limit} bereikt. Haal eerst een land weg als je wilt wisselen.`,
+  },
+  en: {
+    good: (count: number, expected: number) => `Good: ${count}/${expected} selected.`,
+    none: (expected: number) => `Nothing selected yet — choose exactly ${expected}.`,
+    remaining: (count: number, expected: number) => `${expected - count} still to choose (${count}/${expected}).`,
+    tooMany: (count: number, expected: number) => `Too many selected: remove ${count - expected}.`,
+    maxReached: (limit: number) => `Maximum ${limit} reached. Remove a country first if you want to switch.`,
+  },
+} as const;
 
 function uniqueValidCodes(codes: string[] | undefined, validCodes: Set<string>, limit: number) {
   const result: string[] = [];
@@ -55,11 +98,12 @@ function cleanAgainstOptions(codes: string[], allowed: string[], limit: number) 
   return codes.filter((code) => allowedSet.has(code)).slice(0, limit);
 }
 
-function labelForCount(count: number, expected: number) {
-  if (count === expected) return `Goed: ${count}/${expected} gekozen.`;
-  if (count === 0) return `Nog niets gekozen — kies precies ${expected}.`;
-  if (count < expected) return `Nog ${expected - count} kiezen (${count}/${expected}).`;
-  return `Te veel gekozen: haal er ${count - expected} weg.`;
+function labelForCount(count: number, expected: number, locale: Locale) {
+  const copy = pickerCopy[locale];
+  if (count === expected) return copy.good(count, expected);
+  if (count === 0) return copy.none(expected);
+  if (count < expected) return copy.remaining(count, expected);
+  return copy.tooMany(count, expected);
 }
 
 export function KnockoutPredictionPicker({
@@ -68,12 +112,14 @@ export function KnockoutPredictionPicker({
   round16Pool,
   mainDisabled,
   lateDisabled,
+  locale = "nl",
 }: {
   teams: Team[];
   initialSelections: Partial<SelectionState>;
   round16Pool?: string[];
   mainDisabled?: boolean;
   lateDisabled?: boolean;
+  locale?: Locale;
 }) {
   const validCodes = useMemo(() => new Set(teams.map((team) => team.code.toUpperCase())), [teams]);
   // De laatste 32 die uit de groepsvoorspellingen rollen. Alleen daaruit kies je je achtste finalisten.
@@ -140,7 +186,7 @@ export function KnockoutPredictionPicker({
     const current = state[stage];
     const limit = stageLimits[stage];
     if (checked && !current.includes(code) && current.length >= limit) {
-      setNotice({ stage, message: `Max ${limit} bereikt. Haal eerst een land weg als je wilt wisselen.` });
+      setNotice({ stage, message: pickerCopy[locale].maxReached(limit) });
       return;
     }
 
@@ -150,13 +196,13 @@ export function KnockoutPredictionPicker({
   }
 
   function renderStage(stage: StageKey, disabled?: boolean) {
-    const copy = stageCopy[stage];
+    const copy = stageCopy[locale][stage];
     const limit = stageLimits[stage];
     const selected = state[stage];
     const selectedSet = new Set(selected);
     const options = teamsByStage[stage];
     const complete = selected.length === limit;
-    const status = notice?.stage === stage ? notice.message : labelForCount(selected.length, limit);
+    const status = notice?.stage === stage ? notice.message : labelForCount(selected.length, limit, locale);
     const isDisabled = disabled || options.length === 0;
 
     return (
@@ -168,20 +214,23 @@ export function KnockoutPredictionPicker({
         </p>
         {options.length ? (
           <div className="knockout-picker-grid">
-            {options.map((team) => (
-              <label key={`${stage}-${team.code}`} className="knockout-picker-option">
-                <input
-                  name={stage}
-                  type="checkbox"
-                  value={team.code}
-                  checked={selectedSet.has(team.code)}
-                  onChange={(event) => toggleStage(stage, team.code, event.currentTarget.checked)}
-                />
-                <TeamFlag code={team.code} name={team.name_nl} size="sm" />
-                <span className="knockout-picker-code">{team.code}</span>
-                <span className="knockout-picker-name">{team.name_nl}</span>
-              </label>
-            ))}
+            {options.map((team) => {
+              const teamName = teamNameForLocale(team.code, team.name_nl, locale);
+              return (
+                <label key={`${stage}-${team.code}`} className="knockout-picker-option">
+                  <input
+                    name={stage}
+                    type="checkbox"
+                    value={team.code}
+                    checked={selectedSet.has(team.code)}
+                    onChange={(event) => toggleStage(stage, team.code, event.currentTarget.checked)}
+                  />
+                  <TeamFlag code={team.code} name={teamName} size="sm" locale={locale} />
+                  <span className="knockout-picker-code">{team.code}</span>
+                  <span className="knockout-picker-name">{teamName}</span>
+                </label>
+              );
+            })}
           </div>
         ) : (
           <p className="knockout-picker-empty">{copy.empty}</p>

@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight, Medal, Search, Trophy, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Avatar } from "@/components/avatar";
+import type { Locale } from "@/lib/i18n";
 
 export type PlayerRow = {
   userId: string;
@@ -19,13 +20,49 @@ export type PoolRow = { id: string; rank: number; name: string; code: string; po
 
 const PAGE_SIZE = 100;
 
+const rankingExplorerCopy = {
+  nl: {
+    tabListLabel: "Kies ranglijst",
+    worldTitle: "Wereldranglijst",
+    poolsTitle: "WK-poules",
+    playerSearchPlaceholder: "Zoek een speler of team…",
+    poolSearchPlaceholder: "Zoek een WK-poule of code…",
+    playerFallback: "Speler",
+    noPlayers: "Geen spelers gevonden.",
+    noPools: "Geen WK-poules gevonden.",
+    exactSuffix: "exact",
+    pointsSuffix: "pt",
+    previousPage: "Vorige 100 spelers",
+    nextPage: "Volgende 100 spelers",
+    pageOf: "van",
+  },
+  en: {
+    tabListLabel: "Choose ranking",
+    worldTitle: "World rankings",
+    poolsTitle: "World Cup pools",
+    playerSearchPlaceholder: "Search for a player or team…",
+    poolSearchPlaceholder: "Search for a World Cup pool or code…",
+    playerFallback: "Player",
+    noPlayers: "No players found.",
+    noPools: "No World Cup pools found.",
+    exactSuffix: "exact",
+    pointsSuffix: "pts",
+    previousPage: "Previous 100 players",
+    nextPage: "Next 100 players",
+    pageOf: "of",
+  },
+} as const;
+
+type RankingExplorerCopy = (typeof rankingExplorerCopy)[Locale];
+
 function matches(query: string, ...fields: (string | null | undefined)[]) {
   const q = query.trim().toLowerCase();
   if (!q) return true;
   return fields.some((field) => (field ?? "").toLowerCase().includes(q));
 }
 
-export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pools: PoolRow[] }) {
+export function RankingExplorer({ players, pools, locale = "nl" }: { players: PlayerRow[]; pools: PoolRow[]; locale?: Locale }) {
+  const copy = rankingExplorerCopy[locale];
   const [qWorld, setQWorld] = useState("");
   const [qPools, setQPools] = useState("");
   const [view, setView] = useState<"wereld" | "subpoules">("wereld");
@@ -50,7 +87,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
   return (
     <div className="grid gap-4">
       {/* Tabs alleen op mobiel; op desktop staan beide tabellen naast elkaar. */}
-      <div className="flex gap-2 lg:hidden" role="tablist" aria-label="Kies ranglijst">
+      <div className="flex gap-2 lg:hidden" role="tablist" aria-label={copy.tabListLabel}>
         <button
           type="button"
           role="tab"
@@ -59,7 +96,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
           onClick={() => setView("wereld")}
         >
           <Trophy aria-hidden="true" className="size-4" />
-          Wereldranglijst
+          {copy.worldTitle}
         </button>
         <button
           type="button"
@@ -69,7 +106,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
           onClick={() => setView("subpoules")}
         >
           <Users aria-hidden="true" className="size-4" />
-          WK-poules
+          {copy.poolsTitle}
         </button>
       </div>
 
@@ -77,25 +114,25 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
         <article className={`panel overflow-hidden ${view === "wereld" ? "" : "hidden"} lg:block`}>
           <div className="wc-header flex items-center gap-2.5 p-2.5 text-white">
             <Trophy aria-hidden="true" className="size-5" />
-            <h2 className="text-lg font-bold">Wereldranglijst</h2>
+            <h2 className="text-lg font-bold">{copy.worldTitle}</h2>
           </div>
-          <TableSearch value={qWorld} onChange={onSearchWorld} placeholder="Zoek een speler of team…" />
+          <TableSearch value={qWorld} onChange={onSearchWorld} placeholder={copy.playerSearchPlaceholder} />
           <div className="divide-y divide-slate-100">
             {pagedPlayers.length ? (
               pagedPlayers.map((row) => (
                 <div key={row.userId} className="flex items-center gap-2 px-2.5 py-1.5 text-[#101a2b]">
                   <RankBadge rank={row.rank} />
-                  <Avatar name={row.nickname || row.teamName || "Speler"} avatarKey={row.avatarKey} size={24} />
+                  <Avatar name={row.nickname || row.teamName || copy.playerFallback} avatarKey={row.avatarKey} size={24} />
                   <div className="min-w-0 flex-1 truncate text-sm leading-tight">
-                    <span className="font-semibold">{row.nickname || "Speler"}</span>
+                    <span className="font-semibold">{row.nickname || copy.playerFallback}</span>
                     {row.teamName ? <span className="font-medium text-[#5a6b82]"> · {row.teamName}</span> : null}
                   </div>
-                  <span className="hidden text-[11px] font-semibold text-[#5a6b82] sm:inline">{row.exact} exact</span>
-                  <span className="text-sm font-bold tabular-nums">{row.points} pt</span>
+                  <span className="hidden text-[11px] font-semibold text-[#5a6b82] sm:inline">{row.exact} {copy.exactSuffix}</span>
+                  <span className="text-sm font-bold tabular-nums">{row.points} {copy.pointsSuffix}</span>
                 </div>
               ))
             ) : (
-              <p className="p-4 text-sm font-medium text-[#475670]">Geen spelers gevonden.</p>
+              <p className="p-4 text-sm font-medium text-[#475670]">{copy.noPlayers}</p>
             )}
           </div>
           {filteredPlayers.length > PAGE_SIZE ? (
@@ -103,6 +140,7 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
               page={safePage}
               totalPages={totalPages}
               total={filteredPlayers.length}
+              copy={copy}
               onPrev={() => setPage((p) => Math.max(0, p - 1))}
               onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             />
@@ -112,9 +150,9 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
         <article className={`panel overflow-hidden ${view === "subpoules" ? "" : "hidden"} lg:block`}>
           <div className="flex items-center gap-2.5 bg-[#1c855a] p-2.5 text-white">
             <Users aria-hidden="true" className="size-5" />
-            <h2 className="text-lg font-bold">WK-poules</h2>
+            <h2 className="text-lg font-bold">{copy.poolsTitle}</h2>
           </div>
-          <TableSearch value={qPools} onChange={setQPools} placeholder="Zoek een WK-poule of code…" />
+          <TableSearch value={qPools} onChange={setQPools} placeholder={copy.poolSearchPlaceholder} />
           <div className="divide-y divide-slate-100">
             {filteredPools.length ? (
               filteredPools.map((pool) => (
@@ -124,11 +162,11 @@ export function RankingExplorer({ players, pools }: { players: PlayerRow[]; pool
                     <span className="font-semibold">{pool.name}</span>
                     <span className="font-medium text-[#5a6b82]"> · {pool.code}</span>
                   </div>
-                  <span className="text-sm font-bold tabular-nums">{pool.points} pt</span>
+                  <span className="text-sm font-bold tabular-nums">{pool.points} {copy.pointsSuffix}</span>
                 </div>
               ))
             ) : (
-              <p className="p-4 text-sm font-medium text-[#475670]">Geen WK-poules gevonden.</p>
+              <p className="p-4 text-sm font-medium text-[#475670]">{copy.noPools}</p>
             )}
           </div>
         </article>
@@ -141,12 +179,14 @@ function Pager({
   page,
   totalPages,
   total,
+  copy,
   onPrev,
   onNext,
 }: {
   page: number;
   totalPages: number;
   total: number;
+  copy: RankingExplorerCopy;
   onPrev: () => void;
   onNext: () => void;
 }) {
@@ -159,19 +199,19 @@ function Pager({
         className="ranking-pager-btn"
         onClick={onPrev}
         disabled={page === 0}
-        aria-label="Vorige 100 spelers"
+        aria-label={copy.previousPage}
       >
         <ChevronLeft aria-hidden="true" className="size-4" />
       </button>
       <span className="text-xs font-semibold text-[#475670] tabular-nums">
-        {from}–{to} van {total}
+        {from}–{to} {copy.pageOf} {total}
       </span>
       <button
         type="button"
         className="ranking-pager-btn"
         onClick={onNext}
         disabled={page >= totalPages - 1}
-        aria-label="Volgende 100 spelers"
+        aria-label={copy.nextPage}
       >
         <ChevronRight aria-hidden="true" className="size-4" />
       </button>

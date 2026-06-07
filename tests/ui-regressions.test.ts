@@ -20,6 +20,8 @@ const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url),
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
 const rankingPage = await readFile(new URL("../src/app/ranglijst/page.tsx", import.meta.url), "utf8");
+const rankingExplorer = await readFile(new URL("../src/components/ranking-explorer.tsx", import.meta.url), "utf8");
+const rulesPage = await readFile(new URL("../src/app/regels/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
 const manifest = await readFile(new URL("../src/app/manifest.ts", import.meta.url), "utf8");
 const constants = await readFile(new URL("../src/lib/constants.ts", import.meta.url), "utf8");
@@ -45,6 +47,7 @@ const joinPoolPage = await readFile(new URL("../src/app/poules/join/[code]/page.
 const poolMembers = await readFile(new URL("../src/components/pool-members.tsx", import.meta.url), "utf8");
 const poolQuickShare = await readFile(new URL("../src/components/pool-quick-share.tsx", import.meta.url), "utf8");
 const poolTabs = await readFile(new URL("../src/components/pool-tabs.tsx", import.meta.url), "utf8");
+const poolQr = await readFile(new URL("../src/components/pool-qr.tsx", import.meta.url), "utf8");
 const appFirstShareLink = await readFile(new URL("../src/components/app-first-share-link.tsx", import.meta.url), "utf8");
 const installAppCard = await readFile(new URL("../src/components/install-app-card.tsx", import.meta.url), "utf8");
 const siteFooter = await readFile(new URL("../src/components/site-footer.tsx", import.meta.url), "utf8");
@@ -53,6 +56,7 @@ const localeApiRoute = await readOptional("../src/app/api/locale/route.ts");
 const teamFlag = await readFile(new URL("../src/components/team-flag.tsx", import.meta.url), "utf8");
 const knockoutPredictionPicker = await readFile(new URL("../src/components/knockout-prediction-picker.tsx", import.meta.url), "utf8");
 const groupPredictionCard = await readFile(new URL("../src/components/group-prediction-card.tsx", import.meta.url), "utf8");
+const predictionsComplete = await readFile(new URL("../src/components/predictions-complete.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
 const rankingLib = await readFile(new URL("../src/lib/ranking.ts", import.meta.url), "utf8");
 const limitsLib = await readFile(new URL("../src/lib/limits.ts", import.meta.url), "utf8");
@@ -171,8 +175,9 @@ test("create-pool card uses Mexico green contrast styling", () => {
 
 test("pool banner upload helper appears before file input and keeps the original image ratio visible", () => {
   const uploadBlock = poulesPage.match(/<form action=\{uploadPoolImage\}[\s\S]*?<PendingButton/)?.[0] ?? "";
-  assert.match(uploadBlock, /Aanbevolen: breed beeld, liefst 1600 × 900 px \(16:9\)\. We slaan uploads op als \.webp en tonen ze in originele verhouding, zonder crop of uitrekken\./);
-  assert.ok(uploadBlock.indexOf("1600 × 900 px") < uploadBlock.indexOf('type="file"'));
+  assert.match(poulesPage, /uploadHint:[\s\S]*Aanbevolen: breed beeld, liefst 1600 × 900 px \(16:9\)\. We slaan uploads op als \.webp en tonen ze in originele verhouding, zonder crop of uitrekken\./);
+  assert.match(poulesPage, /uploadHint:[\s\S]*Recommended: a wide image, preferably 1600 × 900 px \(16:9\)\. Uploads are stored as \.webp and shown in their original ratio, without cropping or stretching\./);
+  assert.match(uploadBlock, /\{copy\.uploadHint\}[\s\S]*type="file"/);
   assert.match(actions, /const POOL_BANNER_MAX_WIDTH = 1600/);
   assert.match(actions, /const POOL_BANNER_MAX_HEIGHT = 900/);
   assert.match(actions, /resize\(\{[\s\S]*width: POOL_BANNER_MAX_WIDTH,[\s\S]*height: POOL_BANNER_MAX_HEIGHT,[\s\S]*fit: "inside"/);
@@ -227,13 +232,18 @@ test("mobile pool navigation uses a dropdown selector instead of wrapping all po
 
 test("pool share text includes the poulecode and account-before-join guidance", () => {
   assert.match(poulesPage, /Doe je mee met onze 100% gratis WK-poule/);
-  assert.match(poulesPage, /Poulecode: \$\{pool\.code\}/);
+  assert.match(poulesPage, /Poulecode: \$\{poolCode\}/);
   assert.match(poulesPage, /Nog geen account\? Maak eerst gratis een SlimeScore-account aan; daarna kom je via deze link\/code in de poule\./);
   assert.match(poulesPage, /1x ±10 min invullen\. Daarna volg je het speelschema en de uitslagen\./);
+  assert.match(poulesPage, /Join our 100% free World Cup pool/);
+  assert.match(poulesPage, /Pool code: \$\{poolCode\}/);
+  assert.match(poulesPage, /No account yet\? Create a free SlimeScore account first; then this link\/code takes you into the pool\./);
+  assert.match(poulesPage, /Fill in once in about 10 minutes\. Then follow the schedule and results\./);
   assert.match(poolQuickShare, /const message = `\$\{inviteText\}\\n\\n\$\{joinUrl\}`\.trim\(\)/);
-  assert.match(poolQuickShare, /const groupMessageText = `\$\{poolInviteHeadline\}\\n\$\{poolInviteCode\}\\nMaak evt\. eerst gratis een account\. \$\{poolInviteValue\}`/);
+  assert.match(poolQuickShare, /const groupMessageText = `\$\{poolInviteHeadline\}\\n\$\{poolInviteCode\}\\n\$\{copy\.accountHint\} \$\{poolInviteValue\}`/);
   assert.match(poolQuickShare, /const groupMessage = `\$\{groupMessageText\}\\n\\n\$\{joinUrl\}`/);
-  assert.match(poolQuickShare, /const poolInviteCode = `Poulecode: \$\{poolCode\}`/);
+  assert.match(poolQuickShare, /code: \(poolCode: string\) => `Poulecode: \$\{poolCode\}`/);
+  assert.match(poolQuickShare, /code: \(poolCode: string\) => `Pool code: \$\{poolCode\}`/);
   assert.match(joinPoolPage, /Nog geen account\? Maak eerst gratis een SlimeScore-account aan; daarna kom je terug bij deze poule\./);
   assert.doesNotMatch(joinPoolPage, /Geen wachtwoord\. Link klikken/);
 });
@@ -508,16 +518,17 @@ test("English route translates all visible shared fields and labels", () => {
 test("mobile poule page prioritizes ranking and keeps share buttons visible next to the pool name", () => {
   assert.match(poulesPage, /<div className=\"pool-card-title-row\">[\s\S]*<PoolQuickShare/);
   assert.doesNotMatch(poulesPage, /isManager=\{isManager\}/);
-  assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} \/>[\s\S]*Prikbord[\s\S]*Deelopties &amp; QR[\s\S]*WK-poule-instellingen &amp; opmaak \(beheer\)/);
-  assert.match(poolMembers, /Ranglijst &amp; deelnemers/);
+  assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} locale=\{locale\} \/>[\s\S]*\{copy\.board\}[\s\S]*\{copy\.shareOptions\}[\s\S]*\{copy\.settings\}/);
+  assert.match(poolMembers, /title: "Ranglijst & deelnemers"/);
+  assert.match(poolMembers, /title: "Ranking & participants"/);
   assert.match(poolMembers, /pool-members-count/);
-  assert.match(poolQuickShare, /<div className=\"pool-quick-share\" aria-label=\"Poule delen\">/);
-  assert.match(poolQuickShare, /label="Deel via WhatsApp"/);
-  assert.match(poolQuickShare, /label="Deel via Facebook"/);
-  assert.match(poolQuickShare, /label=\"Deel via Telegram\"/);
-  assert.match(poolQuickShare, /aria-label=\{nativeCopied === "Signal" \? "Link gekopieerd voor Signal" : "Deel via Signal"\}/);
-  assert.match(poolQuickShare, /aria-label=\"Deel via mail\"/);
-  assert.match(poolQuickShare, /Deel via Instagram\/native share/);
+  assert.match(poolQuickShare, /<div className=\"pool-quick-share\" aria-label=\{copy\.containerLabel\}>/);
+  assert.match(poolQuickShare, /label=\{copy\.shareVia\("WhatsApp"\)\}/);
+  assert.match(poolQuickShare, /label=\{copy\.shareVia\("Facebook"\)\}/);
+  assert.match(poolQuickShare, /label=\{copy\.shareVia\("Telegram"\)\}/);
+  assert.match(poolQuickShare, /aria-label=\{nativeCopied === "Signal" \? copy\.copied\("Signal"\) : copy\.shareVia\("Signal"\)\}/);
+  assert.match(poolQuickShare, /aria-label=\{copy\.shareVia\("mail"\)\}/);
+  assert.match(poolQuickShare, /copy\.shareVia\("Instagram\/native share"\)/);
   assert.doesNotMatch(poolQuickShare, /Kopieer link|Deel via QR-code|aria-label=\"Deel QR-code\"/);
   assert.doesNotMatch(poolQuickShare, /isManager \? \(/);
   assert.match(poolQuickShare, /whatsapp:\/\/send\?text=\$\{encodedMessage\}/);
@@ -527,7 +538,7 @@ test("mobile poule page prioritizes ranking and keeps share buttons visible next
   assert.match(poolQuickShare, /fb:\/\/facewebmodal\/f\?href=\$\{encodeURIComponent\(facebookWebHref\)\}/);
   assert.match(poolQuickShare, /tg:\/\/msg_url\?url=\$\{encodedUrl\}&text=\$\{encodedInvite\}/);
   assert.match(poolQuickShare, /async function nativeShare\(shareText = groupMessageText, channelLabel = "native share"\)/);
-  assert.match(poolQuickShare, /navigator\.share\(\{ title: `Doe mee met \$\{poolName\}`, text: shareText, url: joinUrl \}\)/);
+  assert.match(poolQuickShare, /navigator\.share\(\{ title: copy\.nativeTitle\(poolName\), text: shareText, url: joinUrl \}\)/);
   assert.match(shareButton, /type ShareChannel = "whatsapp" \| "facebook" \| "telegram" \| "signal" \| "mail" \| "instagram" \| "native"/);
   assert.match(shareButton, /whatsapp:\/\/send\?text=\$\{encodedWhatsApp\}/);
   assert.match(shareButton, /tg:\/\/msg_url\?url=\$\{encodedUrl\}&text=\$\{encodedTelegramText\}/);
@@ -646,4 +657,58 @@ test("game embed is larger and left-aligned on desktop while mobile defaults to 
   assert.match(globalsCss, /\.game-frame \{[\s\S]*width: min\(1120px, 100%\);[\s\S]*aspect-ratio: 16 \/ 9;[\s\S]*margin-inline: 0 auto;/);
   assert.match(globalsCss, /@media \(max-width: 639px\) \{[\s\S]*\.game-frame,\n  \.game-embed-note \{\n    display: none;/);
   assert.match(globalsCss, /\.game-open-link \{[\s\S]*linear-gradient\(135deg, #19b85d, #0e8a49 62%, #0a6b38\)/);
+});
+
+test("English mode is wired through rankings, rules, pools and predictions pages", () => {
+  assert.match(rankingPage, /getServerLocale/);
+  assert.match(rankingPage, /const locale = await getServerLocale\(\)/);
+  assert.match(rankingPage, /<Brand locale=\{locale\} \/>/);
+  assert.match(rankingPage, /<RankingExplorer players=\{players\} pools=\{poolRankings\} locale=\{locale\} \/>/);
+  assert.match(rankingExplorer, /locale = "nl"/);
+  assert.match(rankingExplorer, /World rankings/);
+  assert.match(rankingExplorer, /Search for a player or team/);
+
+  assert.match(rulesPage, /getServerLocale/);
+  assert.match(rulesPage, /rulesCopy\[locale\]/);
+  assert.match(rulesPage, /Rules and explanation/);
+  assert.match(rulesPage, /World Cup pools/);
+  assert.match(rulesPage, /Frequently asked questions/);
+
+  assert.match(poulesPage, /getServerLocale/);
+  assert.match(poulesPage, /poolCopy\[locale\]/);
+  assert.match(poulesPage, /<PoolTabs tabs=\{tabs\} initialId=\{params\.pool\} locale=\{locale\}>/);
+  assert.match(poulesPage, /<PoolQuickShare[\s\S]*locale=\{locale\}/);
+  assert.match(poulesPage, /<PoolMembers members=\{poolMembersById\.get\(pool\.id\) \?\? \[\]\} locale=\{locale\} \/>/);
+  assert.match(poulesPage, /buildPoolMembers\([\s\S]*locale\)/);
+  assert.match(poulesPage, /locale === "en" \? `\$\{SITE_URL\}\/poules\/join\/\$\{pool\.code\}\?lang=en`/);
+  assert.match(poolMembers, /locale = "nl"/);
+  assert.match(poolQuickShare, /locale = "nl"/);
+  assert.match(poolTabs, /locale = "nl"/);
+  assert.match(poolQr, /locale = "nl"/);
+  assert.match(joinPoolPage, /getServerLocale/);
+  assert.match(joinPoolPage, /joinPoolCopy\[locale\]/);
+  assert.match(joinPoolPage, /<Brand locale=\{locale\} \/>/);
+  assert.match(joinPoolPage, /<LoginForm[\s\S]*locale=\{locale\}/);
+  assert.match(joinPoolPage, /copy\.notLoggedInTitle/);
+  const englishJoinCopy = joinPoolPage.match(/en: \{[\s\S]*?\n  \},\n\} as const;/)?.[0] ?? "";
+  assert.match(englishJoinCopy, /Join this World Cup pool/);
+  assert.match(englishJoinCopy, /Copy link/);
+  assert.doesNotMatch(englishJoinCopy, /Eerst aanmelden|Uitnodiging|Kopieer link/);
+
+  assert.match(predictionsPage, /getServerLocale/);
+  assert.match(predictionsPage, /predictionCopy\[locale\]/);
+  assert.match(predictionsPage, /<GroupPredictionCard[\s\S]*locale=\{locale\}/);
+  assert.match(predictionsPage, /<KnockoutPredictionPicker[\s\S]*locale=\{locale\}/);
+  assert.match(predictionsPage, /<PredictionsComplete locale=\{locale\} \/>/);
+  assert.match(groupPredictionCard, /locale = "nl"/);
+  assert.match(groupPredictionCard, /teamNameForLocale/);
+  assert.match(knockoutPredictionPicker, /stageCopy\[locale\]/);
+  assert.match(knockoutPredictionPicker, /teamNameForLocale/);
+  assert.match(predictionsComplete, /locale = "nl"/);
+});
+
+test("mobile landing hero keeps title and host pills compact on one line", () => {
+  assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home \.world-cup-kicker \{[\s\S]*flex-wrap: nowrap;[\s\S]*font-size: 0\.56rem;/);
+  assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home \.world-cup-kicker span \{[\s\S]*padding: 3px 5px;/);
+  assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home-title-block h1 \{[\s\S]*font-size: clamp\(1\.95rem, 12vw, 2\.55rem\);/);
 });
