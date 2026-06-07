@@ -913,8 +913,24 @@ textarea {
 /* Landing-hero: stadion mét slime erin verwerkt (slime staat achter de tekst). */
 .hero-home::after {
   background-image:
-    linear-gradient(158deg, rgba(7, 18, 46, 0.74) 0%, rgba(7, 18, 46, 0.3) 40%, rgba(7, 18, 46, 0.04) 66%),
-    url("/assets/hero-home-portrait.webp");
+    linear-gradient(158deg, rgba(7, 18, 46, 0.74) 0%, rgba(7, 18, 46, 0.3) 40%, rgba(7, 18, 46, 0.04) 66%);
+}
+
+/* De hero-foto staat als echt <img> achter de scrim (zie page.tsx) voor snelle LCP-discovery.
+   Absoluut vullend en achter de gradient (::after, z-index 0) en de tekst (z-index 1). */
+.hero-home .hero-photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-home .hero-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
 }
 
 /* Op mobiel ruimte onderaan zodat de ingebakken slime op het gras zichtbaar blijft. */
@@ -978,8 +994,7 @@ textarea {
 @media (min-width: 760px) {
   .hero-home::after {
     background-image:
-      linear-gradient(102deg, rgba(7, 18, 46, 0.82) 0%, rgba(7, 18, 46, 0.34) 50%, rgba(7, 18, 46, 0.02) 100%),
-      url("/assets/hero-home-landscape.webp");
+      linear-gradient(102deg, rgba(7, 18, 46, 0.82) 0%, rgba(7, 18, 46, 0.34) 50%, rgba(7, 18, 46, 0.02) 100%);
   }
 
   /* Desktop: hogere hero uit main behouden, maar de twee onderknoppen
