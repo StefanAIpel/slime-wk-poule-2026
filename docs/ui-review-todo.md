@@ -32,11 +32,11 @@ Bijgehouden tijdens de UI-review. Status: ✅ klaar · 🟡 deels · ⬜ open.
 **⬜ Actielijst (bewust later / groter)**
 - Monitoring-tool (Sentry), staging-omgeving, E2E-test, DB-indexes-check, admin-auditlog,
   feature flags (Fase 2/3 professionalisering).
-- Reminder-/push-notificaties, meertaligheid NL/EN, dark mode, custom poule-logo,
+- Reminder-/push-notificaties, dark mode, custom poule-logo,
   openbare leaderboard-pagina, premium, WK-archief (nice-to-haves).
 - **Vóór brede launch (extern):** Supabase auth redirect-URLs + custom SMTP/Resend
   definitief; back-up/restore-procedure; betaald e-mailplan bij hoog volume.
-- Leaked-password-protection-warning is **N.v.t.** (alleen magic links, geen wachtwoorden).
+- Leaked-password-protection: check Supabase Auth-instellingen; wachtwoordlogin en vaste codes zijn nu actief.
 
 ## Ronde 3 (deze sessie)
 
@@ -89,7 +89,7 @@ Bijgehouden tijdens de UI-review. Status: ✅ klaar · 🟡 deels · ⬜ open.
 - 🟡 Knock-out **cascade** (kwart alleen uit achtste-keuzes, enz.): nu alleen een
   volledigheidswaarschuwing. Volledige dynamische cascade = client-rewrite van het bracket-formulier.
 - 🟡 Menu desktop "links/rechts" sidebar: nu nette tricolor-pill bovenaan i.p.v. zijbalk.
-- ⬜ Taalkeuze NL/EN (account) — bewust later.
+- ✅ Taalkeuze NL/EN (`/en`, topmenu-switch, accountvoorkeur, NL/BE default NL).
 - ⬜ Wordmark-PNG in header zodra aangeleverd (`public/assets/slimescore-wordmark.png`).
 - ⬜ Hero-mascotte (IKEA-slime) vooraf gecomponeerd / hogere resolutie i.p.v. zwevende PNG.
 - ⬜ Scheidsrechter-slime (Stefan levert) voor regels/uitleg.
