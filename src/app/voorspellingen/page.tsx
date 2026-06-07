@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 import { savePredictions } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
@@ -8,27 +9,131 @@ import { PageHero } from "@/components/page-hero";
 import { PredictionsComplete } from "@/components/predictions-complete";
 import { StatusProgressSync } from "@/components/status-progress-sync";
 import { ENTRY_DEADLINE, groupLetters, POST_GROUP_DEADLINE } from "@/lib/constants";
+import { teamNameForLocale } from "@/lib/format";
 import { calculateRound32 } from "@/lib/group-standings";
+import { localizedHref } from "@/lib/i18n";
 import { oranjeStageLabels, oranjeStageOrder } from "@/lib/scoring";
+import { getServerLocale } from "@/lib/server-locale";
 import { createClient } from "@/lib/supabase/server";
 import type { MatchWithTeams, Team } from "@/lib/types";
+
+const oranjeStageLabelsEn: Record<string, string> = {
+  groep: "Group stage (eliminated)",
+  laatste32: "Last 32",
+  achtste: "Round of 16",
+  kwart: "Quarter-final",
+  halve: "Semi-final",
+  finale: "Final",
+  kampioen: "World champion",
+};
+
+const predictionCopy = {
+  nl: {
+    metaTitle: "Voorspellingen invullen",
+    metaDescription: "Vul je SlimeScore WK 2026-voorspellingen in en pas ze aan tot de deadline.",
+    heroTitle: "Voorspellingen",
+    heroSubtitle:
+      "Snel invullen, later nog bijschaven tot 11 juni 21:00 Nederlandse tijd. Na de groepsfase is er een kleine optionele herziening tot 28 juni 21:00.",
+    saved: "Opgeslagen.",
+    groupTitle: "Groepswedstrijden",
+    groupOpen: "Typ je verwachte uitslag. Je kunt tussentijds opslaan en later verdergaan tot 11 juni 21:00.",
+    groupClosed: "De hoofdvoorspellingen zijn gesloten.",
+    progressTitle: "Voortgang groepswedstrijden",
+    filled: "ingevuld",
+    progressHint: "Bijgewerkt na opslaan. Volledig invullen levert de meeste punten op.",
+    jumpLabel: "Spring naar groep",
+    jumpText: "Selecteer groep",
+    knockoutTitle: "Knock-outrondes",
+    knockoutIntro: "De laatste 32 worden uit je groepsstanden berekend. Daarna kies je simpelweg welke landen verder komen. De wereldkampioen kies je los onderaan (vrij uit alle landen).",
+    last32: "Laatste 32: automatisch uitgerekend met nummers 1 en 2 per groep plus de beste acht nummers 3.",
+    incomplete: (filled: number, total: number) =>
+      `Let op: je hebt ${filled} van ${total} groepswedstrijden ingevuld. Vul ze allemaal in, anders klopt je automatische laatste 32 nog niet en mis je punten.`,
+    bonusTitle: "Bonusvragen",
+    bonusIntro: "Start leeg: vul je eigen schatting in vóór 11 juni 21:00. Lege bonusvelden leveren geen punten op.",
+    teamMostGoals: "Team met de meeste doelpunten",
+    chooseCountry: "Kies land",
+    totalGoals: "Totaal aantal goals",
+    redCards: "Rode kaarten totaal",
+    fastestGoal: "Snelste goal in minuut",
+    examplePrefix: "Bijv.",
+    lateTitle: "Wijzigbaar t/m 28 juni 21:00",
+    lateIntro: "Deze keuzes (samen met de finalisten hierboven) mag je blijven aanpassen tot en met 28 juni 21:00 Nederlandse tijd.",
+    champion: "Wereldkampioen",
+    championHelp: "(vrij uit alle landen, ongeacht je bracket)",
+    chooseChampion: "Kies kampioen",
+    oranje: "Hoe ver komt Oranje?",
+    chooseOranje: "Kies hoe ver Nederland komt",
+    penalties: "Penaltyseries in knock-outfase",
+    save: "Voorspellingen opslaan",
+    helper: "Vul in voor punten; leeg bewaren mag om later af te maken.",
+  },
+  en: {
+    metaTitle: "Fill in predictions",
+    metaDescription: "Fill in your SlimeScore World Cup 2026 predictions and edit them until the deadline.",
+    heroTitle: "Predictions",
+    heroSubtitle:
+      "Fill them in quickly, then tweak until 11 June 21:00 Amsterdam time. After the group stage there is a small optional revision window until 28 June 21:00.",
+    saved: "Saved.",
+    groupTitle: "Group matches",
+    groupOpen: "Enter your expected scores. You can save in between and continue later until 11 June 21:00.",
+    groupClosed: "The main predictions are closed.",
+    progressTitle: "Group match progress",
+    filled: "filled in",
+    progressHint: "Updated after saving. Completing everything gives you the best chance of points.",
+    jumpLabel: "Jump to group",
+    jumpText: "Select group",
+    knockoutTitle: "Knockout rounds",
+    knockoutIntro: "The last 32 are calculated from your group standings. Then simply choose which countries keep going. Pick the world champion separately below (from all countries).",
+    last32: "Last 32: automatically calculated with numbers 1 and 2 from each group plus the best eight number 3 teams.",
+    incomplete: (filled: number, total: number) =>
+      `Heads up: you filled in ${filled} of ${total} group matches. Fill them all in, otherwise your automatic last 32 may be wrong and you can miss points.`,
+    bonusTitle: "Bonus questions",
+    bonusIntro: "Start empty: enter your own estimate before 11 June 21:00. Empty bonus fields score no points.",
+    teamMostGoals: "Team with most goals",
+    chooseCountry: "Choose country",
+    totalGoals: "Total number of goals",
+    redCards: "Total red cards",
+    fastestGoal: "Fastest goal minute",
+    examplePrefix: "e.g.",
+    lateTitle: "Editable until 28 June 21:00",
+    lateIntro: "These choices (together with the finalists above) can still be changed until 28 June 21:00 Amsterdam time.",
+    champion: "World champion",
+    championHelp: "(choose from all countries, regardless of your bracket)",
+    chooseChampion: "Choose champion",
+    oranje: "How far will the Netherlands go?",
+    chooseOranje: "Choose how far the Netherlands will go",
+    penalties: "Penalty shootouts in the knockout phase",
+    save: "Save predictions",
+    helper: "Fill in for points; leaving it empty is fine if you want to finish later.",
+  },
+} as const;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getServerLocale();
+  return {
+    title: predictionCopy[locale].metaTitle,
+    description: predictionCopy[locale].metaDescription,
+  };
+}
 
 export default async function PredictionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ opgeslagen?: string }>;
+  searchParams: Promise<{ opgeslagen?: string; saved?: string }>;
 }) {
   const params = await searchParams;
+  const locale = await getServerLocale();
+  const copy = predictionCopy[locale];
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/");
+  if (!user) redirect(localizedHref("/", locale));
 
   // Meedoen vereist een complete scorekaart (naam + teamnaam, min. 4 tekens).
   const { data: ownProfile } = await supabase.from("profiles").select("nickname,team_name").eq("id", user.id).maybeSingle();
-  if (!ownProfile?.nickname || !ownProfile.team_name) redirect("/");
+  if (!ownProfile?.nickname || !ownProfile.team_name) redirect(localizedHref("/", locale));
 
   const [{ data: teams }, { data: matches }, { data: predictions }, { data: bracket }, { data: special }] =
     await Promise.all([
@@ -86,52 +191,49 @@ export default async function PredictionsPage({
     finalists: (special?.finalists as string[] | undefined) ?? Array.from(bracketByStage.get("finalists") ?? []),
   };
   const initialChampion = special?.champion_code ?? Array.from(bracketByStage.get("champion") ?? [])[0] ?? "";
+  const oranjeLabels = locale === "en" ? oranjeStageLabelsEn : oranjeStageLabels;
 
   return (
     <main className="page-shell">
       <header className="mb-6 grid gap-4">
-        <Brand />
+        <Brand locale={locale} />
         <PageHero
-          title="Voorspellingen"
-          subtitle="Snel invullen, later nog bijschaven tot 11 juni 21:00 Nederlandse tijd. Na de groepsfase is er een kleine optionele herziening tot 28 juni 21:00."
+          title={copy.heroTitle}
+          subtitle={copy.heroSubtitle}
           slime="/assets/hd-voorspel.webp"
         />
       </header>
       <StatusProgressSync progress={groupProgress} />
 
-      {params.opgeslagen ? (
+      {params.opgeslagen || params.saved ? (
         <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-4 font-bold text-green-800">
-          Opgeslagen.
+          {copy.saved}
         </div>
       ) : null}
 
       <form action={savePredictions} className="grid gap-5">
         <section className="dark-panel p-4 text-white">
-          <h2 className="text-2xl font-bold">Groepswedstrijden</h2>
+          <h2 className="text-2xl font-bold">{copy.groupTitle}</h2>
           <p className="mt-1 text-sm font-medium text-blue-100">
-            {mainOpen
-              ? "Typ je verwachte uitslag. Je kunt tussentijds opslaan en later verdergaan tot 11 juni 21:00."
-              : "De hoofdvoorspellingen zijn gesloten."}
+            {mainOpen ? copy.groupOpen : copy.groupClosed}
           </p>
         </section>
 
         <div className="panel p-4">
           <div className="flex items-center justify-between text-sm font-bold text-[#081634]">
-            <span>Voortgang groepswedstrijden</span>
-            <span className="tabular-nums">{filledGroupMatches}/{groupMatchTotal} ingevuld · {groupProgress}%</span>
+            <span>{copy.progressTitle}</span>
+            <span className="tabular-nums">{filledGroupMatches}/{groupMatchTotal} {copy.filled} · {groupProgress}%</span>
           </div>
           <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-slate-200">
             <div className="h-full rounded-full bg-[var(--green)] transition-all" style={{ width: `${groupProgress}%` }} />
           </div>
-          <p className="mt-1 text-xs font-medium text-[#48617f]">
-            Bijgewerkt na opslaan. Volledig invullen levert de meeste punten op.
-          </p>
+          <p className="mt-1 text-xs font-medium text-[#48617f]">{copy.progressHint}</p>
         </div>
 
-        {groupProgress === 100 ? <PredictionsComplete /> : null}
+        {groupProgress === 100 ? <PredictionsComplete locale={locale} /> : null}
 
-        <nav className="group-jump" aria-label="Spring naar groep">
-          <span className="group-jump-label">Selecteer groep</span>
+        <nav className="group-jump" aria-label={copy.jumpLabel}>
+          <span className="group-jump-label">{copy.jumpText}</span>
           {groupLetters.map((group) =>
             groupedMatches.get(group)?.length ? (
               <a
@@ -155,6 +257,7 @@ export default async function PredictionsPage({
               group={group}
               matches={groupMatches}
               disabled={!mainOpen}
+              locale={locale}
               initialScores={Object.fromEntries(
                 groupMatches.map((match) => {
                   const existing = predictionByMatch.get(match.id);
@@ -166,18 +269,14 @@ export default async function PredictionsPage({
         })}
 
         <section className="panel p-4">
-          <h2 className="text-2xl font-bold text-[#081634]">Knock-outrondes</h2>
-          <p className="mt-1 text-sm font-medium text-[#48617f]">
-            De laatste 32 worden uit je groepsstanden berekend. Daarna kies je simpelweg welke landen verder komen.
-            De wereldkampioen kies je los onderaan (vrij uit alle landen).
-          </p>
+          <h2 className="text-2xl font-bold text-[#081634]">{copy.knockoutTitle}</h2>
+          <p className="mt-1 text-sm font-medium text-[#48617f]">{copy.knockoutIntro}</p>
           <div className="mt-4 rounded-lg border border-[#bce8c8] bg-[#f4fbf0] p-3 text-sm font-bold leading-6 text-[#137c35]">
-            Laatste 32: automatisch uitgerekend met nummers 1 en 2 per groep plus de beste acht nummers 3.
+            {copy.last32}
           </div>
           {groupIncomplete ? (
             <div className="mt-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm font-bold leading-6 text-[#8a5a00]">
-              Let op: je hebt {filledGroupMatches} van {groupMatchTotal} groepswedstrijden ingevuld. Vul ze allemaal in,
-              anders klopt je automatische laatste 32 nog niet en mis je punten.
+              {copy.incomplete(filledGroupMatches, groupMatchTotal)}
             </div>
           ) : null}
           <div className="mt-4 grid gap-4">
@@ -187,67 +286,64 @@ export default async function PredictionsPage({
               round16Pool={qualifiedRound16}
               mainDisabled={!mainOpen}
               lateDisabled={!lateOpen}
+              locale={locale}
             />
           </div>
         </section>
 
         <section className="panel p-4">
-          <h2 className="text-2xl font-bold text-[#081634]">Bonusvragen</h2>
-          <p className="mt-1 text-sm font-medium text-[#48617f]">
-            Start leeg: vul je eigen schatting in vóór 11 juni 21:00. Lege bonusvelden leveren geen punten op.
-          </p>
+          <h2 className="text-2xl font-bold text-[#081634]">{copy.bonusTitle}</h2>
+          <p className="mt-1 text-sm font-medium text-[#48617f]">{copy.bonusIntro}</p>
           <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!mainOpen}>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
-              Team met de meeste doelpunten
+              {copy.teamMostGoals}
               <select className="field" name="team_most_goals_code" defaultValue={special?.team_most_goals_code ?? ""}>
-                <option value="">Kies land</option>
+                <option value="">{copy.chooseCountry}</option>
                 {typedTeams.map((team) => (
                   <option key={team.code} value={team.code}>
-                    {team.name_nl}
+                    {teamNameForLocale(team.code, team.name_nl, locale)}
                   </option>
                 ))}
               </select>
             </label>
-            <NumberField name="total_goals" label="Totaal aantal goals" value={special?.total_goals} min={100} max={400} placeholder="Bijv. 172" />
-            <NumberField name="total_red_cards" label="Rode kaarten totaal" value={special?.total_red_cards} min={0} max={50} placeholder="Bijv. 8" />
-            <NumberField name="fastest_goal_minute" label="Snelste goal in minuut" value={special?.fastest_goal_minute} min={1} max={120} placeholder="Bijv. 3" />
+            <NumberField name="total_goals" label={copy.totalGoals} value={special?.total_goals} min={100} max={400} placeholder={`${copy.examplePrefix} 172`} helperText={copy.helper} />
+            <NumberField name="total_red_cards" label={copy.redCards} value={special?.total_red_cards} min={0} max={50} placeholder={`${copy.examplePrefix} 8`} helperText={copy.helper} />
+            <NumberField name="fastest_goal_minute" label={copy.fastestGoal} value={special?.fastest_goal_minute} min={1} max={120} placeholder={`${copy.examplePrefix} 3`} helperText={copy.helper} />
           </fieldset>
         </section>
 
         <section className="panel p-4">
-          <h2 className="text-2xl font-bold text-[#081634]">Wijzigbaar t/m 28 juni 21:00</h2>
-          <p className="mt-1 text-sm font-medium text-[#48617f]">
-            Deze keuzes (samen met de finalisten hierboven) mag je blijven aanpassen tot en met 28 juni 21:00 Nederlandse tijd.
-          </p>
+          <h2 className="text-2xl font-bold text-[#081634]">{copy.lateTitle}</h2>
+          <p className="mt-1 text-sm font-medium text-[#48617f]">{copy.lateIntro}</p>
           <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!lateOpen}>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
-              Wereldkampioen <span className="font-medium text-[#48617f]">(vrij uit alle landen, ongeacht je bracket)</span>
+              {copy.champion} <span className="font-medium text-[#48617f]">{copy.championHelp}</span>
               <select className="field" name="champion_code" defaultValue={initialChampion}>
-                <option value="">Kies kampioen</option>
+                <option value="">{copy.chooseChampion}</option>
                 {typedTeams.map((team) => (
                   <option key={team.code} value={team.code}>
-                    {team.name_nl}
+                    {teamNameForLocale(team.code, team.name_nl, locale)}
                   </option>
                 ))}
               </select>
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
-              Hoe ver komt Oranje?
+              {copy.oranje}
               <select className="field" name="oranje_stage" defaultValue={special?.oranje_stage ?? ""}>
-                <option value="">Kies hoe ver Nederland komt</option>
+                <option value="">{copy.chooseOranje}</option>
                 {oranjeStageOrder.map((stage) => (
                   <option key={stage} value={stage}>
-                    {oranjeStageLabels[stage]}
+                    {oranjeLabels[stage]}
                   </option>
                 ))}
               </select>
             </label>
-            <NumberField name="penalty_shootouts_ko" label="Penaltyseries in knock-outfase" value={special?.penalty_shootouts_ko} min={0} max={20} placeholder="Bijv. 4" />
+            <NumberField name="penalty_shootouts_ko" label={copy.penalties} value={special?.penalty_shootouts_ko} min={0} max={20} placeholder={`${copy.examplePrefix} 4`} helperText={copy.helper} />
           </fieldset>
         </section>
 
         <button className="button-primary sticky bottom-24 z-10 w-full md:static" type="submit">
-          Voorspellingen opslaan
+          {copy.save}
         </button>
       </form>
 
@@ -272,6 +368,7 @@ function NumberField({
   min,
   max,
   placeholder,
+  helperText,
 }: {
   name: string;
   label: string;
@@ -279,6 +376,7 @@ function NumberField({
   min: number;
   max: number;
   placeholder: string;
+  helperText: string;
 }) {
   return (
     <label className="grid gap-2 text-sm font-bold text-[#081634]">
@@ -295,7 +393,7 @@ function NumberField({
         placeholder={placeholder}
         autoComplete="off"
       />
-      <span className="text-xs font-medium text-[#48617f]">Vul in voor punten; leeg bewaren mag om later af te maken.</span>
+      <span className="text-xs font-medium text-[#48617f]">{helperText}</span>
     </label>
   );
 }

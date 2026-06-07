@@ -1,17 +1,41 @@
+import type { Metadata } from "next";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
 import { RankingExplorer, type PlayerRow, type PoolRow } from "@/components/ranking-explorer";
 import { formatAmsterdam } from "@/lib/format";
 import { compareScoresAlphabetical, hasPublicProfile } from "@/lib/ranking";
+import { getServerLocale } from "@/lib/server-locale";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
-export const metadata = {
-  title: "WK 2026-poule ranglijst — wie staat er bovenaan?",
-  description:
-    "De algemene ranglijst van de gratis WK 2026-poule. Volg live wie de meeste punten scoort met voorspellingen en bekijk de stand per WK-poule.",
-  alternates: { canonical: "/ranglijst" },
-};
+const rankingCopy = {
+  nl: {
+    metaTitle: "WK 2026-poule ranglijst — wie staat er bovenaan?",
+    metaDescription:
+      "De algemene ranglijst van de gratis WK 2026-poule. Volg live wie de meeste punten scoort met voorspellingen en bekijk de stand per WK-poule.",
+    heroTitle: "Ranglijsten",
+    heroSubtitle: "Zoek een speler op naam of team, of vind je WK-poule. Meedoen kan na login.",
+    lastUpdated: "Laatste resultaten-update:",
+  },
+  en: {
+    metaTitle: "World Cup 2026 pool rankings — who is on top?",
+    metaDescription:
+      "The overall leaderboard for the free World Cup 2026 pool. Follow who scores the most prediction points and view the standings per World Cup pool.",
+    heroTitle: "Rankings",
+    heroSubtitle: "Search for a player, team or World Cup pool. Join after signing in.",
+    lastUpdated: "Latest results update:",
+  },
+} as const;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getServerLocale();
+  const copy = rankingCopy[locale];
+  return {
+    title: copy.metaTitle,
+    description: copy.metaDescription,
+    alternates: { canonical: "/ranglijst" },
+  };
+}
 
 export const revalidate = 30;
 
@@ -25,6 +49,8 @@ type GlobalScoreRow = {
 };
 
 export default async function RankingPage() {
+  const locale = await getServerLocale();
+  const copy = rankingCopy[locale];
   const admin = createOptionalAdminClient();
   const [{ data: globalScores }, { data: pools }, { data: members }, { data: allScores }, { data: lastScore }] = admin
     ? await Promise.all([
@@ -73,21 +99,21 @@ export default async function RankingPage() {
   return (
     <main className="page-shell">
       <header className="mb-6 grid gap-4">
-        <Brand />
+        <Brand locale={locale} />
         <PageHero
-          title="Ranglijsten"
-          subtitle="Zoek een speler op naam of team, of vind je WK-poule. Meedoen kan na login."
+          title={copy.heroTitle}
+          subtitle={copy.heroSubtitle}
           slime="/assets/transparant-avatar/wk_slime_700_transparant.webp"
         />
         {lastUpdate ? (
           <p className="text-xs font-semibold text-[var(--muted)]">
-            Laatste resultaten-update:{" "}
-            <span className="text-[var(--ink)]">{formatAmsterdam(lastUpdate)}</span>
+            {copy.lastUpdated}{" "}
+            <span className="text-[var(--ink)]">{formatAmsterdam(lastUpdate, locale === "en" ? "en-GB" : "nl-NL")}</span>
           </p>
         ) : null}
       </header>
 
-      <RankingExplorer players={players} pools={poolRankings} />
+      <RankingExplorer players={players} pools={poolRankings} locale={locale} />
 
       <BottomNav current="/ranglijst" className="bottom-nav-hide-mobile" />
     </main>

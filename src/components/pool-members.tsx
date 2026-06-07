@@ -3,6 +3,7 @@
 import { ChevronDown, Crown, Globe, Lock } from "lucide-react";
 import { useState } from "react";
 import { Avatar } from "@/components/avatar";
+import type { Locale } from "@/lib/i18n";
 
 export type MatchLine = {
   matchId: number;
@@ -31,21 +32,55 @@ export type PoolMember = {
   upcoming: MatchLine[];
 };
 
+const poolMembersCopy = {
+  nl: {
+    title: "Ranglijst & deelnemers",
+    hint: "Tik op een speler voor punten en voorspellingen.",
+    owner: "Beheerder",
+    you: "(jij)",
+    worldRank: "Wereldrang",
+    pointsSuffix: "pt",
+    locked: "De voorspellingen van anderen zijn zichtbaar zodra de invulronde sluit.",
+    pastTitle: "Afgelopen wedstrijden",
+    upcomingTitle: "Komende wedstrijden",
+    noPast: "Nog geen afgelopen wedstrijden.",
+    noUpcoming: "Geen voorspellingen ingevuld.",
+    resultLabel: "uitslag",
+  },
+  en: {
+    title: "Ranking & participants",
+    hint: "Tap a player to view points and predictions.",
+    owner: "Manager",
+    you: "(you)",
+    worldRank: "World rank",
+    pointsSuffix: "pts",
+    locked: "Other players’ predictions become visible once the prediction round closes.",
+    pastTitle: "Past matches",
+    upcomingTitle: "Upcoming matches",
+    noPast: "No past matches yet.",
+    noUpcoming: "No predictions filled in.",
+    resultLabel: "result",
+  },
+} as const;
+
+type PoolMembersCopy = (typeof poolMembersCopy)[Locale];
+
 /**
  * Klikbare stand binnen een subpoule: klik een speler open om diens behaalde
  * punten per afgelopen wedstrijd en voorspellingen voor komende wedstrijden te
  * zien. Andere spelers blijven verborgen tot de deadline (e-mail altijd privé).
  */
-export function PoolMembers({ members }: { members: PoolMember[] }) {
+export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[]; locale?: Locale }) {
+  const copy = poolMembersCopy[locale];
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
     <div className="pool-members-section border-b border-slate-200 p-4">
       <div className="pool-members-title-row">
-        <h3 className="pool-members-title text-lg font-bold text-[#101a2b]">Ranglijst &amp; deelnemers</h3>
+        <h3 className="pool-members-title text-lg font-bold text-[#101a2b]">{copy.title}</h3>
         <span className="pool-members-count">{members.length}</span>
       </div>
-      <p className="pool-members-hint mt-1 text-sm font-medium text-[#48617f]">Tik op een speler voor punten en voorspellingen.</p>
+      <p className="pool-members-hint mt-1 text-sm font-medium text-[#48617f]">{copy.hint}</p>
       <div className="pool-members-list mt-3 grid gap-2">
         {members.map((member) => {
           const open = openId === member.userId;
@@ -64,18 +99,18 @@ export function PoolMembers({ members }: { members: PoolMember[] }) {
                 <span className="pool-member-main min-w-0 flex-1 truncate">
                   <span className="pool-member-name font-bold text-[#081634]">{member.name}</span>
                   {member.isOwner ? (
-                    <Crown aria-label="Beheerder" className="ml-1 inline size-4 -translate-y-px text-[#e0a516]" />
+                    <Crown aria-label={copy.owner} className="ml-1 inline size-4 -translate-y-px text-[#e0a516]" />
                   ) : null}
-                  {member.isYou ? <span className="pool-member-you ml-1 text-xs font-bold text-[#16863a]">(jij)</span> : null}
+                  {member.isYou ? <span className="pool-member-you ml-1 text-xs font-bold text-[#16863a]">{copy.you}</span> : null}
                   {member.teamName ? <span className="pool-member-team font-medium text-[#475670]"> · {member.teamName}</span> : null}
                   {member.worldRank ? (
                     <span className="pool-member-world mt-0.5 flex items-center gap-1 text-xs font-semibold text-[#7a8aa3]">
                       <Globe aria-hidden="true" className="size-3" />
-                      Wereldrang #{member.worldRank}
+                      {copy.worldRank} #{member.worldRank}
                     </span>
                   ) : null}
                 </span>
-                <span className="pool-member-points font-bold tabular-nums text-[#081634]">{member.points} pt</span>
+                <span className="pool-member-points font-bold tabular-nums text-[#081634]">{member.points} {copy.pointsSuffix}</span>
                 <ChevronDown
                   aria-hidden="true"
                   className={`pool-member-chevron size-4 flex-none text-[#475670] transition-transform ${open ? "rotate-180" : ""}`}
@@ -87,12 +122,12 @@ export function PoolMembers({ members }: { members: PoolMember[] }) {
                   {member.locked ? (
                     <p className="flex items-center gap-2 rounded-lg bg-slate-50 p-3 text-sm font-medium text-[#48617f]">
                       <Lock aria-hidden="true" className="size-4" />
-                      De voorspellingen van anderen zijn zichtbaar zodra de invulronde sluit.
+                      {copy.locked}
                     </p>
                   ) : (
                     <>
-                      <LineTable title="Afgelopen wedstrijden" lines={member.past} showPoints emptyText="Nog geen afgelopen wedstrijden." />
-                      <LineTable title="Komende wedstrijden" lines={member.upcoming} emptyText="Geen voorspellingen ingevuld." />
+                      <LineTable title={copy.pastTitle} lines={member.past} showPoints emptyText={copy.noPast} copy={copy} />
+                      <LineTable title={copy.upcomingTitle} lines={member.upcoming} emptyText={copy.noUpcoming} copy={copy} />
                     </>
                   )}
                 </div>
@@ -110,11 +145,13 @@ function LineTable({
   lines,
   showPoints = false,
   emptyText,
+  copy,
 }: {
   title: string;
   lines: MatchLine[];
   showPoints?: boolean;
   emptyText: string;
+  copy: PoolMembersCopy;
 }) {
   return (
     <div>
@@ -134,7 +171,7 @@ function LineTable({
                 {line.predHome ?? "–"}–{line.predAway ?? "–"}
                 {showPoints && line.resultHome !== null ? (
                   <span className="block text-xs font-medium text-[#475670]">
-                    uitslag {line.resultHome}–{line.resultAway}
+                    {copy.resultLabel} {line.resultHome}–{line.resultAway}
                   </span>
                 ) : null}
               </span>

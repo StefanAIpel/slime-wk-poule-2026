@@ -328,11 +328,13 @@ export function WhatsappShare({
 export function CopyButton({
   value,
   label = "Kopieer",
+  copiedLabel = "Gekopieerd",
   variant = "secondary",
   compact = false,
 }: {
   value: string;
   label?: string;
+  copiedLabel?: string;
   variant?: Variant;
   compact?: boolean;
 }) {
@@ -352,7 +354,7 @@ export function CopyButton({
   return (
     <button type="button" className={buttonClass} onClick={onCopy}>
       {copied ? <Check aria-hidden="true" className="size-5" /> : <Copy aria-hidden="true" className="size-5" />}
-      {copied ? "Gekopieerd" : label}
+      {copied ? copiedLabel : label}
     </button>
   );
 }
