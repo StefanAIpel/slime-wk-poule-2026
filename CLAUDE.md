@@ -1,11 +1,11 @@
 # CLAUDE.md — gids voor ontwikkelaars & agents
 
-Instappunt voor wie (mens of agent) aan **Slime Score** werkt. Houd dit kort en actueel.
+Instappunt voor wie (mens of agent) aan **SlimeScore** werkt. Houd dit kort en actueel.
 
 ## Wat is het
 Nederlandstalige, mobiel-eerst **WK 2026-poule**. Voorspel uitslagen + knock-out,
-strijd in een algemene ranglijst en in eigen **subpoules**. Gratis, e-mail-only login
-(magic link), geen wachtwoorden, geen tracking. Productie: `slimescore.com` (Vercel,
+strijd in een algemene ranglijst en in eigen **subpoules**. Gratis, zonder advertenties.
+Root `/` is Nederlands; `/en` is Engels. Productie: `slimescore.com` (Vercel,
 deployt vanaf `main`).
 
 ## Stack
@@ -24,8 +24,12 @@ docs               productdocumentatie + werklijsten
 ```
 
 ## Werkwijze / conventies
-- **Branch:** ontwikkel op `claude/wk-pool-app-ui-review-j5dpz`; productie = `main` (clean fast-forward → Vercel deployt).
-- **Altijd groen houden:** `npx tsc --noEmit`, `npx eslint src`, `npm test` (scoring-tests), `npm run build`.
+- **Branch:** feature/fix/docs-branch + PR; productie = `main` (Vercel deployt vanaf `main`).
+- **Altijd groen houden:** `npm test`, `npm run lint`, `npm run build`.
+- **Taal:** Nederlands is hoofdmoot; NL/BE default NL. Bij iedere UI-copy wijziging NL én EN bijwerken (`/` en `/en`, plus aria/metadata/share/form/footer/deeproutes).
+- **Versie:** app/UI-deploys verhogen `APP_VERSION` in `src/lib/constants.ts`; live footer moet `bèta/beta <versie>` tonen. Docs-only zonder app/UI-deploy hoeft geen bump.
+- **Signal:** native Web Share/clipboard fallback; nooit terug naar `sgnl://send?text=...`.
+- **Account:** SlimeScore naam/nickname blijft vast na signup/profiel; teamnaam/avatar/taal mogen editbaar blijven.
 - **DB-wijzigingen:** via een migratie in `supabase/migrations/` én toepassen (MCP/CLI). Daarna `get_advisors` (security/performance) checken.
 - **Secrets:** service-role key alleen server-side; `RESULT_SYNC_SECRET` alleen via header; `ADMIN_EMAILS` voor `/admin`.
 - **Scoring is de bron van waarheid** in `src/lib/scoring.ts` (getest). `src/lib/recalculate.ts` herrekent alle ranglijsten en wordt gedeeld door `/api/sync-results` en `/admin`.
@@ -38,9 +42,11 @@ docs               productdocumentatie + werklijsten
 - `docs/api-en-techniek.md` — uitslagen-API, puntentelling, push, SEO/ads, dataverkeer-sanity.
 - `docs/operatie-launch.md` — auth-URLs, SMTP, back-up/restore, deploy + smoke-test (externe stappen).
 - `docs/ui-deepdive-devices.md` — cross-device/browser + WhatsApp-in-app.
+- `AGENTS.md` — korte operationele instructies voor coding agents.
 - `README.md` — productoverzicht + database-tabellen + roadmap.
 
 ## Status (kort)
-Launch-waardig voor vrienden/familie. Open/actielijst (zie feedback-status.md): automatische
-uitslagen-API + live scores, push-notificaties, knock-out cascade-validatie, taalkeuze NL/EN,
-en externe config (Supabase auth-URLs + custom SMTP) vóór brede launch.
+Launch-waardig voor vrienden/familie. NL/EN, SEO, sitemap/robots, password/fixed-code auth,
+admin-dashboard en v0.21 release staan live. Open/actielijst (zie feedback-status.md): automatische
+uitslagen-API + live scores, push-notificaties, knock-out cascade-validatie en externe config
+(Supabase auth-URLs + custom SMTP) vóór brede launch.

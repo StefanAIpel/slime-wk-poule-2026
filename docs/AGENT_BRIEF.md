@@ -1,8 +1,8 @@
-# Agent Brief: Slime Score 2026
+# Agent Brief: SlimeScore 2026
 
 ## Doel van de app
 
-Slime Score 2026 is een Nederlandstalige, mobiel-eerst WK-poule app. De kern is snel meedoen met alleen e-mail, bijnaam en teamnaam, groepswedstrijden voorspellen, automatisch groepsstanden zien, eigen subpoules delen via code/WhatsApp en ranglijsten volgen.
+SlimeScore 2026 is een Nederlandstalige, mobiel-eerst WK-poule app. De kern is snel meedoen met e-mail + wachtwoord of vaste code, SlimeScore-naam en teamnaam kiezen, groepswedstrijden voorspellen, automatisch groepsstanden zien, eigen subpoules delen via code/share-knoppen en ranglijsten volgen. Nederlands is de hoofdervaring; `/en` is de Engelse route voor internationale bezoekers.
 
 De app moet professioneel kunnen doorgroeien, maar de eerste productkeuze blijft gemak boven volledigheid: deelnemers moeten niet tijdens het hele WK steeds nieuwe formulieren moeten invullen.
 
@@ -10,11 +10,12 @@ De app moet professioneel kunnen doorgroeien, maar de eerste productkeuze blijft
 
 - Nieuwe repo en Vercel-site, niet te veel bouwen op de bestaande Slime game repo.
 - Link naar de bestaande Slime WK-game als bonus.
-- Nederlandse UI.
-- E-mail login met bevestigingsmail/magic link en minimale data.
+- Nederlandse UI als hoofdervaring; `/en` volledig Engels voor internationale bezoekers.
+- NL/BE-bezoekers standaard Nederlands; buiten NL/BE mag Engels de fallback zijn.
+- E-mail + wachtwoordlogin, vaste codes zonder e-mail en minimale data.
 - Supabase als betrouwbare database.
 - Mobiel eerste ervaring, maar bruikbaar op desktop/tablet.
-- Slime Score branding: vrolijk, WK, voetbal, Slime, niet kinderachtig.
+- SlimeScore branding: vrolijk, WK, voetbal, Slime, niet kinderachtig.
 - Geen prompt-antwoordteksten zoals "Wat zit erin?" op publieke pagina's.
 - Scores invullen voor groepswedstrijden.
 - Rondekeuzes, kampioen, topscorer en bonusstatistieken.
@@ -29,8 +30,8 @@ De app moet professioneel kunnen doorgroeien, maar de eerste productkeuze blijft
 
 ## Huidige functionele staat
 
-- Auth: Supabase magic-link login. `/auth/confirm` verwerkt `access_token`/`refresh_token`, `code` en `token_hash`. Een globale `AuthLinkBridge` vangt ook links af die op `/` landen met tokens achter `#`.
-- Profiel: bijnaam en teamnaam na eerste login.
+- Auth: Supabase e-mail + wachtwoordlogin, wachtwoordreset en vaste code-accounts zonder e-mail. `/auth/confirm` verwerkt `access_token`/`refresh_token`, `code` en `token_hash`. Een globale `AuthLinkBridge` vangt ook links af die op `/` landen met tokens achter `#`.
+- Profiel: SlimeScore-naam en teamnaam na eerste login; SlimeScore-naam blijft daarna vast, teamnaam/avatar/taal blijven bewerkbaar.
 - Voorspellingen: 72 groepsduels met live berekende groepsstand per groep.
 - Laatste 32: automatisch uit groepsstanden, nummers 1 en 2 plus beste acht nummers 3.
 - Rondekeuzes: achtste finale, kwartfinale, halve finale, finalisten, kampioen.
@@ -38,6 +39,8 @@ De app moet professioneel kunnen doorgroeien, maar de eerste productkeuze blijft
 - Poules: maken, joinen met code, delen via WhatsApp, leden verwijderen, moderators, aankleding, prikbordberichten.
 - Ranglijsten: publieke personenranglijst en subpoules op beste 4 spelers.
 - PWA: wegklikbare installkaart voor beginscherm/installeren; app blijft ook normaal bruikbaar in de browser.
+- Locale/SEO: `/` is Nederlands, `/en` Engels; NL/BE default NL, internationale fallback EN; sitemap/robots/hreflang aanwezig.
+- Delen: WhatsApp/Facebook/Telegram/Signal/mail/native share. Signal gebruikt native share/clipboard fallback, niet `sgnl://`.
 - Resultaten: `/api/sync-results` verwerkt uitslagen, stage-results en tournament-facts en rekent scores opnieuw door.
 
 ## Belangrijke technische vraagstukken
@@ -46,8 +49,8 @@ De app moet professioneel kunnen doorgroeien, maar de eerste productkeuze blijft
 
 Controleer in Supabase Dashboard:
 
-- Site URL: productie-url, nu `https://slimescore.vercel.app`.
-- Redirect URLs: minimaal `https://slimescore.vercel.app/**` en lokale dev URL.
+- Site URL: productie-url `https://slimescore.com`.
+- Redirect URLs: minimaal `https://slimescore.com/**`, Vercel preview indien gebruikt en lokale dev URL.
 - Als mailtemplates zijn aangepast: gebruik `{{ .ConfirmationURL }}` of gebruik `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email` als `RedirectTo` al naar `/auth/confirm` wijst. Voeg niet nog een extra `/auth/confirm` toe.
 
 Bron: https://supabase.com/docs/guides/auth/redirect-urls
@@ -93,6 +96,15 @@ De huidige stack is geschikt voor een betaalbare MVP:
 
 Voor grotere schaal: ranking-recalculatie uit de request halen en naar queue/cron/background job verplaatsen.
 
+## Agent- en release-instructies
+
+- Behandel Nederlands als primaire producttaal. Iedere UI-copy wijziging moet in NL én EN worden bijgewerkt.
+- Controleer bij i18n ook aria-labels, statusbalken, share-copy, formulieren, metadata, footer en ingelogde/deeproutes.
+- Elke app-deploy met code/UI-wijziging moet `APP_VERSION` in `src/lib/constants.ts` verhogen en live footer `bèta/beta <versie>` tonen.
+- Draai vóór merge/deploy minimaal `npm test`, `npm run lint` en `npm run build`.
+- Browser smoke-test NL `/`, EN `/en`, relevante deeproute(s), mobiel/compacte layout, console errors en indien geraakt een ingelogde flow.
+- Maak tijdelijke testaccounts/scripts schoon en log/commit nooit secrets.
+
 ## Ontwikkelfases
 
 ### Fase 1: MVP afronden
@@ -124,5 +136,5 @@ Voor grotere schaal: ranking-recalculatie uit de request halen en naar queue/cro
 
 - Bedrijfspoules.
 - Premium subpoule-thema's of sponsorvrije bedrijfsvariant.
-- Meertaligheid als er internationale ambitie komt.
+- Internationale SEO en Engelse copy verder aanscherpen op basis van gebruik.
 - Native wrapper pas overwegen als PWA tractie heeft.

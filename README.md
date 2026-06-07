@@ -1,24 +1,25 @@
-# Slime Score — WK Poule 2026
+# SlimeScore — WK Poule 2026
 
 Nederlandstalige, mobiel-eerst WK 2026-poule. Voorspel uitslagen, kies wie ver komt,
 strijd in een algemene ranglijst én in eigen subpoules met familie, vrienden of collega's.
-Gratis, zonder wachtwoord en zonder advertenties.
+Gratis en zonder advertenties. Nederlands is de hoofdervaring; `/en` is de Engelse route
+voor internationale bezoekers.
 
 Gebouwd met **Next.js (App Router)**, **Supabase** (Auth + Postgres + RLS) en gehost op
 **Vercel**. Styling met **Tailwind CSS v4**; lettertype **Poppins**.
 
 ## Wat je als speler doet
 
-1. **Aanmelden** met alleen je e-mail (Supabase magic link, geen wachtwoord).
-2. **Scorekaart afmaken**: naam + teamnaam (allebei min. 4 tekens). Pas daarna doe je echt mee.
+1. **Aanmelden** met e-mail + wachtwoord, of via vaste code zonder e-mail voor kind-/beheeraccounts.
+2. **Scorekaart afmaken**: SlimeScore-naam + teamnaam (allebei min. 4 tekens). Pas daarna doe je echt mee.
 3. **Groepswedstrijden voorspellen** — de groepsstanden en de laatste 32 worden live uit je
    eigen scores berekend.
 4. **Knock-out kiezen**: welke landen halen achtste, kwart, halve finale, finale, wereldkampioen.
 5. **Bonusvragen** invullen (zie roadmap — wordt herzien).
 6. **Subpoule** maken of joinen met een deelcode en de strijd aangaan.
 
-Publieke pagina's (`/schema`, `/ranglijst`, `/regels`, `/privacy`, `/voorwaarden`) zijn zonder
-login zichtbaar en worden gecachet (ISR).
+Publieke pagina's (`/`, `/en`, `/schema`, `/ranglijst`, `/regels`, `/privacy`, `/voorwaarden`, `/games`) zijn zonder
+login zichtbaar en worden gecachet waar dat past (ISR).
 
 ## Slime-game koppeling
 
@@ -79,6 +80,19 @@ doorgerekend**.
 > **Databron is nog niet vastgelegd.** Nu wordt er handmatig/extern gepost. Een geautomatiseerde
 > koppeling met een wedstrijd-API (uitslagen + stats voor de bonusvragen) staat op de roadmap.
 
+## Taal, SEO en deployregels voor agents
+
+- **Nederlands is de hoofdmoot.** Root `/` is Nederlands; NL/BE-bezoekers blijven standaard Nederlands.
+- **Engels staat op `/en`.** Buiten NL/BE mag Engels de fallback zijn; `?lang=en` en `?lang=nl` zetten de locale-cookie en redirecten canonical.
+- **Elke zichtbare UI-tekstwijziging moet in NL én EN kloppen.** Controleer ook aria-labels, statusbalk, share-copy, formulieren, footer, metadata en deep routes.
+- **Elke deploy die de app wijzigt verhoogt `APP_VERSION` in `src/lib/constants.ts`.** De footer moet live de nieuwe `bèta/beta` versie tonen.
+- **Signal blijft native share/fallback copy.** Niet terug naar directe `sgnl://send?text=...` links.
+- **Accountnaam blijft vast na signup/eerste profielstap.** Teamnaam, avatar en taal mogen wel bewerkbaar blijven.
+- **Voor deploy:** draai `npm test`, `npm run lint`, `npm run build`; smoke-test lokaal/preview én productie met NL, EN, mobiel, relevante ingelogde flows, console en layout.
+- **Geen secrets loggen of committen.** Testaccounts/scripts altijd opruimen.
+
+Zie ook `AGENTS.md` en `docs/AGENT_BRIEF.md`.
+
 ## Lokaal draaien
 
 ```bash
@@ -101,17 +115,17 @@ SEO JSON-LD, duo-gamebanner, scoring-tests, rate-limiting, sync-secret header-on
 foutpagina's + logging, **admin-dashboard + auditlog**, hi-res slimes + stadion-hero's, cross-device + WhatsApp-nudge.
 
 **Open / actielijst ⬜** — automatische uitslagen-API + live scores, push-notificaties (of .ics),
-knock-out cascade-validatie, taalkeuze NL/EN, en externe config (Supabase auth-URLs + custom SMTP)
+knock-out cascade-validatie en externe config (Supabase auth-URLs + custom SMTP)
 vóór brede launch (zie `docs/operatie-launch.md`).
 
 **Niet gepland (bewuste keuzes)**
 - Niet alle 104 wedstrijden los invullen — alleen groepsduels + automatische laatste 32.
 - Geen score-koppeling tussen de arcade-game en de poule.
-- Geen wachtwoorden / social login — alleen e-mail magic links.
 - Geen advertenties of tracking-cookies.
 
 ## Documentatie
 
+- [Agent/projectinstructies](AGENTS.md)
 - [Werklijst UI-review](docs/ui-review-todo.md)
 - [Agent brief](docs/AGENT_BRIEF.md)
 - [Onderzoek WK-poule](docs/onderzoek-wk-poule.md)
