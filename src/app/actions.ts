@@ -132,8 +132,10 @@ export async function updateAccount(formData: FormData) {
   } = {};
   const avatarKey = cleanText(formData.get("avatar_key"), 64);
   const preferredLocale = cleanText(formData.get("preferred_locale"), 8);
-  const nickname = cleanText(formData.get("nickname"), NICKNAME_MAX_LENGTH);
-  const teamName = cleanText(formData.get("team_name"), TEAM_NAME_MAX_LENGTH);
+  const hasNickname = formData.has("nickname");
+  const hasTeamName = formData.has("team_name");
+  const nickname = hasNickname ? cleanText(formData.get("nickname"), NICKNAME_MAX_LENGTH) : "";
+  const teamName = hasTeamName ? cleanText(formData.get("team_name"), TEAM_NAME_MAX_LENGTH) : "";
   const cookieStore = await cookies();
   const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
   const redirectLocale: Locale = isSupportedLocale(preferredLocale)
@@ -142,18 +144,23 @@ export async function updateAccount(formData: FormData) {
       ? cookieLocale
       : "nl";
 
-  if (formData.has("nickname") || formData.has("team_name")) {
-    if (nickname.length < NICKNAME_MIN_LENGTH || teamName.length < TEAM_NAME_MIN_LENGTH) {
+  if (hasNickname) {
+    if (nickname.length < NICKNAME_MIN_LENGTH) {
       redirect(`${localizedHref("/account", redirectLocale)}?fout=te-kort`);
     }
     if (reservedNames.includes(nickname.toLowerCase())) {
       redirect(`${localizedHref("/account", redirectLocale)}?fout=gereserveerd`);
     }
     payload.nickname = nickname;
+  }
+  if (hasTeamName) {
+    if (teamName.length < TEAM_NAME_MIN_LENGTH) {
+      redirect(`${localizedHref("/account", redirectLocale)}?fout=te-kort`);
+    }
     payload.team_name = teamName;
   }
 
-  // Avatar en taalvoorkeur mag de speler zelf aanpassen; naam/team gaan mee wanneer het profiel-formulier ze post.
+  // Avatar, teamnaam en taalvoorkeur mag de speler zelf aanpassen; de SlimeScore naam blijft vast na signup.
   if (formData.has("avatar_key")) {
     payload.avatar_key = isAvatarKey(avatarKey) ? avatarKey : null;
   }
@@ -187,7 +194,7 @@ export async function updateAccount(formData: FormData) {
   revalidatePath("/account");
   revalidatePath("/ranglijst");
   revalidatePath("/poules");
-  const savedKind = payload.preferred_locale ? "taal" : payload.nickname || payload.team_name ? "profiel" : "avatar";
+  const savedKind = payload.preferred_locale ? "taal" : hasTeamName ? "profiel" : formData.has("avatar_key") ? "avatar" : "profiel";
   redirect(`${localizedHref("/account", redirectLocale)}?opgeslagen=${savedKind}`);
 }
 

@@ -66,6 +66,8 @@ const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.
 const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
 const recoveryEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
 const englishHomePage = await readOptional("../src/app/en/page.tsx");
+const sitemapRoute = await readOptional("../src/app/sitemap.ts");
+const robotsRoute = await readOptional("../src/app/robots.ts");
 const aanmeldenPage = await readFile(new URL("../src/app/aanmelden/page.tsx", import.meta.url), "utf8");
 const privacyPage = await readFile(new URL("../src/app/privacy/page.tsx", import.meta.url), "utf8");
 const termsPage = await readFile(new URL("../src/app/voorwaarden/page.tsx", import.meta.url), "utf8");
@@ -75,6 +77,25 @@ const preferredLocaleMigrations = (await Promise.all(
     .filter((file) => file.endsWith(".sql") && file.includes("preferred_locale"))
     .map((file) => readFile(new URL(`../supabase/migrations/${file}`, import.meta.url), "utf8")),
 )).join("\n");
+
+test("SEO and indexation expose NL/EN alternates, English keywords, sitemap and robots", () => {
+  assert.match(layout, /World Cup 2026 pool/);
+  assert.match(layout, /free World Cup pool/);
+  assert.match(layout, /USA Canada Mexico 2026/);
+  assert.match(layout, /"x-default": `\$\{SITE_URL\}\/en`/);
+  assert.match(layout, /"@type": "WebSite"/);
+  assert.match(layout, /areaServed: \["NL", "BE", "US", "CA", "MX", "GB", "Global"\]/);
+  assert.match(englishHomePage, /keywords: \[/);
+  assert.match(englishHomePage, /FIFA World Cup 2026 predictions/);
+  assert.match(englishHomePage, /football pool/);
+  assert.match(englishHomePage, /"x-default": `\$\{SITE_URL\}\/en`/);
+  assert.match(sitemapRoute, /export default function sitemap/);
+  assert.match(sitemapRoute, /"\/en"/);
+  assert.match(sitemapRoute, /"\/games"/);
+  assert.match(robotsRoute, /sitemap\.xml/);
+  assert.match(robotsRoute, /export default function robots/);
+  assert.match(robotsRoute, /disallow: \["\/admin", "\/api\/", "\/auth\/"\]/);
+});
 
 test("English authenticated home reuses the logged-in dashboard instead of the public landing page", () => {
   assert.match(englishHomePage, /HomeContent/);
@@ -86,12 +107,15 @@ test("English authenticated home reuses the logged-in dashboard instead of the p
   assert.match(homePage, /<BottomNav current=\"\/\" \/>/);
 });
 
-test("account settings save profile, avatar and language through Supabase for NL and EN", () => {
-  assert.match(accountPage, /name=\"nickname\"/);
+test("account settings save team, avatar and language through Supabase without editing the SlimeScore name", () => {
+  assert.doesNotMatch(accountPage, /name=\"nickname\"/);
+  assert.match(accountPage, /copy\.playerName/);
   assert.match(accountPage, /name=\"team_name\"/);
-  assert.match(accountPage, /defaultValue=\{nickname\}/);
   assert.match(accountPage, /defaultValue=\{teamName\}/);
   assert.match(accountPage, /<AvatarPicker initialKey=\{profile\?\.avatar_key\} name=\{nickname \|\| copy\.player\} locale=\{locale\}/);
+  assert.match(actions, /const hasNickname = formData\.has\("nickname"\)/);
+  assert.match(actions, /const hasTeamName = formData\.has\("team_name"\)/);
+  assert.match(actions, /if \(hasTeamName\) \{[\s\S]*payload\.team_name = teamName;[\s\S]*\}/);
   assert.match(actions, /payload:\s*\{[\s\S]*nickname\?: string;[\s\S]*team_name\?: string;[\s\S]*avatar_key\?: string \| null;[\s\S]*preferred_locale\?: \"nl\" \| \"en\"/);
   assert.match(actions, /\.from\(\"profiles\"\)\.upsert\(\{ id: user\.id, \.\.\.payload \}/);
   assert.match(actions, /revalidatePath\(\"\/en\"\)/);
@@ -117,6 +141,10 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
   assert.match(rankingExplorer, /ranking-row-pool/);
   assert.match(rankingExplorer, /playerRankLabel/);
   assert.match(rankingExplorer, /poolRankLabel/);
+  assert.match(rankingExplorer, /playerTab: "Per speler"/);
+  assert.match(rankingExplorer, /playerTab: "Per player"/);
+  assert.match(rankingExplorer, /poolTab: "Per poule"/);
+  assert.match(rankingExplorer, /poolTab: "Per pool"/);
   assert.match(rankingExplorer, /top 4 total/i);
   assert.match(poolMembers, /poolRankLabel/);
   assert.match(poolMembers, /Pool rank/);
@@ -124,7 +152,7 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = \"0\.2\"/);
+  assert.match(constants, /APP_VERSION = "0\.21"/);
 });
 test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
   const heroPrimaryBlock = globalsCss.match(/\.button-primary\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";
@@ -305,9 +333,10 @@ test("account page saves profile, avatar, password and language safely", () => {
   assert.match(profileForm, /name=\"nickname\"/);
   assert.match(profileForm, /name=\"team_name\"/);
   assert.match(profileForm, /avatar_key/);
-  assert.match(accountPage, /name=\"nickname\"/);
+  assert.doesNotMatch(accountPage, /name=\"nickname\"/);
+  assert.match(accountPage, /copy\.playerName/);
   assert.match(accountPage, /name=\"team_name\"/);
-  assert.match(accountPage, /defaultValue=\{nickname\}/);
+  assert.doesNotMatch(accountPage, /defaultValue=\{nickname\}/);
   assert.match(accountPage, /defaultValue=\{teamName\}/);
   assert.match(accountPage, /<form action=\{updateAccount\}/);
   assert.match(accountPage, /<AvatarPicker initialKey=\{profile\?\.avatar_key\} name=\{nickname \|\| copy\.player\} locale=\{locale\}/);
@@ -704,10 +733,16 @@ test("desktop schedule cards are compact and match rows use a visible aligned te
   assert.doesNotMatch(scheduleExplorer, /dark-panel rounded-2xl/);
 });
 
-test("game embed is larger and left-aligned on desktop while mobile defaults to new-tab play", () => {
-  assert.match(gameFrames, /Open spel in nieuw tabblad/);
-  assert.match(gameFrames, /Mobiel speelt dit het best schermvullend/);
-  assert.match(gameFrames, /Laadt het spel niet\? Open het in een nieuw tabblad\./);
+test("game embed is larger, locale-aware and left-aligned on desktop while mobile defaults to new-tab play", () => {
+  assert.match(gameFrames, /open: "Open spel in nieuw tabblad"/);
+  assert.match(gameFrames, /open: "Open game in a new tab"/);
+  assert.match(gameFrames, /mobileNote: "Mobiel speelt dit het best schermvullend/);
+  assert.match(gameFrames, /mobileNote: "On mobile this plays best full-screen/);
+  assert.match(gameFrames, /embedNote: "Laadt het spel niet\? Open het in een nieuw tabblad\."/);
+  assert.match(gameFrames, /embedNote: "Game not loading\? Open it in a new tab\."/);
+  assert.match(gamesPage, /getServerLocale/);
+  assert.match(gamesPage, /Slime games/);
+  assert.match(gamesPage, /<GameFrames[\s\S]*locale=\{locale\}/);
   assert.doesNotMatch(gameFrames, /game-site moet inbedden toestaan/);
   assert.doesNotMatch(gameFrames, />Nieuw tabblad</);
   assert.match(gamesPage, /page-shell game-page-shell/);
