@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { AuthLinkBridge } from "@/components/auth-link-bridge";
 import { InAppHint } from "@/components/in-app-hint";
 import { LocalePreferenceSync } from "@/components/locale-preference-sync";
@@ -152,20 +152,28 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
   const htmlLang = isSupportedLocale(cookieLocale) ? cookieLocale : "nl";
 
+  // De live-subsite (live.slimescore.com) heeft eigen chrome; verberg hier de
+  // hoofd-navigatie/footer. De header wordt door de middleware gezet.
+  const isLiveSurface = (await headers()).get("x-slimescore-surface") === "live";
+
   return (
     <html lang={htmlLang} className={appFont.variable}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <div className="stadium-bg" />
         <PwaRegister />
-        <LocalePreferenceSync />
-        <AuthLinkBridge />
-        <StatusBar />
-        <SiteHeader />
-        <QuickMenu />
-        <InAppHint />
+        {isLiveSurface ? null : (
+          <>
+            <LocalePreferenceSync />
+            <AuthLinkBridge />
+            <StatusBar />
+            <SiteHeader />
+            <QuickMenu />
+            <InAppHint />
+          </>
+        )}
         {children}
-        <SiteFooter locale={htmlLang} />
+        {isLiveSurface ? null : <SiteFooter locale={htmlLang} />}
       </body>
     </html>
   );
