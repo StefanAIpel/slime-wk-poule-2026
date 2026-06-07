@@ -66,6 +66,9 @@ const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.
 const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
 const recoveryEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
 const englishHomePage = await readOptional("../src/app/en/page.tsx");
+const aanmeldenPage = await readFile(new URL("../src/app/aanmelden/page.tsx", import.meta.url), "utf8");
+const privacyPage = await readFile(new URL("../src/app/privacy/page.tsx", import.meta.url), "utf8");
+const termsPage = await readFile(new URL("../src/app/voorwaarden/page.tsx", import.meta.url), "utf8");
 const migrationFiles = await readdir(new URL("../supabase/migrations/", import.meta.url));
 const preferredLocaleMigrations = (await Promise.all(
   migrationFiles
@@ -73,6 +76,56 @@ const preferredLocaleMigrations = (await Promise.all(
     .map((file) => readFile(new URL(`../supabase/migrations/${file}`, import.meta.url), "utf8")),
 )).join("\n");
 
+test("English authenticated home reuses the logged-in dashboard instead of the public landing page", () => {
+  assert.match(englishHomePage, /HomeContent/);
+  assert.match(homePage, /export async function HomeContent/);
+  assert.match(homePage, /locale:\s*Locale/);
+  assert.match(homePage, /persistSignupProfileFromMetadata/);
+  assert.match(homePage, /copy\.dashboardTitle/);
+  assert.match(homePage, /<Brand locale=\{locale\}/);
+  assert.match(homePage, /<BottomNav current=\"\/\" \/>/);
+});
+
+test("account settings save profile, avatar and language through Supabase for NL and EN", () => {
+  assert.match(accountPage, /name=\"nickname\"/);
+  assert.match(accountPage, /name=\"team_name\"/);
+  assert.match(accountPage, /defaultValue=\{nickname\}/);
+  assert.match(accountPage, /defaultValue=\{teamName\}/);
+  assert.match(accountPage, /<AvatarPicker initialKey=\{profile\?\.avatar_key\} name=\{nickname \|\| copy\.player\} locale=\{locale\}/);
+  assert.match(actions, /payload:\s*\{[\s\S]*nickname\?: string;[\s\S]*team_name\?: string;[\s\S]*avatar_key\?: string \| null;[\s\S]*preferred_locale\?: \"nl\" \| \"en\"/);
+  assert.match(actions, /\.from\(\"profiles\"\)\.upsert\(\{ id: user\.id, \.\.\.payload \}/);
+  assert.match(actions, /revalidatePath\(\"\/en\"\)/);
+  assert.match(actions, /redirect\(`\$\{localizedHref\(\"\/account\", redirectLocale\)\}\?opgeslagen=\$\{savedKind\}`\)/);
+});
+
+test("signup, terms and privacy pages render in the active locale instead of 404 or Dutch-only copy", () => {
+  for (const source of [aanmeldenPage, privacyPage, termsPage]) {
+    assert.match(source, /getServerLocale/);
+    assert.match(source, /const locale = await getServerLocale\(\)/);
+    assert.match(source, /<Brand locale=\{locale\}/);
+  }
+  assert.match(aanmeldenPage, /LoginForm surface=\"inline\" initialMode=\"login\" locale=\{locale\}/);
+  assert.match(aanmeldenPage, /Sign up/);
+  assert.match(privacyPage, /Privacy policy/);
+  assert.match(termsPage, /Terms of use/);
+  assert.match(siteFooter, /localizedHref\(\"\/privacy\", locale\)/);
+  assert.match(siteFooter, /localizedHref\(\"\/voorwaarden\", locale\)/);
+});
+
+test("mobile rankings distinguish individual players from sub-pools", () => {
+  assert.match(rankingExplorer, /ranking-row-player/);
+  assert.match(rankingExplorer, /ranking-row-pool/);
+  assert.match(rankingExplorer, /playerRankLabel/);
+  assert.match(rankingExplorer, /poolRankLabel/);
+  assert.match(rankingExplorer, /top 4 total/i);
+  assert.match(poolMembers, /poolRankLabel/);
+  assert.match(poolMembers, /Pool rank/);
+  assert.doesNotMatch(globalsCss, /\.pool-member-world \{\n\s*display: none;\n\s*\}/);
+});
+
+test("footer version is bumped for this high-priority deploy", () => {
+  assert.match(constants, /APP_VERSION = \"0\.2\"/);
+});
 test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
   const heroPrimaryBlock = globalsCss.match(/\.button-primary\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";
   const mobileHeroBlock = globalsCss.match(/@media \(max-width: 759px\) \{[\s\S]*?\.button-primary\.hero-primary-cta \{[\s\S]*?\}\n\}/)?.[0] ?? "";
@@ -186,7 +239,7 @@ test("pool banner upload helper appears before file input and keeps the original
 });
 
 test("create-pool placeholder uses a neutral local example instead of a personal family name", () => {
-  assert.match(homePage, /placeholder="Bijv\. FC Vathorst"/);
+  assert.match(homePage, /createPoolPlaceholder: "Bijv\. FC Vathorst"/);
   assert.doesNotMatch(homePage, /Familie Dijkstra/);
 });
 
@@ -248,24 +301,27 @@ test("pool share text includes the poulecode and account-before-join guidance", 
   assert.doesNotMatch(joinPoolPage, /Geen wachtwoord\. Link klikken/);
 });
 
-test("account page keeps name/team fixed but lets players change avatar, password and language safely", () => {
+test("account page saves profile, avatar, password and language safely", () => {
   assert.match(profileForm, /name=\"nickname\"/);
   assert.match(profileForm, /name=\"team_name\"/);
   assert.match(profileForm, /avatar_key/);
-  assert.doesNotMatch(accountPage, /name=\"nickname\"|name=\"team_name\"/);
+  assert.match(accountPage, /name=\"nickname\"/);
+  assert.match(accountPage, /name=\"team_name\"/);
+  assert.match(accountPage, /defaultValue=\{nickname\}/);
+  assert.match(accountPage, /defaultValue=\{teamName\}/);
   assert.match(accountPage, /<form action=\{updateAccount\}/);
-  assert.match(accountPage, /<AvatarPicker initialKey=\{profile\?\.avatar_key\} name=\{nickname \|\| copy\.player\}/);
+  assert.match(accountPage, /<AvatarPicker initialKey=\{profile\?\.avatar_key\} name=\{nickname \|\| copy\.player\} locale=\{locale\}/);
   assert.match(accountPage, /Avatar opslaan/);
   assert.match(accountPage, /name=\"preferred_locale\"/);
   assert.match(accountPage, /Account language/);
   assert.match(accountPage, /<PasswordChangeForm locale=\{locale\} \/>/);
   assert.match(accountPage, /<details className=\"panel p-5\">[\s\S]*E-mail/);
-  assert.match(accountPage, /deleteTitle: "Account verwijderen"/);
-  assert.match(accountPage, /deleteTitle: "Delete account"/);
+  assert.match(accountPage, /deleteTitle: \"Account verwijderen\"/);
+  assert.match(accountPage, /deleteTitle: \"Delete account\"/);
   assert.match(accountPage, /<details className=\"panel border-red-200 p-5\">[\s\S]*\{copy\.deleteTitle\}/);
   assert.match(actions, /avatar_key: isAvatarKey\(avatarKey\) \? avatarKey : null/);
   assert.match(actions, /payload\.preferred_locale = preferredLocale/);
-  assert.match(actions, /from\(\"profiles\"\)\.update\(payload\)\.eq\(\"id\", user\.id\)/);
+  assert.match(actions, /from\(\"profiles\"\)\.upsert\(\{ id: user\.id, \.\.\.payload \}\)/);
   assert.match(avatarPicker, /name=\"avatar_key\"/);
   assert.match(passwordChangeForm, /supabase\.auth\.getSession\(\)/);
   assert.match(passwordChangeForm, /supabase\.auth\.updateUser\(\{ password \}\)/);
@@ -315,9 +371,11 @@ test("dashboard copy matches the 72-group-result progress metric and password fl
 });
 
 test("share panel keeps the Deel SlimeScore label above a single icon row on every breakpoint", () => {
-  assert.match(homePage, /<div className=\"create-pool-share share-panel-strip\" aria-label=\"SlimeScore delen\">[\s\S]*<ShareRow/);
+  assert.match(homePage, /sharePanelLabel: "SlimeScore delen"/);
+  assert.match(homePage, /sharePanelTitle: "Deel SlimeScore"/);
+  assert.match(homePage, /<div className=\"create-pool-share share-panel-strip\" aria-label=\{copy\.sharePanelLabel\}>[\s\S]*<ShareRow/);
   assert.match(homePage, /<div className=\"dark-panel poule-share-panel[\s\S]*<div className=\"share-panel-strip\">[\s\S]*<ShareRow/);
-  assert.match(homePage, /<p className=\"share-panel-title\">Deel SlimeScore<\/p>[\s\S]*<ShareRow/);
+  assert.match(homePage, /<p className=\"share-panel-title\">\{copy\.sharePanelTitle\}<\/p>[\s\S]*<ShareRow/);
   assert.match(globalsCss, /\.share-panel-strip \{[\s\S]*display: grid;[\s\S]*justify-items: center;/);
   assert.match(globalsCss, /\.share-panel-strip \.share-actions \{[\s\S]*justify-content: center;/);
   assert.match(globalsCss, /\.share-row-compact \.share-actions \{[\s\S]*flex-wrap: nowrap;/);
@@ -412,10 +470,10 @@ test("English landing page translates the public signup flow without changing th
   assert.match(englishHomePage, /const appIcon = "\/icons\/slimescore-app-icon-v4-512\.png"/);
   assert.match(englishHomePage, /images: \[\{ url: appIcon, width: 512, height: 512, alt: "SlimeScore app icon" \}\]/);
   assert.match(englishHomePage, /twitter: \{[\s\S]*images: \[appIcon\]/);
-  assert.match(englishHomePage, /Fill in your predictions for the full World Cup in about ten minutes/);
-  assert.match(englishHomePage, /Create your World Cup pool/);
-  assert.match(englishHomePage, /Share SlimeScore/);
-  assert.match(englishHomePage, /<LoginForm surface=\"inline\" locale=\"en\" \/>/);
+  assert.match(homePage, /Fill in your predictions for the full World Cup in about ten minutes/);
+  assert.match(homePage, /Create your World Cup pool/);
+  assert.match(homePage, /Share SlimeScore/);
+  assert.match(homePage, /<LoginForm surface=\"inline\" locale=\"en\" \/>/);
   assert.match(loginForm, /locale = "nl"/);
   assert.match(loginForm, /const copy = loginCopy\[locale\]/);
   assert.match(loginForm, /Sign in/);
@@ -449,7 +507,7 @@ test("English preference persists sitewide in browser storage and Supabase accou
   assert.match(accountPage, /name="preferred_locale"/);
   assert.match(accountPage, /Account language/);
   assert.match(actions, /payload\.preferred_locale = preferredLocale/);
-  assert.match(actions, /\(await cookies\(\)\)\.set\(LOCALE_COOKIE, preferredLocale/);
+  assert.match(actions, /cookieStore\.set\(LOCALE_COOKIE, preferredLocale/);
   assert.match(preferredLocaleMigrations, /add column if not exists preferred_locale text/);
   assert.match(preferredLocaleMigrations, /check \(preferred_locale in \('nl', 'en'\)\)/);
 });
@@ -499,7 +557,7 @@ test("English route translates all visible shared fields and labels", () => {
   assert.match(shareButton, /const sharePrefix = locale === "en" \? "Share via" : "Delen via"/);
   assert.match(shareButton, /Copied/);
   assert.match(shareButton, /Share via WhatsApp, Facebook, Telegram, Signal, email or Instagram\/native share\./);
-  assert.match(englishHomePage, /<ShareRow[\s\S]*locale=\"en\"/);
+  assert.match(homePage, /<ShareRow[\s\S]*locale=\{locale\}/);
   assert.match(teamFlag, /locale = "nl"/);
   assert.match(teamFlag, /locale === "en" \? `Flag of \$\{name\}` : `Vlag van \$\{name\}`/);
   assert.match(upcomingMatches, /<TeamFlag code=\{m\.home_code\} name=\{teamNameForLocale\(m\.home_code, m\.home\?\.name_nl, locale\)\} locale=\{locale\}/);

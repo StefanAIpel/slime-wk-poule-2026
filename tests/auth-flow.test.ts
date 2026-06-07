@@ -115,7 +115,7 @@ test("verified signup profile data is persisted after email confirmation", () =>
 
 test("homepage salvages verified signups that arrive already logged in without a profile", () => {
   assert.match(homePage, /persistSignupProfileFromMetadata/);
-  assert.match(homePage, /signupProfile\.ok\) redirect\("\/"\)/);
+  assert.match(homePage, /signupProfile\.ok\) redirect\(localizedHref\("\/", locale\)\)/);
 });
 
 test("unconfirmed players can explicitly resend and code-confirm the registration mail", () => {

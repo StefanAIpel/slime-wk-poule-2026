@@ -1,4 +1,5 @@
 import { AtSign, Languages, LifeBuoy, ShieldCheck, Trash2, Trophy, UserCog } from "lucide-react";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { deleteAccount, updateAccount } from "@/app/actions";
 import { AvatarPicker } from "@/components/avatar-picker";
@@ -9,6 +10,7 @@ import { PasswordChangeForm } from "@/components/password-change-form";
 import { APP_VERSION, CONTACT_EMAIL } from "@/lib/constants";
 import { formatAmsterdam } from "@/lib/format";
 import { isSupportedLocale, localizedHref, type Locale } from "@/lib/i18n";
+import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH, TEAM_NAME_MAX_LENGTH, TEAM_NAME_MIN_LENGTH } from "@/lib/limits";
 import { getServerLocale } from "@/lib/server-locale";
 import { createClient } from "@/lib/supabase/server";
 
@@ -34,7 +36,7 @@ const accountCopy = {
     saved: "Opgeslagen.",
     fallbackError: "Er ging iets mis. Probeer het opnieuw.",
     profile: "Profiel",
-    fixedProfile: "Je naam en teamnaam staan vast na aanmelding. Je slime-avatar en taalvoorkeur kun je wél aanpassen.",
+    fixedProfile: "Werk je naam, teamnaam, slime-avatar en taalvoorkeur bij. Deze waarden komen uit je Supabase-profiel en worden overal in SlimeScore gebruikt.",
     name: "Naam of bijnaam",
     teamName: "Teamnaam",
     player: "Speler",
@@ -78,7 +80,7 @@ const accountCopy = {
     saved: "Saved.",
     fallbackError: "Something went wrong. Please try again.",
     profile: "Profile",
-    fixedProfile: "Your name and team name are locked after signup. You can still change your slime avatar and language preference.",
+    fixedProfile: "Update your name, team name, slime avatar and language preference. These values come from your Supabase profile and are used across SlimeScore.",
     name: "Name or nickname",
     teamName: "Team name",
     player: "Player",
@@ -117,6 +119,17 @@ const accountCopy = {
     beta: "beta",
   },
 } as const;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getServerLocale();
+  return {
+    title: locale === "en" ? "My account" : "Mijn account",
+    description:
+      locale === "en"
+        ? "Manage your SlimeScore profile, avatar, password and language."
+        : "Beheer je SlimeScore-profiel, avatar, wachtwoord en taal.",
+  };
+}
 
 export default async function AccountPage({
   searchParams,
@@ -171,13 +184,37 @@ export default async function AccountPage({
               <h2 className="text-2xl font-bold text-[#081634]">{copy.profile}</h2>
             </div>
             <p className="text-sm font-medium leading-6 text-[#48617f]">{copy.fixedProfile}</p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <ReadOnlyProfileField label={copy.name} value={nickname || copy.player} />
-              <ReadOnlyProfileField label={copy.teamName} value={teamName || "—"} />
-            </div>
             <form action={updateAccount} className="grid gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="grid gap-2 text-sm font-bold text-[#081634]">
+                  {copy.name}
+                  <input
+                    className="field"
+                    name="nickname"
+                    required
+                    minLength={NICKNAME_MIN_LENGTH}
+                    maxLength={NICKNAME_MAX_LENGTH}
+                    defaultValue={nickname}
+                    placeholder={copy.player}
+                    autoComplete="nickname"
+                  />
+                </label>
+                <label className="grid gap-2 text-sm font-bold text-[#081634]">
+                  {copy.teamName}
+                  <input
+                    className="field"
+                    name="team_name"
+                    required
+                    minLength={TEAM_NAME_MIN_LENGTH}
+                    maxLength={TEAM_NAME_MAX_LENGTH}
+                    defaultValue={teamName}
+                    placeholder={copy.teamName}
+                    autoComplete="organization-title"
+                  />
+                </label>
+              </div>
               <div className="text-sm font-bold text-[#081634]">{copy.avatar}</div>
-              <AvatarPicker initialKey={profile?.avatar_key} name={nickname || copy.player} />
+              <AvatarPicker initialKey={profile?.avatar_key} name={nickname || copy.player} locale={locale} />
               <button className="button-secondary w-fit" type="submit">
                 {copy.saveAvatar}
               </button>
@@ -278,15 +315,6 @@ export default async function AccountPage({
 
       <BottomNav current="/account" />
     </main>
-  );
-}
-
-function ReadOnlyProfileField({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-      <div className="text-xs font-bold uppercase tracking-wide text-[#48617f]">{label}</div>
-      <div className="mt-1 break-words text-base font-bold text-[#081634]">{value}</div>
-    </div>
   );
 }
 

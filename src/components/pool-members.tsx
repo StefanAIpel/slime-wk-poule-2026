@@ -39,6 +39,7 @@ const poolMembersCopy = {
     owner: "Beheerder",
     you: "(jij)",
     worldRank: "Wereldrang",
+    poolRankLabel: "Poule-rang",
     pointsSuffix: "pt",
     locked: "De voorspellingen van anderen zijn zichtbaar zodra de invulronde sluit.",
     pastTitle: "Afgelopen wedstrijden",
@@ -53,6 +54,7 @@ const poolMembersCopy = {
     owner: "Manager",
     you: "(you)",
     worldRank: "World rank",
+    poolRankLabel: "Pool rank",
     pointsSuffix: "pts",
     locked: "Other players’ predictions become visible once the prediction round closes.",
     pastTitle: "Past matches",
@@ -92,7 +94,7 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
                 aria-expanded={open}
                 onClick={() => setOpenId(open ? null : member.userId)}
               >
-                <span className="pool-member-rank grid size-7 flex-none place-items-center rounded-full bg-[#20508c] text-xs font-bold text-white">
+                <span className="pool-member-rank grid size-7 flex-none place-items-center rounded-full bg-[#20508c] text-xs font-bold text-white" aria-label={`${copy.poolRankLabel} #${member.rank}`}>
                   {member.rank}
                 </span>
                 <Avatar name={member.name} avatarKey={member.avatarKey} size={26} />
