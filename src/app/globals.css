@@ -2165,32 +2165,148 @@ textarea {
   box-shadow: 0 8px 22px rgba(8, 22, 52, 0.18);
 }
 
-.live-subsite-brand {
-  text-decoration: none;
-}
-
-.live-subsite-tabs {
+.live-subsite-brandwrap {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
-.live-subsite-tab {
+/* Rode LIVE-sticker met pulserende stip. */
+.live-badge {
   display: inline-flex;
-  min-height: 38px;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  padding: 3px 9px;
+  background: #e11d48;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 1000;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.4);
+}
+
+.live-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #fff;
+  animation: live-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.7); }
+}
+
+/* Taalwissel zichtbaar op de donkere header. */
+.live-subsite-header .live-lang {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 2px;
+}
+
+.live-subsite-header .live-lang .language-switcher-option.is-active {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Compacte commerciële banner op de live-pagina. */
+.live-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #1e73b8 0%, #0f5aa0 60%, #0e7a44 100%);
+  box-shadow: 0 10px 26px rgba(8, 22, 52, 0.18);
+}
+
+.live-hero-text {
+  min-width: 0;
+}
+
+.live-hero-title {
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 1000;
+  line-height: 1.15;
+}
+
+.live-hero-sub {
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.live-hero-btn {
+  display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 6px;
   border-radius: 999px;
-  padding: 0 12px;
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
-  font-size: 0.85rem;
-  font-weight: 900;
-  text-decoration: none;
-}
-
-.live-subsite-tab.is-active {
+  padding: 9px 16px;
   background: #ff9800;
   color: #fff;
+  font-size: 0.9rem;
+  font-weight: 1000;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(255, 152, 0, 0.4);
+}
+
+/* Sectie-headers: blauw (standaard) en groen voor de live-sectie i.p.v. beige. */
+.live-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 14px;
+  background: linear-gradient(135deg, #1e73b8, #0f5aa0);
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 1000;
+}
+
+.live-section-header.is-live {
+  background: linear-gradient(135deg, #16a34a, #0e7a44);
+}
+
+.live-section-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  padding: 0 6px;
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 1000;
+}
+
+/* Titel + LIVE-knop op de schema-pagina. */
+.live-schema-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.live-badge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 7px 14px;
+  background: #e11d48;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 1000;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);
 }
 
 .live-subsite-main {
@@ -2263,12 +2379,28 @@ textarea {
   object-fit: contain;
 }
 
+.live-row-code {
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
 .live-row-name {
+  display: none;
   min-width: 0;
   overflow: hidden;
   font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Vanaf tablet de volledige landnaam tonen, op mobiel de 3-letter code. */
+@media (min-width: 640px) {
+  .live-row-code {
+    display: none;
+  }
+  .live-row-name {
+    display: inline;
+  }
 }
 
 .live-row-score {

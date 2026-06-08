@@ -4,11 +4,13 @@
 // aantal bezoekers — binnen de Pro-limiet blijven. Ontbreekt de key, dan geeft alles
 // netjes null terug en toont de UI een nette placeholder.
 
+import { createOptionalAdminClient } from "@/lib/supabase/admin";
+
 const BASE = "https://v3.football.api-sports.io";
 const LEAGUE = Number(process.env.API_FOOTBALL_LEAGUE ?? "1");
 const SEASON = Number(process.env.API_FOOTBALL_SEASON ?? "2026");
 
-export type LiveTeam = { id: number; name: string; logo: string; goals: number | null; winner: boolean | null };
+export type LiveTeam = { id: number; name: string; code: string | null; logo: string; goals: number | null; winner: boolean | null };
 export type LiveFixture = {
   id: number;
   date: string;
@@ -52,8 +54,26 @@ async function apiGet<T>(path: string, revalidate: number): Promise<T[] | null> 
   }
 }
 
-function normalize(raw: RawFixture): LiveFixture {
+type TeamRef = { code: string; nameNl: string };
+
+/** Map API-Football team-id → onze landcode + Nederlandse naam (voor vlaggen + 3-letter codes). */
+async function getTeamMap(): Promise<Map<number, TeamRef>> {
+  const admin = createOptionalAdminClient();
+  if (!admin) return new Map();
+  const { data } = await admin.from("teams").select("code,name_nl,external_id");
+  const map = new Map<number, TeamRef>();
+  for (const team of (data ?? []) as { code: string; name_nl: string; external_id: number | null }[]) {
+    if (team.external_id) map.set(Number(team.external_id), { code: team.code, nameNl: team.name_nl });
+  }
+  return map;
+}
+
+function normalize(raw: RawFixture, teamMap: Map<number, TeamRef>): LiveFixture {
   const venue = [raw.fixture.venue?.city, raw.fixture.venue?.name].filter(Boolean).join(" · ") || null;
+  const team = (side: RawTeam, goals: number | null): LiveTeam => {
+    const ref = teamMap.get(side.id);
+    return { id: side.id, name: ref?.nameNl ?? side.name, code: ref?.code ?? null, logo: side.logo, goals, winner: side.winner };
+  };
   return {
     id: raw.fixture.id,
     date: raw.fixture.date,
@@ -62,15 +82,15 @@ function normalize(raw: RawFixture): LiveFixture {
     elapsed: raw.fixture.status.elapsed,
     round: raw.league.round,
     venue,
-    home: { id: raw.teams.home.id, name: raw.teams.home.name, logo: raw.teams.home.logo, goals: raw.goals.home, winner: raw.teams.home.winner },
-    away: { id: raw.teams.away.id, name: raw.teams.away.name, logo: raw.teams.away.logo, goals: raw.goals.away, winner: raw.teams.away.winner },
+    home: team(raw.teams.home, raw.goals.home),
+    away: team(raw.teams.away, raw.goals.away),
   };
 }
 
 /** Alle WK-fixtures in één gecachete call; daaruit splitsen we live/recent/aankomend. */
 export async function getWcFixtures(): Promise<LiveFixture[] | null> {
-  const raw = await apiGet<RawFixture>(`fixtures?league=${LEAGUE}&season=${SEASON}`, 30);
-  return raw ? raw.map(normalize) : null;
+  const [raw, teamMap] = await Promise.all([apiGet<RawFixture>(`fixtures?league=${LEAGUE}&season=${SEASON}`, 30), getTeamMap()]);
+  return raw ? raw.map((item) => normalize(item, teamMap)) : null;
 }
 
 export function splitFixtures(all: LiveFixture[]) {
@@ -84,8 +104,8 @@ export function splitFixtures(all: LiveFixture[]) {
 }
 
 export async function getFixtureById(id: number): Promise<LiveFixture | null> {
-  const raw = await apiGet<RawFixture>(`fixtures?id=${id}`, 30);
-  return raw && raw[0] ? normalize(raw[0]) : null;
+  const [raw, teamMap] = await Promise.all([apiGet<RawFixture>(`fixtures?id=${id}`, 30), getTeamMap()]);
+  return raw && raw[0] ? normalize(raw[0], teamMap) : null;
 }
 
 export type LineupPlayer = { player: { id: number; name: string; number: number | null; pos: string | null } };

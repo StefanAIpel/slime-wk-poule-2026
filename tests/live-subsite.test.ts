@@ -9,6 +9,7 @@ const livePage = await readFile(new URL("../src/app/live/page.tsx", import.meta.
 const liveLayout = await readFile(new URL("../src/app/live/layout.tsx", import.meta.url), "utf8");
 const liveNav = await readFile(new URL("../src/components/live-subsite-nav.tsx", import.meta.url), "utf8");
 const liveSchema = await readFile(new URL("../src/app/live/schema/page.tsx", import.meta.url), "utf8");
+const liveMatch = await readFile(new URL("../src/app/live/match/[id]/page.tsx", import.meta.url), "utf8");
 
 test("live subsite is host-routed and hides the main chrome", () => {
   assert.match(middleware, /live\.slimescore\.com/);
@@ -19,27 +20,43 @@ test("live subsite is host-routed and hides the main chrome", () => {
   assert.match(layout, /isLiveSurface \? null :/);
 });
 
-test("live subsite only shows Schema + Live and links to Slime Soccer / WK-poule", () => {
-  assert.match(liveNav, /label: "Live"/);
-  assert.match(liveNav, /label: "Schema"/);
+test("top header shows the brand with a LIVE sticker and a NL/EN switch", () => {
+  assert.match(liveNav, /BrandWordmark/);
+  assert.match(liveNav, /LanguageSwitcher/);
+  assert.match(liveNav, /live-badge/);
   assert.match(liveLayout, /SlimeSoccerBanner/);
   assert.match(liveLayout, /includeWk/);
   assert.doesNotMatch(liveLayout, /BottomNav|SiteHeader/);
 });
 
-test("live data is WC-only, server-side and degrades without an API key", () => {
+test("live data is WC-only, server-side, mapped to our flags and degrades without a key", () => {
   assert.match(liveLib, /league=\$\{LEAGUE\}&season=\$\{SEASON\}/);
   assert.match(liveLib, /API_FOOTBALL_KEY/);
   assert.match(liveLib, /if \(!key\) return null/);
+  assert.match(liveLib, /getTeamMap/);
+  assert.match(liveLib, /external_id/);
   assert.match(liveLib, /fixtures\/lineups/);
   assert.match(liveLib, /fixtures\/statistics/);
   assert.match(liveLib, /fixtures\/events/);
-  assert.match(livePage, /splitFixtures/);
-  assert.match(livePage, /Live-data wordt binnenkort/);
-  assert.match(livePage, /LiveAutoRefresh/);
 });
 
-test("live schema mirrors the main ScheduleExplorer", () => {
+test("live page has a commercial hero with a Speelschema button, blue/green headers and flags", () => {
+  assert.match(livePage, /splitFixtures/);
+  assert.match(livePage, /LiveAutoRefresh/);
+  assert.match(livePage, /heroTitle/);
+  assert.match(livePage, /\/live\/schema/);
+  assert.match(livePage, /TeamFlag/);
+  assert.match(livePage, /live-section-header/);
+  assert.doesNotMatch(livePage, /standing-card-header/);
+});
+
+test("live schema mirrors the main ScheduleExplorer and offers a LIVE button", () => {
   assert.match(liveSchema, /ScheduleExplorer/);
   assert.match(liveSchema, /getScheduleMatches/);
+  assert.match(liveSchema, /live-badge-btn/);
+});
+
+test("match detail uses our flags and avoids technical jargon", () => {
+  assert.match(liveMatch, /TeamFlag/);
+  assert.doesNotMatch(liveMatch, /API-Football/);
 });
