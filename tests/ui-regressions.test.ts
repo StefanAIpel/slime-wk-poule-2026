@@ -152,7 +152,7 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.30"/);
+  assert.match(constants, /APP_VERSION = "0.31"/);
 });
 test("entry deadline is set to the Netherlands' first match (Sun 14 June 22:00)", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-14T22:00:00\+02:00"/);
