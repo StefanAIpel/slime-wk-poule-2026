@@ -152,8 +152,43 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.29"/);
+  assert.match(constants, /APP_VERSION = "0.30"/);
 });
+
+test("desktop UI uses compact page heroes, right-column rules banners and aligned game stage", () => {
+  const pageHeroBlock = globalsCss.match(/\.hero-band-page \{[\s\S]*?\}/)?.[0] ?? "";
+  const desktopPageHeroBlock = globalsCss.match(/\.hero-band-page\.hero-band-visual \{[\s\S]*?\}/)?.[0] ?? "";
+  const pageMascotBlock = globalsCss.match(/\.hero-band-page \.hero-mascot \{[\s\S]*?\}/)?.[0] ?? "";
+  const rulesBannerBlock = globalsCss.match(/\.rules-side-banners \.slime-link-banners \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(pageHeroBlock, /min-height: 170px;/);
+  assert.match(desktopPageHeroBlock, /min-height: 168px;/);
+  assert.match(desktopPageHeroBlock, /align-items: start;/);
+  assert.match(pageMascotBlock, /max-height: 78%;/);
+  assert.match(pageMascotBlock, /max-width: 34%;/);
+  assert.match(rulesBannerBlock, /width: 100%;/);
+  assert.match(rulesPage, /FAQ \+ banners/);
+  assert.match(rulesPage, /<section className="rules-side-banners"[\s\S]*?<\/div>\n      <\/section>/);
+  assert.match(gamesPage, /game-page-heading/);
+  assert.match(gameFrames, /game-stage grid gap-3/);
+  assert.match(globalsCss, /\.game-page-heading,\n\.game-stage \{\n  width: min\(1120px, 100%\);/);
+  assert.match(globalsCss, /\.game-frame \{[\s\S]*width: 100%;/);
+});
+
+test("main site language switcher matches the live dropdown pattern", () => {
+  assert.match(languageSwitcher, /ChevronDown/);
+  assert.match(languageSwitcher, /language-switcher-btn/);
+  assert.match(languageSwitcher, /language-switcher-menu/);
+  assert.match(languageSwitcher, /role="listbox"/);
+  assert.match(languageSwitcher, /role="option"/);
+  assert.doesNotMatch(languageSwitcher, /GB<\/span>|NL<\/span>/);
+  assert.match(globalsCss, /\.language-switcher-menu \{[\s\S]*position: absolute;[\s\S]*min-width: 168px;/);
+});
+
+test("ranking desktop column headers distinguish players and poules", () => {
+  assert.match(rankingExplorer, /worldTitle: "Ranking spelers"/);
+  assert.match(rankingExplorer, /poolsTitle: "Ranking poules"/);
+});
+
 test("live subsite header respects the iOS status bar (safe-area-inset-top)", () => {
   const headerBlock = globalsCss.match(/\.live-subsite-header \{[\s\S]*?\}/)?.[0] ?? "";
   assert.match(headerBlock, /padding: calc\(10px \+ env\(safe-area-inset-top\)\) 16px 10px;/);
@@ -508,13 +543,14 @@ test("English locale has a top-menu flag switch and defaults to English outside 
   assert.match(languageSwitcher, /🇬🇧/);
   assert.match(languageSwitcher, /useActiveLocale\(pathname\)/);
   assert.doesNotMatch(languageSwitcher, /localeFromBrowserPreference\(pathname\)/);
-  assert.match(languageSwitcher, /aria-label=\{locale === "nl" \? "Nederlands actief" : "Switch to Dutch"\}/);
+  assert.match(languageSwitcher, /locale === "nl" \? "Nederlands actief" : "Switch to Dutch"/);
   assert.match(languageSwitcher, /aria-label=\{locale === "en" \? "Language switch" : "Taalkeuze \/ language switch"\}/);
-  assert.match(languageSwitcher, /aria-label=\{locale === "en" \? "English active" : "Switch to English"\}/);
+  assert.match(languageSwitcher, /locale === "en" \? "English active" : "Switch to English"/);
   assert.match(languageSwitcher, /document\.cookie = `\$\{LOCALE_COOKIE\}=\$\{nextLocale\}/);
   assert.doesNotMatch(languageSwitcher, /next\/link/);
-  assert.match(languageSwitcher, /<a\s+[\s\S]*href=\{nlHref\}/);
-  assert.match(languageSwitcher, /<a\s+[\s\S]*href=\{englishHref\}/);
+  assert.match(languageSwitcher, /const nlHref = `\$\{localizedHref\(pathname, "nl"\)\}\?lang=nl`/);
+  assert.match(languageSwitcher, /const englishHref = `\$\{localizedHref\(pathname, "en"\)\}\?lang=en`/);
+  assert.match(languageSwitcher, /const href = option\.code === "nl" \? nlHref : englishHref/);
   assert.match(siteHeader, /import \{ LanguageSwitcher \} from "@\/components\/language-switcher"/);
   assert.match(siteHeader, /<LanguageSwitcher \/>/);
   assert.match(quickMenu, /<LanguageSwitcher className=\"quick-menu-language-switcher\" \/>/);
@@ -751,8 +787,8 @@ test("Nederland - Oranje filter supports the app seed code NED as well as extern
 });
 
 test("desktop schedule cards are compact and match rows use a visible aligned team separator", () => {
-  assert.match(globalsCss, /\.hero-band-page \{[\s\S]*max-height: 220px;/);
-  assert.match(globalsCss, /\.hero-band-page\.hero-band-visual \{\n    min-height: 200px;\n  \}/);
+  assert.match(globalsCss, /\.hero-band-page \{[\s\S]*max-height: 200px;/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-band-visual \{\n    min-height: 168px;[\s\S]*align-items: start;/);
   assert.match(globalsCss, /\.schedule-team-grid \{[\s\S]*grid-template-columns: var\(--match-home-col, minmax\(118px, 160px\)\) 30px minmax\(0, 1fr\) 62px;/);
   assert.match(scheduleExplorer, /schedule-team-separator/);
   assert.match(scheduleExplorer, /schedule-team-cell-away/);
@@ -775,7 +811,9 @@ test("game embed is larger, locale-aware and left-aligned on desktop while mobil
   assert.doesNotMatch(gameFrames, />Nieuw tabblad</);
   assert.match(gamesPage, /page-shell game-page-shell/);
   assert.match(globalsCss, /\.game-page-shell \{\n  width: min\(1420px, 100%\);\n\}/);
-  assert.match(globalsCss, /\.game-frame \{[\s\S]*width: min\(1120px, 100%\);[\s\S]*aspect-ratio: 16 \/ 9;[\s\S]*margin-inline: 0 auto;/);
+  assert.match(gameFrames, /game-stage grid gap-3/);
+  assert.match(globalsCss, /\.game-page-heading,\n\.game-stage \{\n  width: min\(1120px, 100%\);[\s\S]*margin-inline: 0 auto;/);
+  assert.match(globalsCss, /\.game-frame \{[\s\S]*width: 100%;[\s\S]*aspect-ratio: 16 \/ 9;[\s\S]*margin-inline: 0 auto;/);
   assert.match(globalsCss, /@media \(max-width: 639px\) \{[\s\S]*\.game-frame,\n  \.game-embed-note \{\n    display: none;/);
   assert.match(globalsCss, /\.game-open-link \{[\s\S]*linear-gradient\(135deg, #19b85d, #0e8a49 62%, #0a6b38\)/);
 });

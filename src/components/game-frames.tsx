@@ -42,7 +42,7 @@ export function GameFrames({
   const gameName = game === "soccer" ? "Slime Soccer" : "Slime Volley";
 
   return (
-    <div className="grid gap-3">
+    <div className="game-stage grid gap-3">
       <div className="game-toolbar" role="toolbar" aria-label={copy.toolbarLabel}>
         <button type="button" aria-label="Slime Soccer" className={`game-tab-pill ${game === "soccer" ? "is-active" : ""}`} onClick={() => setGame("soccer")}>
           <Gamepad2 aria-hidden="true" className="size-4" />

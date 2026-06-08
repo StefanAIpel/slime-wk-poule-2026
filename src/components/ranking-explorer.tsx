@@ -23,8 +23,8 @@ const PAGE_SIZE = 100;
 const rankingExplorerCopy = {
   nl: {
     tabListLabel: "Kies ranglijst",
-    worldTitle: "Wereldranglijst",
-    poolsTitle: "WK-poules",
+    worldTitle: "Ranking spelers",
+    poolsTitle: "Ranking poules",
     playerTab: "Per speler",
     poolTab: "Per poule",
     playerSearchPlaceholder: "Zoek een speler of team…",

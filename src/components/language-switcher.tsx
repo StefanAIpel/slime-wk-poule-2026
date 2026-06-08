@@ -1,6 +1,8 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useActiveLocale } from "@/hooks/use-active-locale";
 import { LOCALE_COOKIE, LOCALE_STORAGE_KEY, localizedHref, type Locale } from "@/lib/i18n";
 
@@ -25,39 +27,69 @@ async function persistLocalePreference(nextLocale: Locale) {
   }
 }
 
+const languageOptions: { code: Locale; flag: string; label: string }[] = [
+  { code: "nl", flag: "🇳🇱", label: "Nederlands" },
+  { code: "en", flag: "🇬🇧", label: "English" },
+];
+
 export function LanguageSwitcher({ className = "" }: { className?: string }) {
   const pathname = usePathname() || "/";
   const locale = useActiveLocale(pathname);
   const nlHref = `${localizedHref(pathname, "nl")}?lang=nl`;
   const englishHref = `${localizedHref(pathname, "en")}?lang=en`;
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const current = languageOptions.find((option) => option.code === locale) ?? languageOptions[0];
+
+  useEffect(() => {
+    if (!open) return;
+    function onClick(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
+    }
+    window.addEventListener("click", onClick);
+    return () => window.removeEventListener("click", onClick);
+  }, [open]);
 
   function chooseLocale(nextLocale: Locale) {
+    setOpen(false);
     setLocalePreference(nextLocale);
     void persistLocalePreference(nextLocale);
   }
 
   return (
-    <div className={`language-switcher ${className}`} aria-label={locale === "en" ? "Language switch" : "Taalkeuze / language switch"}>
-      <a
-        href={nlHref}
-        className={`language-switcher-option ${locale === "nl" ? "is-active" : ""}`}
-        aria-label={locale === "nl" ? "Nederlands actief" : "Switch to Dutch"}
-        aria-current={locale === "nl" ? "true" : undefined}
-        onClick={() => chooseLocale("nl")}
-      >
-        <span aria-hidden="true">🇳🇱</span>
-        <span className="sr-only">Nederlands</span>
-      </a>
-      <a
-        href={englishHref}
-        className={`language-switcher-option ${locale === "en" ? "is-active" : ""}`}
-        aria-label={locale === "en" ? "English active" : "Switch to English"}
-        aria-current={locale === "en" ? "true" : undefined}
-        onClick={() => chooseLocale("en")}
-      >
-        <span aria-hidden="true">🇬🇧</span>
-        <span className="sr-only">English</span>
-      </a>
+    <div ref={ref} className={`language-switcher ${className}`} aria-label={locale === "en" ? "Language switch" : "Taalkeuze / language switch"}>
+      <button type="button" className="language-switcher-btn" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+        <span aria-hidden="true" className="language-switcher-flag">{current.flag}</span>
+        <ChevronDown aria-hidden="true" className="size-3.5" />
+        <span className="sr-only">{current.label}</span>
+      </button>
+      {open ? (
+        <ul className="language-switcher-menu" role="listbox">
+          {languageOptions.map((option) => {
+            const active = option.code === locale;
+            const href = option.code === "nl" ? nlHref : englishHref;
+            const label = option.code === "nl"
+              ? locale === "nl" ? "Nederlands actief" : "Switch to Dutch"
+              : locale === "en" ? "English active" : "Switch to English";
+            return (
+              <li key={option.code}>
+                <a
+                  href={href}
+                  role="option"
+                  aria-label={label}
+                  aria-selected={active}
+                  aria-current={active ? "true" : undefined}
+                  className={`language-switcher-option ${active ? "is-active" : ""}`}
+                  onClick={() => chooseLocale(option.code)}
+                >
+                  <span aria-hidden="true" className="language-switcher-flag">{option.flag}</span>
+                  {option.label}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
     </div>
   );
 }

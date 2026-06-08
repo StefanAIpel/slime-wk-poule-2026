@@ -282,13 +282,9 @@ export default async function RulesPage() {
               ))}
             </ul>
           </article>
-
-          <section className="rules-side-banners" aria-label={copy.sideBannersLabel}>
-            <SlimeSoccerBanner includeWk />
-          </section>
         </div>
 
-        {/* Rechts: puntentelling + FAQ. */}
+        {/* Rechts: puntentelling + FAQ + banners. */}
         <div className="grid gap-4">
           <article className="panel p-5">
             <div className="flex items-center gap-3">
@@ -337,6 +333,10 @@ export default async function RulesPage() {
               ))}
             </div>
           </article>
+
+          <section className="rules-side-banners" aria-label={copy.sideBannersLabel}>
+            <SlimeSoccerBanner includeWk />
+          </section>
         </div>
       </section>
 

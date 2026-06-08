@@ -52,7 +52,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
     <main className="page-shell game-page-shell">
       <header className="mb-4 grid gap-3">
         <Brand locale={locale} />
-        <div className="flex items-center gap-2">
+        <div className="game-page-heading flex items-center gap-2">
           <Gamepad2 aria-hidden="true" className="size-6 text-[#064ed6]" />
           <h1 className="text-2xl font-bold text-[#081634]">{copy.title}</h1>
         </div>
