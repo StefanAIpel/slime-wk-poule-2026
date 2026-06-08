@@ -7,7 +7,7 @@ import { LIVE_URL } from "@/lib/constants";
 import { getServerLocale } from "@/lib/server-locale";
 import type { Locale } from "@/lib/i18n";
 
-export const revalidate = 30;
+export const revalidate = 15;
 
 const copy = {
   nl: {
@@ -158,7 +158,7 @@ function Hero({ locale }: { locale: Locale }) {
       </div>
       {/* Kleine mascotte in de hoek (subtiel, niet zo groot als de hoofdpagina). */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/assets/transparant-avatar/trump_slime_700_transparant.webp" alt="" aria-hidden="true" className="live-hero-mascot" />
+      <img src="/assets/transparant-avatar/virgil_slime_700_transparant.webp" alt="" aria-hidden="true" className="live-hero-mascot" />
     </div>
   );
 }
@@ -181,7 +181,7 @@ export default async function LivePage() {
 
   return (
     <div className="grid gap-4">
-      <LiveAutoRefresh seconds={30} />
+      <LiveAutoRefresh seconds={15} />
       <Hero locale={locale} />
       <Section title={c.now} accent="live" fixtures={live} empty={c.emptyNow} locale={locale} />
       <Section title={c.latest} fixtures={recent} empty={c.emptyLatest} locale={locale} />

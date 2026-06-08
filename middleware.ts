@@ -19,6 +19,11 @@ export async function middleware(request: NextRequest) {
   const isLiveHost = host === "live.slimescore.com" || host === "live.slimescore.app" || host.startsWith("live.localhost");
   const isLivePath = path === "/live" || path.startsWith("/live/");
   if (isLiveHost || isLivePath) {
+    // Statische bestanden (sw.js, .webmanifest, favicon, robots, …) op het subdomein
+    // direct serveren — niet rewriten, anders breekt de PWA (service worker + manifest).
+    if (isLiveHost && !isLivePath && /\.[a-zA-Z0-9]+$/.test(path)) {
+      return NextResponse.next();
+    }
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-slimescore-surface", "live");
     if (isLiveHost && !isLivePath) {

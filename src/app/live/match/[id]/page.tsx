@@ -1,14 +1,14 @@
 import { ArrowLeft } from "lucide-react";
 import { TeamFlag } from "@/components/team-flag";
-import { getFixtureById, getFixtureDetail, isLiveStatus, type LiveFixture, type MatchEvent, type TeamLineup, type TeamStatistics } from "@/lib/apifootball-live";
+import { getFixtureById, getFixtureDetail, isLiveStatus, manOfTheMatch, type LiveFixture, type MatchEvent, type TeamLineup, type TeamPlayers, type TeamStatistics } from "@/lib/apifootball-live";
 import { getServerLocale } from "@/lib/server-locale";
 import type { Locale } from "@/lib/i18n";
 
 export const revalidate = 30;
 
 const copy = {
-  nl: { back: "Terug naar live", finished: "Afgelopen", rest: "Rust", events: "Wedstrijdverloop", stats: "Statistieken", lineups: "Opstellingen", coach: "Coach", notFound: "Deze wedstrijd kon niet geladen worden.", soon: "Opstellingen en statistieken verschijnen rond de aftrap." },
-  en: { back: "Back to live", finished: "Finished", rest: "HT", events: "Match events", stats: "Statistics", lineups: "Line-ups", coach: "Coach", notFound: "This match could not be loaded.", soon: "Line-ups and statistics appear around kick-off." },
+  nl: { back: "Terug naar live", finished: "Afgelopen", rest: "Rust", events: "Wedstrijdverloop", stats: "Statistieken", lineups: "Opstellingen", coach: "Coach", motm: "Man van de wedstrijd", notFound: "Deze wedstrijd kon niet geladen worden.", soon: "Opstellingen en statistieken verschijnen rond de aftrap." },
+  en: { back: "Back to live", finished: "Finished", rest: "HT", events: "Match events", stats: "Statistics", lineups: "Line-ups", coach: "Coach", motm: "Player of the match", notFound: "This match could not be loaded.", soon: "Line-ups and statistics appear around kick-off." },
 } as const;
 
 function shortWhen(iso: string, locale: Locale) {
@@ -41,6 +41,27 @@ function MatchHeader({ fixture, locale }: { fixture: LiveFixture; locale: Locale
           <TeamFlag code={fixture.away.code} name={fixture.away.name} size="md" locale={locale} />
           <span className="text-sm font-bold text-[#081634]">{fixture.away.name}</span>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function Motm({ players, label }: { players: TeamPlayers[] | null; label: string }) {
+  const best = manOfTheMatch(players);
+  if (!best) return null;
+  return (
+    <section className="panel p-4">
+      <h2 className="mb-3 text-lg font-bold text-[#081634]">{label}</h2>
+      <div className="flex items-center gap-3">
+        {best.photo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={best.photo} alt="" aria-hidden="true" className="h-12 w-12 rounded-full object-cover" loading="lazy" />
+        ) : null}
+        <div className="min-w-0">
+          <p className="truncate font-bold text-[#081634]">{best.name}</p>
+          <p className="truncate text-xs font-medium text-[#48617f]">{best.team}{best.goals ? ` · ${best.goals}×` : ""}</p>
+        </div>
+        <span className="ml-auto rounded-lg bg-emerald-50 px-3 py-1 text-lg font-black tabular-nums text-emerald-700">{best.rating.toFixed(1)}</span>
       </div>
     </section>
   );
@@ -118,7 +139,7 @@ export default async function LiveMatchPage({ params }: { params: Promise<{ id: 
   const c = copy[locale];
   const fixtureId = Number(id);
   const [fixture, detail] = await Promise.all([getFixtureById(fixtureId), getFixtureDetail(fixtureId)]);
-  const hasDetail = Boolean(detail.events?.length || detail.statistics?.length || detail.lineups?.length);
+  const hasDetail = Boolean(detail.events?.length || detail.statistics?.length || detail.lineups?.length || detail.players?.length);
 
   return (
     <div className="grid gap-4">
@@ -128,6 +149,7 @@ export default async function LiveMatchPage({ params }: { params: Promise<{ id: 
       {fixture ? <MatchHeader fixture={fixture} locale={locale} /> : (
         <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm font-bold text-[#8a5a00]">{c.notFound}</div>
       )}
+      {fixture ? <Motm players={detail.players} label={c.motm} /> : null}
       {detail.events?.length ? <Events events={detail.events} title={c.events} /> : null}
       {detail.statistics?.length ? <Statistics stats={detail.statistics} title={c.stats} /> : null}
       {detail.lineups?.length ? <Lineups lineups={detail.lineups} title={c.lineups} coachLabel={c.coach} /> : null}
