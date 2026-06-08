@@ -7,6 +7,7 @@ import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
+import { LiveFollowBanner } from "@/components/live-follow-banner";
 import { PasswordResetForm } from "@/components/password-reset-form";
 import { PredictionsComplete } from "@/components/predictions-complete";
 import { ProfileForm } from "@/components/profile-form";
@@ -418,6 +419,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
             <span className="font-bold text-[#064ed6]">{copy.view}</span>
           </a>
 
+          <LiveFollowBanner locale={locale} />
           <SlimeSoccerBanner includeVolley={false} locale={locale} />
         </div>
       </section>
@@ -574,6 +576,7 @@ function PublicHome({
             )}
           </section>
           {locale === "en" ? <InstallAppCard locale="en" /> : <InstallAppCard />}
+          <LiveFollowBanner locale={locale} />
         </aside>
       </div>
 

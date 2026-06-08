@@ -18,6 +18,7 @@ const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
 const liveNav = await readFile(new URL("../src/components/live-subsite-nav.tsx", import.meta.url), "utf8");
+const liveFollowBanner = await readFile(new URL("../src/components/live-follow-banner.tsx", import.meta.url), "utf8");
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
 const rankingPage = await readFile(new URL("../src/app/ranglijst/page.tsx", import.meta.url), "utf8");
@@ -153,7 +154,7 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.32"/);
+  assert.match(constants, /APP_VERSION = "0.33"/);
 });
 test("entry deadline is set to the Netherlands' first match (Sun 14 June 22:00)", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-14T22:00:00\+02:00"/);
@@ -496,6 +497,20 @@ test("logged-in dashboard only shows SlimeSoccer in the right column and no Slim
   assert.match(homePage, /lg:grid-cols-\[1\.2fr_0\.8fr\]/);
   assert.match(homePage, /<SlimeSoccerBanner includeVolley=\{false\}/);
   assert.doesNotMatch(homePage, /<SlimeSoccerBanner \/>/);
+});
+
+test("homepage right columns promote the live subsite with the orange WK banner", () => {
+  const loggedInRightColumn = homePage.match(/<div className=\"grid gap-4\">\n\s*<UpcomingMatches[\s\S]*?<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/)?.[0] ?? "";
+  const publicRightColumn = homePage.match(/<aside className=\"public-login-stack[\s\S]*?<\/aside>/)?.[0] ?? "";
+  const liveBannerBlock = globalsCss.match(/\.live-follow-banner \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(homePage, /import \{ LiveFollowBanner \}/);
+  assert.match(liveFollowBanner, /LIVE_URL/);
+  assert.match(liveFollowBanner, /href=\{LIVE_URL\}/);
+  assert.match(liveFollowBanner, /blije_mascotte_met_wk_bal_FINAL_v5\.webp/);
+  assert.match(loggedInRightColumn, /<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/);
+  assert.match(publicRightColumn, /<InstallAppCard[\s\S]*<LiveFollowBanner locale=\{locale\} \/>/);
+  assert.match(liveBannerBlock, /url\("\/assets\/stadion-4to1\.webp"\)/);
+  assert.match(liveBannerBlock, /min-height: 118px;/);
 });
 
 test("dashboard copy matches the 72-group-result progress metric and password flow", () => {
