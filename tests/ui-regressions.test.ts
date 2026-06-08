@@ -152,7 +152,11 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.27"/);
+  assert.match(constants, /APP_VERSION = "0.28"/);
+});
+test("live subsite header respects the iOS status bar (safe-area-inset-top)", () => {
+  const headerBlock = globalsCss.match(/\.live-subsite-header \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(headerBlock, /padding: calc\(10px \+ env\(safe-area-inset-top\)\) 16px 10px;/);
 });
 test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
   const heroPrimaryBlock = globalsCss.match(/\.button-primary\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";

@@ -2156,7 +2156,7 @@ textarea {
   position: sticky;
   top: 0;
   z-index: 30;
-  padding: 10px 16px;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
   background: linear-gradient(135deg, #1e73b8 0%, #114b82 55%, #0e7a44 100%);
   box-shadow: 0 8px 22px rgba(8, 22, 52, 0.18);
 }
