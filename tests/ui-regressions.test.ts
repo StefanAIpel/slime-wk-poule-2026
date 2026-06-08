@@ -812,5 +812,5 @@ test("English mode is wired through rankings, rules, pools and predictions pages
 test("mobile landing hero keeps title and host pills compact on one line", () => {
   assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home \.world-cup-kicker \{[\s\S]*flex-wrap: nowrap;[\s\S]*font-size: 0\.56rem;/);
   assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home \.world-cup-kicker span \{[\s\S]*padding: 3px 5px;/);
-  assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home-title-block h1 \{[\s\S]*font-size: clamp\(1\.95rem, 12vw, 2\.55rem\);/);
+  assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home-title-block h1 \{[\s\S]*font-size: clamp\(1\.48rem, 7\.4vw, 1\.68rem\) !important;/);
 });
