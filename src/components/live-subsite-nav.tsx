@@ -1,5 +1,5 @@
 import { BrandWordmark } from "@/components/brand-wordmark";
-import { LanguageSwitcher } from "@/components/language-switcher";
+import { LiveLanguageSwitcher } from "@/components/live-language-switcher";
 
 /** Kale top-header van de live-subsite: merk (links) + LIVE-sticker + taalwissel (rechts). */
 export function LiveSubsiteNav() {
@@ -13,7 +13,7 @@ export function LiveSubsiteNav() {
             LIVE
           </span>
         </div>
-        <LanguageSwitcher className="live-lang" />
+        <LiveLanguageSwitcher />
       </div>
     </header>
   );

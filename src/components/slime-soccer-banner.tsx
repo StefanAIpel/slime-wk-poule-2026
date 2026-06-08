@@ -26,7 +26,7 @@ type SlimeSoccerBannerProps = {
 
 export function SlimeSoccerBanner({ includeWk = false, includeVolley = true, fullWidth = false, locale = "nl" }: SlimeSoccerBannerProps) {
   const games = includeVolley ? gameTiles : gameTiles.slice(0, 1);
-  const wkTile = { href: SITE_URL, img: "/slimes/slimescore-wk2026-friend-poule-banner.jpg", alt: wkTileAlt[locale] };
+  const wkTile = { href: SITE_URL, img: "/slimes/slimescore-wk2026-friend-poule-banner.webp", alt: wkTileAlt[locale] };
   const tiles = includeWk ? [wkTile, ...games] : games;
 
   return (

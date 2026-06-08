@@ -21,6 +21,7 @@ export const metadata: Metadata = {
     "WK 2026 wedstrijden",
   ],
   alternates: { canonical: LIVE_URL },
+  manifest: "/live.webmanifest",
   icons: {
     icon: [
       { url: "/icons/slimescore-live-app-icon-512.png", sizes: "512x512", type: "image/png" },
@@ -62,11 +63,13 @@ export default async function LiveLayout({ children }: { children: React.ReactNo
       <footer className="live-subsite-footer">
         <div className="live-footer-grid">
           <a href={SITE_URL} className="dark-panel live-pool-cta">
-            <div className="live-pool-cta-text">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/slimescore-app-icon-v4-512.png" alt="SlimeScore" className="live-pool-cta-logo" loading="lazy" />
+            <div className="live-pool-cta-main">
               <h2 className="live-pool-cta-title">{f.poolTitle}</h2>
               <p className="live-pool-cta-sub">{f.poolIntro}</p>
+              <span className="button-primary live-pool-cta-btn">{f.poolCta}</span>
             </div>
-            <span className="button-primary live-pool-cta-btn">{f.poolCta}</span>
           </a>
           <div className="live-footer-side">
             <p className="live-footer-side-title">{f.more}</p>

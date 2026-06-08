@@ -2205,15 +2205,63 @@ textarea {
   50% { opacity: 0.35; transform: scale(0.7); }
 }
 
-/* Taalwissel zichtbaar op de donkere header. */
-.live-subsite-header .live-lang {
-  background: rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-  padding: 2px;
+/* Taalwissel als vlag-dropdown op de donkere header. */
+.live-lang-dd {
+  position: relative;
+  flex: 0 0 auto;
 }
 
-.live-subsite-header .live-lang .language-switcher-option.is-active {
-  background: rgba(255, 255, 255, 0.95);
+.live-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  border-radius: 999px;
+  padding: 0 10px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  cursor: pointer;
+}
+
+.live-lang-flag {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.live-lang-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  min-width: 168px;
+  border-radius: 12px;
+  background: #fff;
+  padding: 6px;
+  box-shadow: 0 14px 34px rgba(8, 22, 52, 0.22);
+}
+
+.live-lang-opt {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: transparent;
+  color: #081634;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.live-lang-opt:hover {
+  background: #f1f5fb;
+}
+
+.live-lang-opt.is-active {
+  background: #eaf2ff;
+  color: #0866e8;
 }
 
 /* Compacte commerciële banner op de live-pagina. */
@@ -2223,8 +2271,29 @@ textarea {
 }
 
 .live-hero-band .hero-content {
+  position: relative;
+  z-index: 2;
   padding-top: 18px;
   padding-bottom: 18px;
+}
+
+/* Kleine mascotte rechtsonder in de hero (subtiel, niet zo groot als de hoofdpagina). */
+.live-hero-mascot {
+  position: absolute;
+  right: 10px;
+  bottom: 0;
+  z-index: 1;
+  height: 92px;
+  width: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
+}
+
+@media (min-width: 640px) {
+  .live-hero-mascot {
+    height: 150px;
+    right: 24px;
+  }
 }
 
 .live-hero-title {
@@ -2343,11 +2412,25 @@ textarea {
 
 .live-pool-cta {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 12px;
+  align-items: center;
+  gap: 16px;
   padding: 20px;
   text-decoration: none;
+}
+
+.live-pool-cta-logo {
+  width: 64px;
+  height: 64px;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+}
+
+.live-pool-cta-main {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .live-pool-cta-title {
@@ -2423,8 +2506,10 @@ textarea {
   font-weight: 900;
 }
 
+/* Kolommen uitgelijnd zoals slimescore.com: thuis (links) | - | uit | uitslag. */
 .live-match-body {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) 3.4rem;
   align-items: center;
   gap: 8px;
 }
@@ -2434,6 +2519,7 @@ textarea {
   align-items: center;
   gap: 7px;
   min-width: 0;
+  justify-self: start;
 }
 
 .live-match-sep {
@@ -2442,12 +2528,17 @@ textarea {
 }
 
 .live-match-score {
-  margin-left: auto;
-  min-width: 3.2rem;
+  justify-self: end;
   text-align: right;
   font-weight: 1000;
   font-variant-numeric: tabular-nums;
   color: #081634;
+  white-space: nowrap;
+}
+
+.live-match-score-todo {
+  color: #94a3b8;
+  font-weight: 800;
 }
 
 /* Merk netjes gecentreerd in de header-pill. */

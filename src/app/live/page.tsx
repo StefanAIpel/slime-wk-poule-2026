@@ -107,7 +107,9 @@ function MatchCard({ fixture, locale }: { fixture: LiveFixture; locale: Locale }
         <TeamInline team={fixture.home} locale={locale} />
         <span className="live-match-sep" aria-hidden="true">-</span>
         <TeamInline team={fixture.away} locale={locale} />
-        <span className="live-match-score">{played ? `${fixture.home.goals ?? 0} - ${fixture.away.goals ?? 0}` : ""}</span>
+        <span className={played ? "live-match-score" : "live-match-score live-match-score-todo"}>
+          {played ? `${fixture.home.goals ?? 0} - ${fixture.away.goals ?? 0}` : "- : -"}
+        </span>
       </div>
     </a>
   );
@@ -134,8 +136,8 @@ function Hero({ locale }: { locale: Locale }) {
   return (
     <div className="hero-band hero-band-visual hero-home live-hero-band">
       <picture className="hero-photo">
-        <source media="(min-width: 760px)" srcSet="/assets/hero-home-landscape.webp" />
-        <img src="/assets/hero-home-portrait.webp" alt="" aria-hidden="true" fetchPriority="high" decoding="async" />
+        <source media="(min-width: 760px)" srcSet="/assets/stadion-2x1.webp" />
+        <img src="/assets/stadion-3to5.webp" alt="" aria-hidden="true" fetchPriority="high" decoding="async" />
       </picture>
       <div className="hero-content">
         <div className="world-cup-kicker">
@@ -154,6 +156,9 @@ function Hero({ locale }: { locale: Locale }) {
           <ShareRow url={`${LIVE_URL}`} text={c.shareText} title={c.shareTitle} locale={locale} compact onDark />
         </div>
       </div>
+      {/* Kleine mascotte in de hoek (subtiel, niet zo groot als de hoofdpagina). */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/assets/transparant-avatar/trump_slime_700_transparant.webp" alt="" aria-hidden="true" className="live-hero-mascot" />
     </div>
   );
 }
