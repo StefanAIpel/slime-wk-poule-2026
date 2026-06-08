@@ -10,7 +10,7 @@ const BASE = "https://v3.football.api-sports.io";
 const LEAGUE = Number(process.env.API_FOOTBALL_LEAGUE ?? "1");
 const SEASON = Number(process.env.API_FOOTBALL_SEASON ?? "2026");
 
-export type LiveTeam = { id: number; name: string; code: string | null; logo: string; goals: number | null; winner: boolean | null };
+export type LiveTeam = { id: number; name: string; code: string | null; group: string | null; logo: string; goals: number | null; winner: boolean | null };
 export type LiveFixture = {
   id: number;
   date: string;
@@ -54,16 +54,16 @@ async function apiGet<T>(path: string, revalidate: number): Promise<T[] | null> 
   }
 }
 
-type TeamRef = { code: string; nameNl: string };
+type TeamRef = { code: string; nameNl: string; group: string | null };
 
-/** Map API-Football team-id → onze landcode + Nederlandse naam (voor vlaggen + 3-letter codes). */
+/** Map API-Football team-id → onze landcode + Nederlandse naam + poule (voor vlaggen, 3-letter codes en poule-label). */
 async function getTeamMap(): Promise<Map<number, TeamRef>> {
   const admin = createOptionalAdminClient();
   if (!admin) return new Map();
-  const { data } = await admin.from("teams").select("code,name_nl,external_id");
+  const { data } = await admin.from("teams").select("code,name_nl,group_letter,external_id");
   const map = new Map<number, TeamRef>();
-  for (const team of (data ?? []) as { code: string; name_nl: string; external_id: number | null }[]) {
-    if (team.external_id) map.set(Number(team.external_id), { code: team.code, nameNl: team.name_nl });
+  for (const team of (data ?? []) as { code: string; name_nl: string; group_letter: string | null; external_id: number | null }[]) {
+    if (team.external_id) map.set(Number(team.external_id), { code: team.code, nameNl: team.name_nl, group: team.group_letter });
   }
   return map;
 }
@@ -72,7 +72,7 @@ function normalize(raw: RawFixture, teamMap: Map<number, TeamRef>): LiveFixture 
   const venue = [raw.fixture.venue?.city, raw.fixture.venue?.name].filter(Boolean).join(" · ") || null;
   const team = (side: RawTeam, goals: number | null): LiveTeam => {
     const ref = teamMap.get(side.id);
-    return { id: side.id, name: ref?.nameNl ?? side.name, code: ref?.code ?? null, logo: side.logo, goals, winner: side.winner };
+    return { id: side.id, name: ref?.nameNl ?? side.name, code: ref?.code ?? null, group: ref?.group ?? null, logo: side.logo, goals, winner: side.winner };
   };
   return {
     id: raw.fixture.id,
