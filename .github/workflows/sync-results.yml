@@ -1,12 +1,14 @@
 name: Sync WK-uitslagen
 
-# Draait elke minuut, maar het script doet alléén API-werk binnen het wedstrijd-
-# venster (1u vóór t/m ~1u ná elke wedstrijd). Tijdens wedstrijden worden de
-# uitslagen dus elke minuut bijgewerkt; de bonusvraag-facts ~elke 5 min. Buiten
-# het venster en zonder secrets stopt het script direct (groene, lege runs).
+# Vangnet/backup: de primaire live-sync draait via Vercel Cron (elke minuut,
+# /api/cron/live-sync). Deze GitHub-cron draait daarom op 5 min — genoeg als
+# achtervang als Vercel zou uitvallen, en het bespaart Actions-credits.
+# Het script doet alléén API-werk binnen het wedstrijd-venster (1u vóór t/m ~1u
+# ná elke wedstrijd). Buiten het venster en zonder secrets stopt het script
+# direct (groene, lege runs).
 on:
   schedule:
-    - cron: "* * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch: {}
 
 # Niet meerdere syncs tegelijk: een nog lopende run wordt afgekapt door de nieuwe
