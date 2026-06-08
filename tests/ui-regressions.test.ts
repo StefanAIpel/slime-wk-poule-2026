@@ -152,7 +152,7 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.28"/);
+  assert.match(constants, /APP_VERSION = "0.29"/);
 });
 test("live subsite header respects the iOS status bar (safe-area-inset-top)", () => {
   const headerBlock = globalsCss.match(/\.live-subsite-header \{[\s\S]*?\}/)?.[0] ?? "";
