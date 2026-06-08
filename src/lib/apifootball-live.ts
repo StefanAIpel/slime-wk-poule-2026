@@ -108,6 +108,15 @@ export async function getFixtureById(id: number): Promise<LiveFixture | null> {
   return raw && raw[0] ? normalize(raw[0], teamMap) : null;
 }
 
+/** Onderlinge duels (head-to-head); historisch dus lang gecachet. */
+export async function getHeadToHead(homeId: number, awayId: number, last = 5): Promise<LiveFixture[] | null> {
+  const [raw, teamMap] = await Promise.all([
+    apiGet<RawFixture>(`fixtures/headtohead?h2h=${homeId}-${awayId}&last=${last}`, 3600),
+    getTeamMap(),
+  ]);
+  return raw ? raw.map((item) => normalize(item, teamMap)) : null;
+}
+
 export type LineupPlayer = { player: { id: number; name: string; number: number | null; pos: string | null } };
 export type TeamLineup = {
   team: { id: number; name: string; logo: string };
@@ -140,6 +149,11 @@ export type TeamPlayers = {
   team: { id: number; name: string; logo: string };
   players: PlayerLine[];
 };
+
+/** Alleen de events van één wedstrijd (voor de facts-automatisering). */
+export async function getEvents(id: number): Promise<MatchEvent[] | null> {
+  return apiGet<MatchEvent>(`fixtures/events?fixture=${id}`, 300);
+}
 
 export async function getFixtureDetail(id: number) {
   const [lineups, statistics, events, players] = await Promise.all([
