@@ -152,7 +152,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
   const htmlLang = isSupportedLocale(cookieLocale) ? cookieLocale : "nl";
 
-  // De live-subsite (live.slimescore.com) heeft eigen chrome; verberg hier de
+  // De live-subsite (live.slimescore.com / live.slimescore.app) heeft eigen chrome; verberg hier de
   // hoofd-navigatie/footer. De header wordt door de middleware gezet.
   const isLiveSurface = (await headers()).get("x-slimescore-surface") === "live";
 

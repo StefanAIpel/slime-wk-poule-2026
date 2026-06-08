@@ -1,4 +1,4 @@
-// Server-side koppeling met API-Football voor de live-subsite (live.slimescore.com).
+// Server-side koppeling met API-Football voor de live-subsite (live.slimescore.com / live.slimescore.app).
 // Alleen WK 2026 (league 1). De sleutel blijft server-side (env API_FOOTBALL_KEY).
 // Resultaten worden kort gecachet via Next fetch-revalidate, zodat we — ongeacht het
 // aantal bezoekers — binnen de Pro-limiet blijven. Ontbreekt de key, dan geeft alles

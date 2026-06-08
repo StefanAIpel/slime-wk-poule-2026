@@ -12,6 +12,7 @@ const liveSchema = await readFile(new URL("../src/app/live/schema/page.tsx", imp
 
 test("live subsite is host-routed and hides the main chrome", () => {
   assert.match(middleware, /live\.slimescore\.com/);
+  assert.match(middleware, /live\.slimescore\.app/);
   assert.match(middleware, /x-slimescore-surface/);
   assert.match(middleware, /`\/live\$\{path\}`/);
   assert.match(layout, /isLiveSurface/);

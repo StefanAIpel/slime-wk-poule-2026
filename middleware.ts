@@ -9,14 +9,14 @@ const localeCookieOptions = {
 };
 
 export async function middleware(request: NextRequest) {
-  // --- Live-subsite (live.slimescore.com) -----------------------------------
+  // --- Live-subsite (live.slimescore.com / live.slimescore.app) -------------
   // Aparte UI met alleen Schema + Live. We markeren de request met een header
   // zodat de root-layout de hoofd-navigatie/footer verbergt. Op het echte
   // subdomein rewriten we /<path> → /live/<path>; op preview kun je /live direct
   // bezoeken. Raakt de hoofdsite niet (alleen dit host/pad).
   const host = (request.headers.get("host") ?? "").toLowerCase();
   const path = request.nextUrl.pathname;
-  const isLiveHost = host === "live.slimescore.com" || host.startsWith("live.localhost");
+  const isLiveHost = host === "live.slimescore.com" || host === "live.slimescore.app" || host.startsWith("live.localhost");
   const isLivePath = path === "/live" || path.startsWith("/live/");
   if (isLiveHost || isLivePath) {
     const requestHeaders = new Headers(request.headers);

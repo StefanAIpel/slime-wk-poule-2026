@@ -4,7 +4,8 @@ import { CalendarDays, Radio } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { BrandWordmark } from "@/components/brand-wordmark";
 
-// Hrefs met /live-prefix werken zowel op het subdomein (live.slimescore.com/live…)
+// Hrefs met /live-prefix werken zowel op de subdomeinen (live.slimescore.com/live…
+// en live.slimescore.app/live…) als in preview.
 // als op een preview-deploy (…/live…). usePathname ziet de browser-URL, dus we
 // matchen op beide vormen (subdomein-rewrite laat soms "/" zien).
 const tabs = [
