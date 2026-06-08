@@ -1,22 +1,24 @@
 name: Sync WK-uitslagen
 
-# Haalt elke ~5 min de WK-uitslagen bij API-Football op en stuurt ze naar
-# /api/sync-results. Doet niets tot de repository-secrets zijn ingesteld
-# (de worker stopt dan netjes) en buiten het toernooivenster.
+# Draait elke minuut, maar het script doet alléén API-werk binnen het wedstrijd-
+# venster (1u vóór t/m ~1u ná elke wedstrijd). Tijdens wedstrijden worden de
+# uitslagen dus elke minuut bijgewerkt; de bonusvraag-facts ~elke 5 min. Buiten
+# het venster en zonder secrets stopt het script direct (groene, lege runs).
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "* * * * *"
   workflow_dispatch: {}
 
-# Niet meerdere syncs tegelijk laten lopen.
+# Niet meerdere syncs tegelijk: een nog lopende run wordt afgekapt door de nieuwe
+# (de sync is idempotent, dus de volgende minuut wordt alles alsnog bijgewerkt).
 concurrency:
   group: sync-wk-uitslagen
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

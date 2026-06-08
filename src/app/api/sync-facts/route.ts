@@ -1,6 +1,6 @@
 import { timingSafeEqual as nodeTimingSafeEqual } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
-import { getEvents, getWcFixtures, isLiveStatus, type MatchEvent } from "@/lib/apifootball-live";
+import { getEvents, getWcFixtures, type MatchEvent } from "@/lib/apifootball-live";
 import { logError, logInfo } from "@/lib/log";
 import { recalculateAllScores } from "@/lib/recalculate";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -41,9 +41,11 @@ export async function POST(request: NextRequest) {
   }
 
   let eventsByFixture: Map<number, MatchEvent[]> | undefined;
-  if (deep) {
-    const finished = fixtures.filter((f) => FINISHED(f.statusShort) || isLiveStatus(f.statusShort));
-    const pairs = await Promise.all(finished.map(async (f) => [f.id, (await getEvents(f.id)) ?? []] as const));
+  const allFinished = fixtures.length > 0 && fixtures.every((f) => FINISHED(f.statusShort));
+  // Events (rode kaarten + snelste goal) zijn pas definitief — en pas nodig — als
+  // alles gespeeld is. Zo halen we die zware calls alleen op de slotdag op.
+  if (deep && allFinished) {
+    const pairs = await Promise.all(fixtures.map(async (f) => [f.id, (await getEvents(f.id)) ?? []] as const));
     eventsByFixture = new Map(pairs);
   }
 
