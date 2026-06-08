@@ -58,6 +58,20 @@ test("punt per wedstrijd kan nooit boven 12 (geen dubbeltelling bij exact)", () 
   }
 });
 
+test("Oranje-multiplier verdubbelt de wedstrijdpunten (tellers blijven 1/0)", () => {
+  const base = scoreMatchPrediction({ predictedHome: 2, predictedAway: 1, actualHome: 2, actualAway: 1 });
+  const doubled = scoreMatchPrediction({ predictedHome: 2, predictedAway: 1, actualHome: 2, actualAway: 1 }, 2);
+  assert.equal(base.points, matchScoring.exact);
+  assert.equal(doubled.points, matchScoring.exact * 2);
+  assert.equal(doubled.exact, 1);
+  assert.equal(doubled.correct, 1);
+});
+
+test("Oranje-multiplier op een mis blijft 0", () => {
+  const r = scoreMatchPrediction({ predictedHome: 0, predictedAway: 3, actualHome: 2, actualAway: 0 }, 2);
+  assert.equal(r.points, 0);
+});
+
 test("rondekeuzes: punten per juist land, alleen voor overlap", () => {
   const points = scoreStagePrediction("quarterfinal", ["NED", "BRA", "FRA"], ["NED", "FRA", "ARG"]);
   assert.equal(points, 2 * stageScoring.quarterfinal);

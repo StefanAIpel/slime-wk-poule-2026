@@ -20,6 +20,8 @@ type GroupPredictionCardProps = {
   matches: MatchWithTeams[];
   initialScores: Record<number, Score>;
   disabled?: boolean;
+  /** Wedstrijden die niet meer wijzigbaar zijn (binnen 30 min vóór aftrap of al begonnen). */
+  lockedIds?: number[];
   locale?: Locale;
 };
 
@@ -34,6 +36,7 @@ const groupPredictionCopy = {
     country: "Land",
     points: "Pt",
     goalDifference: "DS",
+    locked: "Gesloten",
     advance: "Nummers 1 en 2 gaan door; de beste acht nummers 3 tellen automatisch mee in de laatste 32.",
   },
   en: {
@@ -46,6 +49,7 @@ const groupPredictionCopy = {
     country: "Country",
     points: "Pts",
     goalDifference: "GD",
+    locked: "Closed",
     advance: "Numbers 1 and 2 advance; the best eight number 3 teams automatically count toward the last 32.",
   },
 } as const;
@@ -58,10 +62,11 @@ function scoreMapFromState(scores: Record<number, Score>): ScoreLookup {
   return map;
 }
 
-export function GroupPredictionCard({ group, matches, initialScores, disabled, locale = "nl" }: GroupPredictionCardProps) {
+export function GroupPredictionCard({ group, matches, initialScores, disabled, lockedIds, locale = "nl" }: GroupPredictionCardProps) {
   const copy = groupPredictionCopy[locale];
   const dateLocale = locale === "en" ? "en-GB" : "nl-NL";
   const [scores, setScores] = useState<Record<number, Score>>(initialScores);
+  const lockedSet = useMemo(() => new Set(lockedIds ?? []), [lockedIds]);
 
   // Alle landen in de groep (uit de wedstrijden), zodat de stand ook met nullen
   // alvast volledig zichtbaar is.
@@ -126,15 +131,23 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled, l
             const existing = scores[match.id] ?? { home: null, away: null };
             const homeName = teamNameForLocale(match.home_code, match.home?.name_nl, locale);
             const awayName = teamNameForLocale(match.away_code, match.away?.name_nl, locale);
+            const locked = lockedSet.has(match.id);
             return (
-              <div key={match.id} className="p-3 md:p-4">
-                <div className="mb-1.5 text-xs font-medium text-[var(--muted)]">
-                  {formatAmsterdam(match.starts_at, dateLocale)}
-                  {match.venue ? ` · ${venueLabel(match.venue)}` : ""}
+              <div key={match.id} className={`p-3 md:p-4${locked ? " opacity-60" : ""}`}>
+                <div className="mb-1.5 flex items-center justify-between gap-2 text-xs font-medium text-[var(--muted)]">
+                  <span>
+                    {formatAmsterdam(match.starts_at, dateLocale)}
+                    {match.venue ? ` · ${venueLabel(match.venue)}` : ""}
+                  </span>
+                  {locked ? (
+                    <span className="flex-none rounded-full bg-slate-200 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-slate-600">
+                      {copy.locked}
+                    </span>
+                  ) : null}
                 </div>
                 <fieldset
                   className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2"
-                  disabled={disabled}
+                  disabled={disabled || locked}
                 >
                   <legend className="sr-only">{copy.predict(homeName, awayName)}</legend>
                   <div className="flex min-w-0 items-center justify-end gap-2">

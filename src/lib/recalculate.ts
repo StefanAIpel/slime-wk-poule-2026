@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { NL_POINTS_MULTIPLIER, isNlMatch } from "@/lib/constants";
 import {
   scoreCloseNumber,
   scoreMatchPrediction,
@@ -8,14 +9,12 @@ import {
   specialScoring,
 } from "@/lib/scoring";
 
+type MatchResultJoin = { home_score: number | null; away_score: number | null; home_code?: string | null; away_code?: string | null };
 type PredictionWithResult = {
   user_id: string;
   home_score: number;
   away_score: number;
-  matches:
-    | { home_score: number | null; away_score: number | null }
-    | { home_score: number | null; away_score: number | null }[]
-    | null;
+  matches: MatchResultJoin | MatchResultJoin[] | null;
 };
 
 type BracketPrediction = { user_id: string; stage_key: string; team_codes: string[] };
@@ -62,19 +61,24 @@ export async function recalculateAllScores(admin: SupabaseClient): Promise<{ rec
 
   const { data: predictions, error: predictionError } = await admin
     .from("predictions")
-    .select("user_id, home_score, away_score, matches!inner(home_score, away_score, status)")
+    .select("user_id, home_score, away_score, matches!inner(home_score, away_score, status, home_code, away_code)")
     .eq("matches.status", "finished");
   if (predictionError) return { error: predictionError.message };
 
   for (const prediction of (predictions ?? []) as unknown as PredictionWithResult[]) {
     const result = resultFromJoin(prediction);
     const current = totals.get(prediction.user_id) ?? emptyTotal();
-    const scored = scoreMatchPrediction({
-      predictedHome: prediction.home_score,
-      predictedAway: prediction.away_score,
-      actualHome: result?.home_score ?? null,
-      actualAway: result?.away_score ?? null,
-    });
+    // Oranje-wedstrijden tellen dubbel.
+    const multiplier = isNlMatch(result?.home_code, result?.away_code) ? NL_POINTS_MULTIPLIER : 1;
+    const scored = scoreMatchPrediction(
+      {
+        predictedHome: prediction.home_score,
+        predictedAway: prediction.away_score,
+        actualHome: result?.home_score ?? null,
+        actualAway: result?.away_score ?? null,
+      },
+      multiplier,
+    );
     current.points += scored.points;
     current.exact_scores += scored.exact;
     current.correct_results += scored.correct;

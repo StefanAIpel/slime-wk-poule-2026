@@ -1,6 +1,14 @@
 import { matchScoring, specialScoring, stageScoring } from "@/lib/scoring";
+export {
+  MATCH_LOCK_MINUTES,
+  matchLockTime,
+  isMatchLocked,
+  NL_TEAM_CODE,
+  NL_POINTS_MULTIPLIER,
+  isNlMatch,
+} from "@/lib/entry-rules";
 
-export const ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00+02:00";
+export const ENTRY_DEADLINE_ISO = "2026-06-14T22:00:00+02:00";
 export const POST_GROUP_WINDOW_START_ISO = "2026-06-28T00:00:00+02:00";
 export const POST_GROUP_DEADLINE_ISO = "2026-06-28T21:00:00+02:00";
 
