@@ -22,7 +22,7 @@ function MatchHeader({ fixture, locale }: { fixture: LiveFixture; locale: Locale
   return (
     <section className="panel p-4">
       <p className="text-center text-xs font-bold uppercase tracking-wide text-[#48617f]">
-        {fixture.round}{fixture.venue ? ` · ${fixture.venue}` : ""}
+        {(fixture.friendly ? (locale === "en" ? "Friendly" : "Oefeninterland") : fixture.round)}{fixture.venue ? ` · ${fixture.venue}` : ""}
       </p>
       {/* Afgekorte datum gecentreerd (ook fijn op mobiel). */}
       <p className="mt-1 text-center text-sm font-bold text-[#081634]">{shortWhen(fixture.date, locale)}</p>

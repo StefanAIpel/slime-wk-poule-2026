@@ -62,6 +62,7 @@ const KNOCKOUT: Record<string, [string, string]> = {
 };
 
 function roundLabel(fixture: LiveFixture, locale: Locale) {
+  if (fixture.friendly) return locale === "en" ? "Friendly" : "Oefeninterland";
   const key = fixture.round.toLowerCase();
   // De API gebruikt voor de groepsfase matchday-nummers ("Group Stage - 1"),
   // niet de poule-letter. Die halen we uit de teamgroep.

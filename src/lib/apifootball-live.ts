@@ -19,6 +19,8 @@ export type LiveFixture = {
   elapsed: number | null;
   round: string;
   venue: string | null;
+  /** True als de wedstrijd buiten het WK valt (bijv. een oefeninterland die we bewust tonen). */
+  friendly: boolean;
   home: LiveTeam;
   away: LiveTeam;
 };
@@ -26,7 +28,7 @@ export type LiveFixture = {
 type RawTeam = { id: number; name: string; logo: string; winner: boolean | null };
 type RawFixture = {
   fixture: { id: number; date: string; status: { short: string; long: string; elapsed: number | null }; venue: { name: string | null; city: string | null } };
-  league: { round: string };
+  league: { id: number; round: string };
   teams: { home: RawTeam; away: RawTeam };
   goals: { home: number | null; away: number | null };
 };
@@ -82,15 +84,38 @@ function normalize(raw: RawFixture, teamMap: Map<number, TeamRef>): LiveFixture 
     elapsed: raw.fixture.status.elapsed,
     round: raw.league.round,
     venue,
+    friendly: raw.league.id !== LEAGUE,
     home: team(raw.teams.home, raw.goals.home),
     away: team(raw.teams.away, raw.goals.away),
   };
 }
 
-/** Alle WK-fixtures in één gecachete call; daaruit splitsen we live/recent/aankomend. */
+/** Vandaag in Europe/Amsterdam als YYYY-MM-DD (voor het date-filter van de API). */
+function amsterdamToday(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Amsterdam", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+}
+
+/**
+ * Alle WK-fixtures in één gecachete call; daaruit splitsen we live/recent/aankomend.
+ * Optioneel kan via env LIVE_FRIENDLY_TODAY (een team external_id) de oefeninterland
+ * van dat team van vandaag worden bijgemengd — handig om de live-weergave te proefdraaien.
+ */
 export async function getWcFixtures(): Promise<LiveFixture[] | null> {
-  const [raw, teamMap] = await Promise.all([apiGet<RawFixture>(`fixtures?league=${LEAGUE}&season=${SEASON}`, 30), getTeamMap()]);
-  return raw ? raw.map((item) => normalize(item, teamMap)) : null;
+  const friendlyTeam = Number(process.env.LIVE_FRIENDLY_TODAY ?? "");
+  const wantFriendly = Number.isFinite(friendlyTeam) && friendlyTeam > 0;
+  const [raw, extraRaw, teamMap] = await Promise.all([
+    apiGet<RawFixture>(`fixtures?league=${LEAGUE}&season=${SEASON}`, 30),
+    wantFriendly
+      ? apiGet<RawFixture>(`fixtures?team=${friendlyTeam}&date=${amsterdamToday()}&timezone=Europe/Amsterdam`, 30)
+      : Promise.resolve<RawFixture[] | null>([]),
+    getTeamMap(),
+  ]);
+  if (!raw) return null;
+  const seen = new Set(raw.map((item) => item.fixture.id));
+  const extra = (extraRaw ?? [])
+    .filter((item) => item.league.id !== LEAGUE && !seen.has(item.fixture.id))
+    .map((item) => normalize(item, teamMap));
+  return [...raw.map((item) => normalize(item, teamMap)), ...extra];
 }
 
 export function splitFixtures(all: LiveFixture[]) {
