@@ -70,7 +70,12 @@ export type MatchPredictionScoreInput = {
   actualAway: number | null;
 };
 
-export function scoreMatchPrediction(input: MatchPredictionScoreInput) {
+/**
+ * Scoort één wedstrijdvoorspelling. `multiplier` verdubbelt (of vermenigvuldigt)
+ * de punten — gebruikt voor Oranje-wedstrijden die dubbel tellen. De tellers
+ * `exact`/`correct` blijven 1/0 (dat zijn aantallen, geen punten).
+ */
+export function scoreMatchPrediction(input: MatchPredictionScoreInput, multiplier = 1) {
   if (input.actualHome === null || input.actualAway === null) {
     return { points: 0, exact: 0, correct: 0 };
   }
@@ -92,7 +97,7 @@ export function scoreMatchPrediction(input: MatchPredictionScoreInput) {
     if (input.actualAway === input.predictedAway) points += matchScoring.teamGoal;
   }
 
-  return { points, exact: exact ? 1 : 0, correct: correct ? 1 : 0 };
+  return { points: points * multiplier, exact: exact ? 1 : 0, correct: correct ? 1 : 0 };
 }
 
 export function scoreStagePrediction(stageKey: string, predicted: string[] = [], actual: string[] = []) {

@@ -8,7 +8,7 @@ import { KnockoutPredictionPicker } from "@/components/knockout-prediction-picke
 import { PageHero } from "@/components/page-hero";
 import { PredictionsComplete } from "@/components/predictions-complete";
 import { StatusProgressSync } from "@/components/status-progress-sync";
-import { ENTRY_DEADLINE, groupLetters, POST_GROUP_DEADLINE } from "@/lib/constants";
+import { ENTRY_DEADLINE, groupLetters, isMatchLocked, POST_GROUP_DEADLINE } from "@/lib/constants";
 import { teamNameForLocale } from "@/lib/format";
 import { calculateRound32 } from "@/lib/group-standings";
 import { localizedHref } from "@/lib/i18n";
@@ -33,10 +33,10 @@ const predictionCopy = {
     metaDescription: "Vul je SlimeScore WK 2026-voorspellingen in en pas ze aan tot de deadline.",
     heroTitle: "Voorspellingen",
     heroSubtitle:
-      "Snel invullen, later nog bijschaven tot 11 juni 21:00 Nederlandse tijd. Na de groepsfase is er een kleine optionele herziening tot 28 juni 21:00.",
+      "Vul snel in en schaaf bij t/m zondag 14 juni 22:00 (de aftrap van Oranje). Let op: elke wedstrijd sluit 30 min vóór de aftrap — wat al begonnen is, kun je niet meer invullen. ⚡ Oranje-wedstrijden tellen dubbel! Na de groepsfase is er nog een kleine herziening tot 28 juni 21:00.",
     saved: "Opgeslagen.",
     groupTitle: "Groepswedstrijden",
-    groupOpen: "Typ je verwachte uitslag. Je kunt tussentijds opslaan en later verdergaan tot 11 juni 21:00.",
+    groupOpen: "Typ je verwachte uitslag. Elke wedstrijd sluit 30 min vóór de aftrap; daarna kun je 'm niet meer wijzigen. ⚡ Oranje-wedstrijden tellen dubbel.",
     groupClosed: "De hoofdvoorspellingen zijn gesloten.",
     progressTitle: "Voortgang groepswedstrijden",
     filled: "ingevuld",
@@ -49,7 +49,7 @@ const predictionCopy = {
     incomplete: (filled: number, total: number) =>
       `Let op: je hebt ${filled} van ${total} groepswedstrijden ingevuld. Vul ze allemaal in, anders klopt je automatische laatste 32 nog niet en mis je punten.`,
     bonusTitle: "Bonusvragen",
-    bonusIntro: "Start leeg: vul je eigen schatting in vóór 11 juni 21:00. Lege bonusvelden leveren geen punten op.",
+    bonusIntro: "Start leeg: vul je eigen schatting in vóór 14 juni 22:00. Lege bonusvelden leveren geen punten op.",
     teamMostGoals: "Team met de meeste doelpunten",
     chooseCountry: "Kies land",
     totalGoals: "Totaal aantal goals",
@@ -72,10 +72,10 @@ const predictionCopy = {
     metaDescription: "Fill in your SlimeScore World Cup 2026 predictions and edit them until the deadline.",
     heroTitle: "Predictions",
     heroSubtitle:
-      "Fill them in quickly, then tweak until 11 June 21:00 Amsterdam time. After the group stage there is a small optional revision window until 28 June 21:00.",
+      "Fill them in quickly and tweak until Sunday 14 June 22:00 (the Netherlands' kick-off). Note: each match closes 30 min before kick-off — once it has started you can no longer enter it. ⚡ Netherlands matches count double! After the group stage there is a small revision window until 28 June 21:00.",
     saved: "Saved.",
     groupTitle: "Group matches",
-    groupOpen: "Enter your expected scores. You can save in between and continue later until 11 June 21:00.",
+    groupOpen: "Enter your expected scores. Each match closes 30 min before kick-off; after that you can no longer change it. ⚡ Netherlands matches count double.",
     groupClosed: "The main predictions are closed.",
     progressTitle: "Group match progress",
     filled: "filled in",
@@ -88,7 +88,7 @@ const predictionCopy = {
     incomplete: (filled: number, total: number) =>
       `Heads up: you filled in ${filled} of ${total} group matches. Fill them all in, otherwise your automatic last 32 may be wrong and you can miss points.`,
     bonusTitle: "Bonus questions",
-    bonusIntro: "Start empty: enter your own estimate before 11 June 21:00. Empty bonus fields score no points.",
+    bonusIntro: "Start empty: enter your own estimate before 14 June 22:00. Empty bonus fields score no points.",
     teamMostGoals: "Team with most goals",
     chooseCountry: "Choose country",
     totalGoals: "Total number of goals",
@@ -153,6 +153,8 @@ export default async function PredictionsPage({
   const now = new Date();
   const mainOpen = now < ENTRY_DEADLINE;
   const lateOpen = now < POST_GROUP_DEADLINE;
+  // Wedstrijden die binnen 30 min vóór de aftrap (of al begonnen) zijn: vergrendeld.
+  const lockedMatchIds = (matches ?? []).filter((match) => isMatchLocked(match.starts_at, now)).map((match) => match.id);
   const groupMatchTotal = (matches ?? []).length;
   const isMatchFilled = (id: number) => {
     const prediction = predictionByMatch.get(id);
@@ -257,6 +259,7 @@ export default async function PredictionsPage({
               group={group}
               matches={groupMatches}
               disabled={!mainOpen}
+              lockedIds={lockedMatchIds}
               locale={locale}
               initialScores={Object.fromEntries(
                 groupMatches.map((match) => {

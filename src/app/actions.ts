@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { isAdminEmail } from "@/lib/admin";
 import { isAvatarKey } from "@/lib/avatars";
-import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START } from "@/lib/constants";
+import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START, isMatchLocked } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
 import { LOCALE_COOKIE, isSupportedLocale, localizedHref, type Locale } from "@/lib/i18n";
@@ -636,7 +636,7 @@ export async function savePredictions(formData: FormData) {
 
   const { data: matches, error: matchError } = await supabase
     .from("matches")
-    .select("id,group_letter,home_code,away_code")
+    .select("id,group_letter,home_code,away_code,starts_at")
     .eq("stage", "group");
   if (matchError) throw new Error(matchError.message);
 
@@ -647,9 +647,11 @@ export async function savePredictions(formData: FormData) {
       home_score: number;
       away_score: number;
     }[] = [];
-    const scoreLookup: ScoreLookup = new Map();
 
     for (const match of matches ?? []) {
+      // Elke wedstrijd sluit 30 min vóór de aftrap; gestarte/gespeelde wedstrijden
+      // negeren we (geen wijziging, geen nieuwe invoer → late invullers missen die punten).
+      if (isMatchLocked(match.starts_at, now)) continue;
       const homeRaw = String(formData.get(`match_${match.id}_home`) ?? "").trim();
       const awayRaw = String(formData.get(`match_${match.id}_away`) ?? "").trim();
       if (homeRaw === "" || awayRaw === "") continue;
@@ -661,7 +663,6 @@ export async function savePredictions(formData: FormData) {
         home_score: homeScore,
         away_score: awayScore,
       });
-      scoreLookup.set(match.id, { home: homeScore, away: awayScore });
     }
 
     if (predictionRows.length) {
@@ -669,6 +670,19 @@ export async function savePredictions(formData: FormData) {
       if (error) {
         logError("savePredictions.upsert", error, { userId: user.id, rows: predictionRows.length });
         throw new Error(error.message);
+      }
+    }
+
+    // Laatste 32 uit de VOLLEDIGE set opgeslagen voorspellingen (incl. eerder
+    // ingevulde/vergrendelde wedstrijden), zodat partiële invoer de bracket niet wist.
+    const { data: allPredictions } = await supabase
+      .from("predictions")
+      .select("match_id,home_score,away_score")
+      .eq("user_id", user.id);
+    const scoreLookup: ScoreLookup = new Map();
+    for (const prediction of allPredictions ?? []) {
+      if (prediction.home_score !== null && prediction.away_score !== null) {
+        scoreLookup.set(prediction.match_id, { home: prediction.home_score, away: prediction.away_score });
       }
     }
 

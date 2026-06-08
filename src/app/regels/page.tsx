@@ -20,8 +20,8 @@ const rulesCopy = {
       "we kunnen de spelregels vóór en tijdens het toernooi nog bijschaven — een poule is tenslotte nooit helemaal af. Iets belangrijks? Dan melden we het netjes in je WK-poule.",
     sideBannersLabel: "SlimeScore spellen",
     deadlinesTitle: "Deadlines",
-    mainDeadlinePrefix: "Hoofdvoorspellingen sluiten bij de aftrap op",
-    mainDeadlineSuffix: ".",
+    mainDeadlinePrefix: "Inschrijven en invullen kan t/m",
+    mainDeadlineSuffix: " (de aftrap van Oranje). Elke wedstrijd sluit afzonderlijk 30 min vóór de aftrap — wat al gespeeld is, levert geen punten meer op.",
     lateDeadlinePrefix: "Wereldkampioen, finalisten, penaltyseries en “hoe ver komt Oranje” blijven wijzigbaar t/m",
     lateDeadlineSuffix: ".",
     poolsTitle: "WK-poules",
@@ -58,6 +58,7 @@ const rulesCopy = {
     scoringItems: [
       { label: "Exacte uitslag:", text: "12 punten (het maximum per wedstrijd)." },
       { label: "Juiste winnaar of gelijkspel:", text: "6 punten, plus 2 voor het juiste doelsaldo en 2 per juist teamdoelpunt." },
+      { label: "Oranje telt dubbel:", text: "wedstrijden van Nederland leveren dubbele wedstrijdpunten op (max. 24 per wedstrijd)." },
       { label: "Knock-outrondes:", text: "oplopend van de laatste 32 tot wereldkampioen — een goede eindsprint telt echt." },
       { label: "Bonusvragen:", text: "o.a. team met de meeste goals en hoe ver Oranje komt." },
     ],
@@ -65,7 +66,7 @@ const rulesCopy = {
     scoringDetails: scoringRules,
     pointsSuffix: "pt",
     maxPerMatch:
-      "Per wedstrijd is 12 punten het maximum. Bij een exacte uitslag stapelen de deelpunten niet door; bij een gedeeltelijk goede voorspelling tellen juiste richting, doelsaldo en teamgoals wél samen op.",
+      "Per wedstrijd is 12 punten het maximum (Oranje-wedstrijden tellen dubbel: max 24). Bij een exacte uitslag stapelen de deelpunten niet door; bij een gedeeltelijk goede voorspelling tellen juiste richting, doelsaldo en teamgoals wél samen op.",
     exampleTitle: "Voorbeeld",
     exampleText: (
       <>
@@ -79,7 +80,7 @@ const rulesCopy = {
       { q: "Heb ik een wachtwoord nodig?", a: "Nee. Je logt in met een eenmalige link die we naar je e-mailadres sturen." },
       {
         q: "Tot wanneer kan ik invullen?",
-        a: "Je groepswedstrijden en de meeste bonusvragen sluiten bij de aftrap op 11 juni 21:00. Wereldkampioen, finalisten, penaltyseries en 'hoe ver komt Oranje' blijf je aanpassen t/m 28 juni 21:00.",
+        a: "Je inschrijving loopt t/m zondag 14 juni 22:00 (de aftrap van Oranje). Belangrijk: elke groepswedstrijd sluit afzonderlijk 30 minuten vóór de aftrap — wat al begonnen of gespeeld is, kun je niet meer invullen en levert dus geen punten op. Vul je later in, dan mis je die wedstrijden. Wereldkampioen, finalisten, penaltyseries en 'hoe ver komt Oranje' blijf je aanpassen t/m 28 juni 21:00.",
       },
       { q: "Zijn mijn WK 2026-voorspellingen privé?", a: "Ja, tot de deadline. Daarna zijn ze zichtbaar voor je medespelers in dezelfde WK-poule. Je e-mailadres blijft altijd privé." },
       { q: "Hoe werkt de laatste 32?", a: "Die rekenen we automatisch uit jouw voorspelde groepsstanden: de nummers 1 en 2 plus de beste acht nummers 3." },
@@ -99,8 +100,8 @@ const rulesCopy = {
       "we may still fine-tune the rules before and during the tournament — a pool is never completely finished. If something important changes, we will explain it clearly in your World Cup pool.",
     sideBannersLabel: "SlimeScore games",
     deadlinesTitle: "Deadlines",
-    mainDeadlinePrefix: "Main predictions close at kick-off on",
-    mainDeadlineSuffix: ".",
+    mainDeadlinePrefix: "You can enter and edit until",
+    mainDeadlineSuffix: " (the Netherlands' kick-off). Each match closes individually 30 min before kick-off — anything already played no longer scores points.",
     lateDeadlinePrefix: "World champion, finalists, penalty shootouts and “how far will the Netherlands go” remain editable until",
     lateDeadlineSuffix: ".",
     poolsTitle: "World Cup pools",
@@ -137,6 +138,7 @@ const rulesCopy = {
     scoringItems: [
       { label: "Exact score:", text: "12 points (the maximum per match)." },
       { label: "Correct winner or draw:", text: "6 points, plus 2 for the correct goal difference and 2 for each exact team goal." },
+      { label: "Netherlands counts double:", text: "matches involving the Netherlands earn double match points (max 24 per match)." },
       { label: "Knockout rounds:", text: "increasing from the last 32 to world champion — a strong finish really counts." },
       { label: "Bonus questions:", text: "including team with most goals and how far the Netherlands will go." },
     ],
@@ -159,7 +161,7 @@ const rulesCopy = {
     ],
     pointsSuffix: "pts",
     maxPerMatch:
-      "Per match, 12 points is the maximum. With an exact score, the partial points are not stacked; with a partly correct prediction, correct direction, goal difference and team goals do add up.",
+      "Per match, 12 points is the maximum (Netherlands matches count double: max 24). With an exact score, the partial points are not stacked; with a partly correct prediction, correct direction, goal difference and team goals do add up.",
     exampleTitle: "Example",
     exampleText: (
       <>
@@ -173,7 +175,7 @@ const rulesCopy = {
       { q: "Do I need a password?", a: "You can use a password for your account; confirmation and recovery also support email codes." },
       {
         q: "Until when can I fill in predictions?",
-        a: "Group matches and most bonus questions close at kick-off on 11 June 21:00 Amsterdam time. World champion, finalists, penalty shootouts and 'how far will the Netherlands go' stay editable until 28 June 21:00.",
+        a: "Entry stays open until Sunday 14 June 22:00 (the Netherlands' kick-off). Important: each group match closes individually 30 minutes before kick-off — anything already started or played can no longer be entered and scores no points, so if you join late you miss those matches. World champion, finalists, penalty shootouts and 'how far will the Netherlands go' stay editable until 28 June 21:00.",
       },
       { q: "Are my World Cup 2026 predictions private?", a: "Yes, until the deadline. After that they are visible to players in the same World Cup pool. Your email address always stays private." },
       { q: "How does the last 32 work?", a: "We calculate it automatically from your predicted group standings: places 1 and 2 plus the best eight third-placed teams." },

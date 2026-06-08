@@ -152,7 +152,10 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.29"/);
+  assert.match(constants, /APP_VERSION = "0.30"/);
+});
+test("entry deadline is set to the Netherlands' first match (Sun 14 June 22:00)", () => {
+  assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-14T22:00:00\+02:00"/);
 });
 test("live subsite header respects the iOS status bar (safe-area-inset-top)", () => {
   const headerBlock = globalsCss.match(/\.live-subsite-header \{[\s\S]*?\}/)?.[0] ?? "";
@@ -433,7 +436,7 @@ test("prediction saves sync the global status bar progress without requiring rel
 
 test("knockout predictions flow from last 16 to later rounds without scroll boxes", () => {
   assert.match(predictionsPage, /<KnockoutPredictionPicker/);
-  assert.match(predictionsPage, /Typ je verwachte uitslag\. Je kunt tussentijds opslaan en later verdergaan/);
+  assert.match(predictionsPage, /Typ je verwachte uitslag\. Elke wedstrijd sluit 30 min vóór de aftrap/);
   assert.match(knockoutPredictionPicker, /round16: 16/);
   assert.match(knockoutPredictionPicker, /quarterfinal: 8/);
   assert.match(knockoutPredictionPicker, /Kies precies 16 landen uit jouw berekende laatste 32\./);
