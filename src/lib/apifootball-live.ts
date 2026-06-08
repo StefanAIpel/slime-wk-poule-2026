@@ -90,9 +90,12 @@ function normalize(raw: RawFixture, teamMap: Map<number, TeamRef>): LiveFixture 
   };
 }
 
-/** Vandaag in Europe/Amsterdam als YYYY-MM-DD (voor het date-filter van de API). */
+/** YYYY-MM-DD in Europe/Amsterdam (voor het date-filter). */
+function amsterdamDate(d: Date): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Amsterdam", year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+}
 function amsterdamToday(): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Amsterdam", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+  return amsterdamDate(new Date());
 }
 
 /**
@@ -105,16 +108,28 @@ export async function getWcFixtures(): Promise<LiveFixture[] | null> {
   const wantFriendly = Number.isFinite(friendlyTeam) && friendlyTeam > 0;
   const [raw, extraRaw, teamMap] = await Promise.all([
     apiGet<RawFixture>(`fixtures?league=${LEAGUE}&season=${SEASON}`, 30),
+    // team+season is een gegarandeerd geldige combo bij API-Football; we filteren
+    // daarna client-side op vandaag (NL) + niet-WK, óók live (voor het geval de
+    // datum-grens net anders valt).
     wantFriendly
-      ? apiGet<RawFixture>(`fixtures?team=${friendlyTeam}&date=${amsterdamToday()}&timezone=Europe/Amsterdam`, 30)
+      ? apiGet<RawFixture>(`fixtures?team=${friendlyTeam}&season=${SEASON}`, 30)
       : Promise.resolve<RawFixture[] | null>([]),
     getTeamMap(),
   ]);
   if (!raw) return null;
   const seen = new Set(raw.map((item) => item.fixture.id));
+  const today = amsterdamToday();
   const extra = (extraRaw ?? [])
-    .filter((item) => item.league.id !== LEAGUE && !seen.has(item.fixture.id))
+    .filter(
+      (item) =>
+        item.league.id !== LEAGUE &&
+        !seen.has(item.fixture.id) &&
+        (LIVE_STATUSES.has(item.fixture.status.short) || amsterdamDate(new Date(item.fixture.date)) === today),
+    )
     .map((item) => normalize(item, teamMap));
+  if (wantFriendly) {
+    console.warn(`[live-friendly] team=${friendlyTeam} season=${SEASON} today=${today} raw=${extraRaw === null ? "null" : extraRaw.length} kept=${extra.length}`);
+  }
   return [...raw.map((item) => normalize(item, teamMap)), ...extra];
 }
 
