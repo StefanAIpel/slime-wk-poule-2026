@@ -2268,6 +2268,7 @@ textarea {
 /* Hero met stadion-achtergrond, compacter dan de hoofdsite-hero. */
 .live-hero-band {
   min-height: 0;
+  padding-bottom: 22px;
 }
 
 .live-hero-band .hero-content {
@@ -2280,10 +2281,10 @@ textarea {
 /* Kleine mascotte rechtsonder in de hero (subtiel, niet zo groot als de hoofdpagina). */
 .live-hero-mascot {
   position: absolute;
-  right: -6px;
-  bottom: 0;
+  right: -10px;
+  bottom: 40px;
   z-index: 1;
-  height: 170px;
+  height: 160px;
   width: auto;
   pointer-events: none;
   filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
@@ -2293,28 +2294,29 @@ textarea {
   .live-hero-mascot {
     height: 240px;
     right: 12px;
+    bottom: 0;
   }
 }
 
 .live-hero-title {
-  margin-top: 12px;
+  margin-top: 9px;
   color: #fff;
-  font-size: 1.35rem;
+  font-size: 1.22rem;
   font-weight: 800;
-  line-height: 1.12;
+  line-height: 1.08;
 }
 
 .live-hero-sub {
-  margin-top: 8px;
+  margin-top: 6px;
   max-width: 38rem;
   color: #eff6ff;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 600;
-  line-height: 1.5;
+  line-height: 1.38;
 }
 
 .live-hero-actions {
-  margin-top: 14px;
+  margin-top: 11px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;

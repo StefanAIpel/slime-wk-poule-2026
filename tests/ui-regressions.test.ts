@@ -158,6 +158,21 @@ test("live subsite header respects the iOS status bar (safe-area-inset-top)", ()
   const headerBlock = globalsCss.match(/\.live-subsite-header \{[\s\S]*?\}/)?.[0] ?? "";
   assert.match(headerBlock, /padding: calc\(10px \+ env\(safe-area-inset-top\)\) 16px 10px;/);
 });
+
+test("live mobile hero aligns Memphis with the share row and keeps the title block compact", () => {
+  const liveHeroBlock = globalsCss.match(/\.live-hero-band \{[\s\S]*?\}/)?.[0] ?? "";
+  const mascotBlock = globalsCss.match(/\.live-hero-mascot \{[\s\S]*?\}/)?.[0] ?? "";
+  const titleBlock = globalsCss.match(/\.live-hero-title \{[\s\S]*?\}/)?.[0] ?? "";
+  const subBlock = globalsCss.match(/\.live-hero-sub \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(liveHeroBlock, /padding-bottom: 22px;/);
+  assert.match(mascotBlock, /bottom: 40px;/);
+  assert.match(mascotBlock, /height: 160px;/);
+  assert.match(titleBlock, /font-size: 1\.22rem;/);
+  assert.match(titleBlock, /line-height: 1\.08;/);
+  assert.match(subBlock, /font-size: 0\.84rem;/);
+  assert.match(subBlock, /line-height: 1\.38;/);
+});
+
 test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
   const heroPrimaryBlock = globalsCss.match(/\.button-primary\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";
   const mobileHeroBlock = globalsCss.match(/@media \(max-width: 759px\) \{[\s\S]*?\.button-primary\.hero-primary-cta \{[\s\S]*?\}\n\}/)?.[0] ?? "";
