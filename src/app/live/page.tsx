@@ -1,7 +1,9 @@
 import { CalendarDays } from "lucide-react";
 import { LiveAutoRefresh } from "@/components/live-auto-refresh";
+import { ShareRow } from "@/components/share-button";
 import { TeamFlag } from "@/components/team-flag";
 import { getWcFixtures, isLiveStatus, splitFixtures, type LiveFixture, type LiveTeam } from "@/lib/apifootball-live";
+import { LIVE_URL } from "@/lib/constants";
 import { getServerLocale } from "@/lib/server-locale";
 import type { Locale } from "@/lib/i18n";
 
@@ -9,9 +11,12 @@ export const revalidate = 30;
 
 const copy = {
   nl: {
-    heroTitle: "Volg het WK 2026 live",
-    heroSub: "Alle wedstrijden, uitslagen en standen — direct.",
-    schedule: "Speelschema",
+    kicker: "WK 2026 live",
+    heroTitle: "WK 2026 live: uitslagen, stand & schema",
+    heroSub: "Volg elke WK 2026-wedstrijd live — tussenstanden, opstellingen en statistieken, plus het volledige speelschema. Gratis, zonder gedoe.",
+    schedule: "Hele WK speelschema",
+    shareText: "Volg het WK 2026 live op SlimeScore: uitslagen, stand en schema.",
+    shareTitle: "WK 2026 live — SlimeScore",
     now: "Nu bezig",
     latest: "Laatste uitslagen",
     upcoming: "Aankomend",
@@ -24,9 +29,12 @@ const copy = {
     soon: "Zodra het toernooi begint zie je hier de lopende wedstrijd, de laatste uitslagen en het volledige schema — alles op één plek.",
   },
   en: {
-    heroTitle: "Follow the 2026 World Cup live",
-    heroSub: "Every match, result and standing — instantly.",
-    schedule: "Schedule",
+    kicker: "World Cup 2026 live",
+    heroTitle: "World Cup 2026 live: scores, standings & schedule",
+    heroSub: "Follow every 2026 World Cup match live — live scores, line-ups and stats, plus the full schedule. Free, no fuss.",
+    schedule: "Total World Cup Schedule",
+    shareText: "Follow the 2026 World Cup live on SlimeScore: scores, standings and schedule.",
+    shareTitle: "World Cup 2026 live — SlimeScore",
     now: "Now playing",
     latest: "Latest results",
     upcoming: "Upcoming",
@@ -40,56 +48,61 @@ const copy = {
   },
 } as const;
 
-function kickoff(iso: string, locale: Locale) {
+function whenLabel(iso: string, locale: Locale) {
   return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "nl-NL", { timeZone: "Europe/Amsterdam", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
 }
 
-function statusLabel(fixture: LiveFixture, locale: Locale) {
-  const c = copy[locale];
-  if (isLiveStatus(fixture.statusShort)) {
-    if (fixture.statusShort === "HT") return c.rest;
-    return fixture.elapsed !== null ? `${fixture.elapsed}'` : c.live;
+const KNOCKOUT: Record<string, [string, string]> = {
+  "round of 16": ["Achtste finale", "Round of 16"],
+  "quarter-finals": ["Kwartfinale", "Quarter-finals"],
+  "semi-finals": ["Halve finale", "Semi-finals"],
+  "3rd place final": ["Troostfinale", "Third place"],
+  final: ["Finale", "Final"],
+};
+
+function roundLabel(round: string, locale: Locale) {
+  const group = round.match(/Group ([A-L])/i);
+  if (group) return locale === "en" ? `Group ${group[1]}` : `Groep ${group[1]}`;
+  const key = round.toLowerCase();
+  for (const [needle, [nl, en]] of Object.entries(KNOCKOUT)) {
+    if (key.includes(needle)) return locale === "en" ? en : nl;
   }
-  if (["FT", "AET", "PEN"].includes(fixture.statusShort)) return fixture.statusShort === "FT" ? c.finished : fixture.statusShort;
-  return kickoff(fixture.date, locale);
+  return round;
 }
 
-function TeamCell({ team, locale, align }: { team: LiveTeam; locale: Locale; align: "home" | "away" }) {
-  const flag = <TeamFlag code={team.code} name={team.name} size="sm" locale={locale} />;
-  const label = (
-    <>
+function statusWhen(fixture: LiveFixture, locale: Locale) {
+  const c = copy[locale];
+  if (isLiveStatus(fixture.statusShort)) return { text: fixture.statusShort === "HT" ? c.rest : fixture.elapsed !== null ? `${fixture.elapsed}'` : c.live, live: true };
+  if (["FT", "AET", "PEN"].includes(fixture.statusShort)) return { text: fixture.statusShort === "FT" ? c.finished : fixture.statusShort, live: false };
+  return { text: whenLabel(fixture.date, locale), live: false };
+}
+
+function TeamInline({ team, locale }: { team: LiveTeam; locale: Locale }) {
+  return (
+    <span className="live-match-team">
+      <TeamFlag code={team.code} name={team.name} size="sm" locale={locale} />
       <span className="live-row-code">{team.code ?? team.name.slice(0, 3).toUpperCase()}</span>
       <span className="live-row-name">{team.name}</span>
-    </>
-  );
-  return (
-    <span className={align === "home" ? "live-row-team" : "live-row-team live-row-team-away"}>
-      {align === "home" ? (
-        <>
-          {flag}
-          {label}
-        </>
-      ) : (
-        <>
-          {label}
-          {flag}
-        </>
-      )}
     </span>
   );
 }
 
-function FixtureRow({ fixture, locale }: { fixture: LiveFixture; locale: Locale }) {
-  const live = isLiveStatus(fixture.statusShort);
-  const played = live || ["FT", "AET", "PEN"].includes(fixture.statusShort);
+function MatchCard({ fixture, locale }: { fixture: LiveFixture; locale: Locale }) {
+  const when = statusWhen(fixture, locale);
+  const played = when.live || ["FT", "AET", "PEN"].includes(fixture.statusShort);
+  const meta = [roundLabel(fixture.round, locale), fixture.venue].filter(Boolean).join(" · ");
   return (
-    <a href={`/live/match/${fixture.id}`} className="live-row">
-      <span className={live ? "live-row-status is-live" : "live-row-status"}>{statusLabel(fixture, locale)}</span>
-      <span className="live-row-teams">
-        <TeamCell team={fixture.home} locale={locale} align="home" />
-        <span className="live-row-score">{played ? `${fixture.home.goals ?? 0} - ${fixture.away.goals ?? 0}` : "–"}</span>
-        <TeamCell team={fixture.away} locale={locale} align="away" />
-      </span>
+    <a href={`/live/match/${fixture.id}`} className="live-match-card">
+      <div className="live-match-meta">
+        <span className="live-match-round">{meta}</span>
+        <span className={when.live ? "live-match-when is-live" : "live-match-when"}>{when.text}</span>
+      </div>
+      <div className="live-match-body">
+        <TeamInline team={fixture.home} locale={locale} />
+        <span className="live-match-sep" aria-hidden="true">-</span>
+        <TeamInline team={fixture.away} locale={locale} />
+        <span className="live-match-score">{played ? `${fixture.home.goals ?? 0} - ${fixture.away.goals ?? 0}` : ""}</span>
+      </div>
     </a>
   );
 }
@@ -102,7 +115,7 @@ function Section({ title, accent, fixtures, empty, locale }: { title: string; ac
         {fixtures.length && accent === "live" ? <span className="live-section-count">{fixtures.length}</span> : null}
       </header>
       {fixtures.length ? (
-        <div className="divide-y divide-slate-200">{fixtures.map((f) => <FixtureRow key={f.id} fixture={f} locale={locale} />)}</div>
+        <div className="divide-y divide-slate-200">{fixtures.map((f) => <MatchCard key={f.id} fixture={f} locale={locale} />)}</div>
       ) : (
         <p className="p-4 text-sm font-bold text-[#48617f]">{empty}</p>
       )}
@@ -113,16 +126,29 @@ function Section({ title, accent, fixtures, empty, locale }: { title: string; ac
 function Hero({ locale }: { locale: Locale }) {
   const c = copy[locale];
   return (
-    <section className="live-hero">
-      <div className="live-hero-text">
+    <div className="hero-band hero-band-visual hero-home live-hero-band">
+      <picture className="hero-photo">
+        <source media="(min-width: 760px)" srcSet="/assets/hero-home-landscape.webp" />
+        <img src="/assets/hero-home-portrait.webp" alt="" aria-hidden="true" fetchPriority="high" decoding="async" />
+      </picture>
+      <div className="hero-content">
+        <div className="world-cup-kicker">
+          <span>{c.kicker}</span>
+          <span>USA</span>
+          <span>Canada</span>
+          <span>Mexico</span>
+        </div>
         <h1 className="live-hero-title">{c.heroTitle}</h1>
         <p className="live-hero-sub">{c.heroSub}</p>
+        <div className="live-hero-actions">
+          <a href="/live/schema" className="button-primary live-hero-cta">
+            <CalendarDays aria-hidden="true" className="size-5" />
+            {c.schedule}
+          </a>
+          <ShareRow url={`${LIVE_URL}`} text={c.shareText} title={c.shareTitle} locale={locale} compact onDark />
+        </div>
       </div>
-      <a href="/live/schema" className="live-hero-btn">
-        <CalendarDays aria-hidden="true" className="size-4" />
-        {c.schedule}
-      </a>
-    </section>
+    </div>
   );
 }
 

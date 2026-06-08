@@ -660,7 +660,7 @@ function MatchRow({ match, locale, compactMeta = false, knockout = false }: { ma
               <span className="hidden sm:inline">{teamText(match, "home", locale)}</span>
             </span>
           </div>
-          <span className="schedule-team-separator" aria-hidden="true">•</span>
+          <span className="schedule-team-separator" aria-hidden="true">-</span>
           <span className="sr-only">{scheduleCopy[locale].versus}</span>
           <div className={match.winnerCode === match.awayCode ? "schedule-team-cell schedule-team-cell-away schedule-team-winner" : "schedule-team-cell schedule-team-cell-away"} title={teamText(match, "away", locale)}>
             <TeamFlag code={match.awayCode} name={teamText(match, "away", locale)} locale={locale} />

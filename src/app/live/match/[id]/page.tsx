@@ -11,8 +11,8 @@ const copy = {
   en: { back: "Back to live", finished: "Finished", rest: "HT", events: "Match events", stats: "Statistics", lineups: "Line-ups", coach: "Coach", notFound: "This match could not be loaded.", soon: "Line-ups and statistics appear around kick-off." },
 } as const;
 
-function kickoff(iso: string, locale: Locale) {
-  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "nl-NL", { timeZone: "Europe/Amsterdam", weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
+function shortWhen(iso: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "nl-NL", { timeZone: "Europe/Amsterdam", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
 }
 
 function MatchHeader({ fixture, locale }: { fixture: LiveFixture; locale: Locale }) {
@@ -24,6 +24,8 @@ function MatchHeader({ fixture, locale }: { fixture: LiveFixture; locale: Locale
       <p className="text-center text-xs font-bold uppercase tracking-wide text-[#48617f]">
         {fixture.round}{fixture.venue ? ` · ${fixture.venue}` : ""}
       </p>
+      {/* Afgekorte datum gecentreerd (ook fijn op mobiel). */}
+      <p className="mt-1 text-center text-sm font-bold text-[#081634]">{shortWhen(fixture.date, locale)}</p>
       <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
         <div className="grid justify-items-center gap-2 text-center">
           <TeamFlag code={fixture.home.code} name={fixture.home.name} size="md" locale={locale} />
@@ -32,7 +34,7 @@ function MatchHeader({ fixture, locale }: { fixture: LiveFixture; locale: Locale
         <div className="grid justify-items-center">
           <span className="text-3xl font-black tabular-nums text-[#081634]">{played ? `${fixture.home.goals ?? 0}-${fixture.away.goals ?? 0}` : "–"}</span>
           <span className={live ? "live-row-status is-live mt-1" : "mt-1 text-xs font-bold text-[#48617f]"}>
-            {live ? (fixture.statusShort === "HT" ? c.rest : `${fixture.elapsed ?? ""}'`) : played ? c.finished : kickoff(fixture.date, locale)}
+            {live ? (fixture.statusShort === "HT" ? c.rest : `${fixture.elapsed ?? ""}'`) : played ? c.finished : ""}
           </span>
         </div>
         <div className="grid justify-items-center gap-2 text-center">

@@ -2156,13 +2156,18 @@ textarea {
   position: sticky;
   top: 0;
   z-index: 30;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #1e73b8 0%, #114b82 55%, #0e7a44 100%);
+  box-shadow: 0 8px 22px rgba(8, 22, 52, 0.18);
+}
+
+.live-subsite-header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 16px;
-  background: linear-gradient(135deg, #1e73b8 0%, #114b82 55%, #0e7a44 100%);
-  box-shadow: 0 8px 22px rgba(8, 22, 52, 0.18);
+  width: min(1100px, 100%);
+  margin: 0 auto;
 }
 
 .live-subsite-brandwrap {
@@ -2212,49 +2217,52 @@ textarea {
 }
 
 /* Compacte commerciële banner op de live-pagina. */
-.live-hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-radius: 16px;
-  padding: 14px 16px;
-  background: linear-gradient(135deg, #1e73b8 0%, #0f5aa0 60%, #0e7a44 100%);
-  box-shadow: 0 10px 26px rgba(8, 22, 52, 0.18);
+/* Hero met stadion-achtergrond, compacter dan de hoofdsite-hero. */
+.live-hero-band {
+  min-height: 0;
 }
 
-.live-hero-text {
-  min-width: 0;
+.live-hero-band .hero-content {
+  padding-top: 18px;
+  padding-bottom: 18px;
 }
 
 .live-hero-title {
+  margin-top: 12px;
   color: #fff;
-  font-size: 1.15rem;
-  font-weight: 1000;
-  line-height: 1.15;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.12;
 }
 
 .live-hero-sub {
-  margin-top: 3px;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.8rem;
+  margin-top: 8px;
+  max-width: 38rem;
+  color: #eff6ff;
+  font-size: 0.9rem;
   font-weight: 600;
+  line-height: 1.5;
 }
 
-.live-hero-btn {
-  display: inline-flex;
-  flex: 0 0 auto;
+.live-hero-actions {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  border-radius: 999px;
-  padding: 9px 16px;
-  background: #ff9800;
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 1000;
-  text-decoration: none;
-  box-shadow: 0 4px 14px rgba(255, 152, 0, 0.4);
+  gap: 10px;
 }
+
+.live-hero-cta {
+  flex: 0 0 auto;
+}
+
+@media (min-width: 640px) {
+  .live-hero-title {
+    font-size: 1.7rem;
+  }
+}
+
+/* Sectie-headers: blauw (standaard) en groen voor de live-sectie i.p.v. beige. */
 
 /* Sectie-headers: blauw (standaard) en groen voor de live-sectie i.p.v. beige. */
 .live-section-header {
@@ -2315,17 +2323,136 @@ textarea {
 }
 
 .live-subsite-footer {
-  margin: 8px auto 28px;
-  width: min(700px, 100%);
+  margin: 12px auto 28px;
+  width: min(1100px, 100%);
   padding: 0 16px;
 }
 
-.live-subsite-footer-title {
+/* Onderaan: WK-poule-CTA (links/groot) + Slimescore-banners (rechts/klein). */
+.live-footer-grid {
+  display: grid;
+  gap: 14px;
+}
+
+@media (min-width: 768px) {
+  .live-footer-grid {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: stretch;
+  }
+}
+
+.live-pool-cta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  text-decoration: none;
+}
+
+.live-pool-cta-title {
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.live-pool-cta-sub {
+  margin-top: 6px;
+  color: #dbe7f7;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.live-pool-cta-btn {
+  align-self: flex-start;
+}
+
+.live-footer-side-title {
   margin-bottom: 8px;
   color: #48617f;
   font-size: 0.8rem;
   font-weight: 800;
+}
+
+.live-footer-version {
+  margin-top: 18px;
+  color: #6b7c95;
+  font-size: 0.78rem;
+  font-weight: 700;
   text-align: center;
+}
+
+/* Wedstrijd-kaart: meta-regel boven, teams + uitslag eronder (geen verspringende kolommen). */
+.live-match-card {
+  display: grid;
+  gap: 6px;
+  padding: 11px 14px;
+  color: #0b1f4d;
+  text-decoration: none;
+}
+
+.live-match-card:hover {
+  background: #f7faff;
+}
+
+.live-match-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #48617f;
+}
+
+.live-match-round {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-match-when {
+  flex: 0 0 auto;
+}
+
+.live-match-when.is-live {
+  color: #e11d48;
+  font-weight: 900;
+}
+
+.live-match-body {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-match-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.live-match-sep {
+  color: #94a3b8;
+  font-weight: 800;
+}
+
+.live-match-score {
+  margin-left: auto;
+  min-width: 3.2rem;
+  text-align: right;
+  font-weight: 1000;
+  font-variant-numeric: tabular-nums;
+  color: #081634;
+}
+
+/* Merk netjes gecentreerd in de header-pill. */
+.live-subsite-header .brand-wordmark {
+  justify-content: center;
 }
 
 .live-row {

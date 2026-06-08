@@ -16,6 +16,8 @@ export const SLIME_VOLLEY_URL = "https://volley.slimescore.com";
 export const SITE_URL = "https://slimescore.com";
 /** Alternatief domein (PWA), wijst naar dezelfde app. */
 export const SITE_URL_APP = "https://slimescore.app";
+/** Live-subsite (uitslagen + schema), zelfde app via host-rewrite. */
+export const LIVE_URL = "https://live.slimescore.com";
 export const SITE_NAME = "SlimeScore";
 
 /** Afzender van de inlog-/systeemmails (Cloudflare Email Routing → Resend). */
@@ -23,7 +25,7 @@ export const MAIL_FROM = "noreply@slimesports.com";
 /** Contactadres voor vragen, privacy en account-verzoeken. */
 export const CONTACT_EMAIL = "contact@slimescore.com";
 /** Bèta-versie, handmatig ophogen bij releases. */
-export const APP_VERSION = "0.22";
+export const APP_VERSION = "0.23";
 /** Maker. */
 export const COMPANY_NAME = "Feliro";
 export const COMPANY_URL = "https://feliro.nl";
