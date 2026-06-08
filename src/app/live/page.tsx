@@ -53,6 +53,7 @@ function whenLabel(iso: string, locale: Locale) {
 }
 
 const KNOCKOUT: Record<string, [string, string]> = {
+  "round of 32": ["Zestiende finale", "Round of 32"],
   "round of 16": ["Achtste finale", "Round of 16"],
   "quarter-finals": ["Kwartfinale", "Quarter-finals"],
   "semi-finals": ["Halve finale", "Semi-finals"],
@@ -60,14 +61,19 @@ const KNOCKOUT: Record<string, [string, string]> = {
   final: ["Finale", "Final"],
 };
 
-function roundLabel(round: string, locale: Locale) {
-  const group = round.match(/Group ([A-L])/i);
-  if (group) return locale === "en" ? `Group ${group[1]}` : `Groep ${group[1]}`;
-  const key = round.toLowerCase();
+function roundLabel(fixture: LiveFixture, locale: Locale) {
+  const key = fixture.round.toLowerCase();
+  // De API gebruikt voor de groepsfase matchday-nummers ("Group Stage - 1"),
+  // niet de poule-letter. Die halen we uit de teamgroep.
+  if (key.includes("group")) {
+    const group = fixture.home.group ?? fixture.away.group;
+    if (group) return locale === "en" ? `Group ${group}` : `Groep ${group}`;
+    return locale === "en" ? "Group stage" : "Groepsfase";
+  }
   for (const [needle, [nl, en]] of Object.entries(KNOCKOUT)) {
     if (key.includes(needle)) return locale === "en" ? en : nl;
   }
-  return round;
+  return fixture.round;
 }
 
 function statusWhen(fixture: LiveFixture, locale: Locale) {
@@ -90,7 +96,7 @@ function TeamInline({ team, locale }: { team: LiveTeam; locale: Locale }) {
 function MatchCard({ fixture, locale }: { fixture: LiveFixture; locale: Locale }) {
   const when = statusWhen(fixture, locale);
   const played = when.live || ["FT", "AET", "PEN"].includes(fixture.statusShort);
-  const meta = [roundLabel(fixture.round, locale), fixture.venue].filter(Boolean).join(" · ");
+  const meta = [roundLabel(fixture, locale), fixture.venue].filter(Boolean).join(" · ");
   return (
     <a href={`/live/match/${fixture.id}`} className="live-match-card">
       <div className="live-match-meta">
