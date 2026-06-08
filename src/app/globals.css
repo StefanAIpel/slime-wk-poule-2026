@@ -1022,14 +1022,18 @@ textarea {
 
 /* Compactere stadion-kop voor binnenpagina's. */
 .hero-band-page {
-  min-height: 180px;
-  max-height: 220px;
+  min-height: 170px;
+  max-height: 200px;
+}
+
+.hero-band-page .hero-content {
+  align-self: start;
 }
 
 @media (min-width: 800px) {
   .hero-band-page {
-    min-height: 200px;
-    max-height: 220px;
+    min-height: 168px;
+    max-height: 190px;
   }
 }
 
@@ -1203,7 +1207,9 @@ textarea {
   }
 
   .hero-band-page.hero-band-visual {
-    min-height: 200px;
+    min-height: 168px;
+    align-items: start;
+    padding: 24px 28px 18px;
   }
 
   .hero-content {
@@ -1214,6 +1220,12 @@ textarea {
     right: 24px;
     max-height: 92%;
     max-width: 44%;
+  }
+
+  .hero-band-page .hero-mascot {
+    right: 22px;
+    max-height: 78%;
+    max-width: 34%;
   }
 
   .hero-band-art {
@@ -1468,37 +1480,66 @@ textarea {
 }
 
 .language-switcher {
+  position: relative;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
-  gap: 3px;
-  padding: 3px;
+}
+
+.language-switcher-btn {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 4px;
   border: 1px solid rgba(8, 22, 52, 0.12);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.95);
+  color: #0b1f4d;
+  padding: 0 10px;
+  cursor: pointer;
   box-shadow: 0 8px 18px rgba(8, 22, 52, 0.08);
 }
 
-.language-switcher-option {
-  display: inline-grid;
-  place-items: center;
-  min-width: 30px;
-  min-height: 30px;
-  border-radius: 999px;
-  font-size: 1.05rem;
+.language-switcher-flag {
+  font-size: 1.15rem;
   line-height: 1;
+}
+
+.language-switcher-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  min-width: 168px;
+  border-radius: 12px;
+  background: #fff;
+  padding: 6px;
+  box-shadow: 0 14px 34px rgba(8, 22, 52, 0.22);
+}
+
+.language-switcher-option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: transparent;
+  color: #081634;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: left;
   text-decoration: none;
-  filter: grayscale(0.35);
 }
 
 .language-switcher-option:hover {
-  background: #eef3fc;
-  filter: none;
+  background: #f1f5fb;
 }
 
 .language-switcher-option.is-active {
-  background: linear-gradient(135deg, var(--blue), var(--blue-2));
-  filter: none;
-  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  background: #eaf2ff;
+  color: #0866e8;
 }
 
 .quick-menu-language-switcher {
@@ -2268,6 +2309,7 @@ textarea {
 /* Hero met stadion-achtergrond, compacter dan de hoofdsite-hero. */
 .live-hero-band {
   min-height: 0;
+  padding-bottom: 22px;
 }
 
 .live-hero-band .hero-content {
@@ -2280,10 +2322,10 @@ textarea {
 /* Kleine mascotte rechtsonder in de hero (subtiel, niet zo groot als de hoofdpagina). */
 .live-hero-mascot {
   position: absolute;
-  right: -6px;
-  bottom: 0;
+  right: -10px;
+  bottom: 40px;
   z-index: 1;
-  height: 170px;
+  height: 160px;
   width: auto;
   pointer-events: none;
   filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
@@ -2293,28 +2335,29 @@ textarea {
   .live-hero-mascot {
     height: 240px;
     right: 12px;
+    bottom: 0;
   }
 }
 
 .live-hero-title {
-  margin-top: 12px;
+  margin-top: 9px;
   color: #fff;
-  font-size: 1.35rem;
+  font-size: 1.22rem;
   font-weight: 800;
-  line-height: 1.12;
+  line-height: 1.08;
 }
 
 .live-hero-sub {
-  margin-top: 8px;
+  margin-top: 6px;
   max-width: 38rem;
   color: #eff6ff;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 600;
-  line-height: 1.5;
+  line-height: 1.38;
 }
 
 .live-hero-actions {
-  margin-top: 14px;
+  margin-top: 11px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -2643,7 +2686,7 @@ textarea {
 }
 
 .rules-side-banners .slime-link-banners {
-  width: min(460px, 100%);
+  width: 100%;
   margin-inline: 0;
   gap: 8px;
 }
@@ -2668,6 +2711,12 @@ textarea {
   display: block;
   width: 100%;
   height: auto;
+}
+
+.game-page-heading,
+.game-stage {
+  width: min(1120px, 100%);
+  margin-inline: 0 auto;
 }
 
 .game-toolbar {
@@ -2773,7 +2822,7 @@ textarea {
 
 .game-frame {
   position: relative;
-  width: min(1120px, 100%);
+  width: 100%;
   max-width: 100%;
   aspect-ratio: 16 / 9;
   margin-inline: 0 auto;
