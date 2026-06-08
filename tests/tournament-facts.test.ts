@@ -7,7 +7,7 @@ function team(code: string, goals: number | null, winner = false): Team {
   return { id: code.charCodeAt(0), name: code, code, group: "A", logo: "", goals, winner };
 }
 function fx(id: number, round: string, statusShort: string, home: Team, away: Team) {
-  return { id, date: "2026-06-11T19:00:00Z", statusShort, statusLong: "", elapsed: null, round, venue: null, home, away };
+  return { id, date: "2026-06-11T19:00:00Z", statusShort, statusLong: "", elapsed: null, round, venue: null, friendly: false, home, away };
 }
 
 test("partial tournament does not write end-of-tournament facts", () => {
