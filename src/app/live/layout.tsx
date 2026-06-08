@@ -35,6 +35,13 @@ export const metadata: Metadata = {
     siteName: "SlimeScore",
     title: "WK 2026 live — uitslagen, stand & speelschema",
     description: "Volg het WK 2026 live: uitslagen, stand, opstellingen en het volledige speelschema.",
+    images: [{ url: "/icons/slimescore-live-app-icon-512.png", width: 512, height: 512, alt: "SlimeScore live app icon" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "WK 2026 live — uitslagen, stand & speelschema",
+    description: "Volg het WK 2026 live: uitslagen, stand, opstellingen en het volledige speelschema.",
+    images: ["/icons/slimescore-live-app-icon-512.png"],
   },
 };
 
