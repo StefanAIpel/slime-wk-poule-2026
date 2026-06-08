@@ -76,3 +76,14 @@ test("live list refreshes fast for the Pro plan", () => {
   assert.match(livePage, /LiveAutoRefresh seconds=\{15\}/);
   assert.match(livePage, /revalidate = 15/);
 });
+
+test("cron live-sync is window-gated, authorized and recalculates", async () => {
+  const cron = await readFile(new URL("../src/app/api/cron/live-sync/route.ts", import.meta.url), "utf8");
+  const vercel = await readFile(new URL("../vercel.json", import.meta.url), "utf8");
+  assert.match(cron, /buiten het wedstrijd-venster/);
+  assert.match(cron, /CRON_SECRET/);
+  assert.match(cron, /recalculateAllScores/);
+  assert.match(cron, /computeTournamentFacts/);
+  assert.match(vercel, /\/api\/cron\/live-sync/);
+  assert.match(vercel, /\* \* \* \* \*/);
+});
