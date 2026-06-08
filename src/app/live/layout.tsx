@@ -62,14 +62,9 @@ export default async function LiveLayout({ children }: { children: React.ReactNo
       <main className="page-shell live-subsite-main">{children}</main>
       <footer className="live-subsite-footer">
         <div className="live-footer-grid">
-          <a href={SITE_URL} className="dark-panel live-pool-cta">
+          <a href={SITE_URL} className="live-pool-banner" aria-label={f.poolTitle}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icons/slimescore-app-icon-v4-512.png" alt="SlimeScore" className="live-pool-cta-logo" loading="lazy" />
-            <div className="live-pool-cta-main">
-              <h2 className="live-pool-cta-title">{f.poolTitle}</h2>
-              <p className="live-pool-cta-sub">{f.poolIntro}</p>
-              <span className="button-primary live-pool-cta-btn">{f.poolCta}</span>
-            </div>
+            <img src="/slimes/slimescore-wk2026-friend-poule-banner.webp" alt={f.poolTitle} loading="lazy" />
           </a>
           <div className="live-footer-side">
             <p className="live-footer-side-title">{f.more}</p>

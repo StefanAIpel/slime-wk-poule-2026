@@ -2459,6 +2459,21 @@ textarea {
   font-weight: 800;
 }
 
+/* WK-poule promo-banner als CTA (links in de footer). */
+.live-pool-banner {
+  display: block;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 10px 26px rgba(8, 22, 52, 0.18);
+}
+
+.live-pool-banner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .live-footer-version {
   margin-top: 18px;
   color: #6b7c95;
