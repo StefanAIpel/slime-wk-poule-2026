@@ -1,14 +1,24 @@
 import { ArrowLeft } from "lucide-react";
+import { TeamFlag } from "@/components/team-flag";
 import { getFixtureById, getFixtureDetail, isLiveStatus, type LiveFixture, type MatchEvent, type TeamLineup, type TeamStatistics } from "@/lib/apifootball-live";
+import { getServerLocale } from "@/lib/server-locale";
+import type { Locale } from "@/lib/i18n";
 
 export const revalidate = 30;
 
-function kickoff(iso: string) {
-  return new Intl.DateTimeFormat("nl-NL", { timeZone: "Europe/Amsterdam", weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
+const copy = {
+  nl: { back: "Terug naar live", finished: "Afgelopen", rest: "Rust", events: "Wedstrijdverloop", stats: "Statistieken", lineups: "Opstellingen", coach: "Coach", notFound: "Deze wedstrijd kon niet geladen worden.", soon: "Opstellingen en statistieken verschijnen rond de aftrap." },
+  en: { back: "Back to live", finished: "Finished", rest: "HT", events: "Match events", stats: "Statistics", lineups: "Line-ups", coach: "Coach", notFound: "This match could not be loaded.", soon: "Line-ups and statistics appear around kick-off." },
+} as const;
+
+function kickoff(iso: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "nl-NL", { timeZone: "Europe/Amsterdam", weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
 }
 
-function MatchHeader({ fixture }: { fixture: LiveFixture }) {
-  const played = isLiveStatus(fixture.statusShort) || ["FT", "AET", "PEN"].includes(fixture.statusShort);
+function MatchHeader({ fixture, locale }: { fixture: LiveFixture; locale: Locale }) {
+  const c = copy[locale];
+  const live = isLiveStatus(fixture.statusShort);
+  const played = live || ["FT", "AET", "PEN"].includes(fixture.statusShort);
   return (
     <section className="panel p-4">
       <p className="text-center text-xs font-bold uppercase tracking-wide text-[#48617f]">
@@ -16,19 +26,17 @@ function MatchHeader({ fixture }: { fixture: LiveFixture }) {
       </p>
       <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
         <div className="grid justify-items-center gap-2 text-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={fixture.home.logo} alt="" aria-hidden="true" className="h-10 w-10 object-contain" />
+          <TeamFlag code={fixture.home.code} name={fixture.home.name} size="md" locale={locale} />
           <span className="text-sm font-bold text-[#081634]">{fixture.home.name}</span>
         </div>
         <div className="grid justify-items-center">
           <span className="text-3xl font-black tabular-nums text-[#081634]">{played ? `${fixture.home.goals ?? 0}-${fixture.away.goals ?? 0}` : "–"}</span>
-          <span className={isLiveStatus(fixture.statusShort) ? "live-row-status is-live mt-1" : "mt-1 text-xs font-bold text-[#48617f]"}>
-            {isLiveStatus(fixture.statusShort) ? (fixture.statusShort === "HT" ? "Rust" : `${fixture.elapsed ?? ""}'`) : played ? "Afgelopen" : kickoff(fixture.date)}
+          <span className={live ? "live-row-status is-live mt-1" : "mt-1 text-xs font-bold text-[#48617f]"}>
+            {live ? (fixture.statusShort === "HT" ? c.rest : `${fixture.elapsed ?? ""}'`) : played ? c.finished : kickoff(fixture.date, locale)}
           </span>
         </div>
         <div className="grid justify-items-center gap-2 text-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={fixture.away.logo} alt="" aria-hidden="true" className="h-10 w-10 object-contain" />
+          <TeamFlag code={fixture.away.code} name={fixture.away.name} size="md" locale={locale} />
           <span className="text-sm font-bold text-[#081634]">{fixture.away.name}</span>
         </div>
       </div>
@@ -36,11 +44,11 @@ function MatchHeader({ fixture }: { fixture: LiveFixture }) {
   );
 }
 
-function Events({ events }: { events: MatchEvent[] }) {
+function Events({ events, title }: { events: MatchEvent[]; title: string }) {
   if (!events.length) return null;
   return (
     <section className="panel p-4">
-      <h2 className="mb-3 text-lg font-bold text-[#081634]">Wedstrijdverloop</h2>
+      <h2 className="mb-3 text-lg font-bold text-[#081634]">{title}</h2>
       <ul className="grid gap-2">
         {events.map((event, index) => (
           <li key={index} className="flex items-baseline gap-2 text-sm text-[#2f3d57]">
@@ -54,14 +62,14 @@ function Events({ events }: { events: MatchEvent[] }) {
   );
 }
 
-function Statistics({ stats }: { stats: TeamStatistics[] }) {
+function Statistics({ stats, title }: { stats: TeamStatistics[]; title: string }) {
   if (stats.length < 2) return null;
   const [home, away] = stats;
   const value = (team: TeamStatistics, type: string) => team.statistics.find((s) => s.type === type)?.value ?? "–";
   const types = Array.from(new Set(home.statistics.map((s) => s.type)));
   return (
     <section className="panel p-4">
-      <h2 className="mb-3 text-lg font-bold text-[#081634]">Statistieken</h2>
+      <h2 className="mb-3 text-lg font-bold text-[#081634]">{title}</h2>
       <div className="grid gap-2">
         {types.map((type) => (
           <div key={type} className="grid grid-cols-[3rem_1fr_3rem] items-center gap-2 text-sm">
@@ -75,11 +83,11 @@ function Statistics({ stats }: { stats: TeamStatistics[] }) {
   );
 }
 
-function Lineups({ lineups }: { lineups: TeamLineup[] }) {
+function Lineups({ lineups, title, coachLabel }: { lineups: TeamLineup[]; title: string; coachLabel: string }) {
   if (!lineups.length) return null;
   return (
     <section className="panel p-4">
-      <h2 className="mb-3 text-lg font-bold text-[#081634]">Opstellingen</h2>
+      <h2 className="mb-3 text-lg font-bold text-[#081634]">{title}</h2>
       <div className="grid gap-4 md:grid-cols-2">
         {lineups.map((team) => (
           <div key={team.team.id} className="grid gap-2">
@@ -94,7 +102,7 @@ function Lineups({ lineups }: { lineups: TeamLineup[] }) {
                 <li key={p.player.id}><span className="inline-block w-6 font-bold tabular-nums text-[#48617f]">{p.player.number ?? ""}</span>{p.player.name}</li>
               ))}
             </ul>
-            {team.coach.name ? <p className="text-xs font-medium text-[#48617f]">Coach: {team.coach.name}</p> : null}
+            {team.coach.name ? <p className="text-xs font-medium text-[#48617f]">{coachLabel}: {team.coach.name}</p> : null}
           </div>
         ))}
       </div>
@@ -104,25 +112,24 @@ function Lineups({ lineups }: { lineups: TeamLineup[] }) {
 
 export default async function LiveMatchPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const locale = await getServerLocale();
+  const c = copy[locale];
   const fixtureId = Number(id);
   const [fixture, detail] = await Promise.all([getFixtureById(fixtureId), getFixtureDetail(fixtureId)]);
+  const hasDetail = Boolean(detail.events?.length || detail.statistics?.length || detail.lineups?.length);
 
   return (
     <div className="grid gap-4">
       <a href="/live" className="inline-flex w-fit items-center gap-1 text-sm font-bold text-[#0866e8]">
-        <ArrowLeft aria-hidden="true" className="size-4" /> Terug naar live
+        <ArrowLeft aria-hidden="true" className="size-4" /> {c.back}
       </a>
-      {fixture ? <MatchHeader fixture={fixture} /> : (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm font-bold text-[#8a5a00]">
-          Deze wedstrijd kon niet geladen worden (of de live-koppeling is nog niet actief).
-        </div>
+      {fixture ? <MatchHeader fixture={fixture} locale={locale} /> : (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm font-bold text-[#8a5a00]">{c.notFound}</div>
       )}
-      {detail.events?.length ? <Events events={detail.events} /> : null}
-      {detail.statistics?.length ? <Statistics stats={detail.statistics} /> : null}
-      {detail.lineups?.length ? <Lineups lineups={detail.lineups} /> : null}
-      {fixture && !detail.events?.length && !detail.statistics?.length && !detail.lineups?.length ? (
-        <p className="panel p-4 text-sm font-bold text-[#48617f]">Opstellingen en statistieken verschijnen rond de aftrap, zodra API-Football ze levert.</p>
-      ) : null}
+      {detail.events?.length ? <Events events={detail.events} title={c.events} /> : null}
+      {detail.statistics?.length ? <Statistics stats={detail.statistics} title={c.stats} /> : null}
+      {detail.lineups?.length ? <Lineups lineups={detail.lineups} title={c.lineups} coachLabel={c.coach} /> : null}
+      {fixture && !hasDetail ? <p className="panel p-4 text-sm font-bold text-[#48617f]">{c.soon}</p> : null}
     </div>
   );
 }
