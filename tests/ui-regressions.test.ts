@@ -17,6 +17,7 @@ const passwordChangeForm = await readFile(new URL("../src/components/password-ch
 const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
+const liveNav = await readFile(new URL("../src/components/live-subsite-nav.tsx", import.meta.url), "utf8");
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
 const rankingPage = await readFile(new URL("../src/app/ranglijst/page.tsx", import.meta.url), "utf8");
@@ -152,7 +153,7 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.30"/);
+  assert.match(constants, /APP_VERSION = "0.31"/);
 });
 
 test("desktop UI uses compact page heroes, right-column rules banners and aligned game stage", () => {
@@ -191,7 +192,27 @@ test("ranking desktop column headers distinguish players and poules", () => {
 
 test("live subsite header respects the iOS status bar (safe-area-inset-top)", () => {
   const headerBlock = globalsCss.match(/\.live-subsite-header \{[\s\S]*?\}/)?.[0] ?? "";
-  assert.match(headerBlock, /padding: calc\(10px \+ env\(safe-area-inset-top\)\) 16px 10px;/);
+  assert.match(headerBlock, /padding: calc\(8px \+ env\(safe-area-inset-top\)\) 12px 8px;/);
+  assert.match(headerBlock, /z-index: 1000;/);
+  assert.match(headerBlock, /isolation: isolate;/);
+});
+
+test("live sticky header has visible menu tabs and a high-z-index flag language dropdown", () => {
+  const menuBlock = globalsCss.match(/\.live-subsite-menu \{[\s\S]*?\}/)?.[0] ?? "";
+  const linkBlock = globalsCss.match(/\.live-subsite-menu-link \{[\s\S]*?\}/)?.[0] ?? "";
+  const langButtonBlock = globalsCss.match(/\.live-lang-btn \{[\s\S]*?\}/)?.[0] ?? "";
+  const langMenuBlock = globalsCss.match(/\.live-lang-menu \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(liveNav, /live-subsite-menu/);
+  assert.match(liveNav, /href: "\/live\/schema\/knockout"/);
+  assert.match(liveNav, /href === "\/live\/schema"\) return pathname === href/);
+  assert.match(menuBlock, /grid-column: 1 \/ -1;/);
+  assert.match(menuBlock, /grid-row: 2;/);
+  assert.match(menuBlock, /overflow-x: auto;/);
+  assert.match(linkBlock, /font-size: 0\.86rem;/);
+  assert.match(langButtonBlock, /font: inherit;/);
+  assert.match(langButtonBlock, /min-width: 43px;/);
+  assert.match(langMenuBlock, /z-index: 1001;/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.live-lang-menu \{[\s\S]*top: calc\(100% \+ 56px\);/);
 });
 
 test("live mobile hero aligns Memphis with the share row and keeps the title block compact", () => {
