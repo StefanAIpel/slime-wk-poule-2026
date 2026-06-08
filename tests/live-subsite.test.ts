@@ -60,3 +60,19 @@ test("match detail uses our flags and avoids technical jargon", () => {
   assert.match(liveMatch, /TeamFlag/);
   assert.doesNotMatch(liveMatch, /API-Football/);
 });
+
+test("live host serves static files (sw.js, manifest) so the PWA works", () => {
+  assert.match(middleware, /\\\.\[a-zA-Z0-9\]\+\$/);
+  assert.match(layout, /PwaRegister/);
+});
+
+test("match detail shows a player-of-the-match from the players endpoint", () => {
+  assert.match(liveLib, /fixtures\/players/);
+  assert.match(liveLib, /manOfTheMatch/);
+  assert.match(liveMatch, /Motm/);
+});
+
+test("live list refreshes fast for the Pro plan", () => {
+  assert.match(livePage, /LiveAutoRefresh seconds=\{15\}/);
+  assert.match(livePage, /revalidate = 15/);
+});

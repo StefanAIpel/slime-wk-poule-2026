@@ -129,11 +129,41 @@ export type MatchEvent = {
   detail: string;
 };
 
+export type PlayerLine = {
+  player: { id: number; name: string; photo: string };
+  statistics: {
+    games: { rating: string | null; minutes: number | null; position: string | null; captain: boolean };
+    goals: { total: number | null; assists: number | null };
+  }[];
+};
+export type TeamPlayers = {
+  team: { id: number; name: string; logo: string };
+  players: PlayerLine[];
+};
+
 export async function getFixtureDetail(id: number) {
-  const [lineups, statistics, events] = await Promise.all([
+  const [lineups, statistics, events, players] = await Promise.all([
     apiGet<TeamLineup>(`fixtures/lineups?fixture=${id}`, 30),
     apiGet<TeamStatistics>(`fixtures/statistics?fixture=${id}`, 30),
     apiGet<MatchEvent>(`fixtures/events?fixture=${id}`, 30),
+    apiGet<TeamPlayers>(`fixtures/players?fixture=${id}`, 30),
   ]);
-  return { lineups, statistics, events };
+  return { lineups, statistics, events, players };
+}
+
+/** Hoogst beoordeelde speler over beide teams (man van de wedstrijd). */
+export function manOfTheMatch(players: TeamPlayers[] | null) {
+  if (!players?.length) return null;
+  let best: { name: string; team: string; rating: number; photo: string; goals: number } | null = null;
+  for (const team of players) {
+    for (const line of team.players) {
+      const stat = line.statistics?.[0];
+      const rating = stat?.games.rating ? Number(stat.games.rating) : NaN;
+      if (!Number.isFinite(rating)) continue;
+      if (!best || rating > best.rating) {
+        best = { name: line.player.name, team: team.team.name, rating, photo: line.player.photo, goals: stat?.goals.total ?? 0 };
+      }
+    }
+  }
+  return best;
 }
