@@ -1935,6 +1935,44 @@ textarea {
   gap: 8px;
 }
 
+.schema-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.schema-live-follow-button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ef4444, #dc2626 48%, #b91c1c);
+  padding: 0 16px;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 950;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 10px 22px rgba(185, 28, 28, 0.32);
+}
+
+.schema-live-follow-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(185, 28, 28, 0.38);
+}
+
+.schema-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.18);
+}
+
 @media (min-width: 640px) {
   .schema-tabs {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2353,8 +2391,25 @@ textarea {
 }
 
 @media (max-width: 759px) {
+  .live-subsite-header {
+    position: sticky;
+    top: 0;
+  }
+
+  .live-subsite-main {
+    position: relative;
+    z-index: 0;
+  }
+
+  .live-subsite-main :where(.live-hero-band) {
+    position: relative;
+    z-index: 0;
+  }
+
   .live-lang-menu {
-    top: calc(100% + 56px);
+    position: fixed;
+    top: calc(101px + env(safe-area-inset-top));
+    right: 12px;
   }
 }
 
@@ -3539,7 +3594,7 @@ textarea {
 
 .schedule-tab {
   display: inline-flex;
-  min-height: 44px;
+  min-height: 46px;
   align-items: center;
   justify-content: center;
   gap: 6px;
@@ -3547,8 +3602,8 @@ textarea {
   border-radius: 13px;
   background: transparent;
   color: #48617f;
-  font-size: 0.78rem;
-  font-weight: 900;
+  font-size: 0.9rem;
+  font-weight: 950;
   cursor: pointer;
 }
 

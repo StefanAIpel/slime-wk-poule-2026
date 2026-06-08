@@ -153,7 +153,7 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.31"/);
+  assert.match(constants, /APP_VERSION = "0.32"/);
 });
 test("entry deadline is set to the Netherlands' first match (Sun 14 June 22:00)", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-14T22:00:00\+02:00"/);
@@ -205,6 +205,7 @@ test("live sticky header has visible menu tabs and a high-z-index flag language 
   const linkBlock = globalsCss.match(/\.live-subsite-menu-link \{[\s\S]*?\}/)?.[0] ?? "";
   const langButtonBlock = globalsCss.match(/\.live-lang-btn \{[\s\S]*?\}/)?.[0] ?? "";
   const langMenuBlock = globalsCss.match(/\.live-lang-menu \{[\s\S]*?\}/)?.[0] ?? "";
+  const mobileLangMenuBlock = globalsCss.match(/@media \(max-width: 759px\) \{[\s\S]*?\.live-lang-menu \{[\s\S]*?\}\n\}/)?.[0] ?? "";
   assert.match(liveNav, /live-subsite-menu/);
   assert.match(liveNav, /liveHref: "\/schema\/knockout"/);
   assert.match(liveNav, /appHref: "\/live\/schema\/knockout"/);
@@ -217,7 +218,23 @@ test("live sticky header has visible menu tabs and a high-z-index flag language 
   assert.match(langButtonBlock, /font: inherit;/);
   assert.match(langButtonBlock, /min-width: 43px;/);
   assert.match(langMenuBlock, /z-index: 1001;/);
-  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.live-lang-menu \{[\s\S]*top: calc\(100% \+ 56px\);/);
+  assert.match(mobileLangMenuBlock, /position: fixed;/);
+  assert.match(mobileLangMenuBlock, /top: calc\(101px \+ env\(safe-area-inset-top\)\);/);
+  assert.match(globalsCss, /\.live-subsite-main :where\(\.live-hero-band\) \{[\s\S]*position: relative;[\s\S]*z-index: 0;/);
+});
+
+test("schema hero has a red Follow live CTA and larger schedule section tabs", () => {
+  const scheduleTabBlock = globalsCss.match(/\.schedule-tab \{[\s\S]*?\}/)?.[0] ?? "";
+  const liveButtonBlock = globalsCss.match(/\.schema-live-follow-button \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(schemaPage, /import \{ LIVE_URL, SITE_URL \}/);
+  assert.match(schemaPage, /href=\{LIVE_URL\}/);
+  assert.match(schemaPage, /Volg live/);
+  assert.match(schemaPage, /Follow live/);
+  assert.match(liveButtonBlock, /#ef4444/);
+  assert.match(liveButtonBlock, /#dc2626/);
+  assert.match(liveButtonBlock, /#b91c1c/);
+  assert.match(scheduleTabBlock, /font-size: 0\.9rem;/);
+  assert.match(scheduleTabBlock, /font-weight: 950;/);
 });
 
 test("live mobile hero aligns Memphis with the share row and keeps the title block compact", () => {

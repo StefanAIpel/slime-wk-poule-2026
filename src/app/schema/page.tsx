@@ -4,7 +4,7 @@ import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
 import { ScheduleExplorer } from "@/components/schedule-explorer";
 import { ShareButton } from "@/components/share-button";
-import { SITE_URL } from "@/lib/constants";
+import { LIVE_URL, SITE_URL } from "@/lib/constants";
 import { getScheduleMatches } from "@/lib/schedule-data";
 import { getServerLocale } from "@/lib/server-locale";
 
@@ -15,6 +15,7 @@ const scheduleCopy = {
     metaTitle: "WK 2026 speelschema — groepen en knock-out",
     shareTitle: "WK 2026 speelschema",
     shareLabel: "Deel schema",
+    liveLabel: "Volg live",
   },
   en: {
     intro: "All WC matches in one place with date, time and stadium. No account needed — feel free to share the schedule in your group chat.",
@@ -22,6 +23,7 @@ const scheduleCopy = {
     metaTitle: "WC 2026 schedule — groups and knockout",
     shareTitle: "WC 2026 schedule",
     shareLabel: "Share schedule",
+    liveLabel: "Follow live",
   },
 } as const;
 
@@ -55,7 +57,13 @@ export default async function SchedulePage() {
           slime="/assets/hd-schema-orange-transparent-640.webp"
           mascotClassName="hero-mascot-field hero-mascot-schema"
         >
-          <ShareButton url={scheduleShareUrl} text={scheduleIntro} title={scheduleTitle} label={scheduleCopy[locale].shareLabel} locale={locale} />
+          <div className="schema-hero-actions">
+            <a href={LIVE_URL} className="schema-live-follow-button" aria-label={scheduleCopy[locale].liveLabel}>
+              <span aria-hidden="true" className="schema-live-dot" />
+              {scheduleCopy[locale].liveLabel}
+            </a>
+            <ShareButton url={scheduleShareUrl} text={scheduleIntro} title={scheduleTitle} label={scheduleCopy[locale].shareLabel} locale={locale} />
+          </div>
         </PageHero>
       </header>
 
