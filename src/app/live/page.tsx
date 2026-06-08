@@ -159,7 +159,7 @@ function Hero({ locale }: { locale: Locale }) {
       </div>
       {/* Kleine mascotte in de hoek (subtiel, niet zo groot als de hoofdpagina). */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/assets/transparant-avatar/memphis_slime_700_transparant.webp" alt="" aria-hidden="true" className="live-hero-mascot" />
+      <img src="/assets/transparant-avatar/memphis_wkbal_700_transparant.webp" alt="" aria-hidden="true" className="live-hero-mascot" />
     </div>
   );
 }
