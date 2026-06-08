@@ -206,8 +206,10 @@ test("live sticky header has visible menu tabs and a high-z-index flag language 
   const langButtonBlock = globalsCss.match(/\.live-lang-btn \{[\s\S]*?\}/)?.[0] ?? "";
   const langMenuBlock = globalsCss.match(/\.live-lang-menu \{[\s\S]*?\}/)?.[0] ?? "";
   assert.match(liveNav, /live-subsite-menu/);
-  assert.match(liveNav, /href: "\/live\/schema\/knockout"/);
-  assert.match(liveNav, /href === "\/live\/schema"\) return pathname === href/);
+  assert.match(liveNav, /liveHref: "\/schema\/knockout"/);
+  assert.match(liveNav, /appHref: "\/live\/schema\/knockout"/);
+  assert.match(liveNav, /window\.location\.hostname\.startsWith\("live\."\)/);
+  assert.match(liveNav, /href === "\/schema" \|\| href === "\/live\/schema"/);
   assert.match(menuBlock, /grid-column: 1 \/ -1;/);
   assert.match(menuBlock, /grid-row: 2;/);
   assert.match(menuBlock, /overflow-x: auto;/);

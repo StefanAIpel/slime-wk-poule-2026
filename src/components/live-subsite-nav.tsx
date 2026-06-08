@@ -1,26 +1,27 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import { LiveLanguageSwitcher } from "@/components/live-language-switcher";
 import { useActiveLocale } from "@/hooks/use-active-locale";
 
 const navCopy = {
   nl: [
-    { href: "/live", label: "Live" },
-    { href: "/live/schema", label: "Schema" },
-    { href: "/live/schema/knockout", label: "Finales" },
+    { appHref: "/live", liveHref: "/", label: "Live" },
+    { appHref: "/live/schema", liveHref: "/schema", label: "Schema" },
+    { appHref: "/live/schema/knockout", liveHref: "/schema/knockout", label: "Finales" },
   ],
   en: [
-    { href: "/live", label: "Live" },
-    { href: "/live/schema", label: "Schedule" },
-    { href: "/live/schema/knockout", label: "Finals" },
+    { appHref: "/live", liveHref: "/", label: "Live" },
+    { appHref: "/live/schema", liveHref: "/schema", label: "Schedule" },
+    { appHref: "/live/schema/knockout", liveHref: "/schema/knockout", label: "Finals" },
   ],
 } as const;
 
 function isActive(pathname: string, href: string) {
-  if (href === "/live") return pathname === "/live" || pathname === "/live/" || pathname === "/";
-  if (href === "/live/schema") return pathname === href || pathname === `${href}/`;
+  if (href === "/" || href === "/live") return pathname === "/" || pathname === "/live" || pathname === "/live/";
+  if (href === "/schema" || href === "/live/schema") return pathname === "/schema" || pathname === "/schema/" || pathname === "/live/schema" || pathname === "/live/schema/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -28,7 +29,13 @@ function isActive(pathname: string, href: string) {
 export function LiveSubsiteNav() {
   const pathname = usePathname() || "/live";
   const locale = useActiveLocale(pathname);
-  const items = navCopy[locale];
+  const [isLiveHost, setIsLiveHost] = useState(false);
+
+  useEffect(() => {
+    setIsLiveHost(window.location.hostname.startsWith("live."));
+  }, []);
+
+  const items = navCopy[locale].map((item) => ({ href: isLiveHost ? item.liveHref : item.appHref, label: item.label }));
 
   return (
     <header className="live-subsite-header">
