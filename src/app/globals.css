@@ -4902,26 +4902,31 @@ textarea {
   color: #081634;
 }
 
-/* Poule-pagina: mobiel compacter en prioriteit op ranglijst/deelnemers. */
+/* Poule-pagina: compacte kaart met brede 5:1 banner en prioriteit op ranglijst/deelnemers. */
+.poules-page-shell {
+  /* 1098 border-box - 24px desktop padding links/rechts = ±1050px bannerbreedte. */
+  width: min(1098px, 100%);
+}
+
 .pool-card-hero {
   position: relative;
   display: grid;
-  aspect-ratio: 16 / 9;
-  min-height: 188px;
-  max-height: 330px;
+  aspect-ratio: 5 / 1;
+  min-height: 150px;
+  max-height: 210px;
   grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   align-items: end;
   overflow: hidden;
   border-top: 4px solid var(--pool-accent, #114b82);
   background:
-    linear-gradient(90deg, rgba(4, 12, 32, 0.78) 0%, rgba(4, 12, 32, 0.42) 58%, rgba(4, 12, 32, 0.18) 100%),
+    linear-gradient(90deg, rgba(4, 12, 32, 0.8) 0%, rgba(4, 12, 32, 0.45) 58%, rgba(4, 12, 32, 0.2) 100%),
     var(--pool-banner-image, none),
     var(--pool-accent, #114b82);
   background-position: center, center, center;
-  background-size: cover, contain, auto;
+  background-size: cover, cover, auto;
   background-repeat: no-repeat;
-  padding: 20px 18px;
+  padding: 18px 18px 14px;
 }
 
 .pool-card-title-row {
@@ -5037,6 +5042,92 @@ textarea {
   gap: 8px;
 }
 
+.pool-members-section {
+  padding: 12px;
+}
+
+.pool-members-title {
+  font-size: 1rem;
+  line-height: 1.15;
+}
+
+.pool-members-hint {
+  margin-top: 2px;
+  font-size: 0.76rem;
+}
+
+.pool-members-list {
+  margin-top: 8px;
+  gap: 6px;
+}
+
+.pool-member-button {
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 9px;
+}
+
+.pool-member-rank {
+  width: 24px;
+  height: 24px;
+  font-size: 0.68rem;
+}
+
+.pool-member-main {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pool-member-name,
+.pool-member-points {
+  font-size: 0.84rem;
+  line-height: 1.1;
+}
+
+.pool-member-team,
+.pool-member-world {
+  font-size: 0.72rem;
+}
+
+.pool-member-world {
+  vertical-align: baseline;
+}
+
+.pool-board-section {
+  background: #f2fbf5;
+  padding: 12px;
+}
+
+.pool-board-titlebar {
+  margin: -12px -12px 10px;
+  border-radius: 0;
+  background: linear-gradient(90deg, #0e7a44, #15a35b);
+  color: #ffffff;
+  padding: 9px 12px;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.pool-board-textarea {
+  min-height: 62px;
+}
+
+.pool-board-message {
+  border-color: #bce7c7;
+  background: #f3fcf6;
+  padding: 9px;
+}
+
+.pool-board-message-pinned {
+  border-color: #e0b23a;
+  background: #fff8dc;
+}
+
 .pool-members-count {
   display: inline-grid;
   min-width: 28px;
@@ -5082,10 +5173,11 @@ textarea {
   }
 
   .pool-card-hero {
-    min-height: 188px;
+    min-height: 78px;
+    max-height: 118px;
     grid-template-columns: minmax(0, 1fr);
-    gap: 8px;
-    padding: 16px 12px 13px;
+    gap: 6px;
+    padding: 11px 10px 9px;
   }
 
   .pool-card-title {
