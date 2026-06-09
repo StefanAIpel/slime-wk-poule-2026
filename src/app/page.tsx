@@ -325,8 +325,8 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
         <section className="grid gap-4">
           <ProfileForm error={profileError} locale={locale} />
           <div className="panel p-4">
-            <h2 className="text-xl font-bold text-[#081634]">{copy.afterProfileTitle}</h2>
-            <div className="mt-3 grid gap-2 text-sm font-semibold leading-6 text-[#48617f]">
+            <h2 className="text-xl font-bold text-[var(--ink)]">{copy.afterProfileTitle}</h2>
+            <div className="mt-3 grid gap-2 text-sm font-semibold leading-6 text-[var(--text-muted)]">
               {copy.afterProfileSteps.map((step) => <p key={step}>{step}</p>)}
             </div>
           </div>
@@ -456,10 +456,10 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
 
           <form id="meedoen" action={joinPool} className="panel grid gap-3 p-5 scroll-mt-24">
             <div className="flex items-center gap-2">
-              <KeyRound aria-hidden="true" className="size-5 flex-none text-[#064ed6]" />
-              <h2 className="text-base font-bold text-[#081634] sm:text-lg">{copy.joinPoolTitle}</h2>
+              <KeyRound aria-hidden="true" className="size-5 flex-none text-[var(--accent-blue)]" />
+              <h2 className="text-base font-bold text-[var(--ink)] sm:text-lg">{copy.joinPoolTitle}</h2>
             </div>
-            <p className="text-xs font-medium leading-5 text-[#48617f] sm:text-sm sm:leading-6">
+            <p className="text-xs font-medium leading-5 text-[var(--text-muted)] sm:text-sm sm:leading-6">
               {copy.joinPoolIntro}
             </p>
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -516,8 +516,8 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
           <UpcomingMatches locale={locale} />
           <a href={localizedHref("/poules", locale)} className="panel grid gap-2 p-4 no-underline">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-bold text-[#081634]">{copy.myPoolsTitle}</h2>
-              <Users aria-hidden="true" className="size-5 text-[#064ed6]" />
+              <h2 className="text-lg font-bold text-[var(--ink)]">{copy.myPoolsTitle}</h2>
+              <Users aria-hidden="true" className="size-5 text-[var(--accent-blue)]" />
             </div>
             {homeMemberships.length ? (
               homeMemberships.map((membership) => membership.pools && (
@@ -525,14 +525,14 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                   <span aria-hidden="true" className="grid size-7 flex-none place-items-center rounded-full bg-[#eef3fc] text-base leading-none">
                     {membership.pools.badge_emoji ?? "🏆"}
                   </span>
-                  <span className="truncate font-bold text-[#081634]">{membership.pools.name}</span>
+                  <span className="truncate font-bold text-[var(--ink)]">{membership.pools.name}</span>
                   <span className="ml-auto rounded-full bg-[#e7eef8] px-2 py-0.5 text-xs font-bold tracking-wide text-[var(--blue-2)]">
                     {membership.pools.code}
                   </span>
                 </div>
               ))
             ) : (
-              <p className="text-sm font-medium text-[#48617f]">{copy.noPools}</p>
+              <p className="text-sm font-medium text-[var(--text-muted)]">{copy.noPools}</p>
             )}
           </a>
 
@@ -540,11 +540,11 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
             <div className="flex items-center gap-3">
               <Trophy aria-hidden="true" className="size-6 text-[var(--blue)]" />
               <div>
-                <div className="font-bold text-[#081634]">{copy.worldRanking}</div>
-                <div className="text-sm font-medium text-[#48617f]">
+                <div className="font-bold text-[var(--ink)]">{copy.worldRanking}</div>
+                <div className="text-sm font-medium text-[var(--text-muted)]">
                   {myRank ? (
                     <>
-                      {copy.you}: <strong className="text-[#081634]">#{myRank}</strong> · {myPoints} {copy.pointsSuffix}
+                      {copy.you}: <strong className="text-[var(--ink)]">#{myRank}</strong> · {myPoints} {copy.pointsSuffix}
                     </>
                   ) : (
                     <>{copy.you}: {myPoints} {copy.pointsSuffix}</>
@@ -552,7 +552,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                 </div>
               </div>
             </div>
-            <span className="font-bold text-[#064ed6]">{copy.view}</span>
+            <span className="font-bold text-[var(--accent-blue)]">{copy.view}</span>
           </a>
 
           <LiveFollowBanner locale={locale} />
@@ -730,13 +730,13 @@ function PublicPromoStack({
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Trophy aria-hidden="true" className="size-5 flex-none text-[#efa820]" />
-            <h2 className="text-base font-bold text-[#081634]">{copy.leaderboard}</h2>
+            <h2 className="text-base font-bold text-[var(--ink)]">{copy.leaderboard}</h2>
           </div>
           <span className="text-sm font-bold text-[#0866e8]">{copy.viewAll}</span>
         </div>
         <div className="mt-3 grid gap-1.5">
           {displayRows.map((row, index) => (
-            <div key={`${index}-${displayName(row.profiles)}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
+            <div key={`${index}-${displayName(row.profiles)}`} className="flex items-center justify-between gap-3 text-sm text-[var(--ink)]">
               <span className="flex min-w-0 items-center gap-2">
                 <span className="w-4 flex-none text-right font-bold tabular-nums text-[#475670]">{index + 1}</span>
                 <span className="truncate font-medium">{displayName(row.profiles)}</span>

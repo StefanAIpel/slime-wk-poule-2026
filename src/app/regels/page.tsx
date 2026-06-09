@@ -236,33 +236,33 @@ export default async function RulesPage() {
         <div className="grid gap-4">
           <article className="panel p-5">
             <div className="flex items-center gap-3">
-              <CalendarClock aria-hidden="true" className="size-7 text-[#064ed6]" />
-              <h2 className="text-2xl font-bold text-[#081634]">{copy.deadlinesTitle}</h2>
+              <CalendarClock aria-hidden="true" className="size-7 text-[var(--accent-blue)]" />
+              <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.deadlinesTitle}</h2>
             </div>
             <div className="mt-4 grid gap-2 text-sm leading-6 text-[#2f3d57]">
               <p>
-                {copy.mainDeadlinePrefix} <strong className="text-[#081634]">{formatDeadline(ENTRY_DEADLINE_ISO, locale)}</strong>{copy.mainDeadlineSuffix}
+                {copy.mainDeadlinePrefix} <strong className="text-[var(--ink)]">{formatDeadline(ENTRY_DEADLINE_ISO, locale)}</strong>{copy.mainDeadlineSuffix}
               </p>
               <p>
-                {copy.graceDeadlinePrefix} <strong className="text-[#081634]">{formatDeadline(ENTRY_GRACE_DEADLINE_ISO, locale)}</strong>{copy.graceDeadlineSuffix}
+                {copy.graceDeadlinePrefix} <strong className="text-[var(--ink)]">{formatDeadline(ENTRY_GRACE_DEADLINE_ISO, locale)}</strong>{copy.graceDeadlineSuffix}
               </p>
               <p>
-                {copy.lateDeadlinePrefix} <strong className="text-[#081634]">{formatDeadline(POST_GROUP_DEADLINE_ISO, locale)}</strong>{copy.lateDeadlineSuffix}
+                {copy.lateDeadlinePrefix} <strong className="text-[var(--ink)]">{formatDeadline(POST_GROUP_DEADLINE_ISO, locale)}</strong>{copy.lateDeadlineSuffix}
               </p>
             </div>
           </article>
 
           <article className="panel p-5">
             <div className="flex items-center gap-3">
-              <ShieldCheck aria-hidden="true" className="size-7 text-[#064ed6]" />
-              <h2 className="text-2xl font-bold text-[#081634]">{copy.poolsTitle}</h2>
+              <ShieldCheck aria-hidden="true" className="size-7 text-[var(--accent-blue)]" />
+              <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.poolsTitle}</h2>
             </div>
             <p className="mt-3 text-sm leading-6 text-[#2f3d57]">
-              {copy.poolsBodyPrefix} <strong className="text-[#081634]">{copy.poolsBodyStrong}</strong> {copy.poolsBodySuffix}
+              {copy.poolsBodyPrefix} <strong className="text-[var(--ink)]">{copy.poolsBodyStrong}</strong> {copy.poolsBodySuffix}
             </p>
             <ul className="mt-3 grid gap-2 text-sm leading-6 text-[#2f3d57]">
               {copy.poolItems.map((item) => (
-                <li key={item.label}><strong className="text-[#081634]">{item.label}</strong> {item.text}</li>
+                <li key={item.label}><strong className="text-[var(--ink)]">{item.label}</strong> {item.text}</li>
               ))}
             </ul>
           </article>
@@ -270,25 +270,25 @@ export default async function RulesPage() {
           <article className="panel p-5">
             <div className="flex items-center gap-3">
               <Database aria-hidden="true" className="size-7 text-[#e1262f]" />
-              <h2 className="text-2xl font-bold text-[#081634]">{copy.dataTitle}</h2>
+              <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.dataTitle}</h2>
             </div>
             <p className="mt-4 text-sm leading-6 text-[#2f3d57]">
-              {copy.dataParagraphPrefix} <strong className="font-semibold text-[#081634]">{copy.dataPrivateStrong}</strong>. {copy.dataParagraphSuffix}
+              {copy.dataParagraphPrefix} <strong className="font-semibold text-[var(--ink)]">{copy.dataPrivateStrong}</strong>. {copy.dataParagraphSuffix}
             </p>
             <p className="mt-3 text-sm leading-6 text-[#2f3d57]">
-              {copy.moreInfoPrefix} <a className="font-bold text-[#064ed6]" href={localizedHref("/privacy", locale)}>{copy.privacyLink}</a> {copy.and}{" "}
-              <a className="font-bold text-[#064ed6]" href={localizedHref("/voorwaarden", locale)}>{copy.termsLink}</a>.
+              {copy.moreInfoPrefix} <a className="font-bold text-[var(--accent-blue)]" href={localizedHref("/privacy", locale)}>{copy.privacyLink}</a> {copy.and}{" "}
+              <a className="font-bold text-[var(--accent-blue)]" href={localizedHref("/voorwaarden", locale)}>{copy.termsLink}</a>.
             </p>
           </article>
 
           <article className="panel p-5">
             <div className="flex items-center gap-3">
               <HelpCircle aria-hidden="true" className="size-7 text-[#f26a1b]" />
-              <h2 className="text-2xl font-bold text-[#081634]">{copy.edgeTitle}</h2>
+              <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.edgeTitle}</h2>
             </div>
             <ul className="mt-4 grid gap-2 text-sm leading-6 text-[#2f3d57]">
               {copy.edgeItems.map((item) => (
-                <li key={item.label}><strong className="text-[#081634]">{item.label}</strong> {item.text}</li>
+                <li key={item.label}><strong className="text-[var(--ink)]">{item.label}</strong> {item.text}</li>
               ))}
             </ul>
           </article>
@@ -299,22 +299,22 @@ export default async function RulesPage() {
           <article className="panel p-5">
             <div className="flex items-center gap-3">
               <BookOpen aria-hidden="true" className="size-7 text-[#25a84a]" />
-              <h2 className="text-2xl font-bold text-[#081634]">{copy.scoringTitle}</h2>
+              <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.scoringTitle}</h2>
             </div>
             <ul className="mt-4 grid gap-2 text-sm leading-6 text-[#2f3d57]">
               {copy.scoringItems.map((item) => (
-                <li key={item.label}><strong className="text-[#081634]">{item.label}</strong> {item.text}</li>
+                <li key={item.label}><strong className="text-[var(--ink)]">{item.label}</strong> {item.text}</li>
               ))}
             </ul>
 
             <details className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
-              <summary className="cursor-pointer text-sm font-bold text-[#081634]">{copy.detailsSummary}</summary>
+              <summary className="cursor-pointer text-sm font-bold text-[var(--ink)]">{copy.detailsSummary}</summary>
               <div className="mt-3 grid gap-2">
                 {copy.scoringDetails.map((rule) => (
-                  <div key={rule.label} className="grid gap-1 rounded-lg border border-slate-200 bg-white p-3 text-[#081634] sm:grid-cols-[1fr_auto] sm:items-center">
+                  <div key={rule.label} className="grid gap-1 rounded-lg border border-slate-200 bg-white p-3 text-[var(--ink)] sm:grid-cols-[1fr_auto] sm:items-center">
                     <div>
                       <span className="font-semibold">{rule.label}</span>
-                      <span className="mt-1 block text-xs font-medium text-[#48617f]">{rule.note}</span>
+                      <span className="mt-1 block text-xs font-medium text-[var(--text-muted)]">{rule.note}</span>
                     </div>
                     <span className="font-bold">{rule.points} {copy.pointsSuffix}</span>
                   </div>
@@ -331,13 +331,13 @@ export default async function RulesPage() {
 
           <article className="panel p-5">
             <div className="flex items-center gap-3">
-              <HelpCircle aria-hidden="true" className="size-7 text-[#064ed6]" />
-              <h2 className="text-2xl font-bold text-[#081634]">{copy.faqTitle}</h2>
+              <HelpCircle aria-hidden="true" className="size-7 text-[var(--accent-blue)]" />
+              <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.faqTitle}</h2>
             </div>
             <div className="mt-4 grid gap-2">
               {copy.faq.map((item) => (
                 <details key={item.q} className="rounded-lg border border-slate-200 p-3">
-                  <summary className="cursor-pointer text-sm font-bold text-[#081634]">{item.q}</summary>
+                  <summary className="cursor-pointer text-sm font-bold text-[var(--ink)]">{item.q}</summary>
                   <p className="mt-2 text-sm leading-6 text-[#2f3d57]">{item.a}</p>
                 </details>
               ))}

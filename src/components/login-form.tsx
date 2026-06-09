@@ -652,7 +652,7 @@ export function LoginForm({
 
         {isResetMail ? (
           <form method="post" onSubmit={onResetCodeSubmit} className="auth-code-panel grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label={copy.resetCodeFormAria}>
-            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+            <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
               {copy.email}
               <input
                 aria-label={copy.emailResetAria}
@@ -669,7 +669,7 @@ export function LoginForm({
             <p className="rounded-lg bg-[#eef6ff] p-2 text-xs font-bold leading-5 text-[#305074]">
               {copy.resetCodeInfo}
             </p>
-            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+            <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
               {copy.resetCodeLabel}
               <input
                 className="auth-code-field field text-center text-lg font-black tracking-[0.3em]"
@@ -681,7 +681,7 @@ export function LoginForm({
                 placeholder="123456"
               />
             </label>
-            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+            <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
               {copy.newPasswordLabel}
               <input
                 className="field"
@@ -694,7 +694,7 @@ export function LoginForm({
                 placeholder={copy.newPasswordPlaceholder}
               />
             </label>
-            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+            <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
               {copy.newPasswordAgain}
               <input
                 className="field"
@@ -717,7 +717,7 @@ export function LoginForm({
           </form>
         ) : (
           <form method="post" onSubmit={onSignupCodeSubmit} className="auth-code-panel grid gap-3 rounded-xl border border-green-100 bg-white/70 p-3" aria-label={copy.signupCodeFormAria}>
-            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+            <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
               {copy.signupCodeLabel}
               <input
                 className="auth-code-field field text-center text-lg font-black tracking-[0.3em]"
@@ -946,7 +946,7 @@ export function LoginForm({
               placeholder={copy.passwordAgainPlaceholder}
             />
           </label>
-          <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3 text-sm font-semibold leading-5 text-[#48617f]">
+          <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3 text-sm font-semibold leading-5 text-[var(--text-muted)]">
             <input
               className="mt-1 size-4 accent-[#0e7a44]"
               type="checkbox"
@@ -957,9 +957,9 @@ export function LoginForm({
             />
             <span>
               {copy.termsPrefix}{" "}
-              <a className="font-bold text-[#064ed6]" href="/voorwaarden" target="_blank" rel="noopener noreferrer">{copy.terms}</a>{" "}
+              <a className="font-bold text-[var(--accent-blue)]" href="/voorwaarden" target="_blank" rel="noopener noreferrer">{copy.terms}</a>{" "}
               {copy.privacyPrefix}{" "}
-              <a className="font-bold text-[#064ed6]" href="/privacy" target="_blank" rel="noopener noreferrer">{copy.privacy}</a>.
+              <a className="font-bold text-[var(--accent-blue)]" href="/privacy" target="_blank" rel="noopener noreferrer">{copy.privacy}</a>.
             </span>
           </label>
           <button className="button-primary w-full" type="submit" disabled={status === "loading"}>

@@ -88,7 +88,7 @@ export function InstallAppCard({ locale = "nl" }: { locale?: Locale }) {
             </button>
           </div>
           {showHelp && !installPrompt ? (
-            <ul className="mt-2 grid gap-1 text-xs font-medium leading-5 text-[#48617f]">
+            <ul className="mt-2 grid gap-1 text-xs font-medium leading-5 text-[var(--text-muted)]">
               <li><strong>iPhone (Safari):</strong> {text.iphone}.</li>
               <li><strong>Android (Chrome):</strong> {text.android}.</li>
               <li><strong>Desktop:</strong> {text.desktop}.</li>

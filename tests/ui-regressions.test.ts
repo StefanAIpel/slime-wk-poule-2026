@@ -167,7 +167,7 @@ test("logged-in status header uses the user's avatar instead of the trophy icon"
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.41"/);
+  assert.match(constants, /APP_VERSION = "0.42"/);
 });
 test("entry deadline is extended until the first World Cup match", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00\+02:00"/);
@@ -723,7 +723,7 @@ test("dashboard copy matches the current prediction deadline and password flow",
   assert.match(homePage, /dashboardIntroBefore: "Deadline:"/);
   assert.match(homePage, /Respijt tot Oranje begint/);
   assert.match(homePage, /max-w-\[32rem\] text-\[0\.78rem\] font-medium leading-\[1\.45\]/);
-  assert.match(homePage, /text-base font-bold text-\[#081634\] sm:text-lg/);
+  assert.match(homePage, /text-base font-bold text-\[var\(--ink\)\] sm:text-lg/);
   assert.match(homePage, /create-pool-title text-lg font-bold/);
   assert.doesNotMatch(homePage, /geen wachtwoord/);
 });

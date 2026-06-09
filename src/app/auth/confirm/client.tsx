@@ -43,7 +43,7 @@ export function AuthConfirmClient() {
 
   return (
     <div className="flex items-center gap-3 rounded-lg bg-[#eef6ff] px-4 py-3 text-sm font-bold text-[#102c77]">
-      <LoaderCircle aria-hidden="true" className="size-5 animate-spin text-[#064ed6]" />
+      <LoaderCircle aria-hidden="true" className="size-5 animate-spin text-[var(--accent-blue)]" />
       <span aria-live="polite">{message}</span>
     </div>
   );

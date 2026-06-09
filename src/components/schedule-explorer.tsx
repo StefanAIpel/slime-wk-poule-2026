@@ -530,7 +530,7 @@ function StandingsPanel({ matches, standings, locale }: { matches: ScheduleMatch
             <article key={group} className="panel group-phase-card overflow-hidden">
               <header className="standing-card-header">
                 <span>{scheduleCopy[locale].group} {group}</span>
-                <span className="text-xs font-bold text-[#48617f]">{scheduleCopy[locale].matchesAndStanding}</span>
+                <span className="text-xs font-bold text-[var(--text-muted)]">{scheduleCopy[locale].matchesAndStanding}</span>
               </header>
               <div className="group-phase-body">
                 <div className="divide-y divide-slate-200">
@@ -542,7 +542,7 @@ function StandingsPanel({ matches, standings, locale }: { matches: ScheduleMatch
               </div>
             </article>
           )) : (
-            <p className="panel p-4 text-sm font-bold text-[#48617f]">{scheduleCopy[locale].noMatches}</p>
+            <p className="panel p-4 text-sm font-bold text-[var(--text-muted)]">{scheduleCopy[locale].noMatches}</p>
           )}
         </div>
       ) : (
@@ -551,14 +551,14 @@ function StandingsPanel({ matches, standings, locale }: { matches: ScheduleMatch
             <article key={key} className="panel overflow-hidden">
               <header className="standing-card-header">
                 <span>{key === "unknown" ? scheduleCopy[locale].dateTbd : dateLabel(dateMatches[0]?.startsAt ?? null, locale)}</span>
-                <span className="text-xs font-bold text-[#48617f]">{dateMatches.length} {dateMatches.length === 1 ? scheduleCopy[locale].match : scheduleCopy[locale].matches}</span>
+                <span className="text-xs font-bold text-[var(--text-muted)]">{dateMatches.length} {dateMatches.length === 1 ? scheduleCopy[locale].match : scheduleCopy[locale].matches}</span>
               </header>
               <div className="divide-y divide-slate-200">
                 {dateMatches.map((match) => <MatchRow key={match.id} match={match} locale={locale} compactMeta />)}
               </div>
             </article>
           )) : (
-            <p className="panel p-4 text-sm font-bold text-[#48617f]">{scheduleCopy[locale].noMatches}</p>
+            <p className="panel p-4 text-sm font-bold text-[var(--text-muted)]">{scheduleCopy[locale].noMatches}</p>
           )}
         </div>
       )}
@@ -621,8 +621,8 @@ function KnockoutPanel({ matches, locale }: { matches: ScheduleMatch[]; locale: 
             <article key={item.label} className="panel knockout-roadmap-card p-4">
               <span className="knockout-step">{index + 1}</span>
               <div>
-                <h3 className="text-base font-black text-[#081634]">{item.label}</h3>
-                <p className="mt-1 text-sm font-semibold text-[#48617f]">{item.meta}</p>
+                <h3 className="text-base font-black text-[var(--ink)]">{item.label}</h3>
+                <p className="mt-1 text-sm font-semibold text-[var(--text-muted)]">{item.meta}</p>
               </div>
             </article>
           ))}

@@ -81,7 +81,7 @@ export function AvatarPicker({ initialKey, name, locale = "nl" }: { initialKey?:
           height={previewSize}
           style={{ width: previewSize, height: previewSize }}
         />
-        <p className="text-sm font-medium text-[#48617f]">
+        <p className="text-sm font-medium text-[var(--text-muted)]">
           {selected ? copy.selected : copy.automatic(name)}
         </p>
       </div>

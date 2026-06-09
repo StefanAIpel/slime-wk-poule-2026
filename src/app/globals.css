@@ -18,6 +18,10 @@
   --orange-2: #fb8c46;
   --cream: #fff7e8;
   --ink-soft: #5a6b82;
+  /* Tokens voor de meest-gebruikte tekst/accent-kleuren (exacte waarden -> pixel-identiek). */
+  --ink: #081634;
+  --text-muted: #48617f;
+  --accent-blue: #064ed6;
   --mobile-browser-chrome-gap: 10px;
 }
 

@@ -107,9 +107,9 @@ export function PasswordChangeForm({ locale = "nl" }: { locale?: Locale }) {
     <form onSubmit={submit} className="panel grid gap-3 p-5">
       <div className="flex items-center gap-3">
         <KeyRound aria-hidden="true" className="size-7 text-[#7c4dff]" />
-        <h2 className="text-xl font-bold text-[#081634]">{copy.title}</h2>
+        <h2 className="text-xl font-bold text-[var(--ink)]">{copy.title}</h2>
       </div>
-      <label className="grid gap-1 text-sm font-bold text-[#081634]">
+      <label className="grid gap-1 text-sm font-bold text-[var(--ink)]">
         {copy.newPassword}
         <input
           className="field"
@@ -121,7 +121,7 @@ export function PasswordChangeForm({ locale = "nl" }: { locale?: Locale }) {
           placeholder={copy.newPasswordPlaceholder}
         />
       </label>
-      <label className="grid gap-1 text-sm font-bold text-[#081634]">
+      <label className="grid gap-1 text-sm font-bold text-[var(--ink)]">
         {copy.confirmPassword}
         <input
           className="field"

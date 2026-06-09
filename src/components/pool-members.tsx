@@ -82,7 +82,7 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
         <h3 className="pool-members-title text-lg font-bold text-[#101a2b]">{copy.title}</h3>
         <span className="pool-members-count">{members.length}</span>
       </div>
-      <p className="pool-members-hint mt-1 text-sm font-medium text-[#48617f]">{copy.hint}</p>
+      <p className="pool-members-hint mt-1 text-sm font-medium text-[var(--text-muted)]">{copy.hint}</p>
       <div className="pool-members-list mt-3 grid gap-2">
         {members.map((member) => {
           const open = openId === member.userId;
@@ -99,7 +99,7 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
                 </span>
                 <Avatar name={member.name} avatarKey={member.avatarKey} size={open ? 34 : 22} />
                 <span className="pool-member-main min-w-0 flex-1 truncate">
-                  <span className="pool-member-name font-bold text-[#081634]">{member.name}</span>
+                  <span className="pool-member-name font-bold text-[var(--ink)]">{member.name}</span>
                   {member.isOwner ? (
                     <Crown aria-label={copy.owner} className="ml-1 inline size-4 -translate-y-px text-[#e0a516]" />
                   ) : null}
@@ -112,7 +112,7 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
                     </span>
                   ) : null}
                 </span>
-                <span className="pool-member-points font-bold tabular-nums text-[#081634]">{member.points} {copy.pointsSuffix}</span>
+                <span className="pool-member-points font-bold tabular-nums text-[var(--ink)]">{member.points} {copy.pointsSuffix}</span>
                 <ChevronDown
                   aria-hidden="true"
                   className={`pool-member-chevron size-4 flex-none text-[#475670] transition-transform ${open ? "rotate-180" : ""}`}
@@ -122,7 +122,7 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
               {open ? (
                 <div className="grid gap-4 border-t border-slate-200 p-3">
                   {member.locked ? (
-                    <p className="flex items-center gap-2 rounded-lg bg-slate-50 p-3 text-sm font-medium text-[#48617f]">
+                    <p className="flex items-center gap-2 rounded-lg bg-slate-50 p-3 text-sm font-medium text-[var(--text-muted)]">
                       <Lock aria-hidden="true" className="size-4" />
                       {copy.locked}
                     </p>
@@ -157,7 +157,7 @@ function LineTable({
 }) {
   return (
     <div>
-      <h4 className="mb-2 text-sm font-bold text-[#081634]">{title}</h4>
+      <h4 className="mb-2 text-sm font-bold text-[var(--ink)]">{title}</h4>
       {lines.length ? (
         <div className="overflow-hidden rounded-lg border border-slate-200">
           {lines.map((line) => (
@@ -165,7 +165,7 @@ function LineTable({
               key={line.matchId}
               className="grid grid-cols-[1fr_auto_auto] items-center gap-2 border-b border-slate-100 px-3 py-2 text-sm last:border-b-0"
             >
-              <span className="min-w-0 truncate font-medium text-[#081634]">
+              <span className="min-w-0 truncate font-medium text-[var(--ink)]">
                 {line.home} <span className="text-[#475670]">–</span> {line.away}
                 <span className="ml-1 block text-xs font-medium text-[#7a8aa3]">{line.when}</span>
               </span>
@@ -188,7 +188,7 @@ function LineTable({
           ))}
         </div>
       ) : (
-        <p className="text-sm font-medium text-[#48617f]">{emptyText}</p>
+        <p className="text-sm font-medium text-[var(--text-muted)]">{emptyText}</p>
       )}
     </div>
   );

@@ -21,25 +21,25 @@ function MatchHeader({ fixture, locale }: { fixture: LiveFixture; locale: Locale
   const played = live || ["FT", "AET", "PEN"].includes(fixture.statusShort);
   return (
     <section className="panel p-4">
-      <p className="text-center text-xs font-bold uppercase tracking-wide text-[#48617f]">
+      <p className="text-center text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">
         {(fixture.friendly ? (locale === "en" ? "Friendly" : "Oefeninterland") : fixture.round)}{fixture.venue ? ` · ${fixture.venue}` : ""}
       </p>
       {/* Afgekorte datum gecentreerd (ook fijn op mobiel). */}
-      <p className="mt-1 text-center text-sm font-bold text-[#081634]">{shortWhen(fixture.date, locale)}</p>
+      <p className="mt-1 text-center text-sm font-bold text-[var(--ink)]">{shortWhen(fixture.date, locale)}</p>
       <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
         <div className="grid justify-items-center gap-2 text-center">
           <TeamFlag code={fixture.home.code} name={fixture.home.name} size="md" locale={locale} />
-          <span className="text-sm font-bold text-[#081634]">{fixture.home.name}</span>
+          <span className="text-sm font-bold text-[var(--ink)]">{fixture.home.name}</span>
         </div>
         <div className="grid justify-items-center">
-          <span className="text-3xl font-black tabular-nums text-[#081634]">{played ? `${fixture.home.goals ?? 0}-${fixture.away.goals ?? 0}` : "–"}</span>
-          <span className={live ? "live-row-status is-live mt-1" : "mt-1 text-xs font-bold text-[#48617f]"}>
+          <span className="text-3xl font-black tabular-nums text-[var(--ink)]">{played ? `${fixture.home.goals ?? 0}-${fixture.away.goals ?? 0}` : "–"}</span>
+          <span className={live ? "live-row-status is-live mt-1" : "mt-1 text-xs font-bold text-[var(--text-muted)]"}>
             {live ? (fixture.statusShort === "HT" ? c.rest : `${fixture.elapsed ?? ""}'`) : played ? c.finished : ""}
           </span>
         </div>
         <div className="grid justify-items-center gap-2 text-center">
           <TeamFlag code={fixture.away.code} name={fixture.away.name} size="md" locale={locale} />
-          <span className="text-sm font-bold text-[#081634]">{fixture.away.name}</span>
+          <span className="text-sm font-bold text-[var(--ink)]">{fixture.away.name}</span>
         </div>
       </div>
     </section>
@@ -51,15 +51,15 @@ function Motm({ players, label }: { players: TeamPlayers[] | null; label: string
   if (!best) return null;
   return (
     <section className="panel p-4">
-      <h2 className="mb-3 text-lg font-bold text-[#081634]">{label}</h2>
+      <h2 className="mb-3 text-lg font-bold text-[var(--ink)]">{label}</h2>
       <div className="flex items-center gap-3">
         {best.photo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={best.photo} alt="" aria-hidden="true" className="h-12 w-12 rounded-full object-cover" loading="lazy" />
         ) : null}
         <div className="min-w-0">
-          <p className="truncate font-bold text-[#081634]">{best.name}</p>
-          <p className="truncate text-xs font-medium text-[#48617f]">{best.team}{best.goals ? ` · ${best.goals}×` : ""}</p>
+          <p className="truncate font-bold text-[var(--ink)]">{best.name}</p>
+          <p className="truncate text-xs font-medium text-[var(--text-muted)]">{best.team}{best.goals ? ` · ${best.goals}×` : ""}</p>
         </div>
         <span className="ml-auto rounded-lg bg-emerald-50 px-3 py-1 text-lg font-black tabular-nums text-emerald-700">{best.rating.toFixed(1)}</span>
       </div>
@@ -72,13 +72,13 @@ function HeadToHead({ fixtures, title, locale }: { fixtures: LiveFixture[]; titl
   const fmt = new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "nl-NL", { year: "2-digit", month: "short", day: "numeric" });
   return (
     <section className="panel p-4">
-      <h2 className="mb-3 text-lg font-bold text-[#081634]">{title}</h2>
+      <h2 className="mb-3 text-lg font-bold text-[var(--ink)]">{title}</h2>
       <ul className="grid gap-2 text-sm">
         {fixtures.map((f) => (
           <li key={f.id} className="flex items-center gap-2 text-[#2f3d57]">
-            <span className="w-20 flex-none text-xs font-medium text-[#48617f]">{fmt.format(new Date(f.date))}</span>
-            <span className="min-w-0 flex-1 truncate font-bold text-[#081634]">{(f.home.code ?? f.home.name)} - {(f.away.code ?? f.away.name)}</span>
-            <span className="flex-none font-black tabular-nums text-[#081634]">{f.home.goals ?? 0}-{f.away.goals ?? 0}</span>
+            <span className="w-20 flex-none text-xs font-medium text-[var(--text-muted)]">{fmt.format(new Date(f.date))}</span>
+            <span className="min-w-0 flex-1 truncate font-bold text-[var(--ink)]">{(f.home.code ?? f.home.name)} - {(f.away.code ?? f.away.name)}</span>
+            <span className="flex-none font-black tabular-nums text-[var(--ink)]">{f.home.goals ?? 0}-{f.away.goals ?? 0}</span>
           </li>
         ))}
       </ul>
@@ -90,12 +90,12 @@ function Events({ events, title }: { events: MatchEvent[]; title: string }) {
   if (!events.length) return null;
   return (
     <section className="panel p-4">
-      <h2 className="mb-3 text-lg font-bold text-[#081634]">{title}</h2>
+      <h2 className="mb-3 text-lg font-bold text-[var(--ink)]">{title}</h2>
       <ul className="grid gap-2">
         {events.map((event, index) => (
           <li key={index} className="flex items-baseline gap-2 text-sm text-[#2f3d57]">
-            <span className="w-9 flex-none font-bold tabular-nums text-[#48617f]">{`${event.time.elapsed ?? 0}${event.time.extra ? `+${event.time.extra}` : ""}'`}</span>
-            <span className="font-bold text-[#081634]">{event.detail || event.type}</span>
+            <span className="w-9 flex-none font-bold tabular-nums text-[var(--text-muted)]">{`${event.time.elapsed ?? 0}${event.time.extra ? `+${event.time.extra}` : ""}'`}</span>
+            <span className="font-bold text-[var(--ink)]">{event.detail || event.type}</span>
             <span className="min-w-0">{[event.player.name, event.assist.name].filter(Boolean).join(" · ")} ({event.team.name})</span>
           </li>
         ))}
@@ -111,13 +111,13 @@ function Statistics({ stats, title }: { stats: TeamStatistics[]; title: string }
   const types = Array.from(new Set(home.statistics.map((s) => s.type)));
   return (
     <section className="panel p-4">
-      <h2 className="mb-3 text-lg font-bold text-[#081634]">{title}</h2>
+      <h2 className="mb-3 text-lg font-bold text-[var(--ink)]">{title}</h2>
       <div className="grid gap-2">
         {types.map((type) => (
           <div key={type} className="grid grid-cols-[3rem_1fr_3rem] items-center gap-2 text-sm">
-            <span className="text-left font-bold tabular-nums text-[#081634]">{String(value(home, type))}</span>
-            <span className="text-center text-xs font-medium text-[#48617f]">{type}</span>
-            <span className="text-right font-bold tabular-nums text-[#081634]">{String(value(away, type))}</span>
+            <span className="text-left font-bold tabular-nums text-[var(--ink)]">{String(value(home, type))}</span>
+            <span className="text-center text-xs font-medium text-[var(--text-muted)]">{type}</span>
+            <span className="text-right font-bold tabular-nums text-[var(--ink)]">{String(value(away, type))}</span>
           </div>
         ))}
       </div>
@@ -129,22 +129,22 @@ function Lineups({ lineups, title, coachLabel }: { lineups: TeamLineup[]; title:
   if (!lineups.length) return null;
   return (
     <section className="panel p-4">
-      <h2 className="mb-3 text-lg font-bold text-[#081634]">{title}</h2>
+      <h2 className="mb-3 text-lg font-bold text-[var(--ink)]">{title}</h2>
       <div className="grid gap-4 md:grid-cols-2">
         {lineups.map((team) => (
           <div key={team.team.id} className="grid gap-2">
             <div className="flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={team.team.logo} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
-              <span className="font-bold text-[#081634]">{team.team.name}</span>
-              {team.formation ? <span className="text-xs font-bold text-[#48617f]">{team.formation}</span> : null}
+              <span className="font-bold text-[var(--ink)]">{team.team.name}</span>
+              {team.formation ? <span className="text-xs font-bold text-[var(--text-muted)]">{team.formation}</span> : null}
             </div>
             <ul className="grid gap-1 text-sm text-[#2f3d57]">
               {team.startXI.map((p) => (
-                <li key={p.player.id}><span className="inline-block w-6 font-bold tabular-nums text-[#48617f]">{p.player.number ?? ""}</span>{p.player.name}</li>
+                <li key={p.player.id}><span className="inline-block w-6 font-bold tabular-nums text-[var(--text-muted)]">{p.player.number ?? ""}</span>{p.player.name}</li>
               ))}
             </ul>
-            {team.coach.name ? <p className="text-xs font-medium text-[#48617f]">{coachLabel}: {team.coach.name}</p> : null}
+            {team.coach.name ? <p className="text-xs font-medium text-[var(--text-muted)]">{coachLabel}: {team.coach.name}</p> : null}
           </div>
         ))}
       </div>
@@ -174,7 +174,7 @@ export default async function LiveMatchPage({ params }: { params: Promise<{ id: 
       {detail.statistics?.length ? <Statistics stats={detail.statistics} title={c.stats} /> : null}
       {detail.lineups?.length ? <Lineups lineups={detail.lineups} title={c.lineups} coachLabel={c.coach} /> : null}
       {h2h?.length ? <HeadToHead fixtures={h2h} title={c.h2h} locale={locale} /> : null}
-      {fixture && !hasDetail ? <p className="panel p-4 text-sm font-bold text-[#48617f]">{c.soon}</p> : null}
+      {fixture && !hasDetail ? <p className="panel p-4 text-sm font-bold text-[var(--text-muted)]">{c.soon}</p> : null}
     </div>
   );
 }

@@ -60,30 +60,30 @@ export function ProfileForm({ error, locale = "nl" }: { error?: string; locale?:
         <div className="mb-3 inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-bold text-[#0f7a39]">
           {copy.confirmed}
         </div>
-        <h2 className="text-2xl font-bold text-[#081634]">{copy.title}</h2>
-        <p className="mt-1 text-sm font-medium leading-6 text-[#48617f]">
+        <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.title}</h2>
+        <p className="mt-1 text-sm font-medium leading-6 text-[var(--text-muted)]">
           {copy.intro}
         </p>
       </div>
       {message ? (
         <p className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm font-bold text-red-800">{message}</p>
       ) : null}
-      <label className="grid gap-2 text-sm font-bold text-[#081634]">
+      <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
         {copy.nickname}
         <input className="field" name="nickname" required minLength={NICKNAME_MIN_LENGTH} maxLength={NICKNAME_MAX_LENGTH} placeholder={copy.nicknamePlaceholder} />
       </label>
-      <label className="grid gap-2 text-sm font-bold text-[#081634]">
+      <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
         {copy.teamName}
         <input className="field" name="team_name" required minLength={TEAM_NAME_MIN_LENGTH} maxLength={TEAM_NAME_MAX_LENGTH} placeholder={copy.teamPlaceholder} />
       </label>
       <input type="hidden" name="avatar_key" value="" />
-      <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3 text-sm font-semibold leading-5 text-[#48617f]">
+      <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3 text-sm font-semibold leading-5 text-[var(--text-muted)]">
         <input className="mt-1 size-4 accent-[#0e7a44]" type="checkbox" name="terms_accepted" value="yes" required />
         <span>
           {copy.agreeBefore}{" "}
-          <a className="font-bold text-[#064ed6]" href="/voorwaarden" target="_blank" rel="noopener noreferrer">{copy.terms}</a>{" "}
+          <a className="font-bold text-[var(--accent-blue)]" href="/voorwaarden" target="_blank" rel="noopener noreferrer">{copy.terms}</a>{" "}
           {copy.andThe}{" "}
-          <a className="font-bold text-[#064ed6]" href="/privacy" target="_blank" rel="noopener noreferrer">{copy.privacy}</a>{" "}
+          <a className="font-bold text-[var(--accent-blue)]" href="/privacy" target="_blank" rel="noopener noreferrer">{copy.privacy}</a>{" "}
           {copy.agreeAfter}
         </span>
       </label>

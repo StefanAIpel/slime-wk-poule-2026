@@ -152,7 +152,7 @@ function Section({
       {fixtures.length ? (
         <div className="divide-y divide-slate-200">{fixtures.map((f) => <MatchCard key={f.id} fixture={f} locale={locale} featured={isLive} />)}</div>
       ) : (
-        <p className="p-4 text-sm font-bold text-[#48617f]">{empty}</p>
+        <p className="p-4 text-sm font-bold text-[var(--text-muted)]">{empty}</p>
       )}
       {action ? (
         <footer className="live-section-footer">

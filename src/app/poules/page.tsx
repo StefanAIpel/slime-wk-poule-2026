@@ -317,7 +317,7 @@ export default async function PoolsPage({
         errorCorrectionLevel: "M",
         margin: 1,
         width: 180,
-        color: { dark: "#081634", light: "#ffffff" },
+        color: { dark: "var(--ink)", light: "#ffffff" },
       });
       poolJoinAssets.set(pool.id, { joinUrl, qrDataUrl });
     }),
@@ -520,8 +520,8 @@ export default async function PoolsPage({
                       <div className="flex items-center gap-3">
                         <Avatar name={displayName(member.profiles)} avatarKey={member.profiles?.avatar_key} />
                         <div className="min-w-0">
-                          <div className="truncate font-bold text-[#081634]">{displayName(member.profiles)}</div>
-                          <div className="text-sm font-semibold text-[#48617f]">{roleLabel(member.role, locale)}</div>
+                          <div className="truncate font-bold text-[var(--ink)]">{displayName(member.profiles)}</div>
+                          <div className="text-sm font-semibold text-[var(--text-muted)]">{roleLabel(member.role, locale)}</div>
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -558,10 +558,10 @@ export default async function PoolsPage({
           </PoolTabs>
         ) : (
           <div className="panel p-5">
-            <h2 className="text-2xl font-bold text-[#081634]">{copy.noPoolsTitle}</h2>
-            <p className="mt-2 font-medium text-[#48617f]">
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.noPoolsTitle}</h2>
+            <p className="mt-2 font-medium text-[var(--text-muted)]">
               {copy.noPoolsText}{" "}
-              <Link className="font-bold text-[#064ed6]" href={localizedHref("/", locale)}>{copy.homeLink}</Link>.
+              <Link className="font-bold text-[var(--accent-blue)]" href={localizedHref("/", locale)}>{copy.homeLink}</Link>.
             </p>
           </div>
         )}

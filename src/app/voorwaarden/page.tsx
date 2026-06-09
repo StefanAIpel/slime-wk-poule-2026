@@ -94,10 +94,10 @@ export default async function TermsPage() {
       <section className="grid gap-4 lg:grid-cols-2 lg:items-start">
         <article className="panel p-5">
           <div className="flex items-center gap-3">
-            <Scale aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-bold text-[#081634]">{copy.fairTitle as string}</h2>
+            <Scale aria-hidden="true" className="size-7 text-[var(--accent-blue)]" />
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.fairTitle as string}</h2>
           </div>
-          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
+          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[var(--text-muted)]">
             {fairItems.map((item) => <li key={item}>{item}</li>)}
           </ul>
         </article>
@@ -105,28 +105,28 @@ export default async function TermsPage() {
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <CalendarClock aria-hidden="true" className="size-7 text-[#25a84a]" />
-            <h2 className="text-2xl font-bold text-[#081634]">{copy.deadlinesTitle as string}</h2>
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.deadlinesTitle as string}</h2>
           </div>
-          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
+          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[var(--text-muted)]">
             {deadlinesItems.map((item) => <li key={item}>{item}</li>)}
-            <li>{copy.scoringBefore as string} <a className="font-bold text-[#064ed6]" href={localizedHref("/regels", locale)}>{copy.scoringLink as string}</a>.</li>
+            <li>{copy.scoringBefore as string} <a className="font-bold text-[var(--accent-blue)]" href={localizedHref("/regels", locale)}>{copy.scoringLink as string}</a>.</li>
           </ul>
         </article>
 
         <article className="panel p-5 lg:col-span-2">
           <div className="flex items-center gap-3">
             <Users aria-hidden="true" className="size-7 text-[#e1262f]" />
-            <h2 className="text-2xl font-bold text-[#081634]">{copy.poolsTitle as string}</h2>
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.poolsTitle as string}</h2>
           </div>
-          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
+          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[var(--text-muted)]">
             {poolItems.map((item) => <li key={item}>{item}</li>)}
-            <li>{copy.questions as string} <a className="font-bold text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</li>
+            <li>{copy.questions as string} <a className="font-bold text-[var(--accent-blue)]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</li>
           </ul>
         </article>
       </section>
 
-      <p className="mt-5 text-sm font-medium text-[#48617f]">
-        {copy.readPrivacy as string} <a className="font-bold text-[#064ed6]" href={localizedHref("/privacy", locale)}>{copy.privacy as string}</a>.
+      <p className="mt-5 text-sm font-medium text-[var(--text-muted)]">
+        {copy.readPrivacy as string} <a className="font-bold text-[var(--accent-blue)]" href={localizedHref("/privacy", locale)}>{copy.privacy as string}</a>.
       </p>
 
       <BottomNav current="/voorwaarden" />
