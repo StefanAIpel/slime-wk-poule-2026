@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import { LiveLanguageSwitcher } from "@/components/live-language-switcher";
 import { useActiveLocale } from "@/hooks/use-active-locale";
@@ -29,11 +29,12 @@ function isActive(pathname: string, href: string) {
 export function LiveSubsiteNav() {
   const pathname = usePathname() || "/live";
   const locale = useActiveLocale(pathname);
-  const [isLiveHost, setIsLiveHost] = useState(false);
-
-  useEffect(() => {
-    setIsLiveHost(window.location.hostname.startsWith("live."));
-  }, []);
+  // Hostname is client-only en verandert nooit binnen een sessie; server rendert app-links.
+  const isLiveHost = useSyncExternalStore(
+    () => () => {},
+    () => window.location.hostname.startsWith("live."),
+    () => false,
+  );
 
   const items = navCopy[locale].map((item) => ({ href: isLiveHost ? item.liveHref : item.appHref, label: item.label }));
 
