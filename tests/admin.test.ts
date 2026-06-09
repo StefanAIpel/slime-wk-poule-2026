@@ -72,3 +72,18 @@ test("CI workflow runs test, lint and build", () => {
   assert.match(ciWorkflow, /npm run lint/);
   assert.match(ciWorkflow, /npm run build/);
 });
+
+test("health endpoint is secret-guarded and exposes only counts (no PII)", () => {
+  const health = readFileSync(new URL("../src/app/api/health/route.ts", import.meta.url), "utf8");
+  assert.match(health, /RESULT_SYNC_SECRET/);
+  assert.match(health, /status: 401/);
+  // Alleen head-counts; nooit hele rijen/kid-codes teruggeven.
+  assert.doesNotMatch(health, /kid_accounts/);
+  assert.doesNotMatch(health, /\.select\("code/);
+});
+
+test("admin mutations are rate-limited (defense in depth)", () => {
+  for (const key of ["admin_setresult", "admin_kid", "admin_recalc"]) {
+    assert.match(actions, new RegExp(`rateLimit\\(admin, \`${key}:`));
+  }
+});
