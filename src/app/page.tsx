@@ -471,7 +471,7 @@ function PublicHome({
             <span>Mexico</span>
           </div>
           <div className="hero-home-title-block">
-            <h1 className="mt-4 text-[1.6rem] font-bold leading-[1.12] text-white sm:whitespace-nowrap sm:text-[2rem] md:text-[2.4rem]">
+            <h1 className="mt-3 text-[1.6rem] font-bold leading-[1.12] text-white sm:whitespace-nowrap sm:text-[2rem] md:text-[2.4rem]">
               {copy.publicTitle}
             </h1>
             <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-blue-50 sm:text-[0.95rem] md:text-base">
@@ -497,7 +497,7 @@ function PublicHome({
         </div>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_340px] md:items-start">
+      <div className="grid gap-x-5 gap-y-3 md:grid-cols-[minmax(0,1fr)_340px] md:items-start">
         <section className="grid gap-4">
           <UpcomingMatches locale={locale} />
 
@@ -533,7 +533,7 @@ function PublicHome({
 
         </section>
 
-        <aside className="public-login-stack md:sticky md:top-4">
+        <aside className="public-login-stack md:sticky md:top-[86px]">
           <section id="login" className="public-login-panel grid gap-3 p-3 sm:gap-4 sm:p-5">
             {authError ? (
               <div className="rounded-xl border border-red-200 bg-red-50 p-4 font-bold text-red-800">
@@ -555,7 +555,6 @@ function PublicHome({
             )}
           </section>
           {locale === "en" ? <InstallAppCard locale="en" /> : <InstallAppCard />}
-          <LiveFollowBanner locale={locale} />
         </aside>
 
         <div className="public-mobile-bottom-stack">
@@ -579,6 +578,7 @@ function PublicHome({
               ))}
             </div>
           </a>
+          <LiveFollowBanner locale={locale} />
           <SlimeSoccerBanner includeVolley={false} fullWidth locale={locale} />
         </div>
       </div>

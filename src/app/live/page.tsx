@@ -1,5 +1,4 @@
 import { CalendarDays } from "lucide-react";
-import { BrandWordmark } from "@/components/brand-wordmark";
 import { LiveAutoRefresh } from "@/components/live-auto-refresh";
 import { ShareRow } from "@/components/share-button";
 import { TeamFlag } from "@/components/team-flag";
@@ -144,13 +143,6 @@ function Hero({ locale }: { locale: Locale }) {
         <img src="/assets/stadion-3to5.webp" alt="" aria-hidden="true" fetchPriority="high" decoding="async" />
       </picture>
       <div className="hero-content">
-        <div className="live-hero-brandline" aria-label={locale === "en" ? "SlimeScore live" : "SlimeScore live"}>
-          <span className="live-badge live-badge-hero">
-            <span className="live-badge-dot" aria-hidden="true" />
-            LIVE
-          </span>
-          <BrandWordmark onDark />
-        </div>
         <div className="world-cup-kicker">
           <span>{c.kicker}</span>
           <span>USA</span>

@@ -31,11 +31,11 @@ export default function NotFound() {
                 <ArrowLeft aria-hidden="true" className="size-5" />
                 Terug naar de WK-poule
               </Link>
-              <a href={SLIME_GAME_URL} className="button-secondary">
+              <a href={SLIME_GAME_URL} className="button-secondary" target="_blank" rel="noopener noreferrer">
                 Slime Soccer
                 <ExternalLink aria-hidden="true" className="size-4" />
               </a>
-              <a href={VOLLEY_GAME_URL} className="button-secondary">
+              <a href={VOLLEY_GAME_URL} className="button-secondary" target="_blank" rel="noopener noreferrer">
                 Slime Volley
                 <ExternalLink aria-hidden="true" className="size-4" />
               </a>
@@ -65,13 +65,13 @@ export default function NotFound() {
               Check de spelling of ga terug naar de startpagina. De WK-poule staat nog gewoon stevig in elkaar.
             </p>
           </div>
-          <a className="panel p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-xl" href={SLIME_GAME_URL}>
+          <a className="panel p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-xl" href={SLIME_GAME_URL} target="_blank" rel="noopener noreferrer">
             <div className="text-lg font-black text-[#081634]">/soccer</div>
             <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
               Direct door naar Slime Soccer voor even rammen tegen de bal.
             </p>
           </a>
-          <a className="panel p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-xl" href={VOLLEY_GAME_URL}>
+          <a className="panel p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-xl" href={VOLLEY_GAME_URL} target="_blank" rel="noopener noreferrer">
             <div className="text-lg font-black text-[#081634]">/volley</div>
             <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
               Direct door naar Slime Volley als je liever over het net kliedert.

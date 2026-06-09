@@ -20,6 +20,7 @@ const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url),
 const livePage = await readFile(new URL("../src/app/live/page.tsx", import.meta.url), "utf8");
 const liveNav = await readFile(new URL("../src/components/live-subsite-nav.tsx", import.meta.url), "utf8");
 const liveFollowBanner = await readFile(new URL("../src/components/live-follow-banner.tsx", import.meta.url), "utf8");
+const slimeSoccerBanner = await readFile(new URL("../src/components/slime-soccer-banner.tsx", import.meta.url), "utf8");
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
 const rankingPage = await readFile(new URL("../src/app/ranglijst/page.tsx", import.meta.url), "utf8");
@@ -155,7 +156,7 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.36"/);
+  assert.match(constants, /APP_VERSION = "0.37"/);
 });
 test("entry deadline is extended until the first World Cup match", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00\+02:00"/);
@@ -183,11 +184,13 @@ test("desktop UI uses compact page heroes, right-column rules banners and aligne
   assert.match(globalsCss, /\.game-frame \{[\s\S]*width: 100%;/);
 });
 
-test("main mobile header and hamburger stay sticky and quick menu has a Live/Schema half-row", () => {
+test("main mobile header and hamburger stay sticky and quick menu has a Schema/Live half-row", () => {
   const heroTopbarBlock = globalsCss.match(/\.hero-topbar \{[\s\S]*?\}/)?.[0] ?? "";
   const hamburgerBlock = globalsCss.match(/\.quick-menu-button \{[\s\S]*?\}/)?.[0] ?? "";
   const splitRowBlock = globalsCss.match(/\.quick-menu-split-row \{[\s\S]*?\}/)?.[0] ?? "";
+  const halfLinkBlock = globalsCss.match(/\.quick-menu-link-half \{[\s\S]*?\}/)?.[0] ?? "";
   const liveLinkBlock = globalsCss.match(/\.quick-menu-live-link \{[\s\S]*?\}/)?.[0] ?? "";
+  const pairConfig = quickMenu.slice(quickMenu.indexOf("const menuPairLinks"), quickMenu.indexOf("const privateLinks"));
   assert.match(heroTopbarBlock, /position: fixed;/);
   assert.match(heroTopbarBlock, /z-index: 45;/);
   assert.match(hamburgerBlock, /position: fixed;/);
@@ -196,7 +199,12 @@ test("main mobile header and hamburger stay sticky and quick menu has a Live/Sch
   assert.match(quickMenu, /menuPairLinks/);
   assert.match(quickMenu, /LIVE_URL/);
   assert.match(quickMenu, /quick-menu-split-row/);
+  assert.match(pairConfig, /href: "\/schema"[\s\S]*href: LIVE_URL/);
+  assert.match(quickMenu, /quick-menu-brand-name/);
+  assert.match(quickMenu, /quick-menu-brand-slime/);
+  assert.doesNotMatch(quickMenu, /text-xl font-bold text-\[#081634\]">\{locale === "en" \? "Menu" : "Menu"\}/);
   assert.match(splitRowBlock, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+  assert.match(halfLinkBlock, /justify-content: flex-start;/);
   assert.match(liveLinkBlock, /rgba\(242, 106, 27, 0\.28\)/);
 });
 
@@ -206,6 +214,7 @@ test("ranking card and Slime Soccer banner sit at the bottom of the public mobil
   const bottomStackBlock = globalsCss.match(/\.public-mobile-bottom-stack \{[\s\S]*?\}/)?.[0] ?? "";
   assert.doesNotMatch(publicSection, /public-score-card/);
   assert.match(bottomStack, /public-score-card/);
+  assert.match(bottomStack, /<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} fullWidth locale=\{locale\} \/>/);
   assert.match(bottomStack, /<SlimeSoccerBanner includeVolley=\{false\} fullWidth locale=\{locale\} \/>/);
   assert.match(bottomStackBlock, /display: grid;/);
   assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-mobile-bottom-stack \{[\s\S]*grid-column: 1;/);
@@ -218,7 +227,8 @@ test("main site language switcher matches the live dropdown pattern", () => {
   assert.match(languageSwitcher, /role="listbox"/);
   assert.match(languageSwitcher, /role="option"/);
   assert.doesNotMatch(languageSwitcher, /GB<\/span>|NL<\/span>/);
-  assert.match(globalsCss, /\.language-switcher-menu \{[\s\S]*position: absolute;[\s\S]*min-width: 168px;/);
+  assert.match(globalsCss, /\.language-switcher-menu \{[\s\S]*position: absolute;[\s\S]*z-index: 120;[\s\S]*min-width: 150px;/);
+  assert.match(globalsCss, /\.language-switcher-option \{[\s\S]*font-size: 0\.78rem;[\s\S]*font-weight: 600;/);
 });
 
 test("ranking desktop column headers distinguish players and poules", () => {
@@ -246,6 +256,8 @@ test("live sticky header has visible menu tabs, predict CTA, hamburger and high-
   assert.match(liveNav, /live-subsite-menu/);
   assert.match(liveNav, /WK voorspellen/);
   assert.match(liveNav, /href: SITE_URL/);
+  assert.match(liveNav, /target=\{external \? "_blank" : undefined\}/);
+  assert.match(liveNav, /rel=\{external \? "noopener noreferrer" : undefined\}/);
   assert.match(liveNav, /live-menu-button/);
   assert.match(liveNav, /live-menu-panel/);
   assert.match(liveNav, /window\.location\.hostname\.startsWith\("live\."\)/);
@@ -286,27 +298,26 @@ test("schema hero has a red Follow live CTA and larger schedule section tabs", (
 test("live mobile hero moves host pills up, splits the title and keeps the schema CTA half-width", () => {
   const liveHeroContentBlock = globalsCss.match(/\.live-hero-band \.hero-content \{[\s\S]*?\}/)?.[0] ?? "";
   const liveHeroBlock = globalsCss.match(/\.live-hero-band \{[\s\S]*?\}/)?.[0] ?? "";
+  const liveHeroKickerBlock = globalsCss.match(/\.live-hero-band \.world-cup-kicker \{[\s\S]*?\}/)?.[0] ?? "";
   const mascotBlock = globalsCss.match(/\.live-hero-mascot \{[\s\S]*?\}/)?.[0] ?? "";
   const titleBlock = globalsCss.match(/\.live-hero-title \{[\s\S]*?\}/)?.[0] ?? "";
   const titleSublineBlock = globalsCss.match(/\.live-hero-title-subline \{[\s\S]*?\}/)?.[0] ?? "";
-  const brandlineBlock = globalsCss.match(/\.live-hero-brandline \{[\s\S]*?\}/)?.[0] ?? "";
-  const brandlineLogoBlock = globalsCss.match(/\.live-hero-brandline \.brand-wordmark-logo \{[\s\S]*?\}/)?.[0] ?? "";
   const ctaBlock = globalsCss.match(/\.live-hero-cta \{[\s\S]*?\}/)?.[0] ?? "";
   assert.match(livePage, /heroTitle: "WK 2026 Live:"/);
   assert.match(livePage, /heroTitleSub: "uitslagen, standen & schema"/);
   assert.match(livePage, /live-hero-title-subline/);
-  assert.match(livePage, /live-hero-brandline/);
-  assert.match(livePage, /BrandWordmark onDark/);
+  assert.doesNotMatch(livePage, /live-hero-brandline/);
+  assert.doesNotMatch(livePage, /BrandWordmark onDark/);
   assert.doesNotMatch(livePage, /Gratis, zonder gedoe|Free, no fuss/);
-  assert.match(liveHeroBlock, /padding-bottom: 22px;/);
-  assert.match(liveHeroContentBlock, /padding-top: 8px;/);
-  assert.match(mascotBlock, /bottom: 40px;/);
-  assert.match(mascotBlock, /height: 160px;/);
+  assert.match(liveHeroBlock, /padding: 14px 16px 10px;/);
+  assert.match(liveHeroContentBlock, /padding-top: 0;/);
+  assert.match(liveHeroKickerBlock, /margin-bottom: 12px;/);
+  assert.match(mascotBlock, /bottom: 16px;/);
+  assert.match(mascotBlock, /height: 132px;/);
+  assert.match(titleBlock, /margin-top: 0;/);
   assert.match(titleBlock, /font-size: clamp\(1\.55rem, 7vw, 2\.05rem\);/);
   assert.match(titleBlock, /font-weight: 950;/);
   assert.match(titleSublineBlock, /font-size: clamp\(1\.06rem, 5vw, 1\.5rem\);/);
-  assert.match(brandlineBlock, /max-width: min\(100%, 318px\);/);
-  assert.match(brandlineLogoBlock, /width: 34px;/);
   assert.match(ctaBlock, /flex: 0 1 min\(50%, 182px\);/);
   assert.match(ctaBlock, /font-size: 0\.78rem;/);
 });
@@ -339,8 +350,9 @@ test("hero primary Gratis meedoen button is compact on mobile with a light empha
 
 test("mobile landing hero keeps the WK pills and title separated", () => {
   assert.match(homePage, /className=\"hero-home-title-block\"/);
-  assert.match(globalsCss, /\.hero-home \.world-cup-kicker \{\n    transform: translateY\(3px\);/);
-  assert.match(globalsCss, /\.hero-home-title-block \{\n    max-width: min\(100%, 305px\);\n    transform: translateY\(-4px\);/);
+  assert.match(homePage, /<h1 className=\"mt-3 /);
+  assert.match(globalsCss, /\.hero-home \.world-cup-kicker \{\n    margin-bottom: 12px;\n    transform: none;/);
+  assert.match(globalsCss, /\.hero-home-title-block \{\n    max-width: min\(100%, 305px\);\n    transform: none;/);
 });
 
 test("hero quick-link buttons stay inside the mobile hero card and align right on desktop", () => {
@@ -573,16 +585,22 @@ test("logged-in dashboard only shows SlimeSoccer in the right column and no Slim
   assert.doesNotMatch(homePage, /<SlimeSoccerBanner \/>/);
 });
 
-test("homepage right columns promote the live subsite with the orange WK banner", () => {
+test("homepage left ranking stack promotes the live subsite while right column stays focused on login", () => {
   const loggedInRightColumn = homePage.match(/<div className=\"grid gap-4\">\n\s*<UpcomingMatches[\s\S]*?<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/)?.[0] ?? "";
   const publicRightColumn = homePage.match(/<aside className=\"public-login-stack[\s\S]*?<\/aside>/)?.[0] ?? "";
+  const publicBottomStack = homePage.match(/<div className=\"public-mobile-bottom-stack\">[\s\S]*?<\/div>\n      <\/div>/)?.[0] ?? "";
   const liveBannerBlock = globalsCss.match(/\.live-follow-banner \{[\s\S]*?\}/)?.[0] ?? "";
   assert.match(homePage, /import \{ LiveFollowBanner \}/);
   assert.match(liveFollowBanner, /LIVE_URL/);
   assert.match(liveFollowBanner, /href=\{LIVE_URL\}/);
+  assert.match(liveFollowBanner, /target=\"_blank\"/);
+  assert.match(liveFollowBanner, /rel=\"noopener noreferrer\"/);
   assert.match(liveFollowBanner, /blije_mascotte_met_wk_bal_FINAL_v5\.webp/);
+  assert.ok(slimeSoccerBanner.includes('externalTile = tile.href.startsWith("https://")'));
+  assert.match(slimeSoccerBanner, /target=\{externalTile \? "_blank" : undefined\}/);
   assert.match(loggedInRightColumn, /<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/);
-  assert.match(publicRightColumn, /<InstallAppCard[\s\S]*<LiveFollowBanner locale=\{locale\} \/>/);
+  assert.match(publicBottomStack, /public-score-card[\s\S]*<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} fullWidth locale=\{locale\} \/>/);
+  assert.doesNotMatch(publicRightColumn, /<LiveFollowBanner locale=\{locale\} \/>/);
   assert.match(liveBannerBlock, /url\("\/assets\/stadion-4to1\.webp"\)/);
   assert.match(liveBannerBlock, /min-height: 118px;/);
 });
@@ -645,12 +663,15 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(siteHeader, /site-header-link-emphasis/);
   assert.match(siteHeader, /site-header-mini-action/);
   assert.match(siteHeader, /Uitloggen/);
-  assert.match(quickMenu, /label: \"Voorspellen\"/);
+  assert.match(globalsCss, /\.site-header \{[\s\S]*position: sticky;[\s\S]*top: 0;[\s\S]*z-index: 90;/);
+  assert.match(quickMenu, /label: "Voorspellen"/);
   assert.doesNotMatch(quickMenu, /WK-poule invullen \/ wijzigen/);
   assert.match(quickMenu, /\[publicLinks\[0\], privateLinks\[0\], \.\.\.publicLinks\.slice\(1\), \.\.\.privateLinks\.slice\(1\)\]/);
   assert.match(quickMenu, /<form className=\"quick-menu-form\" action=\"\/logout\" method=\"post\">/);
   assert.match(quickMenu, /quick-menu-link-compact/);
   assert.match(quickMenu, /slime-soccer-icon\.webp/);
+  assert.match(quickMenu, /target=\{link\.external \? "_blank" : undefined\}/);
+  assert.match(quickMenu, /rel=\{link\.external \? "noopener noreferrer" : undefined\}/);
   assert.doesNotMatch(quickMenu, /slime-soccer-icon\.png/);
   assert.match(globalsCss, /\.quick-menu-logout \{/);
   assert.match(bottomNav, /return null;/);

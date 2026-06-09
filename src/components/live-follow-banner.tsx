@@ -22,7 +22,7 @@ export function LiveFollowBanner({ locale = "nl" }: { locale?: Locale }) {
   const t = copy[locale];
 
   return (
-    <a href={LIVE_URL} className="live-follow-banner" aria-label={t.alt}>
+    <a href={LIVE_URL} className="live-follow-banner" aria-label={t.alt} target="_blank" rel="noopener noreferrer">
       <span className="live-follow-banner-copy">
         <span className="live-follow-banner-kicker">{t.kicker}</span>
         <span className="live-follow-banner-title">{t.title}</span>

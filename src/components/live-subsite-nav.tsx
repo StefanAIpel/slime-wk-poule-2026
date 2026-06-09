@@ -85,9 +85,10 @@ export function LiveSubsiteNav() {
         <nav className="live-subsite-menu" aria-label={locale === "en" ? "Live navigation" : "Live navigatie"}>
           {items.map((item) => {
             const active = isActive(pathname, item.href);
+            const external = item.href.startsWith("https://");
             const className = ["live-subsite-menu-link", active ? "is-active" : "", item.emphasis ? "live-subsite-menu-link-predict" : ""].filter(Boolean).join(" ");
             return (
-              <a key={item.href} href={item.href} className={className} aria-current={active ? "page" : undefined}>
+              <a key={item.href} href={item.href} className={className} aria-current={active ? "page" : undefined} target={external ? "_blank" : undefined} rel={external ? "noopener noreferrer" : undefined}>
                 {item.label}
               </a>
             );
@@ -119,10 +120,11 @@ export function LiveSubsiteNav() {
               {panelItems.map((link) => {
                 const Icon = link.icon;
                 const active = isActive(pathname, link.href);
+                const external = link.href.startsWith("https://");
                 const emphasized = "emphasis" in link && link.emphasis;
                 const className = ["live-menu-link", emphasized ? "live-menu-link-predict" : "", active ? "is-active" : ""].filter(Boolean).join(" ");
                 return (
-                  <a key={link.href} href={link.href} className={className} aria-current={active ? "page" : undefined} onClick={() => setMenuOpen(false)}>
+                  <a key={link.href} href={link.href} className={className} aria-current={active ? "page" : undefined} target={external ? "_blank" : undefined} rel={external ? "noopener noreferrer" : undefined} onClick={() => setMenuOpen(false)}>
                     <Icon aria-hidden="true" className="size-5" />
                     <span>{link.label}</span>
                   </a>

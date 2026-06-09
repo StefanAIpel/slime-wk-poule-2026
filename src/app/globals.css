@@ -947,7 +947,12 @@ textarea {
 /* Op mobiel ruimte onderaan zodat de ingebakken slime op het gras zichtbaar blijft. */
 @media (max-width: 759px) {
   .hero-home {
-    padding-bottom: 76px;
+    padding-bottom: 58px;
+  }
+
+  .hero-home .hero-content {
+    padding-top: 0;
+    padding-bottom: 18px;
   }
 
   .hero-topbar .brand-wordmark {
@@ -1124,12 +1129,13 @@ textarea {
 
 @media (max-width: 759px) {
   .hero-home .world-cup-kicker {
-    transform: translateY(3px);
+    margin-bottom: 12px;
+    transform: none;
   }
 
   .hero-home-title-block {
     max-width: min(100%, 305px);
-    transform: translateY(-4px);
+    transform: none;
   }
 
   .hero-home-title-block p {
@@ -1499,20 +1505,20 @@ textarea {
 
 .language-switcher-btn {
   display: inline-flex;
-  min-height: 36px;
+  min-height: 30px;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   border: 1px solid rgba(8, 22, 52, 0.12);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.95);
   color: #0b1f4d;
-  padding: 0 10px;
+  padding: 0 8px;
   cursor: pointer;
   box-shadow: 0 8px 18px rgba(8, 22, 52, 0.08);
 }
 
 .language-switcher-flag {
-  font-size: 1.15rem;
+  font-size: 1rem;
   line-height: 1;
 }
 
@@ -1520,8 +1526,8 @@ textarea {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  z-index: 50;
-  min-width: 168px;
+  z-index: 120;
+  min-width: 150px;
   border-radius: 12px;
   background: #fff;
   padding: 6px;
@@ -1534,11 +1540,11 @@ textarea {
   align-items: center;
   gap: 8px;
   border-radius: 8px;
-  padding: 8px 10px;
+  padding: 7px 9px;
   background: transparent;
   color: #081634;
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 600;
   line-height: 1;
   text-align: left;
   text-decoration: none;
@@ -1586,6 +1592,9 @@ textarea {
 @media (min-width: 768px) {
   .site-header {
     display: block;
+    position: sticky;
+    top: 0;
+    z-index: 90;
     background: rgba(255, 255, 255, 0.97);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
@@ -2656,52 +2665,27 @@ textarea {
 /* Hero met stadion-achtergrond, compacter dan de hoofdsite-hero. */
 .live-hero-band {
   min-height: 0;
-  padding-bottom: 22px;
+  padding: 14px 16px 10px;
 }
 
 .live-hero-band .hero-content {
   position: relative;
   z-index: 2;
-  padding-top: 8px;
-  padding-bottom: 18px;
+  padding-top: 0;
+  padding-bottom: 10px;
 }
 
-.live-hero-brandline {
-  display: inline-flex;
-  max-width: min(100%, 318px);
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.live-hero-brandline .brand-wordmark {
-  min-width: 0;
-  flex: 0 1 auto;
-  font-size: clamp(1.08rem, 5.1vw, 1.35rem);
-}
-
-.live-hero-brandline .brand-wordmark-logo {
-  width: 34px;
-  height: 34px;
-}
-
-.live-hero-brandline .brand-wordmark-text {
-  padding: 7px 11px 8px 12px;
-}
-
-.live-badge-hero {
-  flex: 0 0 auto;
-  padding: 5px 10px;
-  font-size: 0.72rem;
+.live-hero-band .world-cup-kicker {
+  margin-bottom: 12px;
 }
 
 /* Kleine mascotte rechtsonder in de hero (subtiel, niet zo groot als de hoofdpagina). */
 .live-hero-mascot {
   position: absolute;
   right: -10px;
-  bottom: 40px;
+  bottom: 16px;
   z-index: 1;
-  height: 160px;
+  height: 132px;
   width: auto;
   pointer-events: none;
   filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
@@ -2718,7 +2702,7 @@ textarea {
 .live-hero-title {
   display: grid;
   gap: 2px;
-  margin-top: 8px;
+  margin-top: 0;
   color: #fff;
   font-size: clamp(1.55rem, 7vw, 2.05rem);
   font-weight: 950;
@@ -2759,6 +2743,10 @@ textarea {
 }
 
 @media (min-width: 640px) {
+  .live-hero-band {
+    padding: 20px 24px 18px;
+  }
+
   .live-hero-title {
     font-size: 2.45rem;
   }
@@ -3785,6 +3773,38 @@ textarea {
   flex: 0 0 auto;
 }
 
+.quick-menu-brand {
+  display: grid;
+  gap: 2px;
+  line-height: 1;
+  min-width: 0;
+}
+
+.quick-menu-brand-name {
+  font-size: clamp(1.48rem, 6.7vw, 1.78rem);
+  font-weight: 1000;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+}
+
+.quick-menu-brand-slime {
+  color: #ffffff;
+  -webkit-text-stroke: 1px rgba(8, 22, 52, 0.2);
+  text-shadow: 0 2px 5px rgba(8, 22, 52, 0.5);
+}
+
+.quick-menu-brand-score {
+  color: #128f47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.quick-menu-brand-sub {
+  color: #f26a1b;
+  font-size: clamp(1rem, 4.7vw, 1.28rem);
+  font-weight: 1000;
+  letter-spacing: -0.02em;
+}
+
 .quick-menu-link {
   display: flex;
   width: 100%;
@@ -3815,7 +3835,7 @@ textarea {
 
 .quick-menu-link-half {
   min-height: 50px;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
   padding-inline: 10px;
 }

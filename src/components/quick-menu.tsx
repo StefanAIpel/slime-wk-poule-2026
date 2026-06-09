@@ -18,8 +18,8 @@ const publicLinks = [
 ];
 
 const menuPairLinks = [
-  { href: LIVE_URL, label: "Live", labelEn: "Live", icon: Radio, external: true },
   { href: "/schema", label: "Schema", labelEn: "Schedule", icon: CalendarDays, external: false },
+  { href: LIVE_URL, label: "Live", labelEn: "Live", icon: Radio, external: true },
 ];
 
 const privateLinks = [
@@ -95,21 +95,23 @@ export function QuickMenu() {
             aria-label={locale === "en" ? "Quick navigation" : "Snelle navigatie"}
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex min-w-0 items-center gap-2">
                 <Image
                   src="/icons/slimescore-app-icon-v4-192.png"
                   alt=""
-                  width={44}
-                  height={44}
+                  width={46}
+                  height={46}
                   className="quick-menu-app-icon"
                 />
-                <div>
-                  <div className="text-xl font-bold text-[#081634]">{locale === "en" ? "Menu" : "Menu"}</div>
-                  <div className="text-sm font-bold text-[#128f47]">{locale === "en" ? "Slime Score WC 2026" : "Slime Score WK 2026"}</div>
+                <div className="quick-menu-brand" aria-label={locale === "en" ? "SlimeScore World Cup 2026" : "SlimeScore WK 2026"}>
+                  <div className="quick-menu-brand-name" aria-hidden="true">
+                    <span className="quick-menu-brand-slime">Slime</span><span className="quick-menu-brand-score">Score</span>
+                  </div>
+                  <div className="quick-menu-brand-sub">{locale === "en" ? "WC 2026" : "WK 2026"}</div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-center gap-1">
                 <LanguageSwitcher className="quick-menu-language-switcher" />
                 <button className="button-secondary min-h-10 px-3" type="button" onClick={() => setOpen(false)}>
                   <X aria-hidden="true" className="size-5" />
@@ -133,7 +135,14 @@ export function QuickMenu() {
                   const label = locale === "en" ? link.labelEn : link.label;
                   const href = link.external ? link.href : localizedHref(link.href, locale);
                   return (
-                    <a key={link.href} href={href} className={link.external ? "quick-menu-link quick-menu-link-half quick-menu-live-link" : "quick-menu-link quick-menu-link-half"} onClick={() => setOpen(false)}>
+                    <a
+                      key={link.href}
+                      href={href}
+                      className={link.external ? "quick-menu-link quick-menu-link-half quick-menu-live-link" : "quick-menu-link quick-menu-link-half"}
+                      target={link.external ? "_blank" : undefined}
+                      rel={link.external ? "noopener noreferrer" : undefined}
+                      onClick={() => setOpen(false)}
+                    >
                       <Icon aria-hidden="true" className="size-5" />
                       <span>{label}</span>
                     </a>
