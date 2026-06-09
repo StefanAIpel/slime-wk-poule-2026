@@ -50,6 +50,18 @@ test("admin shows read-only players and pools panels", () => {
   assert.match(adminPage, /memberCount/);
 });
 
+test("admin dashboard exposes read-only operational + anomaly counts (no writes)", () => {
+  // Operationele tellingen via head-counts (geen full fetch).
+  assert.match(adminData, /from\("bracket_predictions"\)\.select\("user_id", \{ count: "exact", head: true \}\)/);
+  assert.match(adminData, /from\("special_predictions"\)\.select\("user_id", \{ count: "exact", head: true \}\)/);
+  // Anomalie-tellingen.
+  assert.match(adminData, /profilesWithoutScore/);
+  assert.match(adminData, /or\("nickname\.is\.null,team_name\.is\.null"\)/);
+  assert.match(adminData, /eq\("status", "finished"\)\.or\("home_score\.is\.null,away_score\.is\.null"\)/);
+  // Read-only paneel, geen mutatieknop in de datacontrole.
+  assert.match(adminPage, /Datacontrole \(alleen-lezen\)/);
+});
+
 test("pool member counts come from a server-side aggregate, not a full-table fetch", () => {
   assert.match(adminData, /pool_members\(count\)/);
   assert.doesNotMatch(adminData, /from\("pool_members"\)\.select\("pool_id"\)/);
