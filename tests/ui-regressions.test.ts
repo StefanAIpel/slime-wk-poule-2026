@@ -663,10 +663,12 @@ test("homepage promo/ranking stacks keep desktop ranking tight below the pool bl
   assert.match(publicMobileStack, /className=\"public-mobile-bottom-stack\"/);
   assert.match(promoStackComponent, /public-score-card[\s\S]*<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} fullWidth locale=\{locale\} \/>/);
   assert.match(globalsCss, /\.public-desktop-bottom-stack \{\n  display: none;/);
-  assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-desktop-bottom-stack \{[\s\S]*display: grid;[\s\S]*\.public-mobile-bottom-stack \{[\s\S]*display: none;/);
+  assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-desktop-bottom-stack \{[\s\S]*display: grid;[\s\S]*grid-template-columns: minmax\(0, 1fr\) minmax\(250px, 0\.78fr\);/);
+  assert.match(globalsCss, /\.public-desktop-bottom-stack \.slime-link-banners \{[\s\S]*grid-column: 1 \/ -1;/);
+  assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-mobile-bottom-stack \{[\s\S]*display: none;/);
   assert.doesNotMatch(publicRightColumn, /<LiveFollowBanner locale=\{locale\} \/>/);
   assert.match(liveBannerBlock, /url\("\/assets\/stadion-4to1\.webp"\)/);
-  assert.match(liveBannerBlock, /min-height: 118px;/);
+  assert.match(liveBannerBlock, /min-height: 108px;/);
 });
 
 test("dashboard copy matches the current prediction deadline and password flow", () => {

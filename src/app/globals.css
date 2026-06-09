@@ -551,6 +551,12 @@ textarea {
 @media (min-width: 768px) {
   .public-desktop-bottom-stack {
     display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 0.78fr);
+    align-items: stretch;
+  }
+
+  .public-desktop-bottom-stack .slime-link-banners {
+    grid-column: 1 / -1;
   }
 
   .public-mobile-bottom-stack {
@@ -2270,7 +2276,7 @@ textarea {
 .live-follow-banner {
   position: relative;
   display: grid;
-  min-height: 118px;
+  min-height: 108px;
   overflow: hidden;
   align-items: center;
   border-radius: 14px;
@@ -2280,7 +2286,7 @@ textarea {
     url("/assets/stadion-4to1.webp") center / cover;
   box-shadow: 0 12px 28px rgba(8, 22, 52, 0.18);
   color: #fff;
-  padding: 14px 116px 14px 14px;
+  padding: 14px 96px 14px 14px;
   text-decoration: none;
   transition: transform 140ms ease, box-shadow 140ms ease;
 }
@@ -2303,35 +2309,35 @@ textarea {
   background: #ef4444;
   padding: 3px 8px;
   font-size: 0.72rem;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
 
 .live-follow-banner-title {
-  font-size: 1.45rem;
-  font-weight: 950;
+  font-size: 1.35rem;
+  font-weight: 800;
   line-height: 1;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
 }
 
 .live-follow-banner-text {
-  max-width: 15rem;
+  max-width: 14rem;
   font-size: 0.88rem;
-  font-weight: 750;
+  font-weight: 650;
   line-height: 1.25;
   color: #eaf5ff;
 }
 
 .live-follow-banner img {
   position: absolute;
-  right: -10px;
-  bottom: -12px;
+  right: -16px;
+  bottom: -16px;
   z-index: 0;
-  width: 132px;
-  max-width: 42%;
-  max-height: 128px;
+  width: 118px;
+  max-width: 38%;
+  max-height: 116px;
   object-fit: contain;
   filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.28));
   pointer-events: none;
