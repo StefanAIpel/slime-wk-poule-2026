@@ -7,35 +7,12 @@ import { ConfirmPendingButton } from "@/components/confirm-pending-button";
 import { PendingButton } from "@/components/pending-button";
 import { TeamFlag } from "@/components/team-flag";
 import { isAdminEmail } from "@/lib/admin";
+import { getAdminDashboard } from "@/lib/admin-data";
 import { formatAmsterdam } from "@/lib/format";
 import { NICKNAME_MAX_LENGTH } from "@/lib/limits";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
-
-type MatchRow = {
-  id: number;
-  starts_at: string | null;
-  group_letter: string | null;
-  status: string | null;
-  home_score: number | null;
-  away_score: number | null;
-  home_code: string | null;
-  away_code: string | null;
-  home_label: string | null;
-  away_label: string | null;
-  home: { name_nl: string | null } | null;
-  away: { name_nl: string | null } | null;
-};
-
-type AuditRow = { id: number; actor_email: string | null; action: string; detail: unknown; created_at: string };
-
-type KidRow = { user_id: string; code: string; nickname: string | null; created_at: string };
-
-type ProfileRow = { id: string; nickname: string | null; team_name: string | null; created_at: string };
-
-type PoolRow = { id: string; name: string; created_at: string };
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ ok?: string; fout?: string; kind?: string }> }) {
   const params = await searchParams;
@@ -58,46 +35,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     );
   }
 
-  const admin = createAdminClient();
-  const [
-    { count: userCount },
-    { count: predictionCount },
-    { count: poolCount },
-    { data: lastScore },
-    { data: matches },
-    { data: audit },
-    { data: kids },
-    { data: recentProfiles },
-    { data: recentPools },
-    { data: poolMembers },
-  ] = await Promise.all([
-    admin.from("profiles").select("id", { count: "exact", head: true }),
-    admin.from("predictions").select("user_id", { count: "exact", head: true }),
-    admin.from("pools").select("id", { count: "exact", head: true }),
-    admin.from("scores").select("updated_at").order("updated_at", { ascending: false }).limit(1).maybeSingle(),
-    admin
-      .from("matches")
-      .select("id,starts_at,group_letter,status,home_score,away_score,home_code,away_code,home_label,away_label,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)")
-      .order("starts_at")
-      .limit(120),
-    admin.from("admin_audit_log").select("id,actor_email,action,detail,created_at").order("created_at", { ascending: false }).limit(15),
-    admin.from("kid_accounts").select("user_id,code,nickname,created_at").order("created_at", { ascending: false }),
-    admin.from("profiles").select("id,nickname,team_name,created_at").order("created_at", { ascending: false }).limit(20),
-    admin.from("pools").select("id,name,created_at").order("created_at", { ascending: false }).limit(20),
-    admin.from("pool_members").select("pool_id"),
-  ]);
-
-  const matchRows = (matches ?? []) as unknown as MatchRow[];
-  const auditRows = (audit ?? []) as unknown as AuditRow[];
-  const kidRows = (kids ?? []) as unknown as KidRow[];
-  const lastUpdate = (lastScore as { updated_at: string | null } | null)?.updated_at ?? null;
+  const { userCount, predictionCount, poolCount, lastUpdate, matchRows, auditRows, kidRows, profileRows, poolRows, membersByPool } =
+    await getAdminDashboard();
   const finishedCount = matchRows.filter((m) => m.status === "finished").length;
-  const profileRows = (recentProfiles ?? []) as unknown as ProfileRow[];
-  const poolRows = (recentPools ?? []) as unknown as PoolRow[];
-  const membersByPool = new Map<string, number>();
-  for (const member of (poolMembers ?? []) as { pool_id: string }[]) {
-    membersByPool.set(member.pool_id, (membersByPool.get(member.pool_id) ?? 0) + 1);
-  }
 
   return (
     <main className="page-shell">
@@ -116,9 +56,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       ) : null}
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat icon={<Users className="size-5" />} label="Spelers" value={userCount ?? 0} />
-        <Stat icon={<ClipboardList className="size-5" />} label="Voorspellingen" value={predictionCount ?? 0} />
-        <Stat icon={<Users className="size-5" />} label="WK-poules" value={poolCount ?? 0} />
+        <Stat icon={<Users className="size-5" />} label="Spelers" value={userCount} />
+        <Stat icon={<ClipboardList className="size-5" />} label="Voorspellingen" value={predictionCount} />
+        <Stat icon={<Users className="size-5" />} label="WK-poules" value={poolCount} />
         <Stat icon={<Activity className="size-5" />} label="Afgerond" value={`${finishedCount}/${matchRows.length}`} />
       </section>
 
