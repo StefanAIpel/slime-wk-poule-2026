@@ -34,6 +34,11 @@ export async function getAdminDashboard() {
     { count: userCount },
     { count: predictionCount },
     { count: poolCount },
+    { count: bracketCount },
+    { count: specialCount },
+    { count: scoreCount },
+    { count: profilesMissingNames },
+    { count: finishedWithoutResult },
     { data: lastScore },
     { data: matches },
     { data: audit },
@@ -44,6 +49,13 @@ export async function getAdminDashboard() {
     admin.from("profiles").select("id", { count: "exact", head: true }),
     admin.from("predictions").select("user_id", { count: "exact", head: true }),
     admin.from("pools").select("id", { count: "exact", head: true }),
+    admin.from("bracket_predictions").select("user_id", { count: "exact", head: true }),
+    admin.from("special_predictions").select("user_id", { count: "exact", head: true }),
+    admin.from("scores").select("user_id", { count: "exact", head: true }),
+    // Anomalieën (read-only, alleen tellen): onvolledige profielen en gespeelde
+    // wedstrijden zonder uitslag — handig om snel datagaten te spotten.
+    admin.from("profiles").select("id", { count: "exact", head: true }).or("nickname.is.null,team_name.is.null"),
+    admin.from("matches").select("id", { count: "exact", head: true }).eq("status", "finished").or("home_score.is.null,away_score.is.null"),
     admin.from("scores").select("updated_at").order("updated_at", { ascending: false }).limit(1).maybeSingle(),
     admin
       .from("matches")
@@ -65,10 +77,22 @@ export async function getAdminDashboard() {
     memberCount: pool.pool_members?.[0]?.count ?? 0,
   }));
 
+  const users = userCount ?? 0;
+  const scores = scoreCount ?? 0;
+
   return {
-    userCount: userCount ?? 0,
+    userCount: users,
     predictionCount: predictionCount ?? 0,
     poolCount: poolCount ?? 0,
+    bracketCount: bracketCount ?? 0,
+    specialCount: specialCount ?? 0,
+    scoreCount: scores,
+    // FK garandeert scores.user_id ⊆ profiles.id, dus dit is exact (geen anti-join nodig).
+    anomalies: {
+      profilesWithoutScore: Math.max(0, users - scores),
+      profilesMissingNames: profilesMissingNames ?? 0,
+      finishedWithoutResult: finishedWithoutResult ?? 0,
+    },
     lastUpdate: (lastScore as { updated_at: string | null } | null)?.updated_at ?? null,
     matchRows: (matches ?? []) as unknown as MatchRow[],
     auditRows: (audit ?? []) as unknown as AuditRow[],

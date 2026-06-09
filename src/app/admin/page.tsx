@@ -30,9 +30,14 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     );
   }
 
-  const { userCount, predictionCount, poolCount, lastUpdate, matchRows, auditRows, kidRows, profileRows, poolRows } =
+  const { userCount, predictionCount, poolCount, bracketCount, specialCount, scoreCount, anomalies, lastUpdate, matchRows, auditRows, kidRows, profileRows, poolRows } =
     await getAdminDashboard();
   const finishedCount = matchRows.filter((m) => m.status === "finished").length;
+  const anomalyItems = [
+    { label: "Spelers zonder score", value: anomalies.profilesWithoutScore },
+    { label: "Profielen zonder naam/team", value: anomalies.profilesMissingNames },
+    { label: "Gespeeld zonder uitslag", value: anomalies.finishedWithoutResult },
+  ];
 
   return (
     <main className="page-shell">
@@ -55,6 +60,27 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         <Stat icon={<ClipboardList className="size-5" />} label="Voorspellingen" value={predictionCount} />
         <Stat icon={<Users className="size-5" />} label="WK-poules" value={poolCount} />
         <Stat icon={<Activity className="size-5" />} label="Afgerond" value={`${finishedCount}/${matchRows.length}`} />
+        <Stat icon={<ClipboardList className="size-5" />} label="Bracket-keuzes" value={bracketCount} />
+        <Stat icon={<ClipboardList className="size-5" />} label="Bonusvragen" value={specialCount} />
+        <Stat icon={<Activity className="size-5" />} label="Scores" value={scoreCount} />
+      </section>
+
+      <section className="mt-4 panel p-4">
+        <h2 className="text-lg font-bold text-[#081634]">Datacontrole (alleen-lezen)</h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          {anomalyItems.map((item) => {
+            const flagged = item.value > 0;
+            return (
+              <div
+                key={item.label}
+                className={`rounded-lg border p-3 ${flagged ? "border-amber-300 bg-amber-50" : "border-slate-200 bg-slate-50"}`}
+              >
+                <div className={`text-2xl font-bold tabular-nums ${flagged ? "text-[#8a5a00]" : "text-[#081634]"}`}>{item.value}</div>
+                <div className="text-xs font-medium text-[#48617f]">{item.label}</div>
+              </div>
+            );
+          })}
+        </div>
       </section>
 
       <div className="mt-4 panel flex flex-wrap items-center justify-between gap-3 p-4">
