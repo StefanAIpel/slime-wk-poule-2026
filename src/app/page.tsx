@@ -660,6 +660,12 @@ function PublicHome({
             </div>
           </div>
 
+          <PublicPromoStack
+            className="public-desktop-bottom-stack"
+            copy={copy}
+            displayRows={displayRows}
+            locale={locale}
+          />
         </section>
 
         <aside className="public-login-stack md:sticky md:top-[86px]">
@@ -686,32 +692,55 @@ function PublicHome({
           {locale === "en" ? <InstallAppCard locale="en" /> : <InstallAppCard />}
         </aside>
 
-        <div className="public-mobile-bottom-stack">
-          <a href={localizedHref("/ranglijst", locale)} className="panel public-score-card p-4 no-underline">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Trophy aria-hidden="true" className="size-5 flex-none text-[#efa820]" />
-                <h2 className="text-base font-bold text-[#081634]">{copy.leaderboard}</h2>
-              </div>
-              <span className="text-sm font-bold text-[#0866e8]">{copy.viewAll}</span>
-            </div>
-            <div className="mt-3 grid gap-1.5">
-              {displayRows.map((row, index) => (
-                <div key={`${index}-${displayName(row.profiles)}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
-                  <span className="flex min-w-0 items-center gap-2">
-                    <span className="w-4 flex-none text-right font-bold tabular-nums text-[#475670]">{index + 1}</span>
-                    <span className="truncate font-medium">{displayName(row.profiles)}</span>
-                  </span>
-                  <span className="flex-none font-bold tabular-nums">{row.points} {copy.pointsSuffix}</span>
-                </div>
-              ))}
-            </div>
-          </a>
-          <LiveFollowBanner locale={locale} />
-          <SlimeSoccerBanner includeVolley={false} fullWidth locale={locale} />
-        </div>
+        <PublicPromoStack
+          className="public-mobile-bottom-stack"
+          copy={copy}
+          displayRows={displayRows}
+          locale={locale}
+        />
       </div>
 
     </main>
+  );
+}
+
+type PublicHomeCopy = (typeof homeCopy)[Locale];
+
+function PublicPromoStack({
+  className,
+  copy,
+  displayRows,
+  locale,
+}: {
+  className: string;
+  copy: PublicHomeCopy;
+  displayRows: HomeLeaderboardRow[];
+  locale: Locale;
+}) {
+  return (
+    <div className={className}>
+      <a href={localizedHref("/ranglijst", locale)} className="panel public-score-card p-4 no-underline">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Trophy aria-hidden="true" className="size-5 flex-none text-[#efa820]" />
+            <h2 className="text-base font-bold text-[#081634]">{copy.leaderboard}</h2>
+          </div>
+          <span className="text-sm font-bold text-[#0866e8]">{copy.viewAll}</span>
+        </div>
+        <div className="mt-3 grid gap-1.5">
+          {displayRows.map((row, index) => (
+            <div key={`${index}-${displayName(row.profiles)}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
+              <span className="flex min-w-0 items-center gap-2">
+                <span className="w-4 flex-none text-right font-bold tabular-nums text-[#475670]">{index + 1}</span>
+                <span className="truncate font-medium">{displayName(row.profiles)}</span>
+              </span>
+              <span className="flex-none font-bold tabular-nums">{row.points} {copy.pointsSuffix}</span>
+            </div>
+          ))}
+        </div>
+      </a>
+      <LiveFollowBanner locale={locale} />
+      <SlimeSoccerBanner includeVolley={false} fullWidth locale={locale} />
+    </div>
   );
 }
