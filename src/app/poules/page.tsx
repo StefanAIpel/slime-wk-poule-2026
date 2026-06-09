@@ -77,7 +77,7 @@ const poolCopy = {
     save: "Opslaan",
     uploadBanner: "WK-poulebanner uploaden",
     uploadHint:
-      "Aanbevolen: breed beeld, liefst 1600 × 900 px (16:9). We slaan uploads op als .webp en tonen ze in originele verhouding, zonder crop of uitrekken.",
+      "Aanbevolen: brede banner, liefst 1050 × 210 px (5:1). We slaan uploads op als .webp en tonen de banner over de volle breedte van de poulekaart.",
     uploading: "Uploaden…",
     upload: "Upload banner",
     manageCode: "Deelcode beheren",
@@ -136,7 +136,7 @@ const poolCopy = {
     save: "Save",
     uploadBanner: "Upload World Cup pool banner",
     uploadHint:
-      "Recommended: a wide image, preferably 1600 × 900 px (16:9). Uploads are stored as .webp and shown in their original ratio, without cropping or stretching.",
+      "Recommended: a wide banner, preferably 1050 × 210 px (5:1). Uploads are stored as .webp and shown across the full width of the pool card.",
     uploading: "Uploading…",
     upload: "Upload banner",
     manageCode: "Manage share code",
@@ -375,7 +375,7 @@ export default async function PoolsPage({
                 </div>
                 <PoolMembers members={poolMembersById.get(pool.id) ?? []} locale={locale} />
                 <div className="border-b border-slate-200 p-4 pool-board-section">
-                  <h3 className="text-lg font-bold text-[#101a2b]">{copy.board}</h3>
+                  <h3 className="pool-board-titlebar">{copy.board}</h3>
                   <form action={postPoolMessage} className="mt-3 grid gap-2">
                     <input type="hidden" name="pool_id" value={pool.id} />
                     <textarea
@@ -406,7 +406,7 @@ export default async function PoolsPage({
                       return (
                         <div
                           key={message.id}
-                          className={`rounded-lg border p-3 pool-board-message ${message.pinned ? "border-[#e0b23a] bg-amber-50" : "border-slate-200 bg-white"}`}
+                          className={`rounded-lg border pool-board-message ${message.pinned ? "pool-board-message-pinned" : ""}`}
                         >
                           <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-normal text-[#4c5a70]">
                             {message.pinned ? <span className="text-[#9a6b12]">{copy.pinned}</span> : null}

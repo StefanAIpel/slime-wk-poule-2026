@@ -478,16 +478,16 @@ test("create-pool card uses Mexico green contrast styling", () => {
   assert.match(globalsCss, /\.create-pool-title,[\s\S]*\.create-pool-copy \{\n  color: #ffffff;/);
 });
 
-test("pool banner upload helper appears before file input and keeps the original image ratio visible", () => {
+test("pool banner upload helper appears before file input and describes the compact 5:1 UI slot", () => {
   const uploadBlock = poulesPage.match(/<form action=\{uploadPoolImage\}[\s\S]*?<PendingButton/)?.[0] ?? "";
-  assert.match(poulesPage, /uploadHint:[\s\S]*Aanbevolen: breed beeld, liefst 1600 × 900 px \(16:9\)\. We slaan uploads op als \.webp en tonen ze in originele verhouding, zonder crop of uitrekken\./);
-  assert.match(poulesPage, /uploadHint:[\s\S]*Recommended: a wide image, preferably 1600 × 900 px \(16:9\)\. Uploads are stored as \.webp and shown in their original ratio, without cropping or stretching\./);
+  assert.match(poulesPage, /uploadHint:[\s\S]*Aanbevolen: brede banner, liefst 1050 × 210 px \(5:1\)\. We slaan uploads op als \.webp en tonen de banner over de volle breedte van de poulekaart\./);
+  assert.match(poulesPage, /uploadHint:[\s\S]*Recommended: a wide banner, preferably 1050 × 210 px \(5:1\)\. Uploads are stored as \.webp and shown across the full width of the pool card\./);
   assert.match(uploadBlock, /\{copy\.uploadHint\}[\s\S]*type="file"/);
   assert.match(actions, /const POOL_BANNER_MAX_WIDTH = 1600/);
   assert.match(actions, /const POOL_BANNER_MAX_HEIGHT = 900/);
   assert.match(actions, /resize\(\{[\s\S]*width: POOL_BANNER_MAX_WIDTH,[\s\S]*height: POOL_BANNER_MAX_HEIGHT,[\s\S]*fit: "inside"/);
   assert.doesNotMatch(actions, /fit: "cover"/);
-  assert.doesNotMatch(uploadBlock, /1050 × 150|7:1|snijdt/);
+  assert.doesNotMatch(uploadBlock, /1600 × 900|16:9|originele verhouding|without cropping|7:1/);
 });
 
 test("create-pool placeholder uses a neutral local example instead of a personal family name", () => {
@@ -516,15 +516,36 @@ test("pool banner uploads use versioned storage paths so replacements show immed
   assert.match(actions, /\.update\(\{ banner_path: bannerPath, banner_updated_at:/);
 });
 
-test("pool card uses the uploaded banner as the full hero background instead of a separate color strip", () => {
+test("pool card uses the uploaded banner as a full-width compact 5:1 hero", () => {
   assert.match(poulesPage, /"--pool-accent": pool\.accentColor/);
   assert.match(poulesPage, /"--pool-banner-image": `url\("\$\{poolBannerUrl\(pool\.id, pool\.bannerPath, pool\.bannerUpdatedAt\)\}"\)`/);
   assert.match(poulesPage, /<div className="pool-card-hero text-white" style=\{poolHeroStyle\}>/);
   assert.doesNotMatch(poulesPage, /<PoolBanner/);
+  assert.match(globalsCss, /\.poules-page-shell \{\n  \/\* 1098 border-box - 24px desktop padding links\/rechts = ±1050px bannerbreedte\. \*\/\n  width: min\(1098px, 100%\);\n\}/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*border-top: 4px solid var\(--pool-accent/);
-  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*aspect-ratio: 16 \/ 9;/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*aspect-ratio: 5 \/ 1;/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*max-height: 210px;/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*var\(--pool-banner-image, none\)[\s\S]*var\(--pool-accent/);
-  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*background-size: cover, contain, auto;/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*background-size: cover, cover, auto;/);
+  assert.doesNotMatch(globalsCss, /\.pool-card-hero \{[\s\S]*aspect-ratio: 16 \/ 9;/);
+});
+
+test("pool ranking rows are compact and keep player metadata on one line", () => {
+  assert.match(poolMembers, /className="pool-member-world ml-1 inline-flex/);
+  assert.doesNotMatch(poolMembers, /pool-member-world mt-0\.5 flex/);
+  assert.match(globalsCss, /\.pool-members-section \{[\s\S]*padding: 12px;/);
+  assert.match(globalsCss, /\.pool-member-button \{[\s\S]*min-height: 40px;[\s\S]*padding: 6px 9px;/);
+  assert.match(globalsCss, /\.pool-member-rank \{[\s\S]*width: 24px;[\s\S]*height: 24px;/);
+  assert.match(globalsCss, /\.pool-member-main \{[\s\S]*display: block;[\s\S]*white-space: nowrap;/);
+  assert.match(globalsCss, /\.pool-member-world \{[\s\S]*vertical-align: baseline;/);
+});
+
+test("pool message board has a green title bar and light-green messages", () => {
+  assert.match(poulesPage, /<h3 className="pool-board-titlebar">\{copy\.board\}<\/h3>/);
+  assert.match(globalsCss, /\.pool-board-section \{[\s\S]*background: #f2fbf5;/);
+  assert.match(globalsCss, /\.pool-board-titlebar \{[\s\S]*background: linear-gradient\(90deg, #0e7a44, #15a35b\);[\s\S]*color: #ffffff;/);
+  assert.match(globalsCss, /\.pool-board-message \{[\s\S]*border-color: #bce7c7;[\s\S]*background: #f3fcf6;/);
+  assert.doesNotMatch(poulesPage, /<h3 className="text-lg font-bold text-\[#101a2b\]">\{copy\.board\}<\/h3>/);
 });
 
 test("mobile pool navigation uses a dropdown selector instead of wrapping all pool tabs", () => {
