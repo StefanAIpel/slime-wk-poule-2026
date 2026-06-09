@@ -155,10 +155,13 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.34"/);
+  assert.match(constants, /APP_VERSION = "0.35"/);
 });
-test("entry deadline is set to the Netherlands' first match (Sun 14 June 22:00)", () => {
-  assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-14T22:00:00\+02:00"/);
+test("entry deadline is extended until the first World Cup match", () => {
+  assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00\+02:00"/);
+  assert.match(homePage, /Deadline verlengd: invullen kan tot de eerste WK-wedstrijd/);
+  assert.match(statusBar, /tot de eerste wedstrijd/);
+  assert.match(rulesPage, /de eerste WK-wedstrijd/);
 });
 
 test("desktop UI uses compact page heroes, right-column rules banners and aligned game stage", () => {
@@ -178,6 +181,34 @@ test("desktop UI uses compact page heroes, right-column rules banners and aligne
   assert.match(gameFrames, /game-stage grid gap-3/);
   assert.match(globalsCss, /\.game-page-heading,\n\.game-stage \{\n  width: min\(1120px, 100%\);/);
   assert.match(globalsCss, /\.game-frame \{[\s\S]*width: 100%;/);
+});
+
+test("main mobile header and hamburger stay sticky and quick menu has a Live/Schema half-row", () => {
+  const heroTopbarBlock = globalsCss.match(/\.hero-topbar \{[\s\S]*?\}/)?.[0] ?? "";
+  const hamburgerBlock = globalsCss.match(/\.quick-menu-button \{[\s\S]*?\}/)?.[0] ?? "";
+  const splitRowBlock = globalsCss.match(/\.quick-menu-split-row \{[\s\S]*?\}/)?.[0] ?? "";
+  const liveLinkBlock = globalsCss.match(/\.quick-menu-live-link \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(heroTopbarBlock, /position: fixed;/);
+  assert.match(heroTopbarBlock, /z-index: 45;/);
+  assert.match(hamburgerBlock, /position: fixed;/);
+  assert.match(hamburgerBlock, /top: calc\(12px \+ env\(safe-area-inset-top\)\);/);
+  assert.match(hamburgerBlock, /z-index: 50;/);
+  assert.match(quickMenu, /menuPairLinks/);
+  assert.match(quickMenu, /LIVE_URL/);
+  assert.match(quickMenu, /quick-menu-split-row/);
+  assert.match(splitRowBlock, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+  assert.match(liveLinkBlock, /rgba\(242, 106, 27, 0\.28\)/);
+});
+
+test("ranking card and Slime Soccer banner sit at the bottom of the public mobile homepage", () => {
+  const publicSection = homePage.match(/<section className="grid content-start gap-4">[\s\S]*?<\/section>/)?.[0] ?? "";
+  const bottomStack = homePage.match(/<div className="public-mobile-bottom-stack">[\s\S]*?<\/div>\n      <\/div>/)?.[0] ?? "";
+  const bottomStackBlock = globalsCss.match(/\.public-mobile-bottom-stack \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.doesNotMatch(publicSection, /public-score-card/);
+  assert.match(bottomStack, /public-score-card/);
+  assert.match(bottomStack, /<SlimeSoccerBanner includeVolley=\{false\} fullWidth locale=\{locale\} \/>/);
+  assert.match(bottomStackBlock, /display: grid;/);
+  assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-mobile-bottom-stack \{[\s\S]*grid-column: 1;/);
 });
 
 test("main site language switcher matches the live dropdown pattern", () => {
@@ -724,7 +755,7 @@ test("English preference keeps schedule and shared navigation in English without
 test("English route translates all visible shared fields and labels", () => {
   assert.match(statusBar, /const locale = useActiveLocale\(pathname \|\| "\/"\)/);
   assert.match(statusBar, /locale === "en" \? `\$\{d\}d \$\{h\}h` : `\$\{d\}d \$\{h\}u`/);
-  assert.match(statusBar, /Time left to predict/);
+  assert.match(statusBar, /until the first match/);
   assert.match(statusBar, /Entries closed/);
   assert.match(statusBar, /Player/);
   assert.match(statusBar, /completed/);

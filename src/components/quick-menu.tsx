@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, ClipboardList, Home, ListChecks, LogOut, Menu, Trophy, UserCog, Users, X } from "lucide-react";
+import { CalendarDays, ClipboardList, Home, ListChecks, LogOut, Menu, Radio, Trophy, UserCog, Users, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -8,13 +8,18 @@ import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useActiveLocale } from "@/hooks/use-active-locale";
 import { localizedHref } from "@/lib/i18n";
+import { LIVE_URL } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/browser";
 
 const publicLinks = [
   { href: "/", label: "Home", labelEn: "Home", icon: Home },
-  { href: "/schema", label: "Schema", labelEn: "Schedule", icon: CalendarDays },
   { href: "/ranglijst", label: "Ranglijst", labelEn: "Rankings", icon: Trophy },
   { href: "/regels", label: "Regels", labelEn: "Rules", icon: ListChecks },
+];
+
+const menuPairLinks = [
+  { href: LIVE_URL, label: "Live", labelEn: "Live", icon: Radio, external: true },
+  { href: "/schema", label: "Schema", labelEn: "Schedule", icon: CalendarDays, external: false },
 ];
 
 const privateLinks = [
@@ -73,6 +78,7 @@ export function QuickMenu() {
   }, [open]);
 
   const links = loggedIn ? [publicLinks[0], privateLinks[0], ...publicLinks.slice(1), ...privateLinks.slice(1)] : publicLinks;
+  const [primaryLink, ...tailLinks] = links;
   const AccountIcon = accountLink.icon;
 
   return (
@@ -112,7 +118,29 @@ export function QuickMenu() {
               </div>
             </div>
             <div className="mt-5 grid gap-2">
-              {links.map((link) => {
+              {primaryLink ? (() => {
+                const Icon = primaryLink.icon;
+                return (
+                  <Link key={primaryLink.href} href={localizedHref(primaryLink.href, locale)} className="quick-menu-link" onClick={() => setOpen(false)}>
+                    <Icon aria-hidden="true" className="size-5" />
+                    <span>{locale === "en" ? primaryLink.labelEn : primaryLink.label}</span>
+                  </Link>
+                );
+              })() : null}
+              <div className="quick-menu-split-row" aria-label={locale === "en" ? "Live and schedule" : "Live en schema"}>
+                {menuPairLinks.map((link) => {
+                  const Icon = link.icon;
+                  const label = locale === "en" ? link.labelEn : link.label;
+                  const href = link.external ? link.href : localizedHref(link.href, locale);
+                  return (
+                    <a key={link.href} href={href} className={link.external ? "quick-menu-link quick-menu-link-half quick-menu-live-link" : "quick-menu-link quick-menu-link-half"} onClick={() => setOpen(false)}>
+                      <Icon aria-hidden="true" className="size-5" />
+                      <span>{label}</span>
+                    </a>
+                  );
+                })}
+              </div>
+              {tailLinks.map((link) => {
                 const Icon = link.icon;
                 return (
                   <Link key={link.href} href={localizedHref(link.href, locale)} className="quick-menu-link" onClick={() => setOpen(false)}>

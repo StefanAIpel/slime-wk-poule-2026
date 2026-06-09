@@ -59,7 +59,7 @@ const homeCopy = {
       "3. Maak of join een WK-poule met een code.",
     ],
     dashboardTitle: "Jouw Slime Score, alles op één plek.",
-    dashboardIntroBefore: "De voortgang hieronder telt je 72 groepsuitslagen. Knock-outkeuzes en bonusvragen kun je ook invullen tot de deadline op",
+    dashboardIntroBefore: "De voortgang hieronder telt je 72 groepsuitslagen. Knock-outkeuzes en bonusvragen kun je invullen tot de eerste WK-wedstrijd op",
     dashboardIntroAfter: " — daarna staat alles vast.",
     progressTitle: "Voortgang",
     progressCount: (filled: number) => `${filled} van 72 uitslagen`,
@@ -88,7 +88,7 @@ const homeCopy = {
     publicKickerAria: "WK 2026 in de Verenigde Staten, Canada en Mexico",
     publicKicker: "WK 2026",
     publicTitle: "Gratis WK 2026 Poule",
-    publicIntro: "In tien minuten vul je voorspellingen voor het hele WK. Speel met en tegen je vrienden en familie en maak zoveel subpoules als je wilt. Gratis, en zo gedeeld in je groepsapp. Geen irritante reclames en cookies, alleen een e-mailadres nodig.",
+    publicIntro: "In tien minuten vul je voorspellingen voor het hele WK. Deadline verlengd: invullen kan tot de eerste WK-wedstrijd. Speel met en tegen je vrienden en familie; gratis en zo gedeeld in je groepsapp.",
     publicCta: "Gratis meedoen",
     quickLinks: "Snelle links",
     scheduleLink: "WK-speelschema",
@@ -122,7 +122,7 @@ const homeCopy = {
       "3. Create or join a World Cup pool with a code.",
     ],
     dashboardTitle: "Your Slime Score, all in one place.",
-    dashboardIntroBefore: "The progress below counts your 72 group-stage results. Knockout picks and bonus questions can also be filled in until the deadline on",
+    dashboardIntroBefore: "The progress below counts your 72 group-stage results. Knockout picks and bonus questions can be filled in until the first World Cup match on",
     dashboardIntroAfter: " — after that everything is locked.",
     progressTitle: "Progress",
     progressCount: (filled: number) => `${filled} of 72 results`,
@@ -151,7 +151,7 @@ const homeCopy = {
     publicKickerAria: "World Cup 2026 in the United States, Canada and Mexico",
     publicKicker: "World Cup 2026",
     publicTitle: "Free World Cup 2026 pool",
-    publicIntro: "Fill in your predictions for the full World Cup in about ten minutes. Play with and against friends and family, create as many sub-pools as you like, and share it in your group chat. Free, no annoying ads or cookies — just an email address.",
+    publicIntro: "Fill in your predictions for the full World Cup in about ten minutes. Deadline extended: enter until the first World Cup match. Play with friends and family; free and easy to share.",
     publicCta: "Join for free",
     quickLinks: "Quick links",
     scheduleLink: "Match schedule",
@@ -531,27 +531,6 @@ function PublicHome({
             </div>
           </div>
 
-          <a href={localizedHref("/ranglijst", locale)} className="panel public-score-card p-4 no-underline">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Trophy aria-hidden="true" className="size-5 flex-none text-[#efa820]" />
-                <h2 className="text-base font-bold text-[#081634]">{copy.leaderboard}</h2>
-              </div>
-              <span className="text-sm font-bold text-[#0866e8]">{copy.viewAll}</span>
-            </div>
-            <div className="mt-3 grid gap-1.5">
-              {displayRows.map((row, index) => (
-                <div key={`${index}-${displayName(row.profiles)}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
-                  <span className="flex min-w-0 items-center gap-2">
-                    <span className="w-4 flex-none text-right font-bold tabular-nums text-[#475670]">{index + 1}</span>
-                    <span className="truncate font-medium">{displayName(row.profiles)}</span>
-                  </span>
-                  <span className="flex-none font-bold tabular-nums">{row.points} {copy.pointsSuffix}</span>
-                </div>
-              ))}
-            </div>
-          </a>
-          <SlimeSoccerBanner includeVolley={false} fullWidth locale={locale} />
         </section>
 
         <aside className="public-login-stack md:sticky md:top-4">
@@ -578,6 +557,30 @@ function PublicHome({
           {locale === "en" ? <InstallAppCard locale="en" /> : <InstallAppCard />}
           <LiveFollowBanner locale={locale} />
         </aside>
+
+        <div className="public-mobile-bottom-stack">
+          <a href={localizedHref("/ranglijst", locale)} className="panel public-score-card p-4 no-underline">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Trophy aria-hidden="true" className="size-5 flex-none text-[#efa820]" />
+                <h2 className="text-base font-bold text-[#081634]">{copy.leaderboard}</h2>
+              </div>
+              <span className="text-sm font-bold text-[#0866e8]">{copy.viewAll}</span>
+            </div>
+            <div className="mt-3 grid gap-1.5">
+              {displayRows.map((row, index) => (
+                <div key={`${index}-${displayName(row.profiles)}`} className="flex items-center justify-between gap-3 text-sm text-[#081634]">
+                  <span className="flex min-w-0 items-center gap-2">
+                    <span className="w-4 flex-none text-right font-bold tabular-nums text-[#475670]">{index + 1}</span>
+                    <span className="truncate font-medium">{displayName(row.profiles)}</span>
+                  </span>
+                  <span className="flex-none font-bold tabular-nums">{row.points} {copy.pointsSuffix}</span>
+                </div>
+              ))}
+            </div>
+          </a>
+          <SlimeSoccerBanner includeVolley={false} fullWidth locale={locale} />
+        </div>
       </div>
 
     </main>

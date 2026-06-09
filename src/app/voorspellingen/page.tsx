@@ -33,7 +33,7 @@ const predictionCopy = {
     metaDescription: "Vul je SlimeScore WK 2026-voorspellingen in en pas ze aan tot de deadline.",
     heroTitle: "Voorspellingen",
     heroSubtitle:
-      "Vul snel in en schaaf bij t/m zondag 14 juni 22:00 (de aftrap van Oranje). Let op: elke wedstrijd sluit 30 min vóór de aftrap — wat al begonnen is, kun je niet meer invullen. ⚡ Oranje-wedstrijden tellen dubbel! Na de groepsfase is er nog een kleine herziening tot 28 juni 21:00.",
+      "Vul snel in en schaaf bij t/m donderdag 11 juni 21:00 (de eerste WK-wedstrijd). Let op: elke wedstrijd sluit 30 min vóór de aftrap — wat al begonnen is, kun je niet meer invullen. ⚡ Oranje-wedstrijden tellen dubbel! Na de groepsfase is er nog een kleine herziening tot 28 juni 21:00.",
     saved: "Opgeslagen.",
     groupTitle: "Groepswedstrijden",
     groupOpen: "Typ je verwachte uitslag. Elke wedstrijd sluit 30 min vóór de aftrap; daarna kun je 'm niet meer wijzigen. ⚡ Oranje-wedstrijden tellen dubbel.",
@@ -49,7 +49,7 @@ const predictionCopy = {
     incomplete: (filled: number, total: number) =>
       `Let op: je hebt ${filled} van ${total} groepswedstrijden ingevuld. Vul ze allemaal in, anders klopt je automatische laatste 32 nog niet en mis je punten.`,
     bonusTitle: "Bonusvragen",
-    bonusIntro: "Start leeg: vul je eigen schatting in vóór 14 juni 22:00. Lege bonusvelden leveren geen punten op.",
+    bonusIntro: "Start leeg: vul je eigen schatting in vóór 11 juni 21:00. Lege bonusvelden leveren geen punten op.",
     teamMostGoals: "Team met de meeste doelpunten",
     chooseCountry: "Kies land",
     totalGoals: "Totaal aantal goals",
@@ -72,7 +72,7 @@ const predictionCopy = {
     metaDescription: "Fill in your SlimeScore World Cup 2026 predictions and edit them until the deadline.",
     heroTitle: "Predictions",
     heroSubtitle:
-      "Fill them in quickly and tweak until Sunday 14 June 22:00 (the Netherlands' kick-off). Note: each match closes 30 min before kick-off — once it has started you can no longer enter it. ⚡ Netherlands matches count double! After the group stage there is a small revision window until 28 June 21:00.",
+      "Fill them in quickly and tweak until Thursday 11 June 21:00 (the first World Cup match). Note: each match closes 30 min before kick-off — once it has started you can no longer enter it. ⚡ Netherlands matches count double! After the group stage there is a small revision window until 28 June 21:00.",
     saved: "Saved.",
     groupTitle: "Group matches",
     groupOpen: "Enter your expected scores. Each match closes 30 min before kick-off; after that you can no longer change it. ⚡ Netherlands matches count double.",
@@ -88,7 +88,7 @@ const predictionCopy = {
     incomplete: (filled: number, total: number) =>
       `Heads up: you filled in ${filled} of ${total} group matches. Fill them all in, otherwise your automatic last 32 may be wrong and you can miss points.`,
     bonusTitle: "Bonus questions",
-    bonusIntro: "Start empty: enter your own estimate before 14 June 22:00. Empty bonus fields score no points.",
+    bonusIntro: "Start empty: enter your own estimate before 11 June 21:00. Empty bonus fields score no points.",
     teamMostGoals: "Team with most goals",
     chooseCountry: "Choose country",
     totalGoals: "Total number of goals",
