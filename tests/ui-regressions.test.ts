@@ -17,6 +17,7 @@ const passwordChangeForm = await readFile(new URL("../src/components/password-ch
 const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
+const livePage = await readFile(new URL("../src/app/live/page.tsx", import.meta.url), "utf8");
 const liveNav = await readFile(new URL("../src/components/live-subsite-nav.tsx", import.meta.url), "utf8");
 const liveFollowBanner = await readFile(new URL("../src/components/live-follow-banner.tsx", import.meta.url), "utf8");
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
@@ -154,7 +155,7 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.33"/);
+  assert.match(constants, /APP_VERSION = "0.34"/);
 });
 test("entry deadline is set to the Netherlands' first match (Sun 14 June 22:00)", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-14T22:00:00\+02:00"/);
@@ -201,21 +202,31 @@ test("live subsite header respects the iOS status bar (safe-area-inset-top)", ()
   assert.match(headerBlock, /isolation: isolate;/);
 });
 
-test("live sticky header has visible menu tabs and a high-z-index flag language dropdown", () => {
+test("live sticky header has visible menu tabs, predict CTA, hamburger and high-z-index flag dropdown", () => {
   const menuBlock = globalsCss.match(/\.live-subsite-menu \{[\s\S]*?\}/)?.[0] ?? "";
   const linkBlock = globalsCss.match(/\.live-subsite-menu-link \{[\s\S]*?\}/)?.[0] ?? "";
+  const predictLinkBlock = globalsCss.match(/\.live-subsite-menu-link-predict \{[\s\S]*?\}/)?.[0] ?? "";
+  const hamburgerBlock = globalsCss.match(/\.live-menu-button \{[\s\S]*?\}/)?.[0] ?? "";
+  const backdropBlock = globalsCss.match(/\.live-menu-backdrop \{[\s\S]*?\}/)?.[0] ?? "";
   const langButtonBlock = globalsCss.match(/\.live-lang-btn \{[\s\S]*?\}/)?.[0] ?? "";
   const langMenuBlock = globalsCss.match(/\.live-lang-menu \{[\s\S]*?\}/)?.[0] ?? "";
   const mobileLangMenuBlock = globalsCss.match(/@media \(max-width: 759px\) \{[\s\S]*?\.live-lang-menu \{[\s\S]*?\}\n\}/)?.[0] ?? "";
   assert.match(liveNav, /live-subsite-menu/);
-  assert.match(liveNav, /liveHref: "\/schema\/knockout"/);
-  assert.match(liveNav, /appHref: "\/live\/schema\/knockout"/);
+  assert.match(liveNav, /WK voorspellen/);
+  assert.match(liveNav, /href: SITE_URL/);
+  assert.match(liveNav, /live-menu-button/);
+  assert.match(liveNav, /live-menu-panel/);
   assert.match(liveNav, /window\.location\.hostname\.startsWith\("live\."\)/);
   assert.match(liveNav, /href === "\/schema" \|\| href === "\/live\/schema"/);
   assert.match(menuBlock, /grid-column: 1 \/ -1;/);
   assert.match(menuBlock, /grid-row: 2;/);
   assert.match(menuBlock, /overflow-x: auto;/);
   assert.match(linkBlock, /font-size: 0\.86rem;/);
+  assert.match(predictLinkBlock, /linear-gradient\(135deg, #ff9800, #f26a1b\)/);
+  assert.match(hamburgerBlock, /grid-column: 3;/);
+  assert.match(hamburgerBlock, /linear-gradient\(135deg, #ff9800, #f26a1b\)/);
+  assert.match(backdropBlock, /justify-content: flex-start;/);
+  assert.match(globalsCss, /@media \(min-width: 760px\) \{[\s\S]*\.live-menu-button \{[\s\S]*display: none;/);
   assert.match(langButtonBlock, /font: inherit;/);
   assert.match(langButtonBlock, /min-width: 43px;/);
   assert.match(langMenuBlock, /z-index: 1001;/);
@@ -238,18 +249,40 @@ test("schema hero has a red Follow live CTA and larger schedule section tabs", (
   assert.match(scheduleTabBlock, /font-weight: 950;/);
 });
 
-test("live mobile hero aligns Memphis with the share row and keeps the title block compact", () => {
+test("live mobile hero moves host pills up, splits the title and keeps the schema CTA half-width", () => {
+  const liveHeroContentBlock = globalsCss.match(/\.live-hero-band \.hero-content \{[\s\S]*?\}/)?.[0] ?? "";
   const liveHeroBlock = globalsCss.match(/\.live-hero-band \{[\s\S]*?\}/)?.[0] ?? "";
   const mascotBlock = globalsCss.match(/\.live-hero-mascot \{[\s\S]*?\}/)?.[0] ?? "";
   const titleBlock = globalsCss.match(/\.live-hero-title \{[\s\S]*?\}/)?.[0] ?? "";
-  const subBlock = globalsCss.match(/\.live-hero-sub \{[\s\S]*?\}/)?.[0] ?? "";
+  const titleSublineBlock = globalsCss.match(/\.live-hero-title-subline \{[\s\S]*?\}/)?.[0] ?? "";
+  const ctaBlock = globalsCss.match(/\.live-hero-cta \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(livePage, /heroTitle: "WK 2026 Live:"/);
+  assert.match(livePage, /heroTitleSub: "uitslagen, standen & schema"/);
+  assert.match(livePage, /live-hero-title-subline/);
   assert.match(liveHeroBlock, /padding-bottom: 22px;/);
+  assert.match(liveHeroContentBlock, /padding-top: 8px;/);
   assert.match(mascotBlock, /bottom: 40px;/);
   assert.match(mascotBlock, /height: 160px;/);
-  assert.match(titleBlock, /font-size: 1\.22rem;/);
-  assert.match(titleBlock, /line-height: 1\.08;/);
-  assert.match(subBlock, /font-size: 0\.84rem;/);
-  assert.match(subBlock, /line-height: 1\.38;/);
+  assert.match(titleBlock, /font-size: clamp\(1\.55rem, 7vw, 2\.05rem\);/);
+  assert.match(titleBlock, /font-weight: 950;/);
+  assert.match(titleSublineBlock, /font-size: clamp\(1\.06rem, 5vw, 1\.5rem\);/);
+  assert.match(ctaBlock, /flex: 0 1 min\(50%, 182px\);/);
+  assert.match(ctaBlock, /font-size: 0\.78rem;/);
+});
+
+test("schedule filters fit one row with a compact Dutch flag chip", () => {
+  const controlsBlock = globalsCss.match(/\.schedule-groups-controls \{[\s\S]*?\}/)?.[0] ?? "";
+  const pickerButtonBlock = globalsCss.match(/\.schedule-picker-button \{[\s\S]*?\}/)?.[0] ?? "";
+  const nlChipBlock = globalsCss.match(/\.schedule-nl-chip \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(scheduleExplorer, /className=\{nlOnly \? "schedule-orange-chip schedule-nl-chip schedule-orange-chip-active"/);
+  assert.match(scheduleExplorer, /aria-label=\{scheduleCopy\[locale\]\.netherlandsFilter\}/);
+  assert.match(scheduleExplorer, /<span aria-hidden="true">🇳🇱<\/span>/);
+  assert.match(controlsBlock, /flex-wrap: nowrap;/);
+  assert.match(controlsBlock, /overflow-x: auto;/);
+  assert.match(pickerButtonBlock, /font-size: 0\.76rem;/);
+  assert.match(pickerButtonBlock, /white-space: nowrap;/);
+  assert.match(nlChipBlock, /min-width: 36px;/);
+  assert.doesNotMatch(scheduleExplorer, />\s*\{scheduleCopy\[locale\]\.netherlandsFilter\}\s*<\/button>/);
 });
 
 test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {

@@ -511,8 +511,15 @@ function StandingsPanel({ matches, standings, locale }: { matches: ScheduleMatch
             ) : null}
           </div>
 
-          <button type="button" className={nlOnly ? "schedule-orange-chip schedule-orange-chip-active" : "schedule-orange-chip"} onClick={() => setNlOnly((value) => !value)}>
-            {scheduleCopy[locale].netherlandsFilter}
+          <button
+            type="button"
+            className={nlOnly ? "schedule-orange-chip schedule-nl-chip schedule-orange-chip-active" : "schedule-orange-chip schedule-nl-chip"}
+            aria-label={scheduleCopy[locale].netherlandsFilter}
+            title={scheduleCopy[locale].netherlandsFilter}
+            onClick={() => setNlOnly((value) => !value)}
+          >
+            <span aria-hidden="true">🇳🇱</span>
+            <span className="sr-only">{scheduleCopy[locale].netherlandsFilter}</span>
           </button>
         </div>
       </div>

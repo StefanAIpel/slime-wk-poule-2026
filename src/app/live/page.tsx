@@ -12,7 +12,8 @@ export const revalidate = 15;
 const copy = {
   nl: {
     kicker: "WK 2026 live",
-    heroTitle: "WK 2026 live: uitslagen, stand & schema",
+    heroTitle: "WK 2026 Live:",
+    heroTitleSub: "uitslagen, standen & schema",
     heroSub: "Volg elke WK 2026-wedstrijd live — tussenstanden, opstellingen en statistieken, plus het volledige speelschema. Gratis, zonder gedoe.",
     schedule: "Hele WK speelschema",
     shareText: "Volg het WK 2026 live op SlimeScore: uitslagen, stand en schema.",
@@ -30,7 +31,8 @@ const copy = {
   },
   en: {
     kicker: "World Cup 2026 live",
-    heroTitle: "World Cup 2026 live: scores, standings & schedule",
+    heroTitle: "World Cup 2026 Live:",
+    heroTitleSub: "scores, standings & schedule",
     heroSub: "Follow every 2026 World Cup match live — live scores, line-ups and stats, plus the full schedule. Free, no fuss.",
     schedule: "Total World Cup Schedule",
     shareText: "Follow the 2026 World Cup live on SlimeScore: scores, standings and schedule.",
@@ -147,7 +149,10 @@ function Hero({ locale }: { locale: Locale }) {
           <span>Canada</span>
           <span>Mexico</span>
         </div>
-        <h1 className="live-hero-title">{c.heroTitle}</h1>
+        <h1 className="live-hero-title">
+          <span>{c.heroTitle}</span>
+          <span className="live-hero-title-subline">{c.heroTitleSub}</span>
+        </h1>
         <p className="live-hero-sub">{c.heroSub}</p>
         <div className="live-hero-actions">
           <a href="/live/schema" className="button-primary live-hero-cta">
