@@ -384,6 +384,11 @@ test("logged-in homepage uses shorter prediction deadline copy and compact mobil
   assert.match(homePage, /dashboard-extra-progress-bar mt-2 h-2/);
   assert.match(homePage, /<p className="text-2xl font-bold sm:text-3xl">\{progress\}%<\/p>/);
   assert.match(homePage, /<p className="text-xl font-bold tabular-nums sm:text-2xl">\{extraProgress\}%<\/p>/);
+  assert.match(homePage, /<Avatar name=\{nickname \|\| copy\.you\} avatarKey=\{profile\?\.avatar_key\} size=\{78\} \/>/);
+  assert.match(homePage, /<Brand hideIcon locale=\{locale\} \/>/);
+  assert.match(globalsCss, /\.home-mobile-user-avatar \{[\s\S]*display: inline-flex;/);
+  assert.match(globalsCss, /\.home-mobile-user-avatar \.avatar-img \{[\s\S]*width: 84px;[\s\S]*height: 84px;/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.home-mobile-user-avatar \.avatar-img \{[\s\S]*width: 78px;[\s\S]*height: 78px;/);
 });
 
 test("prediction edits stay open through the Oranje grace window while pre-kickoff bonus fields still close at kickoff", () => {
