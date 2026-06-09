@@ -32,11 +32,10 @@ const predictionCopy = {
     metaTitle: "Voorspellingen invullen",
     metaDescription: "Vul je SlimeScore WK 2026-voorspellingen in en pas ze aan tot de deadline.",
     heroTitle: "Voorspellingen",
-    heroSubtitle:
-      "Vul je voorspellingen in en sla op. Deadlines en puntentelling staan bij Regels.",
+    heroSubtitle: "Vul je voorspellingen in en sla op.",
     saved: "Opgeslagen.",
     groupTitle: "Groepswedstrijden",
-    groupOpen: "T/m 14 juni 21:00: niet-gestarte wedstrijden invullen en opslaan.",
+    groupOpen: "",
     groupClosed: "De hoofdvoorspellingen zijn gesloten.",
     progressTitle: "Voortgang groepswedstrijden",
     filled: "ingevuld",
@@ -71,11 +70,10 @@ const predictionCopy = {
     metaTitle: "Fill in predictions",
     metaDescription: "Fill in your SlimeScore World Cup 2026 predictions and edit them until the deadline.",
     heroTitle: "Predictions",
-    heroSubtitle:
-      "Fill in your predictions and save. Details and deadlines are in Rules.",
+    heroSubtitle: "Fill in your predictions and save.",
     saved: "Saved.",
     groupTitle: "Group matches",
-    groupOpen: "Until 14 June 21:00: fill in unstarted matches and save.",
+    groupOpen: "",
     groupClosed: "The main predictions are closed.",
     progressTitle: "Group match progress",
     filled: "filled in",
@@ -217,9 +215,10 @@ export default async function PredictionsPage({
       <form action={savePredictions} className="grid gap-5">
         <section className="dark-panel p-4 text-white">
           <h2 className="text-2xl font-bold">{copy.groupTitle}</h2>
-          <p className="mt-1 text-sm font-medium text-blue-100">
-            {mainOpen ? copy.groupOpen : copy.groupClosed}
-          </p>
+          {mainOpen && copy.groupOpen ? (
+            <p className="mt-1 text-sm font-medium text-blue-100">{copy.groupOpen}</p>
+          ) : null}
+          {!mainOpen ? <p className="mt-1 text-sm font-medium text-blue-100">{copy.groupClosed}</p> : null}
         </section>
 
         <div className="panel p-4">

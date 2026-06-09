@@ -746,11 +746,14 @@ test("prediction saves sync the global status bar progress without requiring rel
   assert.match(statusBar, /setMe\(\(current\)/);
 });
 
-test("prediction page keeps deadline and scoring explanation short because details live in rules", () => {
-  assert.match(predictionsPage, /Vul je voorspellingen in en sla op\. Deadlines en puntentelling staan bij Regels\./);
-  assert.match(predictionsPage, /T\/m 14 juni 21:00: niet-gestarte wedstrijden invullen en opslaan\./);
-  assert.match(predictionsPage, /Fill in your predictions and save\. Details and deadlines are in Rules\./);
-  assert.match(predictionsPage, /Until 14 June 21:00: fill in unstarted matches and save\./);
+test("prediction page keeps deadline and scoring explanation out of the form because details live in rules", () => {
+  assert.match(predictionsPage, /heroSubtitle: "Vul je voorspellingen in en sla op\."/);
+  assert.match(predictionsPage, /heroSubtitle: "Fill in your predictions and save\."/);
+  assert.match(predictionsPage, /groupOpen: ""/);
+  assert.doesNotMatch(predictionsPage, /Deadlines en puntentelling staan bij Regels/);
+  assert.doesNotMatch(predictionsPage, /Details and deadlines are in Rules/);
+  assert.doesNotMatch(predictionsPage, /T\/m 14 juni 21:00: niet-gestarte wedstrijden invullen en opslaan\./);
+  assert.doesNotMatch(predictionsPage, /Until 14 June 21:00: fill in unstarted matches and save\./);
   assert.doesNotMatch(predictionsPage, /Vul snel in en schaaf bij t\/m donderdag 11 juni 21:00/);
   assert.doesNotMatch(predictionsPage, /Na de groepsfase is er nog een kleine herziening/);
   assert.doesNotMatch(predictionsPage, /Elke wedstrijd sluit 30 min vóór de aftrap; daarna kun je 'm niet meer wijzigen/);
@@ -758,7 +761,6 @@ test("prediction page keeps deadline and scoring explanation short because detai
 
 test("knockout predictions flow from last 16 to later rounds without scroll boxes", () => {
   assert.match(predictionsPage, /<KnockoutPredictionPicker/);
-  assert.match(predictionsPage, /T\/m 14 juni 21:00: niet-gestarte wedstrijden invullen en opslaan\./);
   assert.match(knockoutPredictionPicker, /round16: 16/);
   assert.match(knockoutPredictionPicker, /quarterfinal: 8/);
   assert.match(knockoutPredictionPicker, /Kies precies 16 landen uit jouw berekende laatste 32\./);
