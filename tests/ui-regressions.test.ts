@@ -274,7 +274,7 @@ test("live sticky header has visible menu tabs, predict CTA, hamburger and high-
   assert.match(menuBlock, /grid-row: 2;/);
   assert.match(menuBlock, /overflow-x: auto;/);
   assert.match(linkBlock, /font-size: 0\.86rem;/);
-  assert.match(predictLinkBlock, /width: 182px;/);
+  assert.match(predictLinkBlock, /width: 138px;/);
   assert.match(predictLinkBlock, /margin-left: 8px;/);
   assert.match(predictLinkBlock, /background: rgba\(255, 255, 255, 0\.12\);/);
   assert.match(hamburgerBlock, /linear-gradient\(135deg, #ff9800, #f26a1b\)/);
