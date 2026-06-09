@@ -5,6 +5,7 @@ import { createPool, joinPool } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
+import { Avatar } from "@/components/avatar";
 import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { LiveFollowBanner } from "@/components/live-follow-banner";
@@ -104,8 +105,8 @@ const homeCopy = {
       "3. Maak of join een WK-poule met een code.",
     ],
     dashboardTitle: "Voorspel je WK 2026",
-    dashboardIntroBefore: "Invullen tot de eerste WK-wedstrijd op",
-    dashboardIntroAfter: " — er is een respijtperiode tot de eerste wedstrijd van Oranje: niet-gespeelde wedstrijden kun je wijzigen tot 14 juni 2026 om 21:00. Daarna staat alles vast, behalve 3 bonusvragen die je nog kunt wijzigen tot het einde van de groepsfase.",
+    dashboardIntroBefore: "Deadline:",
+    dashboardIntroAfter: " Respijt tot Oranje begint: niet-gespeelde wedstrijden kun je wijzigen tot 14 juni 2026 om 21:00. Daarna staat alles vast, behalve 3 bonusvragen tot einde groepsfase.",
     progressTitle: "Voortgang",
     progressCount: (filled: number) => `${filled} van 72 uitslagen`,
     remaining: (count: number) => `Nog ${count} wedstrijden in te vullen.`,
@@ -178,8 +179,8 @@ const homeCopy = {
       "3. Create or join a World Cup pool with a code.",
     ],
     dashboardTitle: "Predict your World Cup 2026",
-    dashboardIntroBefore: "Fill in until the first World Cup match on",
-    dashboardIntroAfter: " — there is a grace period until the Netherlands’ first match: unplayed matches can be changed until 14 June 2026 at 21:00. After that everything is locked, except 3 bonus questions that remain editable until the end of the group stage.",
+    dashboardIntroBefore: "Deadline:",
+    dashboardIntroAfter: " Grace period until the Netherlands starts: unplayed matches can be changed until 14 June 2026 at 21:00. After that everything is locked, except 3 bonus questions until the end of the group stage.",
     progressTitle: "Progress",
     progressCount: (filled: number) => `${filled} of 72 results`,
     remaining: (count: number) => `${count} matches left to predict.`,
@@ -287,7 +288,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
     { data: bracketPredictions },
     { data: specialPrediction },
   ] = await Promise.all([
-    supabase.from("profiles").select("id,nickname,team_name").eq("id", user.id).single(),
+    supabase.from("profiles").select("id,nickname,team_name,avatar_key").eq("id", user.id).single(),
     supabase.from("predictions").select("match_id", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("pool_members").select("role,pools(id,name,code,badge_emoji)").eq("user_id", user.id).limit(3),
     supabase.from("scores").select("points, exact_scores, correct_results").eq("user_id", user.id).single(),
@@ -335,6 +336,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
   }
 
   const progress = Math.round(((predictionCount ?? 0) / 72) * 100);
+  const nickname = profile.nickname ?? "";
   const homeMemberships = (memberships ?? []) as unknown as HomeMembership[];
   const myPoints = score?.points ?? 0;
   const remaining = 72 - (predictionCount ?? 0);
@@ -388,16 +390,21 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
   return (
     <main className="page-shell">
       <header className="mb-6 grid gap-4 md:max-w-xl">
-        <Brand locale={locale} />
+        <div className="home-mobile-user-row">
+          <a href={localizedHref("/account", locale)} className="home-mobile-user-avatar" aria-label={locale === "en" ? "My account" : "Mijn account"}>
+            <Avatar name={nickname || copy.you} avatarKey={profile?.avatar_key} size={42} />
+          </a>
+          <Brand locale={locale} />
+        </div>
       </header>
 
       <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
         <div className="grid gap-4">
-          <div className="dark-panel p-5 text-white">
+          <div className="dark-panel p-4 text-white sm:p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h1 className="text-2xl font-bold leading-tight md:text-4xl">{copy.dashboardTitle}</h1>
-                <p className="mt-2 max-w-xl text-base font-medium text-blue-100">
+                <h1 className="text-[1.45rem] font-bold leading-tight md:text-4xl">{copy.dashboardTitle}</h1>
+                <p className="mt-1.5 max-w-[32rem] text-[0.78rem] font-medium leading-[1.45] text-blue-100 sm:text-sm sm:leading-6 md:text-base md:leading-7">
                   {copy.dashboardIntroBefore}{" "}
                   <strong className="font-bold text-white">{deadlineLabel}</strong>
                   {copy.dashboardIntroAfter}
@@ -407,27 +414,27 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                 <Trophy aria-hidden="true" className="size-10 text-[#ffd44d]" />
               </div>
             </div>
-            <div className="dashboard-progress-card mt-4 rounded-lg bg-[#061b47] p-3">
+            <div className="dashboard-progress-card mt-3 rounded-lg bg-[#061b47] p-2.5 sm:p-3">
               <div className="flex items-end justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-normal text-blue-100">{copy.progressTitle}</p>
-                  <p className="text-3xl font-bold">{progress}%</p>
+                  <p className="text-2xl font-bold sm:text-3xl">{progress}%</p>
                 </div>
-                <p className="text-right text-sm font-semibold text-blue-100">{copy.progressCount(predictionCount ?? 0)}</p>
+                <p className="text-right text-xs font-semibold text-blue-100 sm:text-sm">{copy.progressCount(predictionCount ?? 0)}</p>
               </div>
-              <div className="dashboard-progress-bar mt-2 h-3 overflow-hidden rounded-full bg-black/32">
+              <div className="dashboard-progress-bar mt-2 h-2.5 overflow-hidden rounded-full bg-black/32 sm:h-3">
                 <div className="h-full rounded-full bg-[#25a84a]" style={{ width: `${Math.min(progress, 100)}%` }} />
               </div>
-              <p className="mt-2 text-sm font-semibold text-blue-100">
+              <p className="mt-2 text-xs font-semibold text-blue-100 sm:text-sm">
                 {remaining > 0 ? copy.remaining(remaining) : copy.complete}
               </p>
               <div className={`mt-3 rounded-lg border p-2.5 ${extraRemaining > 0 ? "border-amber-300 bg-amber-50 text-[#8a5a00]" : "border-green-300 bg-green-50 text-[#137c35]"}`}>
                 <div className="flex items-end justify-between gap-3">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-normal">{copy.extraProgressTitle}</p>
-                    <p className="text-2xl font-bold tabular-nums">{extraProgress}%</p>
+                    <p className="text-xl font-bold tabular-nums sm:text-2xl">{extraProgress}%</p>
                   </div>
-                  <p className="text-right text-sm font-bold tabular-nums">{copy.extraProgressCount(extraFilled, EXTRA_PROGRESS_TOTAL)}</p>
+                  <p className="text-right text-xs font-bold tabular-nums sm:text-sm">{copy.extraProgressCount(extraFilled, EXTRA_PROGRESS_TOTAL)}</p>
                 </div>
                 <div className="dashboard-extra-progress-bar mt-2 h-2 overflow-hidden rounded-full bg-white/70">
                   <div
@@ -435,7 +442,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                     style={{ width: `${Math.min(extraProgress, 100)}%` }}
                   />
                 </div>
-                <p className="mt-2 text-sm font-bold">
+                <p className="mt-2 text-xs font-bold sm:text-sm">
                   {extraRemaining > 0 ? copy.extraProgressOpen(knockoutRemaining, bonusRemaining) : copy.extraProgressComplete}
                 </p>
               </div>
@@ -447,12 +454,12 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
 
           {remaining === 0 && extraRemaining === 0 ? <PredictionsComplete locale={locale} /> : null}
 
-          <form action={joinPool} className="panel grid gap-3 p-5">
+          <form id="meedoen" action={joinPool} className="panel grid gap-3 p-5 scroll-mt-24">
             <div className="flex items-center gap-2">
               <KeyRound aria-hidden="true" className="size-5 flex-none text-[#064ed6]" />
-              <h2 className="text-lg font-bold text-[#081634]">{copy.joinPoolTitle}</h2>
+              <h2 className="text-base font-bold text-[#081634] sm:text-lg">{copy.joinPoolTitle}</h2>
             </div>
-            <p className="text-sm font-medium leading-6 text-[#48617f]">
+            <p className="text-xs font-medium leading-5 text-[#48617f] sm:text-sm sm:leading-6">
               {copy.joinPoolIntro}
             </p>
             <div className="flex flex-col gap-2 sm:flex-row">

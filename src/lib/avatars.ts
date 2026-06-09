@@ -34,9 +34,36 @@ export const avatarOptions: AvatarOption[] = [
 ];
 
 const avatarKeys = avatarOptions.map((option) => option.key);
+const webpAvatarKeys = new Set([
+  "argentina",
+  "brazil",
+  "curacao",
+  "duitsland",
+  "england",
+  "france",
+  "japan-sumo",
+  "keeper",
+  "mexico",
+  "morocco-fan",
+  "netherlands",
+  "norway-viking",
+  "oranje-aanvaller",
+  "oranje-aanvoerder",
+  "oranje-coach",
+  "oranje-president",
+  "oranje-spelmaker",
+  "oranje-supporter",
+  "rode-duivel",
+  "scotland-fan",
+  "spain",
+  "sweden-fan",
+  "switzerland-alpine",
+  "turkey-fan",
+  "usa",
+]);
 
 export function avatarSrcForKey(key: string) {
-  return `/avatars/${key}.png`;
+  return `/avatars/${key}.${webpAvatarKeys.has(key) ? "webp" : "png"}`;
 }
 
 export function isAvatarKey(key: string | null | undefined): key is string {

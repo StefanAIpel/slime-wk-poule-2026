@@ -209,6 +209,34 @@ textarea {
   font-weight: 700;
 }
 
+.home-mobile-user-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-mobile-user-avatar {
+  display: none;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+@media (max-width: 759px) {
+  .home-mobile-user-avatar {
+    display: inline-flex;
+  }
+
+  .home-mobile-user-avatar .avatar-img {
+    width: 42px;
+    height: 42px;
+    background: #fff;
+    box-shadow:
+      0 9px 20px rgba(8, 22, 52, 0.16),
+      inset 0 0 0 2px rgba(255, 255, 255, 0.8);
+  }
+}
+
 .inapp-hint {
   display: flex;
   align-items: flex-start;
@@ -292,14 +320,15 @@ textarea {
 
 .status-chip-countdown {
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--orange-2), var(--orange));
-  padding: 3px 10px;
+  background: linear-gradient(135deg, #ffbf2e 0%, #ff8a00 42%, #ef4b24 100%);
+  padding: 4px 11px;
   color: #fff;
   text-decoration: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 3px 10px rgba(239, 75, 36, 0.28);
 }
 
 .status-chip-countdown strong {
-  font-weight: 700;
+  font-weight: 1000;
 }
 
 .stadium-bg {
@@ -1068,6 +1097,54 @@ textarea {
   align-self: start;
 }
 
+@media (max-width: 759px) {
+  .hero-band-page {
+    min-height: 138px;
+    max-height: 166px;
+    padding: 16px 18px;
+  }
+
+  .hero-band-page .hero-content {
+    max-width: 68%;
+  }
+
+  .hero-band-page.hero-title-mascot-large .hero-content {
+    max-width: 86%;
+  }
+
+  .hero-band-page h1 {
+    font-size: 2rem;
+    line-height: 1.04;
+  }
+
+  .hero-band-page p {
+    margin-top: 6px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .hero-band-page.hero-band-visual .hero-mascot {
+    max-height: 58%;
+    max-width: 32%;
+  }
+
+  .hero-band-page.hero-title-mascot-large.hero-band-visual .hero-mascot {
+    right: -12px;
+    bottom: -10px;
+    max-height: 88%;
+    max-width: 54%;
+  }
+
+  .hero-band-page.hero-band-visual .hero-mascot-account-avatar {
+    width: 106px;
+    height: 106px;
+    max-width: none;
+    max-height: none;
+    right: 8px;
+    bottom: 8px;
+  }
+}
+
 @media (min-width: 800px) {
   .hero-band-page {
     min-height: 168px;
@@ -1080,6 +1157,32 @@ textarea {
   padding: 8px 14px;
   border-color: rgba(255, 255, 255, 0.5);
   box-shadow: 0 6px 18px rgba(220, 85, 16, 0.28);
+}
+
+.hero-mascot-account-avatar {
+  width: min(34vw, 136px);
+  height: min(34vw, 136px);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 4px rgba(255, 255, 255, 0.8);
+  object-fit: cover;
+}
+
+.hero-title-mascot-large .hero-content {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+@media (min-width: 800px) {
+  .hero-band-page .hero-mascot-account-avatar {
+    width: 138px;
+    height: 138px;
+    right: 32px;
+    bottom: 18px;
+    max-height: none;
+    max-width: none;
+  }
 }
 
 .join-pool-hero {
@@ -1270,6 +1373,52 @@ textarea {
   .hero-band-art {
     width: 104px;
     height: 104px;
+  }
+}
+
+/* Voorspellingen: compacte blauwe sectiebanners. */
+.prediction-title-banner {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(43, 195, 95, 0.16) 0 18%, transparent 18%),
+    linear-gradient(150deg, #1e73b8 0%, #114b82 58%, #0b345d 100%);
+  padding: 13px 16px;
+  color: #fff;
+  box-shadow: 0 12px 26px rgba(14, 42, 71, 0.18);
+}
+
+.prediction-title-banner-inset {
+  margin: 12px;
+}
+
+.prediction-title-banner h2 {
+  font-size: clamp(1.28rem, 5vw, 1.7rem);
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.prediction-title-banner p {
+  margin-top: 4px;
+  color: #dbeafe;
+  font-size: 0.88rem;
+  font-weight: 550;
+  line-height: 1.45;
+}
+
+.prediction-helper-panel {
+  border-color: rgba(30, 115, 184, 0.14);
+  background: linear-gradient(135deg, #f7fbff, #fff7e8);
+}
+
+@media (min-width: 760px) {
+  .prediction-title-banner {
+    padding: 15px 18px;
+  }
+
+  .prediction-title-banner-inset {
+    margin: 14px;
   }
 }
 
@@ -4075,6 +4224,10 @@ textarea {
   color: #f26a1b;
 }
 
+.quick-menu-split-row + .quick-menu-split-row .quick-menu-link-half {
+  background: #f7fbff;
+}
+
 .quick-menu-logout {
   border-color: rgba(210, 58, 49, 0.18);
   background: #fff8f7;
@@ -4436,6 +4589,23 @@ textarea {
   color: #081634;
   font-size: 0.95rem;
   font-weight: 1000;
+}
+
+.group-phase-card .standing-card-header {
+  border-bottom: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent 38%),
+    linear-gradient(100deg, #0b62d9 0%, #0a8f47 48%, #ffb000 74%, #e1262f 100%);
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(8, 22, 52, 0.28);
+}
+
+.group-phase-card .standing-card-header span:last-child {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 4px 9px;
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
 }
 
 .standing-table {
@@ -5171,6 +5341,23 @@ textarea {
   border-bottom: 0;
 }
 
+.poules-join-create-link {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(6, 78, 214, 0.18);
+  background: rgba(255, 255, 255, 0.74);
+  color: #064ed6;
+  padding: 8px 12px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 8px 18px rgba(8, 22, 52, 0.06);
+}
+
 @media (max-width: 640px) {
   .poules-page-shell {
     padding: 12px 10px calc(22px + env(safe-area-inset-bottom));
@@ -5178,6 +5365,12 @@ textarea {
 
   .poules-page-shell > header {
     margin-bottom: 10px;
+  }
+
+  .poules-join-create-link {
+    margin-bottom: 10px;
+    padding: 7px 10px;
+    font-size: 0.8rem;
   }
 
   .poules-page-shell .pool-tabs {
@@ -5377,6 +5570,15 @@ textarea {
   max-height: 46%;
   max-width: 46%;
   filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.42));
+}
+
+@media (max-width: 759px) {
+  .hero-band-page.hero-title-mascot-large .hero-mascot-regels {
+    right: -18px;
+    bottom: -12px;
+    max-height: 76%;
+    max-width: 62%;
+  }
 }
 
 @media (min-width: 800px) {

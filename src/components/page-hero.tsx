@@ -10,16 +10,18 @@ export function PageHero({
   subtitle,
   children,
   slime = "/assets/hd-ranglijst.webp",
+  className,
   mascotClassName,
 }: {
   title: string;
   subtitle?: string;
   children?: ReactNode;
   slime?: string;
+  className?: string;
   mascotClassName?: string;
 }) {
   return (
-    <div className="hero-band hero-band-visual hero-band-page">
+    <div className={["hero-band hero-band-visual hero-band-page", className].filter(Boolean).join(" ")}>
       <div className="hero-content">
         <h1 className="text-3xl font-bold leading-tight md:text-4xl">{title}</h1>
         {subtitle ? (

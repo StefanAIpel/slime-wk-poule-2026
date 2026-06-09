@@ -10,7 +10,7 @@ import { getServerLocale } from "@/lib/server-locale";
 
 const scheduleCopy = {
   nl: {
-    intro: "Alle WK-wedstrijden op een rij met datum, tijd en stadion. Geen account nodig — deel het schema gerust in je groepsapp.",
+    intro: "Alle WK-wedstrijden op een rij met datum, tijd en stadion. Deel het schema gerust in je groepsapp.",
     title: "Speelschema",
     metaTitle: "WK 2026 speelschema — groepen en knock-out",
     shareTitle: "WK 2026 speelschema",
@@ -18,7 +18,7 @@ const scheduleCopy = {
     liveLabel: "Volg live",
   },
   en: {
-    intro: "All WC matches in one place with date, time and stadium. No account needed — feel free to share the schedule in your group chat.",
+    intro: "All WC matches in one place with date, time and stadium. Feel free to share the schedule in your group chat.",
     title: "Schedule",
     metaTitle: "WC 2026 schedule — groups and knockout",
     shareTitle: "WC 2026 schedule",

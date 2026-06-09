@@ -104,6 +104,7 @@ export default async function RankingPage() {
           title={copy.heroTitle}
           subtitle={copy.heroSubtitle}
           slime="/assets/transparant-avatar/wk_slime_700_transparant.webp"
+          className="hero-title-mascot-large"
         />
         {lastUpdate ? (
           <p className="text-xs font-semibold text-[var(--muted)]">

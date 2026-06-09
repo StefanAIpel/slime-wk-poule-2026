@@ -10,7 +10,7 @@ import { getServerLocale } from "@/lib/server-locale";
 
 const copy = {
   nl: {
-    shareText: "Alle WK-wedstrijden op een rij met datum, tijd en stadion. Geen account nodig — deel het schema gerust in je groepsapp.",
+    shareText: "Alle WK-wedstrijden op een rij met datum, tijd en stadion. Deel het schema gerust in je groepsapp.",
     metaTitle: "WK 2026 knock-out — route naar de finale",
     description: "Alle knock-outwedstrijden van het WK 2026, van de laatste 32 tot en met de finale, met datum, tijd en stadion.",
     title: "Knock-out",
@@ -19,7 +19,7 @@ const copy = {
     shareLabel: "Deel schema",
   },
   en: {
-    shareText: "All WC matches in one place with date, time and stadium. No account needed — feel free to share the schedule in your group chat.",
+    shareText: "All WC matches in one place with date, time and stadium. Feel free to share the schedule in your group chat.",
     metaTitle: "WC 2026 knockout — road to the final",
     description: "All WC 2026 knockout matches, from the round of 32 through the final, with date, time and stadium.",
     title: "Knockout",

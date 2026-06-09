@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
-import { ImagePlus, Megaphone, Palette, RefreshCw, Trash2 } from "lucide-react";
+import { ImagePlus, KeyRound, Megaphone, Palette, RefreshCw, Trash2 } from "lucide-react";
 import QRCode from "qrcode";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -90,6 +90,7 @@ const poolCopy = {
     noPoolsTitle: "Nog geen WK-poules",
     noPoolsText: "Maak er een aan of sluit aan met een code op de",
     homeLink: "startpagina",
+    joinCreateLink: "Meedoen aan poule of maak poule",
     soccerLead: "Even pauze?",
     soccerText: "Speel een potje Slime Soccer tegen de computer of je vrienden.",
     play: "Spelen →",
@@ -149,6 +150,7 @@ const poolCopy = {
     noPoolsTitle: "No World Cup pools yet",
     noPoolsText: "Create one or join with a code on the",
     homeLink: "home page",
+    joinCreateLink: "Join or create a pool",
     soccerLead: "Need a break?",
     soccerText: "Play Slime Soccer against the computer or your friends.",
     play: "Play →",
@@ -339,6 +341,11 @@ export default async function PoolsPage({
           {copy.errors[params.fout as keyof typeof copy.errors] ?? copy.fallbackError}
         </div>
       ) : null}
+
+      <Link href={localizedHref("/#meedoen", locale)} className="poules-join-create-link">
+        <KeyRound aria-hidden="true" className="size-4" />
+        {copy.joinCreateLink}
+      </Link>
 
       <section className="mt-1">
         {pools.length ? (

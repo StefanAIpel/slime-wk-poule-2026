@@ -173,7 +173,7 @@ test("entry deadline is extended until the first World Cup match", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00\+02:00"/);
   assert.match(constants, /ENTRY_GRACE_DEADLINE_ISO = "2026-06-14T21:00:00\+02:00"/);
   assert.match(homePage, /Deadline: 11 juni 21:00\. Respijt t\/m zondag 14 juni voor niet-gespeelde wedstrijden/);
-  assert.match(statusBar, /tot de eerste wedstrijd/);
+  assert.match(statusBar, /tot WK/);
   assert.match(rulesPage, /Respijtperiode: niet-gespeelde groepswedstrijden/);
   assert.match(rulesPage, /ENTRY_GRACE_DEADLINE_ISO/);
   assert.match(rulesPage, /zondag 14 juni 21:00/);
@@ -196,6 +196,17 @@ test("desktop UI uses compact page heroes, right-column rules banners and aligne
   assert.match(gameFrames, /game-stage grid gap-3/);
   assert.match(globalsCss, /\.game-page-heading,\n\.game-stage \{\n  width: min\(1120px, 100%\);/);
   assert.match(globalsCss, /\.game-frame \{[\s\S]*width: 100%;/);
+});
+
+test("mobile tab page heroes use larger bottom-right mascots behind the title copy", () => {
+  assert.match(predictionsPage, /className="hero-title-mascot-large"/);
+  assert.match(rulesPage, /className="hero-title-mascot-large"/);
+  assert.match(rankingPage, /className="hero-title-mascot-large"/);
+  assert.match(accountPage, /className="hero-title-mascot-large"/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large \.hero-content \{\n    max-width: 86%;\n  \}/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large\.hero-band-visual \.hero-mascot \{[\s\S]*right: -12px;[\s\S]*bottom: -10px;[\s\S]*max-height: 88%;[\s\S]*max-width: 54%;/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-band-visual \.hero-mascot-account-avatar \{[\s\S]*width: 106px;[\s\S]*height: 106px;/);
+  assert.match(globalsCss, /\.hero-title-mascot-large \.hero-content \{[\s\S]*text-shadow: 0 2px 10px/);
 });
 
 test("main mobile header and hamburger stay sticky and quick menu has a Schema/Live half-row", () => {
@@ -359,16 +370,19 @@ test("schedule filters fit one row with a compact Dutch flag chip", () => {
   assert.doesNotMatch(scheduleExplorer, />\s*\{scheduleCopy\[locale\]\.netherlandsFilter\}\s*<\/button>/);
 });
 
-test("logged-in homepage uses the new prediction deadline copy and compact progress bars", () => {
+test("logged-in homepage uses shorter prediction deadline copy and compact mobile progress bars", () => {
   assert.match(homePage, /dashboardTitle: "Voorspel je WK 2026"/);
-  assert.match(homePage, /Invullen tot de eerste WK-wedstrijd op/);
+  assert.match(homePage, /dashboardIntroBefore: "Deadline:"/);
+  assert.match(homePage, /Respijt tot Oranje begint/);
   assert.match(homePage, /niet-gespeelde wedstrijden kun je wijzigen tot 14 juni 2026 om 21:00/);
-  assert.match(homePage, /behalve 3 bonusvragen/);
-  assert.match(homePage, /dashboard-progress-card mt-4 rounded-lg bg-\[#061b47\] p-3/);
-  assert.match(homePage, /dashboard-progress-bar mt-2 h-3/);
+  assert.match(homePage, /behalve 3 bonusvragen tot einde groepsfase/);
+  assert.match(homePage, /dark-panel p-4 text-white sm:p-5/);
+  assert.match(homePage, /max-w-\[32rem\] text-\[0\.78rem\] font-medium leading-\[1\.45\]/);
+  assert.match(homePage, /dashboard-progress-card mt-3 rounded-lg bg-\[#061b47\] p-2\.5 sm:p-3/);
+  assert.match(homePage, /dashboard-progress-bar mt-2 h-2\.5/);
   assert.match(homePage, /dashboard-extra-progress-bar mt-2 h-2/);
-  assert.match(homePage, /<p className="text-3xl font-bold">\{progress\}%<\/p>/);
-  assert.match(homePage, /<p className="text-2xl font-bold tabular-nums">\{extraProgress\}%<\/p>/);
+  assert.match(homePage, /<p className="text-2xl font-bold sm:text-3xl">\{progress\}%<\/p>/);
+  assert.match(homePage, /<p className="text-xl font-bold tabular-nums sm:text-2xl">\{extraProgress\}%<\/p>/);
 });
 
 test("prediction edits stay open through the Oranje grace window while pre-kickoff bonus fields still close at kickoff", () => {
@@ -483,9 +497,13 @@ test("profile and pool display names are capped for compact mobile UI", () => {
   assert.match(actions, /fout=naam-bezet/);
 });
 
-test("create-pool card uses Mexico green contrast styling", () => {
+test("create-pool card uses Mexico green contrast styling and restored mobile typography", () => {
   assert.match(homePage, /create-pool-card/);
   assert.match(homePage, /create-pool-button/);
+  assert.match(homePage, /create-pool-title text-lg font-bold/);
+  assert.match(homePage, /create-pool-copy text-sm font-medium leading-6/);
+  assert.doesNotMatch(homePage, /create-pool-title text-base font-bold sm:text-lg/);
+  assert.doesNotMatch(homePage, /create-pool-copy text-xs font-medium leading-5/);
   assert.match(globalsCss, /\.create-pool-card \{[\s\S]*#006847[\s\S]*#009b3a/);
   assert.match(globalsCss, /\.create-pool-button\.button-primary \{[\s\S]*#ce1126/);
   assert.match(globalsCss, /\.create-pool-title,[\s\S]*\.create-pool-copy \{\n  color: #ffffff;/);
@@ -701,8 +719,11 @@ test("homepage promo/ranking stacks keep desktop ranking tight below the pool bl
 test("dashboard copy matches the current prediction deadline and password flow", () => {
   assert.doesNotMatch(homePage, /Vul je wedstrijden en knock-outkeuzes in/);
   assert.match(homePage, /Voorspel je WK 2026/);
-  assert.match(homePage, /Invullen tot de eerste WK-wedstrijd op/);
-  assert.match(homePage, /respijtperiode tot de eerste wedstrijd van Oranje/);
+  assert.match(homePage, /dashboardIntroBefore: "Deadline:"/);
+  assert.match(homePage, /Respijt tot Oranje begint/);
+  assert.match(homePage, /max-w-\[32rem\] text-\[0\.78rem\] font-medium leading-\[1\.45\]/);
+  assert.match(homePage, /text-base font-bold text-\[#081634\] sm:text-lg/);
+  assert.match(homePage, /create-pool-title text-lg font-bold/);
   assert.doesNotMatch(homePage, /geen wachtwoord/);
 });
 
@@ -749,7 +770,9 @@ test("prediction saves sync the global status bar progress without requiring rel
 test("prediction page keeps deadline and scoring explanation out of the form because details live in rules", () => {
   assert.match(predictionsPage, /heroSubtitle: "Vul je voorspellingen in en sla op\."/);
   assert.match(predictionsPage, /heroSubtitle: "Fill in your predictions and save\."/);
-  assert.match(predictionsPage, /groupOpen: ""/);
+  assert.match(predictionsPage, /Vraag je AI-agent om een eerste invulling/);
+  assert.match(predictionsPage, /groupOpen: "Geen perfecte glazen bol nodig: vul eerst je gevoel in, verfijn later\."/);
+  assert.match(predictionsPage, /prediction-title-banner/);
   assert.doesNotMatch(predictionsPage, /Deadlines en puntentelling staan bij Regels/);
   assert.doesNotMatch(predictionsPage, /Details and deadlines are in Rules/);
   assert.doesNotMatch(predictionsPage, /T\/m 14 juni 21:00: niet-gestarte wedstrijden invullen en opslaan\./);
@@ -793,7 +816,9 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(globalsCss, /\.site-header \{[\s\S]*position: sticky;[\s\S]*top: 0;[\s\S]*z-index: 90;/);
   assert.match(quickMenu, /label: "Voorspellen"/);
   assert.doesNotMatch(quickMenu, /WK-poule invullen \/ wijzigen/);
-  assert.match(quickMenu, /\[publicLinks\[0\], privateLinks\[0\], \.\.\.publicLinks\.slice\(1\), \.\.\.privateLinks\.slice\(1\)\]/);
+  assert.match(quickMenu, /joinPoolLink = \{ href: "\/#meedoen"/);
+  assert.match(quickMenu, /aria-label=\{locale === "en" \? "Pools and joining" : "WK-poules en meedoen"\}/);
+  assert.match(quickMenu, /\[privateLinks\[1\], joinPoolLink\]\.map/);
   assert.match(quickMenu, /<form className=\"quick-menu-form\" action=\"\/logout\" method=\"post\">/);
   assert.match(quickMenu, /quick-menu-link-compact/);
   assert.match(quickMenu, /slime-soccer-icon\.webp/);
@@ -913,7 +938,7 @@ test("English preference keeps schedule and shared navigation in English without
 test("English route translates all visible shared fields and labels", () => {
   assert.match(statusBar, /const locale = useActiveLocale\(pathname \|\| "\/"\)/);
   assert.match(statusBar, /locale === "en" \? `\$\{d\}d \$\{h\}h` : `\$\{d\}d \$\{h\}u`/);
-  assert.match(statusBar, /until the first match/);
+  assert.match(statusBar, /until WC/);
   assert.match(statusBar, /Entries closed/);
   assert.match(statusBar, /Player/);
   assert.match(statusBar, /completed/);
@@ -1047,7 +1072,8 @@ test("schema defaults to groups, keeps knockout separate, and removes the all-ma
 
 test("schema copy is public-facing and group/date are chosen via pickers", () => {
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Alle WK-wedstrijden op een rij met datum, tijd en stadion/);
-  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Geen account nodig — deel het schema gerust in je groepsapp/);
+  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Deel het schema gerust in je groepsapp/);
+  assert.doesNotMatch(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Geen account nodig/);
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /shareTitle: "WK 2026 speelschema"/);
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /shareTitle: "WC 2026 schedule"/);
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /<ShareButton[\s\S]*title=\{[^}]+shareTitle|title=\{scheduleTitle\}[\s\S]*label=\{[^}]+shareLabel|label=\{scheduleCopy\[locale\]\.shareLabel\}[\s\S]*locale=\{locale\}/);
@@ -1057,6 +1083,7 @@ test("schema copy is public-facing and group/date are chosen via pickers", () =>
   assert.match(scheduleExplorer, /schedule-group-grid/);
   assert.match(scheduleExplorer, /groupFilter/);
   assert.match(scheduleExplorer, /dateFilter/);
+  assert.match(globalsCss, /\.group-phase-card \.standing-card-header \{[\s\S]*linear-gradient\(100deg, #0b62d9 0%, #0a8f47 48%, #ffb000 74%, #e1262f 100%\)/);
 });
 
 test("Nederland - Oranje filter supports the app seed code NED as well as external NLD", () => {
