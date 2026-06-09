@@ -611,6 +611,26 @@ test("dashboard copy matches the 72-group-result progress metric and password fl
   assert.doesNotMatch(homePage, /geen wachtwoord/);
 });
 
+test("home dashboard warns when knockout picks or bonus questions are still open", () => {
+  assert.match(homePage, /KNOCKOUT_TARGETS/);
+  assert.match(homePage, /EXTRA_PROGRESS_TOTAL/);
+  assert.match(homePage, /bracket_predictions[\s\S]*select\("stage_key,team_codes"\)/);
+  assert.match(homePage, /special_predictions[\s\S]*team_most_goals_code,total_goals,total_red_cards,fastest_goal_minute,champion_code,oranje_stage,penalty_shootouts_ko,finalists/);
+  assert.match(homePage, /extraProgressTitle: "Knock-outs \+ bonus"/);
+  assert.match(homePage, /extraProgressOpen: \(knockout: number, bonus: number\)/);
+  assert.match(homePage, /extraProgress = Math\.round\(\(extraFilled \/ EXTRA_PROGRESS_TOTAL\) \* 100\)/);
+  assert.match(homePage, /extraRemaining > 0/);
+  assert.match(homePage, /remaining === 0 && extraRemaining === 0 \? <PredictionsComplete/);
+});
+
+test("empty prediction select placeholders are highlighted as pending choices", () => {
+  assert.match(predictionsPage, /className="field choice-select"/);
+  assert.match(predictionsPage, /name="team_most_goals_code"[\s\S]*<option value="">\{copy\.chooseCountry\}<\/option>/);
+  assert.match(predictionsPage, /name="champion_code"[\s\S]*<option value="">\{copy\.chooseChampion\}<\/option>/);
+  assert.match(predictionsPage, /name="oranje_stage"[\s\S]*<option value="">\{copy\.chooseOranje\}<\/option>/);
+  assert.match(globalsCss, /\.choice-select:has\(option\[value=""\]:checked\)/);
+});
+
 test("share panel keeps the Deel SlimeScore label above a single icon row on every breakpoint", () => {
   assert.match(homePage, /sharePanelLabel: "SlimeScore delen"/);
   assert.match(homePage, /sharePanelTitle: "Deel SlimeScore"/);

@@ -37,6 +37,51 @@ type HomeLeaderboardRow = {
   isDemo?: boolean;
 };
 
+type HomeBracketPrediction = {
+  stage_key: string;
+  team_codes: string[] | null;
+};
+
+type HomeSpecialPrediction = {
+  team_most_goals_code: string | null;
+  total_goals: number | null;
+  total_red_cards: number | null;
+  fastest_goal_minute: number | null;
+  champion_code: string | null;
+  oranje_stage: string | null;
+  penalty_shootouts_ko: number | null;
+  finalists: string[] | null;
+};
+
+const KNOCKOUT_TARGETS = {
+  round16: 16,
+  quarterfinal: 8,
+  semifinal: 4,
+  finalists: 2,
+  champion: 1,
+} as const;
+
+const BONUS_FIELD_KEYS = [
+  "team_most_goals_code",
+  "total_goals",
+  "total_red_cards",
+  "fastest_goal_minute",
+  "oranje_stage",
+  "penalty_shootouts_ko",
+] as const;
+
+const KNOCKOUT_TOTAL = Object.values(KNOCKOUT_TARGETS).reduce((sum, value) => sum + value, 0);
+const EXTRA_PROGRESS_TOTAL = KNOCKOUT_TOTAL + BONUS_FIELD_KEYS.length;
+
+function selectedCount(teamCodes: string[] | null | undefined, expected: number) {
+  return Math.min((teamCodes ?? []).filter(Boolean).length, expected);
+}
+
+function hasAnswer(value: string | number | null | undefined) {
+  if (typeof value === "number") return Number.isFinite(value);
+  return Boolean(value && value.trim());
+}
+
 const homeCopy = {
   nl: {
     generalShareTitle: "SlimeScore · gratis WK-poule",
@@ -65,6 +110,17 @@ const homeCopy = {
     progressCount: (filled: number) => `${filled} van 72 uitslagen`,
     remaining: (count: number) => `Nog ${count} wedstrijden in te vullen.`,
     complete: "Alle wedstrijden ingevuld — top!",
+    extraProgressTitle: "Knock-outs + bonus",
+    extraProgressCount: (filled: number, total: number) => `${filled} van ${total} keuzes`,
+    extraProgressOpen: (knockout: number, bonus: number) => {
+      const parts = [
+        knockout > 0 ? `${knockout} knock-outkeuze${knockout === 1 ? "" : "s"}` : null,
+        bonus > 0 ? `${bonus} bonusvraag${bonus === 1 ? "" : "en"}` : null,
+      ].filter(Boolean);
+      return `Nog ${parts.join(" en ")} open.`;
+    },
+    extraProgressComplete: "Knock-outs en bonusvragen ingevuld — alles staat klaar!",
+    extraProgressCta: "Knock-outs & bonus invullen",
     continuePredictions: "Verder invullen",
     viewPredictions: "Voorspellingen bekijken",
     joinPoolTitle: "Meedoen met een WK-poule",
@@ -128,6 +184,17 @@ const homeCopy = {
     progressCount: (filled: number) => `${filled} of 72 results`,
     remaining: (count: number) => `${count} matches left to predict.`,
     complete: "All matches filled in — nice!",
+    extraProgressTitle: "Knockouts + bonus",
+    extraProgressCount: (filled: number, total: number) => `${filled} of ${total} choices`,
+    extraProgressOpen: (knockout: number, bonus: number) => {
+      const parts = [
+        knockout > 0 ? `${knockout} knockout pick${knockout === 1 ? "" : "s"}` : null,
+        bonus > 0 ? `${bonus} bonus question${bonus === 1 ? "" : "s"}` : null,
+      ].filter(Boolean);
+      return `${parts.join(" and ")} still open.`;
+    },
+    extraProgressComplete: "Knockouts and bonus questions complete — all set!",
+    extraProgressCta: "Fill knockouts & bonus",
     continuePredictions: "Continue predicting",
     viewPredictions: "View predictions",
     joinPoolTitle: "Join a World Cup pool",
@@ -212,11 +279,24 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
     );
   }
 
-  const [{ data: profile }, { count: predictionCount }, { data: memberships }, { data: score }] = await Promise.all([
+  const [
+    { data: profile },
+    { count: predictionCount },
+    { data: memberships },
+    { data: score },
+    { data: bracketPredictions },
+    { data: specialPrediction },
+  ] = await Promise.all([
     supabase.from("profiles").select("id,nickname,team_name").eq("id", user.id).single(),
     supabase.from("predictions").select("match_id", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("pool_members").select("role,pools(id,name,code,badge_emoji)").eq("user_id", user.id).limit(3),
     supabase.from("scores").select("points, exact_scores, correct_results").eq("user_id", user.id).single(),
+    supabase.from("bracket_predictions").select("stage_key,team_codes").eq("user_id", user.id),
+    supabase
+      .from("special_predictions")
+      .select("team_most_goals_code,total_goals,total_red_cards,fastest_goal_minute,champion_code,oranje_stage,penalty_shootouts_ko,finalists")
+      .eq("user_id", user.id)
+      .maybeSingle(),
   ]);
 
   if (!profile?.nickname || !profile.team_name) {
@@ -258,6 +338,37 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
   const homeMemberships = (memberships ?? []) as unknown as HomeMembership[];
   const myPoints = score?.points ?? 0;
   const remaining = 72 - (predictionCount ?? 0);
+  const bracketByStage = new Map(
+    ((bracketPredictions ?? []) as HomeBracketPrediction[]).map((prediction) => [
+      prediction.stage_key,
+      (prediction.team_codes ?? []).filter(Boolean),
+    ]),
+  );
+  const special = specialPrediction as HomeSpecialPrediction | null;
+  const finalists = Array.isArray(special?.finalists) ? special.finalists : bracketByStage.get("finalists");
+  const knockoutFilled =
+    selectedCount(bracketByStage.get("round16"), KNOCKOUT_TARGETS.round16) +
+    selectedCount(bracketByStage.get("quarterfinal"), KNOCKOUT_TARGETS.quarterfinal) +
+    selectedCount(bracketByStage.get("semifinal"), KNOCKOUT_TARGETS.semifinal) +
+    selectedCount(finalists, KNOCKOUT_TARGETS.finalists) +
+    Math.min(hasAnswer(special?.champion_code) ? 1 : selectedCount(bracketByStage.get("champion"), KNOCKOUT_TARGETS.champion), 1);
+  const bonusFilled = BONUS_FIELD_KEYS.filter((key) => hasAnswer(special?.[key])).length;
+  const knockoutRemaining = Math.max(KNOCKOUT_TOTAL - knockoutFilled, 0);
+  const bonusRemaining = Math.max(BONUS_FIELD_KEYS.length - bonusFilled, 0);
+  const extraFilled = Math.min(knockoutFilled + bonusFilled, EXTRA_PROGRESS_TOTAL);
+  const extraProgress = Math.round((extraFilled / EXTRA_PROGRESS_TOTAL) * 100);
+  const extraRemaining = knockoutRemaining + bonusRemaining;
+  const predictionsCtaLabel = remaining > 0 ? copy.continuePredictions : extraRemaining > 0 ? copy.extraProgressCta : copy.viewPredictions;
+  const predictionsHref = localizedHref(
+    remaining > 0
+      ? "/voorspellingen"
+      : knockoutRemaining > 0
+        ? "/voorspellingen#knockouts"
+        : bonusRemaining > 0
+          ? "/voorspellingen#bonusvragen"
+          : "/voorspellingen",
+    locale,
+  );
   const deadlineLabel = new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "nl-NL", {
     timeZone: "Europe/Amsterdam",
     dateStyle: "long",
@@ -310,13 +421,31 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
               <p className="mt-2 text-sm font-semibold text-blue-100">
                 {remaining > 0 ? copy.remaining(remaining) : copy.complete}
               </p>
-              <a href={localizedHref("/voorspellingen", locale)} className="button-primary mt-3 w-full justify-center">
-                {remaining > 0 ? copy.continuePredictions : copy.viewPredictions}
+              <div className={`mt-4 rounded-lg border p-3 ${extraRemaining > 0 ? "border-amber-300 bg-amber-50 text-[#8a5a00]" : "border-green-300 bg-green-50 text-[#137c35]"}`}>
+                <div className="flex items-end justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-bold uppercase tracking-normal">{copy.extraProgressTitle}</p>
+                    <p className="text-3xl font-bold tabular-nums">{extraProgress}%</p>
+                  </div>
+                  <p className="text-right text-sm font-bold tabular-nums">{copy.extraProgressCount(extraFilled, EXTRA_PROGRESS_TOTAL)}</p>
+                </div>
+                <div className="mt-2 h-3 overflow-hidden rounded-full bg-white/70">
+                  <div
+                    className={`h-full rounded-full ${extraRemaining > 0 ? "bg-[#f59e0b]" : "bg-[#25a84a]"}`}
+                    style={{ width: `${Math.min(extraProgress, 100)}%` }}
+                  />
+                </div>
+                <p className="mt-2 text-sm font-bold">
+                  {extraRemaining > 0 ? copy.extraProgressOpen(knockoutRemaining, bonusRemaining) : copy.extraProgressComplete}
+                </p>
+              </div>
+              <a href={predictionsHref} className="button-primary mt-3 w-full justify-center">
+                {predictionsCtaLabel}
               </a>
             </div>
           </div>
 
-          {remaining === 0 ? <PredictionsComplete locale={locale} /> : null}
+          {remaining === 0 && extraRemaining === 0 ? <PredictionsComplete locale={locale} /> : null}
 
           <form action={joinPool} className="panel grid gap-3 p-5">
             <div className="flex items-center gap-2">
