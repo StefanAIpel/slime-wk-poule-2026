@@ -668,7 +668,10 @@ test("homepage promo/ranking stacks keep desktop ranking tight below the pool bl
   assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-mobile-bottom-stack \{[\s\S]*display: none;/);
   assert.doesNotMatch(publicRightColumn, /<LiveFollowBanner locale=\{locale\} \/>/);
   assert.match(liveBannerBlock, /url\("\/assets\/stadion-4to1\.webp"\)/);
-  assert.match(liveBannerBlock, /min-height: 108px;/);
+  assert.match(liveBannerBlock, /min-height: 112px;/);
+  assert.match(liveBannerBlock, /padding: 14px 112px 14px 14px;/);
+  assert.match(globalsCss, /\.live-follow-banner-text \{[\s\S]*font-weight: 520;/);
+  assert.match(globalsCss, /\.live-follow-banner img \{[\s\S]*width: 136px;[\s\S]*max-height: 132px;/);
 });
 
 test("dashboard copy matches the current prediction deadline and password flow", () => {
