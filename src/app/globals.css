@@ -198,6 +198,13 @@ textarea {
   white-space: nowrap;
 }
 
+.status-chip-account .avatar-img {
+  width: 18px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72), 0 1px 4px rgba(8, 22, 52, 0.18);
+}
+
 .status-chip strong {
   font-weight: 700;
 }
@@ -536,6 +543,32 @@ textarea {
   display: grid;
   align-content: start;
   gap: 14px;
+}
+
+.public-desktop-bottom-stack {
+  display: none;
+  gap: 14px;
+}
+
+.public-mobile-bottom-stack {
+  display: grid;
+  gap: 14px;
+}
+
+@media (min-width: 768px) {
+  .public-desktop-bottom-stack {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 0.78fr);
+    align-items: stretch;
+  }
+
+  .public-desktop-bottom-stack .slime-link-banners {
+    grid-column: 1 / -1;
+  }
+
+  .public-mobile-bottom-stack {
+    display: none;
+  }
 }
 
 .public-login-ad {
@@ -901,7 +934,7 @@ textarea {
 
 /* Hero met geïntegreerde header: ruimte bovenin voor de balk (alleen mobiel). */
 .hero-band-topbar {
-  padding-top: 72px;
+  padding-top: 16px;
 }
 
 @media (min-width: 768px) {
@@ -936,7 +969,12 @@ textarea {
 /* Op mobiel ruimte onderaan zodat de ingebakken slime op het gras zichtbaar blijft. */
 @media (max-width: 759px) {
   .hero-home {
-    padding-bottom: 76px;
+    padding-bottom: 58px;
+  }
+
+  .hero-home .hero-content {
+    padding-top: 0;
+    padding-bottom: 18px;
   }
 
   .hero-topbar .brand-wordmark {
@@ -1113,12 +1151,13 @@ textarea {
 
 @media (max-width: 759px) {
   .hero-home .world-cup-kicker {
-    transform: translateY(3px);
+    margin-bottom: 12px;
+    transform: none;
   }
 
   .hero-home-title-block {
     max-width: min(100%, 305px);
-    transform: translateY(-4px);
+    transform: none;
   }
 
   .hero-home-title-block p {
@@ -1488,20 +1527,20 @@ textarea {
 
 .language-switcher-btn {
   display: inline-flex;
-  min-height: 36px;
+  min-height: 30px;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   border: 1px solid rgba(8, 22, 52, 0.12);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.95);
   color: #0b1f4d;
-  padding: 0 10px;
+  padding: 0 8px;
   cursor: pointer;
   box-shadow: 0 8px 18px rgba(8, 22, 52, 0.08);
 }
 
 .language-switcher-flag {
-  font-size: 1.15rem;
+  font-size: 1rem;
   line-height: 1;
 }
 
@@ -1509,8 +1548,8 @@ textarea {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  z-index: 50;
-  min-width: 168px;
+  z-index: 120;
+  min-width: 150px;
   border-radius: 12px;
   background: #fff;
   padding: 6px;
@@ -1523,11 +1562,11 @@ textarea {
   align-items: center;
   gap: 8px;
   border-radius: 8px;
-  padding: 8px 10px;
+  padding: 7px 9px;
   background: transparent;
   color: #081634;
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 600;
   line-height: 1;
   text-align: left;
   text-decoration: none;
@@ -1548,14 +1587,16 @@ textarea {
 
 /* Geïntegreerde header-balk bovenin de stadion-hero. */
 .hero-topbar {
-  position: absolute;
-  inset: 0 0 auto 0;
-  z-index: 2;
+  position: fixed;
+  inset: env(safe-area-inset-top) 0 auto 0;
+  z-index: 45;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 12px 72px 12px 16px;
+  background: linear-gradient(180deg, rgba(4, 16, 43, 0.96), rgba(4, 16, 43, 0.9));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 @media (min-width: 768px) {
@@ -1572,6 +1613,9 @@ textarea {
 @media (min-width: 768px) {
   .site-header {
     display: block;
+    position: sticky;
+    top: 0;
+    z-index: 90;
     background: rgba(255, 255, 255, 0.97);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
@@ -1846,6 +1890,16 @@ textarea {
 
 .field:focus {
   border-color: var(--blue);
+}
+
+.choice-select:has(option[value=""]:checked) {
+  border-color: #f59e0b;
+  background: #fff7d6;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.16), inset 0 1px 2px rgba(8, 22, 52, 0.05);
+}
+
+.choice-select:has(option[value=""]:checked):focus {
+  border-color: #d97706;
 }
 
 .match-group {
@@ -2226,6 +2280,76 @@ textarea {
   width: 100%;
 }
 
+.live-follow-banner {
+  position: relative;
+  display: grid;
+  min-height: 112px;
+  overflow: hidden;
+  align-items: center;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  background:
+    linear-gradient(135deg, rgba(5, 20, 55, 0.92), rgba(6, 78, 59, 0.82) 54%, rgba(234, 88, 12, 0.82)),
+    url("/assets/stadion-4to1.webp") center / cover;
+  box-shadow: 0 12px 28px rgba(8, 22, 52, 0.18);
+  color: #fff;
+  padding: 14px 112px 14px 14px;
+  text-decoration: none;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.live-follow-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px rgba(8, 22, 52, 0.24);
+}
+
+.live-follow-banner-copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 4px;
+}
+
+.live-follow-banner-kicker {
+  width: max-content;
+  border-radius: 999px;
+  background: #ef4444;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.live-follow-banner-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+}
+
+.live-follow-banner-text {
+  max-width: 14rem;
+  font-size: 0.88rem;
+  font-weight: 520;
+  line-height: 1.25;
+  color: #eaf5ff;
+}
+
+.live-follow-banner img {
+  position: absolute;
+  right: -8px;
+  bottom: -10px;
+  z-index: 0;
+  width: 136px;
+  max-width: 42%;
+  max-height: 132px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.28));
+  pointer-events: none;
+}
+
 /* ---- Live-subsite (live.slimescore.com / live.slimescore.app) ---- */
 .live-subsite {
   min-height: 100vh;
@@ -2275,6 +2399,7 @@ textarea {
 .live-subsite-menu-link {
   display: inline-flex;
   min-height: 34px;
+  width: 104px;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
@@ -2294,6 +2419,141 @@ textarea {
   border-color: rgba(255, 255, 255, 0.78);
   background: #ffffff;
   color: #114b82;
+}
+
+.live-subsite-menu-link-predict {
+  width: 138px;
+  margin-left: 8px;
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  box-shadow: none;
+}
+
+.live-subsite-menu-link-predict.is-active,
+.live-subsite-menu-link-predict:hover {
+  border-color: rgba(255, 255, 255, 0.78);
+  background: #ffffff;
+  color: #114b82;
+}
+
+.live-subsite-menu-link-predict:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.live-subsite-menu-link-predict.is-active:hover {
+  background: #ffffff;
+  color: #114b82;
+}
+
+.live-menu-button {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ff9800, #f26a1b);
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(242, 106, 27, 0.28);
+}
+
+.live-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  justify-content: flex-start;
+  background: rgba(8, 22, 52, 0.44);
+  backdrop-filter: blur(8px);
+}
+
+.live-menu-panel {
+  width: min(430px, 88vw);
+  min-height: 100vh;
+  padding: calc(58px + env(safe-area-inset-top)) 20px 24px;
+  background: #f8fbff;
+  box-shadow: 18px 0 44px rgba(8, 22, 52, 0.24);
+}
+
+.live-menu-panel-head,
+.live-menu-panel-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.live-menu-panel-head {
+  justify-content: space-between;
+}
+
+.live-menu-title {
+  color: #081634;
+  font-size: 1.35rem;
+  font-weight: 950;
+  line-height: 1.05;
+}
+
+.live-menu-subtitle {
+  margin-top: 3px;
+  color: #128f47;
+  font-size: 0.93rem;
+  font-weight: 900;
+}
+
+.live-menu-close {
+  display: inline-flex;
+  width: 46px;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(14, 122, 68, 0.22);
+  border-radius: 14px;
+  background: #eefaf0;
+  color: #0e7a44;
+}
+
+.live-menu-links {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.live-menu-link {
+  display: flex;
+  min-height: 58px;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid rgba(8, 22, 52, 0.08);
+  border-radius: 14px;
+  background: #fff;
+  padding: 0 16px;
+  color: #081634;
+  font-size: 1rem;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 8px 18px rgba(8, 22, 52, 0.05);
+}
+
+.live-menu-link svg {
+  color: #0866e8;
+}
+
+.live-menu-link.is-active {
+  border-color: rgba(30, 115, 184, 0.28);
+  background: #eef6ff;
+}
+
+.live-menu-link-predict {
+  border-color: rgba(242, 106, 27, 0.28);
+  background: #fff7ed;
+  color: #9a3412;
+}
+
+.live-menu-link-predict svg {
+  color: #f26a1b;
 }
 
 /* Rode LIVE-sticker met pulserende stip. */
@@ -2406,6 +2666,16 @@ textarea {
     z-index: 0;
   }
 
+  .live-menu-button {
+    position: fixed;
+    top: calc(112px + env(safe-area-inset-top));
+    right: 18px;
+    z-index: 1002;
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+  }
+
   .live-lang-menu {
     position: fixed;
     top: calc(101px + env(safe-area-inset-top));
@@ -2421,14 +2691,23 @@ textarea {
   .live-subsite-header-inner {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
+    gap: 16px;
   }
 
   .live-subsite-menu {
     grid-column: auto;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     justify-content: center;
     overflow: visible;
+  }
+
+  .live-subsite-menu-link,
+  .live-subsite-menu-link-predict {
+    width: 126px;
+  }
+
+  .live-menu-button {
+    display: none;
   }
 }
 
@@ -2436,23 +2715,27 @@ textarea {
 /* Hero met stadion-achtergrond, compacter dan de hoofdsite-hero. */
 .live-hero-band {
   min-height: 0;
-  padding-bottom: 22px;
+  padding: 14px 16px 10px;
 }
 
 .live-hero-band .hero-content {
   position: relative;
   z-index: 2;
-  padding-top: 18px;
-  padding-bottom: 18px;
+  padding-top: 0;
+  padding-bottom: 10px;
+}
+
+.live-hero-band .world-cup-kicker {
+  margin-bottom: 12px;
 }
 
 /* Kleine mascotte rechtsonder in de hero (subtiel, niet zo groot als de hoofdpagina). */
 .live-hero-mascot {
   position: absolute;
   right: -10px;
-  bottom: 40px;
+  bottom: 16px;
   z-index: 1;
-  height: 160px;
+  height: 132px;
   width: auto;
   pointer-events: none;
   filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
@@ -2467,10 +2750,20 @@ textarea {
 }
 
 .live-hero-title {
-  margin-top: 9px;
+  display: grid;
+  gap: 2px;
+  margin-top: 0;
   color: #fff;
-  font-size: 1.22rem;
-  font-weight: 800;
+  font-size: clamp(1.55rem, 7vw, 2.05rem);
+  font-weight: 950;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.live-hero-title-subline {
+  display: block;
+  font-size: clamp(1.06rem, 5vw, 1.5rem);
+  font-weight: 850;
   line-height: 1.08;
 }
 
@@ -2492,18 +2785,60 @@ textarea {
 }
 
 .live-hero-cta {
-  flex: 0 0 auto;
+  flex: 0 1 min(50%, 182px);
+  min-height: 42px;
+  padding-inline: 12px;
+  font-size: 0.78rem;
+  line-height: 1.1;
 }
 
 @media (min-width: 640px) {
+  .live-hero-band {
+    padding: 20px 24px 18px;
+  }
+
   .live-hero-title {
-    font-size: 1.7rem;
+    font-size: 2.45rem;
+  }
+
+  .live-hero-title-subline {
+    font-size: 1.85rem;
+  }
+
+  .live-hero-cta {
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding-inline: 18px;
+    font-size: 0.92rem;
   }
 }
 
-/* Sectie-headers: blauw (standaard) en groen voor de live-sectie i.p.v. beige. */
+.live-sections-grid {
+  display: grid;
+  gap: 14px;
+}
 
-/* Sectie-headers: blauw (standaard) en groen voor de live-sectie i.p.v. beige. */
+@media (min-width: 860px) {
+  .live-sections-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "live live"
+      "upcoming latest";
+  }
+
+  .live-section-live {
+    grid-area: live;
+  }
+
+  .live-section-latest {
+    grid-area: latest;
+  }
+
+  .live-section-upcoming {
+    grid-area: upcoming;
+  }
+}
+
 .live-section-header {
   display: flex;
   align-items: center;
@@ -2517,7 +2852,15 @@ textarea {
 }
 
 .live-section-header.is-live {
+  background: linear-gradient(135deg, #e1262f, #b91c1c);
+}
+
+.live-section-header.is-latest {
   background: linear-gradient(135deg, #16a34a, #0e7a44);
+}
+
+.live-section-header.is-upcoming {
+  background: linear-gradient(135deg, #1e73b8, #0f5aa0);
 }
 
 .live-section-count {
@@ -2531,6 +2874,35 @@ textarea {
   color: #fff;
   font-size: 0.72rem;
   font-weight: 1000;
+}
+
+.live-section-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #dbe7f7;
+  background: #f7faff;
+  padding: 10px 12px;
+}
+
+.live-section-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  border-radius: 8px;
+  border: 1px solid #bfd3ed;
+  background: #fff;
+  padding: 7px 12px;
+  color: #0f5aa0;
+  font-size: 0.82rem;
+  font-weight: 1000;
+  text-decoration: none;
+}
+
+.live-section-more:hover {
+  border-color: #1e73b8;
+  color: #081634;
 }
 
 /* Titel + LIVE-knop op de schema-pagina. */
@@ -2557,13 +2929,14 @@ textarea {
 }
 
 .live-subsite-main {
+  width: min(1050px, 100%);
   padding-top: 16px;
   padding-bottom: 16px;
 }
 
 .live-subsite-footer {
   margin: 12px auto 28px;
-  width: min(1100px, 100%);
+  width: min(1050px, 100%);
   padding: 0 16px;
 }
 
@@ -2661,14 +3034,18 @@ textarea {
   text-decoration: none;
 }
 
+.live-match-card-featured {
+  padding: 14px 16px 16px;
+}
+
 .live-match-card:hover {
   background: #f7faff;
 }
 
 .live-match-meta {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
-  justify-content: space-between;
   gap: 10px;
   font-size: 0.74rem;
   font-weight: 700;
@@ -2683,7 +3060,8 @@ textarea {
 }
 
 .live-match-when {
-  flex: 0 0 auto;
+  min-width: max-content;
+  justify-self: end;
 }
 
 .live-match-when.is-live {
@@ -2694,7 +3072,7 @@ textarea {
 /* Kolommen uitgelijnd zoals slimescore.com: thuis (links) | - | uit | uitslag. */
 .live-match-body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) 3.4rem;
+  grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr) 58px;
   align-items: center;
   gap: 8px;
 }
@@ -2714,8 +3092,10 @@ textarea {
 
 .live-match-score {
   justify-self: end;
+  width: 58px;
+  min-width: 58px;
   text-align: right;
-  padding-right: 6px;
+  padding-right: 0;
   font-weight: 1000;
   font-variant-numeric: tabular-nums;
   color: #081634;
@@ -2725,6 +3105,93 @@ textarea {
 .live-match-score-todo {
   color: #94a3b8;
   font-weight: 800;
+}
+
+.live-match-card-featured .live-match-meta {
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.live-match-card-featured .live-match-when {
+  border-radius: 999px;
+  background: #fee2e2;
+  padding: 5px 10px;
+  color: #b91c1c;
+  font-weight: 1000;
+}
+
+.live-match-card-featured .live-match-body {
+  grid-template-columns: minmax(0, 1fr) 42px minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.live-match-card-featured .live-match-team {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  text-align: center;
+}
+
+.live-match-card-featured .live-match-sep {
+  display: none;
+}
+
+.live-match-card-featured .live-match-score {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  padding: 0;
+  font-size: 1.85rem;
+  line-height: 1;
+}
+
+.live-match-card-featured .live-match-team:last-of-type {
+  grid-column: 3;
+}
+
+.live-match-card-featured .live-row-name {
+  display: inline;
+  max-width: 100%;
+  font-size: 1.18rem;
+  line-height: 1.12;
+  white-space: normal;
+}
+
+.live-match-card-featured .live-row-code {
+  display: none;
+}
+
+.live-match-card-featured .live-match-team img,
+.live-match-card-featured .live-match-team > span:first-child {
+  width: 34px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+@media (min-width: 760px) {
+  .live-match-card-featured {
+    padding: 18px 22px 20px;
+  }
+
+  .live-match-card-featured .live-match-body {
+    grid-template-columns: minmax(0, 1fr) 92px minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .live-match-card-featured .live-match-score {
+    font-size: 2.75rem;
+  }
+
+  .live-match-card-featured .live-row-name {
+    font-size: 1.55rem;
+  }
+
+  .live-match-card-featured .live-match-team img,
+  .live-match-card-featured .live-match-team > span:first-child {
+    width: 46px;
+    height: 31px;
+  }
 }
 
 /* Merk netjes gecentreerd in de header-pill. */
@@ -3458,10 +3925,11 @@ textarea {
 
 .quick-menu-button {
   position: fixed;
+  /* Net onder de mobiele status/headerbalk houden, zodat hij de aftel- en accountchips niet afdekt. */
   top: calc(60px + env(safe-area-inset-top));
   /* Lijn de hamburger uit met de rechterrand van de content-blokken (page-shell-padding). */
   right: 16px;
-  z-index: 40;
+  z-index: 50;
   display: inline-grid;
   min-height: 46px;
   min-width: 46px;
@@ -3482,8 +3950,6 @@ textarea {
   overflow: hidden;
   overscroll-behavior: contain;
   background: rgba(8, 22, 52, 0.42);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
 }
 
 .quick-menu-panel {
@@ -3510,6 +3976,38 @@ textarea {
   flex: 0 0 auto;
 }
 
+.quick-menu-brand {
+  display: grid;
+  gap: 2px;
+  line-height: 1;
+  min-width: 0;
+}
+
+.quick-menu-brand-name {
+  font-size: clamp(1.48rem, 6.7vw, 1.78rem);
+  font-weight: 1000;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+}
+
+.quick-menu-brand-slime {
+  color: #ffffff;
+  -webkit-text-stroke: 1px rgba(8, 22, 52, 0.2);
+  text-shadow: 0 2px 5px rgba(8, 22, 52, 0.5);
+}
+
+.quick-menu-brand-score {
+  color: #128f47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.quick-menu-brand-sub {
+  color: #f26a1b;
+  font-size: clamp(1rem, 4.7vw, 1.28rem);
+  font-weight: 1000;
+  letter-spacing: -0.02em;
+}
+
 .quick-menu-link {
   display: flex;
   width: 100%;
@@ -3528,8 +4026,53 @@ textarea {
   cursor: pointer;
 }
 
+.quick-menu-home-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.quick-menu-home-row .language-switcher {
+  align-self: stretch;
+}
+
+.quick-menu-home-row .language-switcher-btn {
+  min-height: 52px;
+  padding-inline: 12px;
+  border-radius: 12px;
+}
+
+.quick-menu-home-row .language-switcher-menu {
+  right: 0;
+  z-index: 130;
+}
+
 .quick-menu-form {
   margin: 0;
+}
+
+.quick-menu-split-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.quick-menu-link-half {
+  min-height: 50px;
+  justify-content: flex-start;
+  gap: 8px;
+  padding-inline: 10px;
+}
+
+.quick-menu-live-link {
+  border-color: rgba(242, 106, 27, 0.28);
+  background: linear-gradient(135deg, #fff7e8, #ffe8cf);
+  color: #a93b00;
+}
+
+.quick-menu-live-link svg {
+  color: #f26a1b;
 }
 
 .quick-menu-logout {
@@ -3658,9 +4201,15 @@ textarea {
 
 .schedule-groups-controls {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  overflow: visible;
+  scrollbar-width: none;
+}
+
+.schedule-groups-controls::-webkit-scrollbar {
+  display: none;
 }
 
 .schedule-picker {
@@ -3669,17 +4218,18 @@ textarea {
 
 .schedule-picker-button {
   display: inline-flex;
-  min-height: 34px;
+  min-height: 32px;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   border: 1px solid rgba(8, 22, 52, 0.12);
   border-radius: 11px;
   background: #fff;
-  padding: 0 10px;
+  padding: 0 8px;
   color: #081634;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 1000;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .schedule-picker-caret {
@@ -3784,16 +4334,23 @@ textarea {
 
 .schedule-orange-chip {
   display: inline-flex;
-  min-height: 34px;
+  min-height: 32px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(242, 106, 27, 0.24);
+  border: 1px solid rgba(242, 106, 27, 0.28);
   border-radius: 11px;
   background: #fff7ed;
   color: #c44b07;
-  padding: 0 11px;
-  font-size: 0.8rem;
+  padding: 0 9px;
+  font-size: 0.78rem;
   font-weight: 1000;
+  white-space: nowrap;
+}
+
+.schedule-nl-chip {
+  min-width: 36px;
+  padding: 0 8px;
+  font-size: 1rem;
 }
 
 .schedule-orange-chip-active,
@@ -4358,26 +4915,31 @@ textarea {
   color: #081634;
 }
 
-/* Poule-pagina: mobiel compacter en prioriteit op ranglijst/deelnemers. */
+/* Poule-pagina: compacte kaart met brede 5:1 banner en prioriteit op ranglijst/deelnemers. */
+.poules-page-shell {
+  /* 1098 border-box - 24px desktop padding links/rechts = ±1050px bannerbreedte. */
+  width: min(1098px, 100%);
+}
+
 .pool-card-hero {
   position: relative;
   display: grid;
-  aspect-ratio: 16 / 9;
-  min-height: 188px;
-  max-height: 330px;
+  aspect-ratio: 5 / 1;
+  min-height: 150px;
+  max-height: 210px;
   grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   align-items: end;
   overflow: hidden;
   border-top: 4px solid var(--pool-accent, #114b82);
   background:
-    linear-gradient(90deg, rgba(4, 12, 32, 0.78) 0%, rgba(4, 12, 32, 0.42) 58%, rgba(4, 12, 32, 0.18) 100%),
+    linear-gradient(90deg, rgba(4, 12, 32, 0.8) 0%, rgba(4, 12, 32, 0.45) 58%, rgba(4, 12, 32, 0.2) 100%),
     var(--pool-banner-image, none),
     var(--pool-accent, #114b82);
   background-position: center, center, center;
-  background-size: cover, contain, auto;
+  background-size: cover, cover, auto;
   background-repeat: no-repeat;
-  padding: 20px 18px;
+  padding: 18px 18px 14px;
 }
 
 .pool-card-title-row {
@@ -4493,6 +5055,100 @@ textarea {
   gap: 8px;
 }
 
+.pool-members-section {
+  padding: 12px;
+}
+
+.pool-members-title {
+  font-size: 1rem;
+  line-height: 1.15;
+}
+
+.pool-members-hint {
+  margin-top: 2px;
+  font-size: 0.76rem;
+}
+
+.pool-members-list {
+  margin-top: 8px;
+  gap: 6px;
+}
+
+.pool-member-button {
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 9px;
+}
+
+.pool-member-button .avatar-img {
+  transition: width 160ms ease, height 160ms ease, transform 160ms ease;
+}
+
+.pool-member-button[aria-expanded="true"] .avatar-img {
+  transform: scale(1.03);
+}
+
+.pool-member-rank {
+  width: 24px;
+  height: 24px;
+  font-size: 0.68rem;
+}
+
+.pool-member-main {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pool-member-name,
+.pool-member-points {
+  font-size: 0.84rem;
+  line-height: 1.1;
+}
+
+.pool-member-team,
+.pool-member-world {
+  font-size: 0.72rem;
+}
+
+.pool-member-world {
+  vertical-align: baseline;
+}
+
+.pool-board-section {
+  background: #f2fbf5;
+  padding: 12px;
+}
+
+.pool-board-titlebar {
+  margin: -12px -12px 10px;
+  border-radius: 0;
+  background: linear-gradient(90deg, #0e7a44, #15a35b);
+  color: #ffffff;
+  padding: 9px 12px;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.pool-board-textarea {
+  min-height: 62px;
+}
+
+.pool-board-message {
+  border-color: #bce7c7;
+  background: #f3fcf6;
+  padding: 9px;
+}
+
+.pool-board-message-pinned {
+  border-color: #e0b23a;
+  background: #fff8dc;
+}
+
 .pool-members-count {
   display: inline-grid;
   min-width: 28px;
@@ -4538,10 +5194,11 @@ textarea {
   }
 
   .pool-card-hero {
-    min-height: 188px;
+    min-height: 78px;
+    max-height: 118px;
     grid-template-columns: minmax(0, 1fr);
-    gap: 8px;
-    padding: 16px 12px 13px;
+    gap: 6px;
+    padding: 11px 10px 9px;
   }
 
   .pool-card-title {

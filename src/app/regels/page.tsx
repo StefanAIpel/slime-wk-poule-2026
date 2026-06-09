@@ -4,7 +4,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
-import { ENTRY_DEADLINE_ISO, POST_GROUP_DEADLINE_ISO, scoringRules } from "@/lib/constants";
+import { ENTRY_DEADLINE_ISO, ENTRY_GRACE_DEADLINE_ISO, POST_GROUP_DEADLINE_ISO, scoringRules } from "@/lib/constants";
 import { localizedHref, type Locale } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/server-locale";
 
@@ -21,7 +21,9 @@ const rulesCopy = {
     sideBannersLabel: "SlimeScore spellen",
     deadlinesTitle: "Deadlines",
     mainDeadlinePrefix: "Inschrijven en invullen kan t/m",
-    mainDeadlineSuffix: " (de aftrap van Oranje). Elke wedstrijd sluit afzonderlijk 30 min vóór de aftrap — wat al gespeeld is, levert geen punten meer op.",
+    mainDeadlineSuffix: " (de eerste WK-wedstrijd).",
+    graceDeadlinePrefix: "Respijtperiode: niet-gespeelde groepswedstrijden kun je nog invullen of wijzigen t/m",
+    graceDeadlineSuffix: " — maar elke wedstrijd sluit altijd 30 min vóór de aftrap. Begonnen of gespeelde wedstrijden blijven dicht en leveren zonder voorspelling geen punten op.",
     lateDeadlinePrefix: "Wereldkampioen, finalisten, penaltyseries en “hoe ver komt Oranje” blijven wijzigbaar t/m",
     lateDeadlineSuffix: ".",
     poolsTitle: "WK-poules",
@@ -80,7 +82,7 @@ const rulesCopy = {
       { q: "Heb ik een wachtwoord nodig?", a: "Nee. Je logt in met een eenmalige link die we naar je e-mailadres sturen." },
       {
         q: "Tot wanneer kan ik invullen?",
-        a: "Je inschrijving loopt t/m zondag 14 juni 22:00 (de aftrap van Oranje). Belangrijk: elke groepswedstrijd sluit afzonderlijk 30 minuten vóór de aftrap — wat al begonnen of gespeeld is, kun je niet meer invullen en levert dus geen punten op. Vul je later in, dan mis je die wedstrijden. Wereldkampioen, finalisten, penaltyseries en 'hoe ver komt Oranje' blijf je aanpassen t/m 28 juni 21:00.",
+        a: "Je inschrijving loopt t/m donderdag 11 juni 21:00 (de eerste WK-wedstrijd). Daarna is er respijt t/m zondag 14 juni 21:00: groepswedstrijden die nog niet gespeeld zijn kun je dan nog invullen of wijzigen. Elke wedstrijd sluit wel altijd 30 minuten vóór de aftrap — wat al begonnen of gespeeld is, blijft dicht en levert zonder voorspelling geen punten op. Wereldkampioen, finalisten, penaltyseries en 'hoe ver komt Oranje' blijf je aanpassen t/m 28 juni 21:00.",
       },
       { q: "Zijn mijn WK 2026-voorspellingen privé?", a: "Ja, tot de deadline. Daarna zijn ze zichtbaar voor je medespelers in dezelfde WK-poule. Je e-mailadres blijft altijd privé." },
       { q: "Hoe werkt de laatste 32?", a: "Die rekenen we automatisch uit jouw voorspelde groepsstanden: de nummers 1 en 2 plus de beste acht nummers 3." },
@@ -101,7 +103,9 @@ const rulesCopy = {
     sideBannersLabel: "SlimeScore games",
     deadlinesTitle: "Deadlines",
     mainDeadlinePrefix: "You can enter and edit until",
-    mainDeadlineSuffix: " (the Netherlands' kick-off). Each match closes individually 30 min before kick-off — anything already played no longer scores points.",
+    mainDeadlineSuffix: " (the first World Cup match).",
+    graceDeadlinePrefix: "Grace period: group matches that have not been played yet can still be entered or edited until",
+    graceDeadlineSuffix: " — but every match always closes 30 min before kick-off. Started or played matches stay locked and score no points without a prediction.",
     lateDeadlinePrefix: "World champion, finalists, penalty shootouts and “how far will the Netherlands go” remain editable until",
     lateDeadlineSuffix: ".",
     poolsTitle: "World Cup pools",
@@ -175,7 +179,7 @@ const rulesCopy = {
       { q: "Do I need a password?", a: "You can use a password for your account; confirmation and recovery also support email codes." },
       {
         q: "Until when can I fill in predictions?",
-        a: "Entry stays open until Sunday 14 June 22:00 (the Netherlands' kick-off). Important: each group match closes individually 30 minutes before kick-off — anything already started or played can no longer be entered and scores no points, so if you join late you miss those matches. World champion, finalists, penalty shootouts and 'how far will the Netherlands go' stay editable until 28 June 21:00.",
+        a: "Entry stays open until Thursday 11 June 21:00 (the first World Cup match). After that there is a grace period until Sunday 14 June 21:00: group matches that have not been played yet can still be entered or edited. Every match still closes 30 minutes before kick-off — anything already started or played stays locked and scores no points without a prediction. World champion, finalists, penalty shootouts and 'how far will the Netherlands go' stay editable until 28 June 21:00.",
       },
       { q: "Are my World Cup 2026 predictions private?", a: "Yes, until the deadline. After that they are visible to players in the same World Cup pool. Your email address always stays private." },
       { q: "How does the last 32 work?", a: "We calculate it automatically from your predicted group standings: places 1 and 2 plus the best eight third-placed teams." },
@@ -237,6 +241,9 @@ export default async function RulesPage() {
             <div className="mt-4 grid gap-2 text-sm leading-6 text-[#2f3d57]">
               <p>
                 {copy.mainDeadlinePrefix} <strong className="text-[#081634]">{formatDeadline(ENTRY_DEADLINE_ISO, locale)}</strong>{copy.mainDeadlineSuffix}
+              </p>
+              <p>
+                {copy.graceDeadlinePrefix} <strong className="text-[#081634]">{formatDeadline(ENTRY_GRACE_DEADLINE_ISO, locale)}</strong>{copy.graceDeadlineSuffix}
               </p>
               <p>
                 {copy.lateDeadlinePrefix} <strong className="text-[#081634]">{formatDeadline(POST_GROUP_DEADLINE_ISO, locale)}</strong>{copy.lateDeadlineSuffix}

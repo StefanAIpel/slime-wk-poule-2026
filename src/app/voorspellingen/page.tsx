@@ -8,7 +8,7 @@ import { KnockoutPredictionPicker } from "@/components/knockout-prediction-picke
 import { PageHero } from "@/components/page-hero";
 import { PredictionsComplete } from "@/components/predictions-complete";
 import { StatusProgressSync } from "@/components/status-progress-sync";
-import { ENTRY_DEADLINE, groupLetters, isMatchLocked, POST_GROUP_DEADLINE } from "@/lib/constants";
+import { ENTRY_DEADLINE, ENTRY_GRACE_DEADLINE, groupLetters, isMatchLocked, POST_GROUP_DEADLINE } from "@/lib/constants";
 import { teamNameForLocale } from "@/lib/format";
 import { calculateRound32 } from "@/lib/group-standings";
 import { localizedHref } from "@/lib/i18n";
@@ -32,11 +32,10 @@ const predictionCopy = {
     metaTitle: "Voorspellingen invullen",
     metaDescription: "Vul je SlimeScore WK 2026-voorspellingen in en pas ze aan tot de deadline.",
     heroTitle: "Voorspellingen",
-    heroSubtitle:
-      "Vul snel in en schaaf bij t/m zondag 14 juni 22:00 (de aftrap van Oranje). Let op: elke wedstrijd sluit 30 min vóór de aftrap — wat al begonnen is, kun je niet meer invullen. ⚡ Oranje-wedstrijden tellen dubbel! Na de groepsfase is er nog een kleine herziening tot 28 juni 21:00.",
+    heroSubtitle: "Vul je voorspellingen in en sla op.",
     saved: "Opgeslagen.",
     groupTitle: "Groepswedstrijden",
-    groupOpen: "Typ je verwachte uitslag. Elke wedstrijd sluit 30 min vóór de aftrap; daarna kun je 'm niet meer wijzigen. ⚡ Oranje-wedstrijden tellen dubbel.",
+    groupOpen: "",
     groupClosed: "De hoofdvoorspellingen zijn gesloten.",
     progressTitle: "Voortgang groepswedstrijden",
     filled: "ingevuld",
@@ -49,7 +48,7 @@ const predictionCopy = {
     incomplete: (filled: number, total: number) =>
       `Let op: je hebt ${filled} van ${total} groepswedstrijden ingevuld. Vul ze allemaal in, anders klopt je automatische laatste 32 nog niet en mis je punten.`,
     bonusTitle: "Bonusvragen",
-    bonusIntro: "Start leeg: vul je eigen schatting in vóór 14 juni 22:00. Lege bonusvelden leveren geen punten op.",
+    bonusIntro: "Start leeg: vul je eigen schatting in vóór 11 juni 21:00. Lege bonusvelden leveren geen punten op.",
     teamMostGoals: "Team met de meeste doelpunten",
     chooseCountry: "Kies land",
     totalGoals: "Totaal aantal goals",
@@ -71,11 +70,10 @@ const predictionCopy = {
     metaTitle: "Fill in predictions",
     metaDescription: "Fill in your SlimeScore World Cup 2026 predictions and edit them until the deadline.",
     heroTitle: "Predictions",
-    heroSubtitle:
-      "Fill them in quickly and tweak until Sunday 14 June 22:00 (the Netherlands' kick-off). Note: each match closes 30 min before kick-off — once it has started you can no longer enter it. ⚡ Netherlands matches count double! After the group stage there is a small revision window until 28 June 21:00.",
+    heroSubtitle: "Fill in your predictions and save.",
     saved: "Saved.",
     groupTitle: "Group matches",
-    groupOpen: "Enter your expected scores. Each match closes 30 min before kick-off; after that you can no longer change it. ⚡ Netherlands matches count double.",
+    groupOpen: "",
     groupClosed: "The main predictions are closed.",
     progressTitle: "Group match progress",
     filled: "filled in",
@@ -88,7 +86,7 @@ const predictionCopy = {
     incomplete: (filled: number, total: number) =>
       `Heads up: you filled in ${filled} of ${total} group matches. Fill them all in, otherwise your automatic last 32 may be wrong and you can miss points.`,
     bonusTitle: "Bonus questions",
-    bonusIntro: "Start empty: enter your own estimate before 14 June 22:00. Empty bonus fields score no points.",
+    bonusIntro: "Start empty: enter your own estimate before 11 June 21:00. Empty bonus fields score no points.",
     teamMostGoals: "Team with most goals",
     chooseCountry: "Choose country",
     totalGoals: "Total number of goals",
@@ -151,7 +149,8 @@ export default async function PredictionsPage({
   const predictionByMatch = new Map((predictions ?? []).map((prediction) => [prediction.match_id, prediction]));
   const bracketByStage = new Map((bracket ?? []).map((row) => [row.stage_key, new Set(row.team_codes as string[])]));
   const now = new Date();
-  const mainOpen = now < ENTRY_DEADLINE;
+  const preKickoffBonusOpen = now < ENTRY_DEADLINE;
+  const mainOpen = now < ENTRY_GRACE_DEADLINE;
   const lateOpen = now < POST_GROUP_DEADLINE;
   // Wedstrijden die binnen 30 min vóór de aftrap (of al begonnen) zijn: vergrendeld.
   const lockedMatchIds = (matches ?? []).filter((match) => isMatchLocked(match.starts_at, now)).map((match) => match.id);
@@ -216,9 +215,10 @@ export default async function PredictionsPage({
       <form action={savePredictions} className="grid gap-5">
         <section className="dark-panel p-4 text-white">
           <h2 className="text-2xl font-bold">{copy.groupTitle}</h2>
-          <p className="mt-1 text-sm font-medium text-blue-100">
-            {mainOpen ? copy.groupOpen : copy.groupClosed}
-          </p>
+          {mainOpen && copy.groupOpen ? (
+            <p className="mt-1 text-sm font-medium text-blue-100">{copy.groupOpen}</p>
+          ) : null}
+          {!mainOpen ? <p className="mt-1 text-sm font-medium text-blue-100">{copy.groupClosed}</p> : null}
         </section>
 
         <div className="panel p-4">
@@ -271,7 +271,7 @@ export default async function PredictionsPage({
           );
         })}
 
-        <section className="panel p-4">
+        <section id="knockouts" className="panel p-4">
           <h2 className="text-2xl font-bold text-[#081634]">{copy.knockoutTitle}</h2>
           <p className="mt-1 text-sm font-medium text-[#48617f]">{copy.knockoutIntro}</p>
           <div className="mt-4 rounded-lg border border-[#bce8c8] bg-[#f4fbf0] p-3 text-sm font-bold leading-6 text-[#137c35]">
@@ -294,13 +294,13 @@ export default async function PredictionsPage({
           </div>
         </section>
 
-        <section className="panel p-4">
+        <section id="bonusvragen" className="panel p-4">
           <h2 className="text-2xl font-bold text-[#081634]">{copy.bonusTitle}</h2>
           <p className="mt-1 text-sm font-medium text-[#48617f]">{copy.bonusIntro}</p>
-          <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!mainOpen}>
+          <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!preKickoffBonusOpen}>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
               {copy.teamMostGoals}
-              <select className="field" name="team_most_goals_code" defaultValue={special?.team_most_goals_code ?? ""}>
+              <select className="field choice-select" name="team_most_goals_code" defaultValue={special?.team_most_goals_code ?? ""}>
                 <option value="">{copy.chooseCountry}</option>
                 {typedTeams.map((team) => (
                   <option key={team.code} value={team.code}>
@@ -321,7 +321,7 @@ export default async function PredictionsPage({
           <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!lateOpen}>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
               {copy.champion} <span className="font-medium text-[#48617f]">{copy.championHelp}</span>
-              <select className="field" name="champion_code" defaultValue={initialChampion}>
+              <select className="field choice-select" name="champion_code" defaultValue={initialChampion}>
                 <option value="">{copy.chooseChampion}</option>
                 {typedTeams.map((team) => (
                   <option key={team.code} value={team.code}>
@@ -332,7 +332,7 @@ export default async function PredictionsPage({
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
               {copy.oranje}
-              <select className="field" name="oranje_stage" defaultValue={special?.oranje_stage ?? ""}>
+              <select className="field choice-select" name="oranje_stage" defaultValue={special?.oranje_stage ?? ""}>
                 <option value="">{copy.chooseOranje}</option>
                 {oranjeStageOrder.map((stage) => (
                   <option key={stage} value={stage}>

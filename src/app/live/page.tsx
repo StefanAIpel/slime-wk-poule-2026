@@ -1,4 +1,4 @@
-import { CalendarDays } from "lucide-react";
+import { ArrowRight, CalendarDays, ListOrdered } from "lucide-react";
 import { LiveAutoRefresh } from "@/components/live-auto-refresh";
 import { ShareRow } from "@/components/share-button";
 import { TeamFlag } from "@/components/team-flag";
@@ -12,14 +12,19 @@ export const revalidate = 15;
 const copy = {
   nl: {
     kicker: "WK 2026 live",
-    heroTitle: "WK 2026 live: uitslagen, stand & schema",
-    heroSub: "Volg elke WK 2026-wedstrijd live — tussenstanden, opstellingen en statistieken, plus het volledige speelschema. Gratis, zonder gedoe.",
+    heroTitle: "WK 2026 Live:",
+    heroTitleSub: "uitslagen, standen & schema",
+    heroSub: "Volg elke WK 2026-wedstrijd live — tussenstanden, opstellingen en statistieken, plus het volledige speelschema.",
     schedule: "Hele WK speelschema",
     shareText: "Volg het WK 2026 live op SlimeScore: uitslagen, stand en schema.",
     shareTitle: "WK 2026 live — SlimeScore",
     now: "Nu bezig",
     latest: "Laatste uitslagen",
     upcoming: "Aankomend",
+    upcomingAll: "Alle komende wedstrijden",
+    moreMatches: "Meer wedstrijden",
+    allUpcoming: "Alle komende WK-wedstrijden",
+    compactUpcoming: "Compact overzicht",
     emptyNow: "Op dit moment is er geen WK-wedstrijd bezig.",
     emptyLatest: "Nog geen gespeelde wedstrijden.",
     emptyUpcoming: "Geen geplande wedstrijden gevonden.",
@@ -30,14 +35,19 @@ const copy = {
   },
   en: {
     kicker: "World Cup 2026 live",
-    heroTitle: "World Cup 2026 live: scores, standings & schedule",
-    heroSub: "Follow every 2026 World Cup match live — live scores, line-ups and stats, plus the full schedule. Free, no fuss.",
+    heroTitle: "World Cup 2026 Live:",
+    heroTitleSub: "scores, standings & schedule",
+    heroSub: "Follow every 2026 World Cup match live — live scores, line-ups and stats, plus the full schedule.",
     schedule: "Total World Cup Schedule",
     shareText: "Follow the 2026 World Cup live on SlimeScore: scores, standings and schedule.",
     shareTitle: "World Cup 2026 live — SlimeScore",
     now: "Now playing",
     latest: "Latest results",
     upcoming: "Upcoming",
+    upcomingAll: "All upcoming matches",
+    moreMatches: "More matches",
+    allUpcoming: "All upcoming WC matches",
+    compactUpcoming: "Compact view",
     emptyNow: "No World Cup match is being played right now.",
     emptyLatest: "No matches played yet.",
     emptyUpcoming: "No scheduled matches found.",
@@ -94,12 +104,12 @@ function TeamInline({ team, locale }: { team: LiveTeam; locale: Locale }) {
   );
 }
 
-function MatchCard({ fixture, locale }: { fixture: LiveFixture; locale: Locale }) {
+function MatchCard({ fixture, locale, featured = false }: { fixture: LiveFixture; locale: Locale; featured?: boolean }) {
   const when = statusWhen(fixture, locale);
   const played = when.live || ["FT", "AET", "PEN"].includes(fixture.statusShort);
   const meta = [roundLabel(fixture, locale), fixture.venue].filter(Boolean).join(" · ");
   return (
-    <a href={`/live/match/${fixture.id}`} className="live-match-card">
+    <a href={`/live/match/${fixture.id}`} className={featured ? "live-match-card live-match-card-featured" : "live-match-card"}>
       <div className="live-match-meta">
         <span className="live-match-round">{meta}</span>
         <span className={when.live ? "live-match-when is-live" : "live-match-when"}>{when.text}</span>
@@ -116,18 +126,42 @@ function MatchCard({ fixture, locale }: { fixture: LiveFixture; locale: Locale }
   );
 }
 
-function Section({ title, accent, fixtures, empty, locale }: { title: string; accent?: "live"; fixtures: LiveFixture[]; empty: string; locale: Locale }) {
+function Section({
+  title,
+  tone,
+  fixtures,
+  empty,
+  locale,
+  action,
+}: {
+  title: string;
+  tone: "live" | "latest" | "upcoming";
+  fixtures: LiveFixture[];
+  empty: string;
+  locale: Locale;
+  action?: { href: string; label: string; icon: "arrow" | "list" };
+}) {
+  const isLive = tone === "live";
+  const ActionIcon = action?.icon === "list" ? ListOrdered : ArrowRight;
   return (
-    <section className="panel overflow-hidden">
-      <header className={accent === "live" ? "live-section-header is-live" : "live-section-header"}>
+    <section id={tone === "upcoming" ? "alle-komende" : undefined} className={`panel live-section live-section-${tone} overflow-hidden`}>
+      <header className={`live-section-header is-${tone}`}>
         <span>{title}</span>
-        {fixtures.length && accent === "live" ? <span className="live-section-count">{fixtures.length}</span> : null}
+        {fixtures.length && isLive ? <span className="live-section-count">{fixtures.length}</span> : null}
       </header>
       {fixtures.length ? (
-        <div className="divide-y divide-slate-200">{fixtures.map((f) => <MatchCard key={f.id} fixture={f} locale={locale} />)}</div>
+        <div className="divide-y divide-slate-200">{fixtures.map((f) => <MatchCard key={f.id} fixture={f} locale={locale} featured={isLive} />)}</div>
       ) : (
         <p className="p-4 text-sm font-bold text-[#48617f]">{empty}</p>
       )}
+      {action ? (
+        <footer className="live-section-footer">
+          <a href={action.href} className="live-section-more">
+            <ActionIcon aria-hidden="true" className="size-4" />
+            {action.label}
+          </a>
+        </footer>
+      ) : null}
     </section>
   );
 }
@@ -147,7 +181,10 @@ function Hero({ locale }: { locale: Locale }) {
           <span>Canada</span>
           <span>Mexico</span>
         </div>
-        <h1 className="live-hero-title">{c.heroTitle}</h1>
+        <h1 className="live-hero-title">
+          <span>{c.heroTitle}</span>
+          <span className="live-hero-title-subline">{c.heroTitleSub}</span>
+        </h1>
         <p className="live-hero-sub">{c.heroSub}</p>
         <div className="live-hero-actions">
           <a href="/live/schema" className="button-primary live-hero-cta">
@@ -164,8 +201,9 @@ function Hero({ locale }: { locale: Locale }) {
   );
 }
 
-export default async function LivePage() {
+export default async function LivePage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   const locale = await getServerLocale();
+  const params = await searchParams;
   const c = copy[locale];
   const all = await getWcFixtures();
 
@@ -179,14 +217,26 @@ export default async function LivePage() {
   }
 
   const { live, recent, upcoming } = splitFixtures(all);
+  const allUpcoming = all.filter((f) => !f.friendly && f.statusShort === "NS").sort((a, b) => a.date.localeCompare(b.date));
+  const showAllUpcoming = params.view === "upcoming";
+  const upcomingFixtures = showAllUpcoming ? allUpcoming : upcoming;
 
   return (
     <div className="grid gap-4">
       <LiveAutoRefresh seconds={15} />
       <Hero locale={locale} />
-      <Section title={c.now} accent="live" fixtures={live} empty={c.emptyNow} locale={locale} />
-      <Section title={c.latest} fixtures={recent} empty={c.emptyLatest} locale={locale} />
-      <Section title={c.upcoming} fixtures={upcoming} empty={c.emptyUpcoming} locale={locale} />
+      <div className="live-sections-grid">
+        <Section title={c.now} tone="live" fixtures={live} empty={c.emptyNow} locale={locale} />
+        <Section title={c.latest} tone="latest" fixtures={recent} empty={c.emptyLatest} locale={locale} action={{ href: "/live/schema", label: c.moreMatches, icon: "arrow" }} />
+        <Section
+          title={showAllUpcoming ? c.upcomingAll : c.upcoming}
+          tone="upcoming"
+          fixtures={upcomingFixtures}
+          empty={c.emptyUpcoming}
+          locale={locale}
+          action={showAllUpcoming ? { href: "/live", label: c.compactUpcoming, icon: "arrow" } : { href: "/live?view=upcoming#alle-komende", label: c.allUpcoming, icon: "list" }}
+        />
+      </div>
     </div>
   );
 }

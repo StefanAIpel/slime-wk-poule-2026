@@ -8,11 +8,13 @@ export {
   isNlMatch,
 } from "@/lib/entry-rules";
 
-export const ENTRY_DEADLINE_ISO = "2026-06-14T22:00:00+02:00";
+export const ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00+02:00";
+export const ENTRY_GRACE_DEADLINE_ISO = "2026-06-14T21:00:00+02:00";
 export const POST_GROUP_WINDOW_START_ISO = "2026-06-28T00:00:00+02:00";
 export const POST_GROUP_DEADLINE_ISO = "2026-06-28T21:00:00+02:00";
 
 export const ENTRY_DEADLINE = new Date(ENTRY_DEADLINE_ISO);
+export const ENTRY_GRACE_DEADLINE = new Date(ENTRY_GRACE_DEADLINE_ISO);
 export const POST_GROUP_WINDOW_START = new Date(POST_GROUP_WINDOW_START_ISO);
 export const POST_GROUP_DEADLINE = new Date(POST_GROUP_DEADLINE_ISO);
 
@@ -33,7 +35,7 @@ export const MAIL_FROM = "noreply@slimesports.com";
 /** Contactadres voor vragen, privacy en account-verzoeken. */
 export const CONTACT_EMAIL = "contact@slimescore.com";
 /** Bèta-versie, handmatig ophogen bij releases. */
-export const APP_VERSION = "0.34";
+export const APP_VERSION = "0.39";
 /** Maker. */
 export const COMPANY_NAME = "Feliro";
 export const COMPANY_URL = "https://feliro.nl";

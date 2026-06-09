@@ -17,7 +17,11 @@ const passwordChangeForm = await readFile(new URL("../src/components/password-ch
 const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
+const livePage = await readFile(new URL("../src/app/live/page.tsx", import.meta.url), "utf8");
+const liveLayout = await readFile(new URL("../src/app/live/layout.tsx", import.meta.url), "utf8");
 const liveNav = await readFile(new URL("../src/components/live-subsite-nav.tsx", import.meta.url), "utf8");
+const liveFollowBanner = await readFile(new URL("../src/components/live-follow-banner.tsx", import.meta.url), "utf8");
+const slimeSoccerBanner = await readFile(new URL("../src/components/slime-soccer-banner.tsx", import.meta.url), "utf8");
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
 const rankingPage = await readFile(new URL("../src/app/ranglijst/page.tsx", import.meta.url), "utf8");
@@ -152,11 +156,27 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
   assert.doesNotMatch(globalsCss, /\.pool-member-world \{\n\s*display: none;\n\s*\}/);
 });
 
-test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.34"/);
+test("logged-in status header uses the user's avatar instead of the trophy icon", () => {
+  assert.match(apiMeRoute, /select\("nickname,team_name,avatar_key,preferred_locale"\)/);
+  assert.match(apiMeRoute, /avatarKey: profile\?\.avatar_key \?\? null/);
+  assert.match(statusBar, /import \{ Avatar \} from "@\/components\/avatar";/);
+  assert.match(statusBar, /type Me = \{ loggedIn: boolean; nickname\?: string \| null; avatarKey\?: string \| null; rank\?: number \| null; progress\?: number \}/);
+  assert.match(statusBar, /<Avatar name=\{me\.nickname \?\? \(locale === "en" \? "Player" : "Speler"\)\} avatarKey=\{me\.avatarKey\} size=\{18\} \/>/);
+  assert.doesNotMatch(statusBar, /<Trophy aria-hidden="true"/);
+  assert.match(globalsCss, /\.status-chip-account \.avatar-img \{[\s\S]*width: 18px;[\s\S]*height: 18px;[\s\S]*background: rgba\(255, 255, 255, 0\.22\);/);
 });
-test("entry deadline is set to the Netherlands' first match (Sun 14 June 22:00)", () => {
-  assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-14T22:00:00\+02:00"/);
+
+test("footer version is bumped for this high-priority deploy", () => {
+  assert.match(constants, /APP_VERSION = "0.39"/);
+});
+test("entry deadline is extended until the first World Cup match", () => {
+  assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00\+02:00"/);
+  assert.match(constants, /ENTRY_GRACE_DEADLINE_ISO = "2026-06-14T21:00:00\+02:00"/);
+  assert.match(homePage, /Deadline: 11 juni 21:00\. Respijt t\/m zondag 14 juni voor niet-gespeelde wedstrijden/);
+  assert.match(statusBar, /tot de eerste wedstrijd/);
+  assert.match(rulesPage, /Respijtperiode: niet-gespeelde groepswedstrijden/);
+  assert.match(rulesPage, /ENTRY_GRACE_DEADLINE_ISO/);
+  assert.match(rulesPage, /zondag 14 juni 21:00/);
 });
 
 test("desktop UI uses compact page heroes, right-column rules banners and aligned game stage", () => {
@@ -178,6 +198,47 @@ test("desktop UI uses compact page heroes, right-column rules banners and aligne
   assert.match(globalsCss, /\.game-frame \{[\s\S]*width: 100%;/);
 });
 
+test("main mobile header and hamburger stay sticky and quick menu has a Schema/Live half-row", () => {
+  const heroTopbarBlock = globalsCss.match(/\.hero-topbar \{[\s\S]*?\}/)?.[0] ?? "";
+  const heroBandTopbarBlock = globalsCss.match(/\.hero-band-topbar \{[\s\S]*?\}/)?.[0] ?? "";
+  const hamburgerBlock = globalsCss.match(/\.quick-menu-button \{[\s\S]*?\}/)?.[0] ?? "";
+  const quickMenuHomeRowBlock = globalsCss.match(/\.quick-menu-home-row \{[\s\S]*?\}/)?.[0] ?? "";
+  const splitRowBlock = globalsCss.match(/\.quick-menu-split-row \{[\s\S]*?\}/)?.[0] ?? "";
+  const halfLinkBlock = globalsCss.match(/\.quick-menu-link-half \{[\s\S]*?\}/)?.[0] ?? "";
+  const liveLinkBlock = globalsCss.match(/\.quick-menu-live-link \{[\s\S]*?\}/)?.[0] ?? "";
+  const pairConfig = quickMenu.slice(quickMenu.indexOf("const menuPairLinks"), quickMenu.indexOf("const privateLinks"));
+  assert.match(heroTopbarBlock, /position: fixed;/);
+  assert.match(heroTopbarBlock, /z-index: 45;/);
+  assert.doesNotMatch(heroTopbarBlock, /backdrop-filter|blur\(/);
+  assert.match(heroBandTopbarBlock, /padding-top: 16px;/);
+  assert.match(hamburgerBlock, /position: fixed;/);
+  assert.match(hamburgerBlock, /top: calc\(60px \+ env\(safe-area-inset-top\)\);/);
+  assert.match(hamburgerBlock, /z-index: 50;/);
+  assert.match(quickMenu, /menuPairLinks/);
+  assert.match(quickMenu, /LIVE_URL/);
+  assert.match(quickMenu, /quick-menu-split-row/);
+  assert.match(pairConfig, /href: "\/schema"[\s\S]*href: LIVE_URL/);
+  assert.match(quickMenu, /quick-menu-brand-name/);
+  assert.match(quickMenu, /quick-menu-brand-slime/);
+  assert.match(quickMenu, /quick-menu-home-row/);
+  assert.match(quickMenuHomeRowBlock, /grid-template-columns: minmax\(0, 1fr\) auto;/);
+  assert.doesNotMatch(quickMenu, /text-xl font-bold text-\[#081634\]">\{locale === "en" \? "Menu" : "Menu"\}/);
+  assert.match(splitRowBlock, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+  assert.match(halfLinkBlock, /justify-content: flex-start;/);
+  assert.match(liveLinkBlock, /rgba\(242, 106, 27, 0\.28\)/);
+});
+
+test("ranking card and Slime Soccer banner stay in the public mobile bottom stack", () => {
+  const publicMobileStack = homePage.match(/<PublicPromoStack[\s\S]*className=\"public-mobile-bottom-stack\"[\s\S]*\/>/)?.[0] ?? "";
+  const promoStackComponent = homePage.match(/function PublicPromoStack[\s\S]*$/)?.[0] ?? "";
+  const bottomStackBlock = globalsCss.match(/\.public-mobile-bottom-stack \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(publicMobileStack, /className=\"public-mobile-bottom-stack\"/);
+  assert.match(promoStackComponent, /public-score-card/);
+  assert.match(promoStackComponent, /<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} fullWidth locale=\{locale\} \/>/);
+  assert.match(bottomStackBlock, /display: grid;/);
+  assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-mobile-bottom-stack \{[\s\S]*display: none;/);
+});
+
 test("main site language switcher matches the live dropdown pattern", () => {
   assert.match(languageSwitcher, /ChevronDown/);
   assert.match(languageSwitcher, /language-switcher-btn/);
@@ -185,7 +246,8 @@ test("main site language switcher matches the live dropdown pattern", () => {
   assert.match(languageSwitcher, /role="listbox"/);
   assert.match(languageSwitcher, /role="option"/);
   assert.doesNotMatch(languageSwitcher, /GB<\/span>|NL<\/span>/);
-  assert.match(globalsCss, /\.language-switcher-menu \{[\s\S]*position: absolute;[\s\S]*min-width: 168px;/);
+  assert.match(globalsCss, /\.language-switcher-menu \{[\s\S]*position: absolute;[\s\S]*z-index: 120;[\s\S]*min-width: 150px;/);
+  assert.match(globalsCss, /\.language-switcher-option \{[\s\S]*font-size: 0\.78rem;[\s\S]*font-weight: 600;/);
 });
 
 test("ranking desktop column headers distinguish players and poules", () => {
@@ -200,21 +262,38 @@ test("live subsite header respects the iOS status bar (safe-area-inset-top)", ()
   assert.match(headerBlock, /isolation: isolate;/);
 });
 
-test("live sticky header has visible menu tabs and a high-z-index flag language dropdown", () => {
+test("live sticky header has visible menu tabs, predict CTA, hamburger and high-z-index flag dropdown", () => {
   const menuBlock = globalsCss.match(/\.live-subsite-menu \{[\s\S]*?\}/)?.[0] ?? "";
   const linkBlock = globalsCss.match(/\.live-subsite-menu-link \{[\s\S]*?\}/)?.[0] ?? "";
+  const predictLinkBlock = globalsCss.match(/\.live-subsite-menu-link-predict \{[\s\S]*?\}/)?.[0] ?? "";
+  const hamburgerBlock = globalsCss.match(/\.live-menu-button \{[\s\S]*?\}/)?.[0] ?? "";
+  const backdropBlock = globalsCss.match(/\.live-menu-backdrop \{[\s\S]*?\}/)?.[0] ?? "";
   const langButtonBlock = globalsCss.match(/\.live-lang-btn \{[\s\S]*?\}/)?.[0] ?? "";
   const langMenuBlock = globalsCss.match(/\.live-lang-menu \{[\s\S]*?\}/)?.[0] ?? "";
   const mobileLangMenuBlock = globalsCss.match(/@media \(max-width: 759px\) \{[\s\S]*?\.live-lang-menu \{[\s\S]*?\}\n\}/)?.[0] ?? "";
   assert.match(liveNav, /live-subsite-menu/);
-  assert.match(liveNav, /liveHref: "\/schema\/knockout"/);
-  assert.match(liveNav, /appHref: "\/live\/schema\/knockout"/);
+  assert.match(liveNav, /WK voorspellen/);
+  assert.match(liveNav, /href: SITE_URL/);
+  assert.match(liveNav, /target=\{external \? "_blank" : undefined\}/);
+  assert.match(liveNav, /rel=\{external \? "noopener noreferrer" : undefined\}/);
+  assert.match(liveLayout, /className=\"live-pool-banner\"[\s\S]*target=\"_blank\"[\s\S]*rel=\"noopener noreferrer\"/);
+  assert.match(liveNav, /live-menu-button/);
+  assert.match(liveNav, /live-menu-panel/);
   assert.match(liveNav, /window\.location\.hostname\.startsWith\("live\."\)/);
+  const topNavConfig = liveNav.slice(liveNav.indexOf("const navCopy"), liveNav.indexOf("const drawerLinks"));
+  assert.doesNotMatch(topNavConfig, /Finales|Finals|schema\/knockout/);
   assert.match(liveNav, /href === "\/schema" \|\| href === "\/live\/schema"/);
   assert.match(menuBlock, /grid-column: 1 \/ -1;/);
   assert.match(menuBlock, /grid-row: 2;/);
   assert.match(menuBlock, /overflow-x: auto;/);
   assert.match(linkBlock, /font-size: 0\.86rem;/);
+  assert.match(predictLinkBlock, /width: 138px;/);
+  assert.match(predictLinkBlock, /margin-left: 8px;/);
+  assert.match(predictLinkBlock, /background: rgba\(255, 255, 255, 0\.12\);/);
+  assert.match(hamburgerBlock, /linear-gradient\(135deg, #ff9800, #f26a1b\)/);
+  assert.match(globalsCss, /\.live-menu-button \{\n    position: fixed;\n    top: calc\(112px \+ env\(safe-area-inset-top\)\);/);
+  assert.match(backdropBlock, /justify-content: flex-start;/);
+  assert.match(globalsCss, /@media \(min-width: 760px\) \{[\s\S]*\.live-menu-button \{[\s\S]*display: none;/);
   assert.match(langButtonBlock, /font: inherit;/);
   assert.match(langButtonBlock, /min-width: 43px;/);
   assert.match(langMenuBlock, /z-index: 1001;/);
@@ -237,18 +316,70 @@ test("schema hero has a red Follow live CTA and larger schedule section tabs", (
   assert.match(scheduleTabBlock, /font-weight: 950;/);
 });
 
-test("live mobile hero aligns Memphis with the share row and keeps the title block compact", () => {
+test("live mobile hero moves host pills up, splits the title and keeps the schema CTA half-width", () => {
+  const liveHeroContentBlock = globalsCss.match(/\.live-hero-band \.hero-content \{[\s\S]*?\}/)?.[0] ?? "";
   const liveHeroBlock = globalsCss.match(/\.live-hero-band \{[\s\S]*?\}/)?.[0] ?? "";
+  const liveHeroKickerBlock = globalsCss.match(/\.live-hero-band \.world-cup-kicker \{[\s\S]*?\}/)?.[0] ?? "";
   const mascotBlock = globalsCss.match(/\.live-hero-mascot \{[\s\S]*?\}/)?.[0] ?? "";
   const titleBlock = globalsCss.match(/\.live-hero-title \{[\s\S]*?\}/)?.[0] ?? "";
-  const subBlock = globalsCss.match(/\.live-hero-sub \{[\s\S]*?\}/)?.[0] ?? "";
-  assert.match(liveHeroBlock, /padding-bottom: 22px;/);
-  assert.match(mascotBlock, /bottom: 40px;/);
-  assert.match(mascotBlock, /height: 160px;/);
-  assert.match(titleBlock, /font-size: 1\.22rem;/);
-  assert.match(titleBlock, /line-height: 1\.08;/);
-  assert.match(subBlock, /font-size: 0\.84rem;/);
-  assert.match(subBlock, /line-height: 1\.38;/);
+  const titleSublineBlock = globalsCss.match(/\.live-hero-title-subline \{[\s\S]*?\}/)?.[0] ?? "";
+  const ctaBlock = globalsCss.match(/\.live-hero-cta \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(livePage, /heroTitle: "WK 2026 Live:"/);
+  assert.match(livePage, /heroTitleSub: "uitslagen, standen & schema"/);
+  assert.match(livePage, /live-hero-title-subline/);
+  assert.doesNotMatch(livePage, /live-hero-brandline/);
+  assert.doesNotMatch(livePage, /BrandWordmark onDark/);
+  assert.doesNotMatch(livePage, /Gratis, zonder gedoe|Free, no fuss/);
+  assert.match(liveHeroBlock, /padding: 14px 16px 10px;/);
+  assert.match(liveHeroContentBlock, /padding-top: 0;/);
+  assert.match(liveHeroKickerBlock, /margin-bottom: 12px;/);
+  assert.match(mascotBlock, /bottom: 16px;/);
+  assert.match(mascotBlock, /height: 132px;/);
+  assert.match(titleBlock, /margin-top: 0;/);
+  assert.match(titleBlock, /font-size: clamp\(1\.55rem, 7vw, 2\.05rem\);/);
+  assert.match(titleBlock, /font-weight: 950;/);
+  assert.match(titleSublineBlock, /font-size: clamp\(1\.06rem, 5vw, 1\.5rem\);/);
+  assert.match(ctaBlock, /flex: 0 1 min\(50%, 182px\);/);
+  assert.match(ctaBlock, /font-size: 0\.78rem;/);
+});
+
+test("schedule filters fit one row with a compact Dutch flag chip", () => {
+  const controlsBlock = globalsCss.match(/\.schedule-groups-controls \{[\s\S]*?\}/)?.[0] ?? "";
+  const pickerButtonBlock = globalsCss.match(/\.schedule-picker-button \{[\s\S]*?\}/)?.[0] ?? "";
+  const nlChipBlock = globalsCss.match(/\.schedule-nl-chip \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(scheduleExplorer, /className=\{nlOnly \? "schedule-orange-chip schedule-nl-chip schedule-orange-chip-active"/);
+  assert.match(scheduleExplorer, /aria-label=\{scheduleCopy\[locale\]\.netherlandsFilter\}/);
+  assert.match(scheduleExplorer, /<span aria-hidden="true">🇳🇱<\/span>/);
+  assert.match(controlsBlock, /flex-wrap: nowrap;/);
+  assert.match(controlsBlock, /overflow: visible;/);
+  assert.doesNotMatch(controlsBlock, /overflow-x: auto;/);
+  assert.match(pickerButtonBlock, /font-size: 0\.76rem;/);
+  assert.match(pickerButtonBlock, /white-space: nowrap;/);
+  assert.match(nlChipBlock, /min-width: 36px;/);
+  assert.doesNotMatch(scheduleExplorer, />\s*\{scheduleCopy\[locale\]\.netherlandsFilter\}\s*<\/button>/);
+});
+
+test("logged-in homepage uses the new prediction deadline copy and compact progress bars", () => {
+  assert.match(homePage, /dashboardTitle: "Voorspel je WK 2026"/);
+  assert.match(homePage, /Invullen tot de eerste WK-wedstrijd op/);
+  assert.match(homePage, /niet-gespeelde wedstrijden kun je wijzigen tot 14 juni 2026 om 21:00/);
+  assert.match(homePage, /behalve 3 bonusvragen/);
+  assert.match(homePage, /dashboard-progress-card mt-4 rounded-lg bg-\[#061b47\] p-3/);
+  assert.match(homePage, /dashboard-progress-bar mt-2 h-3/);
+  assert.match(homePage, /dashboard-extra-progress-bar mt-2 h-2/);
+  assert.match(homePage, /<p className="text-3xl font-bold">\{progress\}%<\/p>/);
+  assert.match(homePage, /<p className="text-2xl font-bold tabular-nums">\{extraProgress\}%<\/p>/);
+});
+
+test("prediction edits stay open through the Oranje grace window while pre-kickoff bonus fields still close at kickoff", () => {
+  assert.match(constants, /ENTRY_GRACE_DEADLINE_ISO = "2026-06-14T21:00:00\+02:00"/);
+  assert.match(actions, /const canEditPreKickoffBonus = now < ENTRY_DEADLINE;/);
+  assert.match(actions, /const canEditMain = now < ENTRY_GRACE_DEADLINE;/);
+  assert.match(actions, /if \(isMatchLocked\(match\.starts_at, now\)\) continue;/);
+  assert.match(predictionsPage, /const preKickoffBonusOpen = now < ENTRY_DEADLINE;/);
+  assert.match(predictionsPage, /const mainOpen = now < ENTRY_GRACE_DEADLINE;/);
+  assert.match(predictionsPage, /disabled=\{!preKickoffBonusOpen\}/);
+  assert.match(predictionsPage, /disabled=\{!mainOpen\}/);
 });
 
 test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
@@ -264,8 +395,9 @@ test("hero primary Gratis meedoen button is compact on mobile with a light empha
 
 test("mobile landing hero keeps the WK pills and title separated", () => {
   assert.match(homePage, /className=\"hero-home-title-block\"/);
-  assert.match(globalsCss, /\.hero-home \.world-cup-kicker \{\n    transform: translateY\(3px\);/);
-  assert.match(globalsCss, /\.hero-home-title-block \{\n    max-width: min\(100%, 305px\);\n    transform: translateY\(-4px\);/);
+  assert.match(homePage, /<h1 className=\"mt-3 /);
+  assert.match(globalsCss, /\.hero-home \.world-cup-kicker \{\n    margin-bottom: 12px;\n    transform: none;/);
+  assert.match(globalsCss, /\.hero-home-title-block \{\n    max-width: min\(100%, 305px\);\n    transform: none;/);
 });
 
 test("hero quick-link buttons stay inside the mobile hero card and align right on desktop", () => {
@@ -359,16 +491,16 @@ test("create-pool card uses Mexico green contrast styling", () => {
   assert.match(globalsCss, /\.create-pool-title,[\s\S]*\.create-pool-copy \{\n  color: #ffffff;/);
 });
 
-test("pool banner upload helper appears before file input and keeps the original image ratio visible", () => {
+test("pool banner upload helper appears before file input and describes the compact 5:1 UI slot", () => {
   const uploadBlock = poulesPage.match(/<form action=\{uploadPoolImage\}[\s\S]*?<PendingButton/)?.[0] ?? "";
-  assert.match(poulesPage, /uploadHint:[\s\S]*Aanbevolen: breed beeld, liefst 1600 × 900 px \(16:9\)\. We slaan uploads op als \.webp en tonen ze in originele verhouding, zonder crop of uitrekken\./);
-  assert.match(poulesPage, /uploadHint:[\s\S]*Recommended: a wide image, preferably 1600 × 900 px \(16:9\)\. Uploads are stored as \.webp and shown in their original ratio, without cropping or stretching\./);
+  assert.match(poulesPage, /uploadHint:[\s\S]*Aanbevolen: brede banner, liefst 1050 × 210 px \(5:1\)\. We slaan uploads op als \.webp en tonen de banner over de volle breedte van de poulekaart\./);
+  assert.match(poulesPage, /uploadHint:[\s\S]*Recommended: a wide banner, preferably 1050 × 210 px \(5:1\)\. Uploads are stored as \.webp and shown across the full width of the pool card\./);
   assert.match(uploadBlock, /\{copy\.uploadHint\}[\s\S]*type="file"/);
   assert.match(actions, /const POOL_BANNER_MAX_WIDTH = 1600/);
   assert.match(actions, /const POOL_BANNER_MAX_HEIGHT = 900/);
   assert.match(actions, /resize\(\{[\s\S]*width: POOL_BANNER_MAX_WIDTH,[\s\S]*height: POOL_BANNER_MAX_HEIGHT,[\s\S]*fit: "inside"/);
   assert.doesNotMatch(actions, /fit: "cover"/);
-  assert.doesNotMatch(uploadBlock, /1050 × 150|7:1|snijdt/);
+  assert.doesNotMatch(uploadBlock, /1600 × 900|16:9|originele verhouding|without cropping|7:1/);
 });
 
 test("create-pool placeholder uses a neutral local example instead of a personal family name", () => {
@@ -397,15 +529,43 @@ test("pool banner uploads use versioned storage paths so replacements show immed
   assert.match(actions, /\.update\(\{ banner_path: bannerPath, banner_updated_at:/);
 });
 
-test("pool card uses the uploaded banner as the full hero background instead of a separate color strip", () => {
+test("pool card uses the uploaded banner as a full-width compact 5:1 hero", () => {
   assert.match(poulesPage, /"--pool-accent": pool\.accentColor/);
   assert.match(poulesPage, /"--pool-banner-image": `url\("\$\{poolBannerUrl\(pool\.id, pool\.bannerPath, pool\.bannerUpdatedAt\)\}"\)`/);
   assert.match(poulesPage, /<div className="pool-card-hero text-white" style=\{poolHeroStyle\}>/);
   assert.doesNotMatch(poulesPage, /<PoolBanner/);
+  assert.match(globalsCss, /\.poules-page-shell \{\n  \/\* 1098 border-box - 24px desktop padding links\/rechts = ±1050px bannerbreedte\. \*\/\n  width: min\(1098px, 100%\);\n\}/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*border-top: 4px solid var\(--pool-accent/);
-  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*aspect-ratio: 16 \/ 9;/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*aspect-ratio: 5 \/ 1;/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*max-height: 210px;/);
   assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*var\(--pool-banner-image, none\)[\s\S]*var\(--pool-accent/);
-  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*background-size: cover, contain, auto;/);
+  assert.match(globalsCss, /\.pool-card-hero \{[\s\S]*background-size: cover, cover, auto;/);
+  assert.doesNotMatch(globalsCss, /\.pool-card-hero \{[\s\S]*aspect-ratio: 16 \/ 9;/);
+});
+
+test("pool ranking rows are compact and keep player metadata on one line", () => {
+  assert.match(poolMembers, /className="pool-member-world ml-1 inline-flex/);
+  assert.doesNotMatch(poolMembers, /pool-member-world mt-0\.5 flex/);
+  assert.match(globalsCss, /\.pool-members-section \{[\s\S]*padding: 12px;/);
+  assert.match(globalsCss, /\.pool-member-button \{[\s\S]*min-height: 40px;[\s\S]*padding: 6px 9px;/);
+  assert.match(globalsCss, /\.pool-member-rank \{[\s\S]*width: 24px;[\s\S]*height: 24px;/);
+  assert.match(globalsCss, /\.pool-member-main \{[\s\S]*display: block;[\s\S]*white-space: nowrap;/);
+  assert.match(globalsCss, /\.pool-member-world \{[\s\S]*vertical-align: baseline;/);
+});
+
+test("pool ranking enlarges a player's avatar when the row is opened", () => {
+  assert.match(poolMembers, /<Avatar name=\{member\.name\} avatarKey=\{member\.avatarKey\} size=\{open \? 34 : 22\} \/>/);
+  assert.doesNotMatch(poolMembers, /<Avatar name=\{member\.name\} avatarKey=\{member\.avatarKey\} size=\{22\} \/>/);
+  assert.match(globalsCss, /\.pool-member-button \.avatar-img \{[\s\S]*transition: width 160ms ease, height 160ms ease, transform 160ms ease;/);
+  assert.match(globalsCss, /\.pool-member-button\[aria-expanded="true"\] \.avatar-img \{[\s\S]*transform: scale\(1\.03\);/);
+});
+
+test("pool message board has a green title bar and light-green messages", () => {
+  assert.match(poulesPage, /<h3 className="pool-board-titlebar">\{copy\.board\}<\/h3>/);
+  assert.match(globalsCss, /\.pool-board-section \{[\s\S]*background: #f2fbf5;/);
+  assert.match(globalsCss, /\.pool-board-titlebar \{[\s\S]*background: linear-gradient\(90deg, #0e7a44, #15a35b\);[\s\S]*color: #ffffff;/);
+  assert.match(globalsCss, /\.pool-board-message \{[\s\S]*border-color: #bce7c7;[\s\S]*background: #f3fcf6;/);
+  assert.doesNotMatch(poulesPage, /<h3 className="text-lg font-bold text-\[#101a2b\]">\{copy\.board\}<\/h3>/);
 });
 
 test("mobile pool navigation uses a dropdown selector instead of wrapping all pool tabs", () => {
@@ -432,6 +592,13 @@ test("pool share text includes the poulecode and account-before-join guidance", 
   assert.match(poolQuickShare, /code: \(poolCode: string\) => `Pool code: \$\{poolCode\}`/);
   assert.match(joinPoolPage, /Nog geen account\? Maak eerst gratis een SlimeScore-account aan; daarna kom je terug bij deze poule\./);
   assert.doesNotMatch(joinPoolPage, /Geen wachtwoord\. Link klikken/);
+});
+
+test("profile shows the selected slime preview twice as large as the automatic preview", () => {
+  assert.match(avatarPicker, /const previewSize = selected \? 112 : 56/);
+  assert.match(avatarPicker, /width=\{previewSize\}/);
+  assert.match(avatarPicker, /height=\{previewSize\}/);
+  assert.match(avatarPicker, /style=\{\{ width: previewSize, height: previewSize \}\}/);
 });
 
 test("account page saves profile, avatar, password and language safely", () => {
@@ -474,8 +641,8 @@ test("shared SlimeScore links use the app icon instead of the wide banner", () =
   assert.doesNotMatch(layout, /og-slimescore-wk2026-v2\.png/);
 });
 
-test("SlimeScore brand wordmark uses the neutral WK slime and a richer pill lockup", () => {
-  assert.match(brandWordmark, /wk_slime_700_transparant\.webp/);
+test("SlimeScore brand wordmark uses the Memphis slime and a richer pill lockup", () => {
+  assert.match(brandWordmark, /memphis_wkbal_700_transparant\.webp/);
   assert.match(siteHeader, /wk_slime_700_transparant\.webp/);
   assert.doesNotMatch(`${brandWordmark}\n${siteHeader}`, /trump_slime_700_transparant\.webp/);
   assert.match(globalsCss, /\.brand-wordmark-text \{[\s\S]*border-radius: 999px;[\s\S]*linear-gradient\(135deg, #061a3c/);
@@ -498,10 +665,65 @@ test("logged-in dashboard only shows SlimeSoccer in the right column and no Slim
   assert.doesNotMatch(homePage, /<SlimeSoccerBanner \/>/);
 });
 
-test("dashboard copy matches the 72-group-result progress metric and password flow", () => {
+test("homepage promo/ranking stacks keep desktop ranking tight below the pool block and mobile stack low", () => {
+  const loggedInRightColumn = homePage.match(/<div className=\"grid gap-4\">\n\s*<UpcomingMatches[\s\S]*?<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/)?.[0] ?? "";
+  const publicRightColumn = homePage.match(/<aside className=\"public-login-stack[\s\S]*?<\/aside>/)?.[0] ?? "";
+  const publicDesktopStack = homePage.match(new RegExp('<PublicPromoStack[\\s\\S]*className=\\"public-desktop-bottom-stack\\"[\\s\\S]*\\/>\\n\\s*<\\/section>'))?.[0] ?? "";
+  const publicMobileStack = homePage.match(/<PublicPromoStack[\s\S]*className=\"public-mobile-bottom-stack\"[\s\S]*\/>/)?.[0] ?? "";
+  const liveBannerBlock = globalsCss.match(/\.live-follow-banner \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(homePage, /import \{ LiveFollowBanner \}/);
+  assert.match(liveFollowBanner, /LIVE_URL/);
+  assert.match(liveFollowBanner, /href=\{LIVE_URL\}/);
+  assert.match(liveFollowBanner, /target=\"_blank\"/);
+  assert.match(liveFollowBanner, /rel=\"noopener noreferrer\"/);
+  assert.match(liveFollowBanner, /Volg elke WK 2026-wedstrijd live — tussenstanden, opstellingen en statistieken, plus het volledige speelschema\./);
+  assert.doesNotMatch(liveFollowBanner, /Stand, uitslagen en speelschema zonder gedoe\./);
+  assert.match(liveFollowBanner, /blije_mascotte_met_wk_bal_FINAL_v5\.webp/);
+  assert.ok(slimeSoccerBanner.includes('externalTile = tile.href.startsWith("https://")'));
+  assert.match(slimeSoccerBanner, /target=\{externalTile \? "_blank" : undefined\}/);
+  assert.match(loggedInRightColumn, /<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/);
+  const promoStackComponent = homePage.match(/function PublicPromoStack[\s\S]*$/)?.[0] ?? "";
+  assert.match(publicDesktopStack, /className=\"public-desktop-bottom-stack\"/);
+  assert.match(publicMobileStack, /className=\"public-mobile-bottom-stack\"/);
+  assert.match(promoStackComponent, /public-score-card[\s\S]*<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} fullWidth locale=\{locale\} \/>/);
+  assert.match(globalsCss, /\.public-desktop-bottom-stack \{\n  display: none;/);
+  assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-desktop-bottom-stack \{[\s\S]*display: grid;[\s\S]*grid-template-columns: minmax\(0, 1fr\) minmax\(250px, 0\.78fr\);/);
+  assert.match(globalsCss, /\.public-desktop-bottom-stack \.slime-link-banners \{[\s\S]*grid-column: 1 \/ -1;/);
+  assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-mobile-bottom-stack \{[\s\S]*display: none;/);
+  assert.doesNotMatch(publicRightColumn, /<LiveFollowBanner locale=\{locale\} \/>/);
+  assert.match(liveBannerBlock, /url\("\/assets\/stadion-4to1\.webp"\)/);
+  assert.match(liveBannerBlock, /min-height: 112px;/);
+  assert.match(liveBannerBlock, /padding: 14px 112px 14px 14px;/);
+  assert.match(globalsCss, /\.live-follow-banner-text \{[\s\S]*font-weight: 520;/);
+  assert.match(globalsCss, /\.live-follow-banner img \{[\s\S]*width: 136px;[\s\S]*max-height: 132px;/);
+});
+
+test("dashboard copy matches the current prediction deadline and password flow", () => {
   assert.doesNotMatch(homePage, /Vul je wedstrijden en knock-outkeuzes in/);
-  assert.match(homePage, /De voortgang hieronder telt je 72 groepsuitslagen/);
+  assert.match(homePage, /Voorspel je WK 2026/);
+  assert.match(homePage, /Invullen tot de eerste WK-wedstrijd op/);
+  assert.match(homePage, /respijtperiode tot de eerste wedstrijd van Oranje/);
   assert.doesNotMatch(homePage, /geen wachtwoord/);
+});
+
+test("home dashboard warns when knockout picks or bonus questions are still open", () => {
+  assert.match(homePage, /KNOCKOUT_TARGETS/);
+  assert.match(homePage, /EXTRA_PROGRESS_TOTAL/);
+  assert.match(homePage, /bracket_predictions[\s\S]*select\("stage_key,team_codes"\)/);
+  assert.match(homePage, /special_predictions[\s\S]*team_most_goals_code,total_goals,total_red_cards,fastest_goal_minute,champion_code,oranje_stage,penalty_shootouts_ko,finalists/);
+  assert.match(homePage, /extraProgressTitle: "Knock-outs \+ bonus"/);
+  assert.match(homePage, /extraProgressOpen: \(knockout: number, bonus: number\)/);
+  assert.match(homePage, /extraProgress = Math\.round\(\(extraFilled \/ EXTRA_PROGRESS_TOTAL\) \* 100\)/);
+  assert.match(homePage, /extraRemaining > 0/);
+  assert.match(homePage, /remaining === 0 && extraRemaining === 0 \? <PredictionsComplete/);
+});
+
+test("empty prediction select placeholders are highlighted as pending choices", () => {
+  assert.match(predictionsPage, /className="field choice-select"/);
+  assert.match(predictionsPage, /name="team_most_goals_code"[\s\S]*<option value="">\{copy\.chooseCountry\}<\/option>/);
+  assert.match(predictionsPage, /name="champion_code"[\s\S]*<option value="">\{copy\.chooseChampion\}<\/option>/);
+  assert.match(predictionsPage, /name="oranje_stage"[\s\S]*<option value="">\{copy\.chooseOranje\}<\/option>/);
+  assert.match(globalsCss, /\.choice-select:has\(option\[value=""\]:checked\)/);
 });
 
 test("share panel keeps the Deel SlimeScore label above a single icon row on every breakpoint", () => {
@@ -524,9 +746,21 @@ test("prediction saves sync the global status bar progress without requiring rel
   assert.match(statusBar, /setMe\(\(current\)/);
 });
 
+test("prediction page keeps deadline and scoring explanation out of the form because details live in rules", () => {
+  assert.match(predictionsPage, /heroSubtitle: "Vul je voorspellingen in en sla op\."/);
+  assert.match(predictionsPage, /heroSubtitle: "Fill in your predictions and save\."/);
+  assert.match(predictionsPage, /groupOpen: ""/);
+  assert.doesNotMatch(predictionsPage, /Deadlines en puntentelling staan bij Regels/);
+  assert.doesNotMatch(predictionsPage, /Details and deadlines are in Rules/);
+  assert.doesNotMatch(predictionsPage, /T\/m 14 juni 21:00: niet-gestarte wedstrijden invullen en opslaan\./);
+  assert.doesNotMatch(predictionsPage, /Until 14 June 21:00: fill in unstarted matches and save\./);
+  assert.doesNotMatch(predictionsPage, /Vul snel in en schaaf bij t\/m donderdag 11 juni 21:00/);
+  assert.doesNotMatch(predictionsPage, /Na de groepsfase is er nog een kleine herziening/);
+  assert.doesNotMatch(predictionsPage, /Elke wedstrijd sluit 30 min vóór de aftrap; daarna kun je 'm niet meer wijzigen/);
+});
+
 test("knockout predictions flow from last 16 to later rounds without scroll boxes", () => {
   assert.match(predictionsPage, /<KnockoutPredictionPicker/);
-  assert.match(predictionsPage, /Typ je verwachte uitslag\. Elke wedstrijd sluit 30 min vóór de aftrap/);
   assert.match(knockoutPredictionPicker, /round16: 16/);
   assert.match(knockoutPredictionPicker, /quarterfinal: 8/);
   assert.match(knockoutPredictionPicker, /Kies precies 16 landen uit jouw berekende laatste 32\./);
@@ -556,12 +790,15 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(siteHeader, /site-header-link-emphasis/);
   assert.match(siteHeader, /site-header-mini-action/);
   assert.match(siteHeader, /Uitloggen/);
-  assert.match(quickMenu, /label: \"Voorspellen\"/);
+  assert.match(globalsCss, /\.site-header \{[\s\S]*position: sticky;[\s\S]*top: 0;[\s\S]*z-index: 90;/);
+  assert.match(quickMenu, /label: "Voorspellen"/);
   assert.doesNotMatch(quickMenu, /WK-poule invullen \/ wijzigen/);
   assert.match(quickMenu, /\[publicLinks\[0\], privateLinks\[0\], \.\.\.publicLinks\.slice\(1\), \.\.\.privateLinks\.slice\(1\)\]/);
   assert.match(quickMenu, /<form className=\"quick-menu-form\" action=\"\/logout\" method=\"post\">/);
   assert.match(quickMenu, /quick-menu-link-compact/);
   assert.match(quickMenu, /slime-soccer-icon\.webp/);
+  assert.match(quickMenu, /target=\{link\.external \? "_blank" : undefined\}/);
+  assert.match(quickMenu, /rel=\{link\.external \? "noopener noreferrer" : undefined\}/);
   assert.doesNotMatch(quickMenu, /slime-soccer-icon\.png/);
   assert.match(globalsCss, /\.quick-menu-logout \{/);
   assert.match(bottomNav, /return null;/);
@@ -638,7 +875,7 @@ test("English preference persists sitewide in browser storage and Supabase accou
   assert.match(localePreferenceSync, /reloadIfRenderedLocaleDiffers\(me\.preferredLocale\)/);
   assert.match(localePreferenceSync, /fetch\("\/api\/me"[\s\S]*fetch\("\/api\/locale"/);
   assert.match(layout, /<LocalePreferenceSync \/>/);
-  assert.match(apiMeRoute, /select\("nickname,team_name,preferred_locale"\)/);
+  assert.match(apiMeRoute, /select\("nickname,team_name,avatar_key,preferred_locale"\)/);
   assert.match(apiMeRoute, /preferredLocale: profile\?\.preferred_locale/);
   assert.match(accountPage, /name="preferred_locale"/);
   assert.match(accountPage, /Account language/);
@@ -676,7 +913,7 @@ test("English preference keeps schedule and shared navigation in English without
 test("English route translates all visible shared fields and labels", () => {
   assert.match(statusBar, /const locale = useActiveLocale\(pathname \|\| "\/"\)/);
   assert.match(statusBar, /locale === "en" \? `\$\{d\}d \$\{h\}h` : `\$\{d\}d \$\{h\}u`/);
-  assert.match(statusBar, /Time left to predict/);
+  assert.match(statusBar, /until the first match/);
   assert.match(statusBar, /Entries closed/);
   assert.match(statusBar, /Player/);
   assert.match(statusBar, /completed/);

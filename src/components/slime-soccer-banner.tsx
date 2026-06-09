@@ -31,11 +31,21 @@ export function SlimeSoccerBanner({ includeWk = false, includeVolley = true, ful
 
   return (
     <div className={fullWidth ? "slime-link-banners slime-link-banners-wide" : "slime-link-banners"}>
-      {tiles.map((tile) => (
-        <a key={tile.href} href={tile.href} className="game-banner-tile" aria-label={tile.alt}>
-          <img src={tile.img} alt={tile.alt} loading="lazy" />
-        </a>
-      ))}
+      {tiles.map((tile) => {
+        const externalTile = tile.href.startsWith("https://");
+        return (
+          <a
+            key={tile.href}
+            href={tile.href}
+            className="game-banner-tile"
+            aria-label={tile.alt}
+            target={externalTile ? "_blank" : undefined}
+            rel={externalTile ? "noopener noreferrer" : undefined}
+          >
+            <img src={tile.img} alt={tile.alt} loading="lazy" />
+          </a>
+        );
+      })}
     </div>
   );
 }

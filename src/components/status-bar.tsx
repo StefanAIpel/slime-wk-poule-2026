@@ -1,14 +1,15 @@
 "use client";
 
-import { ArrowRight, CalendarClock, ListChecks, Trophy } from "lucide-react";
+import { ArrowRight, CalendarClock, ListChecks } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Avatar } from "@/components/avatar";
 import { useActiveLocale } from "@/hooks/use-active-locale";
 import { ENTRY_DEADLINE_ISO } from "@/lib/constants";
 import { localizedHref, type Locale } from "@/lib/i18n";
 
-type Me = { loggedIn: boolean; nickname?: string | null; rank?: number | null; progress?: number };
+type Me = { loggedIn: boolean; nickname?: string | null; avatarKey?: string | null; rank?: number | null; progress?: number };
 
 const deadline = new Date(ENTRY_DEADLINE_ISO).getTime();
 
@@ -77,13 +78,13 @@ export function StatusBar() {
         <Link href={predictHref} className="status-chip status-chip-countdown">
           <CalendarClock aria-hidden="true" className="size-4" />
           {left ? (
-            locale === "en" ? <><strong>{left}</strong> Time left to predict</> : <>Nog <strong>{left}</strong> om in te vullen</>
+            locale === "en" ? <><strong>{left}</strong> until the first match</> : <>Nog <strong>{left}</strong> tot de eerste wedstrijd</>
           ) : locale === "en" ? "Entries closed" : "Invullen gesloten"}
         </Link>
         {me?.loggedIn ? (
           <span className="status-me">
-            <Link href={localizedHref("/account", locale)} className="status-chip" aria-label={locale === "en" ? "My account" : "Mijn account"}>
-              <Trophy aria-hidden="true" className="size-4" />
+            <Link href={localizedHref("/account", locale)} className="status-chip status-chip-account" aria-label={locale === "en" ? "My account" : "Mijn account"}>
+              <Avatar name={me.nickname ?? (locale === "en" ? "Player" : "Speler")} avatarKey={me.avatarKey} size={18} />
               {me.nickname ?? (locale === "en" ? "Player" : "Speler")}{typeof me.rank === "number" ? <> · #{me.rank}</> : null}
             </Link>
             <Link href={localizedHref("/voorspellingen", locale)} className="status-chip status-chip-accent status-chip-progress">

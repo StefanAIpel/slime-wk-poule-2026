@@ -24,7 +24,7 @@ test("top header shows the brand with a LIVE sticker and a NL/EN switch", () => 
   assert.match(liveNav, /BrandWordmark/);
   assert.match(liveNav, /LiveLanguageSwitcher/);
   assert.match(liveNav, /live-subsite-menu/);
-  assert.match(liveNav, /\/live\/schema\/knockout/);
+  assert.match(liveNav, /\/schema\/knockout/);
   assert.match(liveNav, /live-badge/);
   assert.match(liveLayout, /SlimeSoccerBanner/);
   assert.match(liveLayout, /includeWk/);
@@ -42,14 +42,25 @@ test("live data is WC-only, server-side, mapped to our flags and degrades withou
   assert.match(liveLib, /fixtures\/events/);
 });
 
-test("live page has a commercial hero with a Speelschema button, blue/green headers and flags", () => {
+test("live page has a commercial hero with a Speelschema button, red/green/blue headers and flags", () => {
   assert.match(livePage, /splitFixtures/);
   assert.match(livePage, /LiveAutoRefresh/);
   assert.match(livePage, /heroTitle/);
   assert.match(livePage, /\/live\/schema/);
   assert.match(livePage, /TeamFlag/);
   assert.match(livePage, /live-section-header/);
+  assert.match(livePage, /tone="live"/);
+  assert.match(livePage, /tone="latest"/);
+  assert.match(livePage, /tone="upcoming"/);
   assert.doesNotMatch(livePage, /standing-card-header/);
+});
+
+test("live page links compact result blocks to more matches and full upcoming mode", () => {
+  assert.match(livePage, /view\?: string/);
+  assert.match(livePage, /showAllUpcoming/);
+  assert.match(livePage, /allUpcoming/);
+  assert.match(livePage, /\/live\?view=upcoming#alle-komende/);
+  assert.match(livePage, /href: "\/live\/schema"/);
 });
 
 test("live schema mirrors the main ScheduleExplorer and offers a LIVE button", () => {

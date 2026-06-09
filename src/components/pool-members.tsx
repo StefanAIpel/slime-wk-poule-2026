@@ -97,7 +97,7 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
                 <span className="pool-member-rank grid size-7 flex-none place-items-center rounded-full bg-[#20508c] text-xs font-bold text-white" aria-label={`${copy.poolRankLabel} #${member.rank}`}>
                   {member.rank}
                 </span>
-                <Avatar name={member.name} avatarKey={member.avatarKey} size={26} />
+                <Avatar name={member.name} avatarKey={member.avatarKey} size={open ? 34 : 22} />
                 <span className="pool-member-main min-w-0 flex-1 truncate">
                   <span className="pool-member-name font-bold text-[#081634]">{member.name}</span>
                   {member.isOwner ? (
@@ -106,7 +106,7 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
                   {member.isYou ? <span className="pool-member-you ml-1 text-xs font-bold text-[#16863a]">{copy.you}</span> : null}
                   {member.teamName ? <span className="pool-member-team font-medium text-[#475670]"> · {member.teamName}</span> : null}
                   {member.worldRank ? (
-                    <span className="pool-member-world mt-0.5 flex items-center gap-1 text-xs font-semibold text-[#7a8aa3]">
+                    <span className="pool-member-world ml-1 inline-flex items-center gap-1 text-xs font-semibold text-[#7a8aa3]">
                       <Globe aria-hidden="true" className="size-3" />
                       {copy.worldRank} #{member.worldRank}
                     </span>

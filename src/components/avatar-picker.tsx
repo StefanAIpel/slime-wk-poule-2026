@@ -58,6 +58,7 @@ function avatarLabel(option: { key: string; label: string }, locale: Locale) {
 export function AvatarPicker({ initialKey, name, locale = "nl" }: { initialKey?: string | null; name: string; locale?: Locale }) {
   const [selected, setSelected] = useState<string>(isAvatarKey(initialKey) ? (initialKey as string) : "");
   const copy = avatarPickerCopy[locale];
+  const previewSize = selected ? 112 : 56;
 
   return (
     <div className="grid gap-3">
@@ -68,9 +69,9 @@ export function AvatarPicker({ initialKey, name, locale = "nl" }: { initialKey?:
           src={selected ? avatarSrcForKey(selected) : resolveAvatarSrc(name)}
           alt=""
           aria-hidden="true"
-          width={56}
-          height={56}
-          style={{ width: 56, height: 56 }}
+          width={previewSize}
+          height={previewSize}
+          style={{ width: previewSize, height: previewSize }}
         />
         <p className="text-sm font-medium text-[#48617f]">
           {selected ? copy.selected : copy.automatic(name)}

@@ -102,6 +102,8 @@ const FRIENDLY_LINGER_MS = 96 * 60 * 60 * 1000;
  * eerste WK-wedstrijd ligt én hoogstens FRIENDLY_LINGER_MS geleden was. Daarmee
  * blijven oude seizoensuitslagen en latere interlands buiten de WK-lijst.
  */
+
+
 export async function getWcFixtures(): Promise<LiveFixture[] | null> {
   const friendlyTeam = Number(process.env.LIVE_FRIENDLY_TODAY ?? "");
   const wantFriendly = Number.isFinite(friendlyTeam) && friendlyTeam > 0;

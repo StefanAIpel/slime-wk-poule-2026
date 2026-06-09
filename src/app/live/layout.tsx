@@ -69,7 +69,7 @@ export default async function LiveLayout({ children }: { children: React.ReactNo
       <main className="page-shell live-subsite-main">{children}</main>
       <footer className="live-subsite-footer">
         <div className="live-footer-grid">
-          <a href={SITE_URL} className="live-pool-banner" aria-label={f.poolTitle}>
+          <a href={SITE_URL} className="live-pool-banner" aria-label={f.poolTitle} target="_blank" rel="noopener noreferrer">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/slimes/slimescore-wk2026-friend-poule-banner.webp" alt={f.poolTitle} loading="lazy" />
           </a>
