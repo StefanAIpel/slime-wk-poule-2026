@@ -78,7 +78,7 @@ export function StatusBar() {
         <Link href={predictHref} className="status-chip status-chip-countdown">
           <CalendarClock aria-hidden="true" className="size-4" />
           {left ? (
-            locale === "en" ? <><strong>{left}</strong> until the first match</> : <>Nog <strong>{left}</strong> tot de eerste wedstrijd</>
+            locale === "en" ? <><strong>{left}</strong> until WC</> : <>Nog <strong>{left}</strong> tot WK</>
           ) : locale === "en" ? "Entries closed" : "Invullen gesloten"}
         </Link>
         {me?.loggedIn ? (

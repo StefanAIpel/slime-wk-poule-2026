@@ -173,7 +173,7 @@ test("entry deadline is extended until the first World Cup match", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00\+02:00"/);
   assert.match(constants, /ENTRY_GRACE_DEADLINE_ISO = "2026-06-14T21:00:00\+02:00"/);
   assert.match(homePage, /Deadline: 11 juni 21:00\. Respijt t\/m zondag 14 juni voor niet-gespeelde wedstrijden/);
-  assert.match(statusBar, /tot de eerste wedstrijd/);
+  assert.match(statusBar, /tot WK/);
   assert.match(rulesPage, /Respijtperiode: niet-gespeelde groepswedstrijden/);
   assert.match(rulesPage, /ENTRY_GRACE_DEADLINE_ISO/);
   assert.match(rulesPage, /zondag 14 juni 21:00/);
@@ -913,7 +913,7 @@ test("English preference keeps schedule and shared navigation in English without
 test("English route translates all visible shared fields and labels", () => {
   assert.match(statusBar, /const locale = useActiveLocale\(pathname \|\| "\/"\)/);
   assert.match(statusBar, /locale === "en" \? `\$\{d\}d \$\{h\}h` : `\$\{d\}d \$\{h\}u`/);
-  assert.match(statusBar, /until the first match/);
+  assert.match(statusBar, /until WC/);
   assert.match(statusBar, /Entries closed/);
   assert.match(statusBar, /Player/);
   assert.match(statusBar, /completed/);
@@ -1057,6 +1057,7 @@ test("schema copy is public-facing and group/date are chosen via pickers", () =>
   assert.match(scheduleExplorer, /schedule-group-grid/);
   assert.match(scheduleExplorer, /groupFilter/);
   assert.match(scheduleExplorer, /dateFilter/);
+  assert.match(globalsCss, /\.group-phase-card \.standing-card-header \{[\s\S]*linear-gradient\(100deg, #0b62d9 0%, #0a8f47 48%, #ffb000 74%, #e1262f 100%\)/);
 });
 
 test("Nederland - Oranje filter supports the app seed code NED as well as external NLD", () => {
