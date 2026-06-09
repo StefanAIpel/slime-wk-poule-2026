@@ -10,6 +10,7 @@ const finishAuth = await readFile(new URL("../src/lib/supabase/finish-auth.ts", 
 const callbackRoute = await readFile(new URL("../src/app/auth/callback/route.ts", import.meta.url), "utf8");
 const passwordRoute = await readFile(new URL("../src/app/auth/password/route.ts", import.meta.url), "utf8").catch(() => "");
 const signupProfile = await readFile(new URL("../src/lib/supabase/signup-profile.ts", import.meta.url), "utf8");
+const passwordResetForm = await readFile(new URL("../src/components/password-reset-form.tsx", import.meta.url), "utf8").catch(() => "");
 const authEmailTemplate = await readFile(new URL("../supabase/templates/slimescore_auth.html", import.meta.url), "utf8");
 const authRecoveryTemplate = await readFile(new URL("../supabase/templates/slimescore_recovery.html", import.meta.url), "utf8");
 
@@ -136,6 +137,10 @@ test("existing players can reset their password with a copyable email code inste
   assert.match(loginForm, /Je hebt net al een resetmail aangevraagd\. Gebruik de code uit die mail hieronder/);
   assert.match(authRecoveryTemplate, /{{ \.Token }}/);
   assert.match(authRecoveryTemplate, /Code uit deze resetmail/);
+  assert.match(authRecoveryTemplate, /Kopieerbare code/);
+  assert.match(authRecoveryTemplate, /user-select:\s*all/);
+  assert.match(authRecoveryTemplate, /letter-spacing:\s*0/);
+  assert.match(authRecoveryTemplate, /Tik of druk lang op deze code/);
   assert.match(authRecoveryTemplate, /niet de vaste inlogcode die een kind van de beheerder krijgt/);
   assert.match(authRecoveryTemplate, /Neem contact op met de poulebeheerder/);
   assert.doesNotMatch(authRecoveryTemplate, /{{ \.ConfirmationURL }}/);
@@ -178,6 +183,14 @@ test("confirmation and recovery screens keep provider-neutral spam folder hints"
   assert.doesNotMatch(loginForm, /Zoho|zohomail|Notification/);
   assert.doesNotMatch(authEmailTemplate, /Notification/);
   assert.doesNotMatch(authRecoveryTemplate, /Notification/);
+});
+
+test("password reset forms leave the reset screen immediately after saving a new password", () => {
+  assert.match(passwordResetForm, /supabase\.auth\.updateUser\(\{ password \}\)/);
+  assert.match(passwordResetForm, /window\.location\.replace\(copy\.redirect/);
+  assert.doesNotMatch(passwordResetForm, /window\.setTimeout\(\(\) => \{[\s\S]*window\.location\.href = copy\.redirect/);
+  assert.match(loginForm, /supabase\.auth\.updateUser\(\{ password: resetNewPassword \}\)/);
+  assert.match(loginForm, /window\.location\.replace\(target\)/);
 });
 
 test("recovery links remain accepted by the auth callback fallback", () => {

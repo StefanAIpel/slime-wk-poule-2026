@@ -80,9 +80,7 @@ export function PasswordResetForm({ locale = "nl" }: { locale?: Locale }) {
 
     setStatus("success");
     setMessage(copy.saved);
-    window.setTimeout(() => {
-      window.location.href = copy.redirect;
-    }, 900);
+    window.location.replace(copy.redirect);
   }
 
   return (
