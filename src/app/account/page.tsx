@@ -9,7 +9,6 @@ import { PageHero } from "@/components/page-hero";
 import { PasswordChangeForm } from "@/components/password-change-form";
 import { APP_VERSION, CONTACT_EMAIL } from "@/lib/constants";
 import { formatAmsterdam } from "@/lib/format";
-import { resolveAvatarSrc } from "@/lib/avatars";
 import { isSupportedLocale, localizedHref, type Locale } from "@/lib/i18n";
 import { TEAM_NAME_MAX_LENGTH, TEAM_NAME_MIN_LENGTH } from "@/lib/limits";
 import { getServerLocale } from "@/lib/server-locale";
@@ -166,9 +165,9 @@ export default async function AccountPage({
         <PageHero
           title={copy.title}
           subtitle={copy.subtitle}
-          slime={resolveAvatarSrc(nickname || copy.player, profile?.avatar_key)}
+          slime="/avatars/messi-slime.webp"
           className="hero-title-mascot-large"
-          mascotClassName="hero-mascot-account-avatar"
+          mascotClassName="hero-mascot-account-messi"
         />
       </header>
 

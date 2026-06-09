@@ -203,9 +203,10 @@ test("mobile tab page heroes use larger bottom-right mascots behind the title co
   assert.match(rulesPage, /className="hero-title-mascot-large"/);
   assert.match(rankingPage, /className="hero-title-mascot-large"/);
   assert.match(accountPage, /className="hero-title-mascot-large"/);
-  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large \.hero-content \{\n    max-width: 86%;\n  \}/);
-  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large\.hero-band-visual \.hero-mascot \{[\s\S]*right: -12px;[\s\S]*bottom: -10px;[\s\S]*max-height: 88%;[\s\S]*max-width: 54%;/);
-  assert.match(globalsCss, /\.hero-band-page\.hero-band-visual \.hero-mascot-account-avatar \{[\s\S]*width: 106px;[\s\S]*height: 106px;/);
+  assert.match(globalsCss, /\.hero-band-page \.hero-content \{\n    max-width: 86%;\n  \}/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large\.hero-band-visual \.hero-mascot \{[\s\S]*right: -12px;[\s\S]*bottom: -10px;[\s\S]*max-height: 104%;[\s\S]*max-width: 54%;/);
+  assert.match(accountPage, /slime="\/avatars\/messi-slime\.webp"/);
+  assert.match(globalsCss, /\.hero-mascot-account-messi \{[\s\S]*max-height: 108%;[\s\S]*max-width: 56%;/);
   assert.match(globalsCss, /\.hero-title-mascot-large \.hero-content \{[\s\S]*text-shadow: 0 2px 10px/);
 });
 
@@ -770,7 +771,9 @@ test("prediction saves sync the global status bar progress without requiring rel
 test("prediction page keeps deadline and scoring explanation out of the form because details live in rules", () => {
   assert.match(predictionsPage, /heroSubtitle: "Vul je voorspellingen in en sla op\."/);
   assert.match(predictionsPage, /heroSubtitle: "Fill in your predictions and save\."/);
-  assert.match(predictionsPage, /Vraag je AI-agent om een eerste invulling/);
+  assert.match(predictionsPage, /Veel wedstrijden, maar in 10 minuten kun je klaar zijn voor het hele WK/);
+  assert.match(predictionsPage, /hero-inline-note/);
+  assert.doesNotMatch(predictionsPage, /prediction-helper-panel/);
   assert.match(predictionsPage, /groupOpen: "Geen perfecte glazen bol nodig: vul eerst je gevoel in, verfijn later\."/);
   assert.match(predictionsPage, /prediction-title-banner/);
   assert.doesNotMatch(predictionsPage, /Deadlines en puntentelling staan bij Regels/);
