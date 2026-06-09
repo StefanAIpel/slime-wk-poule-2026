@@ -5,42 +5,19 @@ import { adminRecalculate, adminSetResult, createKidAccount } from "@/app/action
 import { Brand } from "@/components/brand";
 import { PendingButton } from "@/components/pending-button";
 import { TeamFlag } from "@/components/team-flag";
-import { isAdminEmail } from "@/lib/admin";
+import { getAdminDashboard } from "@/lib/admin-data";
+import { getAdminUser } from "@/lib/admin-guard";
 import { formatAmsterdam } from "@/lib/format";
 import { NICKNAME_MAX_LENGTH } from "@/lib/limits";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-type MatchRow = {
-  id: number;
-  starts_at: string | null;
-  group_letter: string | null;
-  status: string | null;
-  home_score: number | null;
-  away_score: number | null;
-  home_code: string | null;
-  away_code: string | null;
-  home_label: string | null;
-  away_label: string | null;
-  home: { name_nl: string | null } | null;
-  away: { name_nl: string | null } | null;
-};
-
-type AuditRow = { id: number; actor_email: string | null; action: string; detail: unknown; created_at: string };
-
-type KidRow = { user_id: string; code: string; nickname: string | null; created_at: string };
-
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ ok?: string; fout?: string; kind?: string }> }) {
   const params = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, isAdmin } = await getAdminUser();
 
   if (!user) redirect("/");
-  if (!isAdminEmail(user.email)) {
+  if (!isAdmin) {
     return (
       <main className="page-shell grid min-h-[60vh] place-items-center">
         <div className="panel grid max-w-md gap-2 p-6 text-center">
@@ -53,33 +30,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     );
   }
 
-  const admin = createAdminClient();
-  const [
-    { count: userCount },
-    { count: predictionCount },
-    { count: poolCount },
-    { data: lastScore },
-    { data: matches },
-    { data: audit },
-    { data: kids },
-  ] = await Promise.all([
-    admin.from("profiles").select("id", { count: "exact", head: true }),
-    admin.from("predictions").select("user_id", { count: "exact", head: true }),
-    admin.from("pools").select("id", { count: "exact", head: true }),
-    admin.from("scores").select("updated_at").order("updated_at", { ascending: false }).limit(1).maybeSingle(),
-    admin
-      .from("matches")
-      .select("id,starts_at,group_letter,status,home_score,away_score,home_code,away_code,home_label,away_label,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)")
-      .order("starts_at")
-      .limit(120),
-    admin.from("admin_audit_log").select("id,actor_email,action,detail,created_at").order("created_at", { ascending: false }).limit(15),
-    admin.from("kid_accounts").select("user_id,code,nickname,created_at").order("created_at", { ascending: false }),
-  ]);
-
-  const matchRows = (matches ?? []) as unknown as MatchRow[];
-  const auditRows = (audit ?? []) as unknown as AuditRow[];
-  const kidRows = (kids ?? []) as unknown as KidRow[];
-  const lastUpdate = (lastScore as { updated_at: string | null } | null)?.updated_at ?? null;
+  const { userCount, predictionCount, poolCount, lastUpdate, matchRows, auditRows, kidRows, profileRows, poolRows } =
+    await getAdminDashboard();
   const finishedCount = matchRows.filter((m) => m.status === "finished").length;
 
   return (
@@ -99,9 +51,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       ) : null}
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat icon={<Users className="size-5" />} label="Spelers" value={userCount ?? 0} />
-        <Stat icon={<ClipboardList className="size-5" />} label="Voorspellingen" value={predictionCount ?? 0} />
-        <Stat icon={<Users className="size-5" />} label="WK-poules" value={poolCount ?? 0} />
+        <Stat icon={<Users className="size-5" />} label="Spelers" value={userCount} />
+        <Stat icon={<ClipboardList className="size-5" />} label="Voorspellingen" value={predictionCount} />
+        <Stat icon={<Users className="size-5" />} label="WK-poules" value={poolCount} />
         <Stat icon={<Activity className="size-5" />} label="Afgerond" value={`${finishedCount}/${matchRows.length}`} />
       </section>
 
@@ -110,12 +62,50 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           Laatste herberekening: <span className="font-bold text-[#081634]">{lastUpdate ? formatAmsterdam(lastUpdate) : "nog niet"}</span>
         </div>
         <form action={adminRecalculate}>
-          <PendingButton className="button-secondary" pendingText="Bezig…">
+          <PendingButton
+            className="button-secondary"
+            confirmText="Alle ranglijsten opnieuw doorrekenen? Dit raakt alle spelers en kan even duren."
+          >
             <RefreshCw aria-hidden="true" className="size-4" />
             Herbereken nu
           </PendingButton>
         </form>
       </div>
+
+      <section className="mt-4 grid gap-3 lg:grid-cols-2">
+        <div className="panel p-4">
+          <h2 className="text-lg font-bold text-[#081634]">Nieuwste spelers (20)</h2>
+          <div className="mt-2 grid gap-1 text-sm">
+            {profileRows.length ? (
+              profileRows.map((p) => (
+                <div key={p.id} className="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-100 py-1 last:border-b-0">
+                  <span className="font-bold text-[#081634]">{p.nickname ?? "(geen naam)"}</span>
+                  <span className="text-[#48617f]">{p.team_name ?? "—"}</span>
+                  <span className="text-xs text-[#7a8aa3]">{formatAmsterdam(p.created_at)}</span>
+                </div>
+              ))
+            ) : (
+              <p className="font-medium text-[#48617f]">Nog geen spelers.</p>
+            )}
+          </div>
+        </div>
+        <div className="panel p-4">
+          <h2 className="text-lg font-bold text-[#081634]">Nieuwste WK-poules (20)</h2>
+          <div className="mt-2 grid gap-1 text-sm">
+            {poolRows.length ? (
+              poolRows.map((p) => (
+                <div key={p.id} className="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-100 py-1 last:border-b-0">
+                  <span className="font-bold text-[#081634]">{p.name}</span>
+                  <span className="text-[#48617f]">{p.memberCount} leden</span>
+                  <span className="text-xs text-[#7a8aa3]">{formatAmsterdam(p.created_at)}</span>
+                </div>
+              ))
+            ) : (
+              <p className="font-medium text-[#48617f]">Nog geen poules.</p>
+            )}
+          </div>
+        </div>
+      </section>
 
       <section className="mt-4 panel p-4">
         <div className="flex items-center gap-2">

@@ -4,7 +4,7 @@ import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { isAdminEmail } from "@/lib/admin";
+import { requireAdmin } from "@/lib/admin-guard";
 import { isAvatarKey } from "@/lib/avatars";
 import { ENTRY_DEADLINE, ENTRY_GRACE_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START, isMatchLocked } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
@@ -218,8 +218,7 @@ export async function deleteAccount(formData: FormData) {
 }
 
 export async function adminSetResult(formData: FormData) {
-  const { user } = await requireUser();
-  if (!isAdminEmail(user.email)) redirect("/");
+  const { user } = await requireAdmin();
 
   const admin = createAdminClient();
   const matchId = Number.parseInt(String(formData.get("match_id") ?? ""), 10);
@@ -262,8 +261,7 @@ function kidCode() {
 }
 
 export async function createKidAccount(formData: FormData) {
-  const { user } = await requireUser();
-  if (!isAdminEmail(user.email)) redirect("/");
+  const { user } = await requireAdmin();
 
   const admin = createAdminClient();
   const nickname = cleanText(formData.get("nickname"), NICKNAME_MAX_LENGTH);
@@ -305,8 +303,7 @@ export async function createKidAccount(formData: FormData) {
 }
 
 export async function adminRecalculate() {
-  const { user } = await requireUser();
-  if (!isAdminEmail(user.email)) redirect("/");
+  const { user } = await requireAdmin();
 
   const admin = createAdminClient();
   const recalc = await recalculateAllScores(admin);

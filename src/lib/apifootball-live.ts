@@ -90,14 +90,19 @@ function normalize(raw: RawFixture, teamMap: Map<number, TeamRef>): LiveFixture 
   };
 }
 
+// Gespeelde oefenpot blijft minstens 48u zichtbaar; ruim genomen (96u) zodat een
+// oefenpot van een paar dagen vóór de WK-start tot de aftrap blijft hangen.
+const FRIENDLY_LINGER_MS = 96 * 60 * 60 * 1000;
+
 /**
  * Alle WK-fixtures in één gecachete call; daaruit splitsen we live/recent/aankomend.
- * Optioneel kan via env LIVE_FRIENDLY_TODAY (een team external_id) de oefeninterland
- * van dat team worden bijgemengd — handig om de live-weergave te proefdraaien. De
- * oefenpot blijft staan tot het WK begint, en daarna nog minstens 48 uur na de aftrap
- * (zodat een gespeelde wedstrijd netjes onder "Laatste uitslagen" blijft hangen).
+ * Optioneel kan via env LIVE_FRIENDLY_TODAY (een team external_id) een oefeninterland
+ * van dat team worden bijgemengd — handig om de live-weergave te proefdraaien.
+ * Venster: alleen niet-WK-fixtures die live zijn, of waarvan de aftrap vóór de
+ * eerste WK-wedstrijd ligt én hoogstens FRIENDLY_LINGER_MS geleden was. Daarmee
+ * blijven oude seizoensuitslagen en latere interlands buiten de WK-lijst.
  */
-const FRIENDLY_LINGER_MS = 48 * 60 * 60 * 1000;
+
 
 export async function getWcFixtures(): Promise<LiveFixture[] | null> {
   const friendlyTeam = Number(process.env.LIVE_FRIENDLY_TODAY ?? "");
@@ -113,18 +118,20 @@ export async function getWcFixtures(): Promise<LiveFixture[] | null> {
   ]);
   if (!raw) return null;
   const seen = new Set(raw.map((item) => item.fixture.id));
-  const nowMs = Date.now();
-  // Vroegste WK-aftrap: vóór de start van het WK laten we de oefenpot altijd staan.
-  const firstWcKickoffMs = raw.reduce((min, item) => Math.min(min, new Date(item.fixture.date).getTime()), Number.POSITIVE_INFINITY);
-  const extra = (extraRaw ?? [])
-    .filter((item) => {
-      if (item.league.id === LEAGUE || seen.has(item.fixture.id)) return false;
-      if (LIVE_STATUSES.has(item.fixture.status.short)) return true;
-      const kickoffMs = new Date(item.fixture.date).getTime();
-      return nowMs < firstWcKickoffMs || nowMs <= kickoffMs + FRIENDLY_LINGER_MS;
-    })
-    .map((item) => normalize(item, teamMap));
-  if (wantFriendly) {
+  let extra: LiveFixture[] = [];
+  // Zonder WK-fixtures (transient lege respons) geen referentiepunt: dan ook geen
+  // oefenpot bijmengen, anders valt het venster-filter stilletjes weg.
+  if (wantFriendly && raw.length) {
+    const nowMs = Date.now();
+    const firstWcKickoffMs = raw.reduce((min, item) => Math.min(min, new Date(item.fixture.date).getTime()), Number.POSITIVE_INFINITY);
+    extra = (extraRaw ?? [])
+      .filter((item) => {
+        if (item.league.id === LEAGUE || seen.has(item.fixture.id)) return false;
+        if (LIVE_STATUSES.has(item.fixture.status.short)) return true;
+        const kickoffMs = new Date(item.fixture.date).getTime();
+        return kickoffMs < firstWcKickoffMs && kickoffMs + FRIENDLY_LINGER_MS >= nowMs;
+      })
+      .map((item) => normalize(item, teamMap));
     console.warn(`[live-friendly] team=${friendlyTeam} season=${SEASON} raw=${extraRaw === null ? "null" : extraRaw.length} kept=${extra.length}`);
   }
   return [...raw.map((item) => normalize(item, teamMap)), ...extra];

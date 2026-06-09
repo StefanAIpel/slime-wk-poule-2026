@@ -1,0 +1,79 @@
+import "server-only";
+
+import { requireAdmin } from "@/lib/admin-guard";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+// Leeshelpers voor het admin-dashboard. getAdminDashboard() dwingt zelf de
+// admin-guard af (defense in depth): dit bestand hanteert de service-role en
+// levert o.a. kid-logincodes, dus een vergeten paginaguard mag nooit genoeg zijn.
+
+type MatchRow = {
+  id: number;
+  starts_at: string | null;
+  group_letter: string | null;
+  status: string | null;
+  home_score: number | null;
+  away_score: number | null;
+  home_code: string | null;
+  away_code: string | null;
+  home_label: string | null;
+  away_label: string | null;
+  home: { name_nl: string | null } | null;
+  away: { name_nl: string | null } | null;
+};
+
+type AuditRow = { id: number; actor_email: string | null; action: string; detail: unknown; created_at: string };
+type KidRow = { user_id: string; code: string; nickname: string | null; created_at: string };
+type ProfileRow = { id: string; nickname: string | null; team_name: string | null; created_at: string };
+type PoolRow = { id: string; name: string; created_at: string; pool_members: { count: number }[] };
+
+export async function getAdminDashboard() {
+  await requireAdmin();
+  const admin = createAdminClient();
+  const [
+    { count: userCount },
+    { count: predictionCount },
+    { count: poolCount },
+    { data: lastScore },
+    { data: matches },
+    { data: audit },
+    { data: kids },
+    { data: recentProfiles },
+    { data: recentPools },
+  ] = await Promise.all([
+    admin.from("profiles").select("id", { count: "exact", head: true }),
+    admin.from("predictions").select("user_id", { count: "exact", head: true }),
+    admin.from("pools").select("id", { count: "exact", head: true }),
+    admin.from("scores").select("updated_at").order("updated_at", { ascending: false }).limit(1).maybeSingle(),
+    admin
+      .from("matches")
+      .select("id,starts_at,group_letter,status,home_score,away_score,home_code,away_code,home_label,away_label,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)")
+      .order("starts_at")
+      .limit(120),
+    admin.from("admin_audit_log").select("id,actor_email,action,detail,created_at").order("created_at", { ascending: false }).limit(15),
+    admin.from("kid_accounts").select("user_id,code,nickname,created_at").order("created_at", { ascending: false }),
+    admin.from("profiles").select("id,nickname,team_name,created_at").order("created_at", { ascending: false }).limit(20),
+    // Ledenaantal als server-side aggregate (geteld in Postgres), niet als
+    // full-table-fetch: die zou stil afkappen op de PostgREST max-rows-cap.
+    admin.from("pools").select("id,name,created_at,pool_members(count)").order("created_at", { ascending: false }).limit(20),
+  ]);
+
+  const poolRows = ((recentPools ?? []) as unknown as PoolRow[]).map((pool) => ({
+    id: pool.id,
+    name: pool.name,
+    created_at: pool.created_at,
+    memberCount: pool.pool_members?.[0]?.count ?? 0,
+  }));
+
+  return {
+    userCount: userCount ?? 0,
+    predictionCount: predictionCount ?? 0,
+    poolCount: poolCount ?? 0,
+    lastUpdate: (lastScore as { updated_at: string | null } | null)?.updated_at ?? null,
+    matchRows: (matches ?? []) as unknown as MatchRow[],
+    auditRows: (audit ?? []) as unknown as AuditRow[],
+    kidRows: (kids ?? []) as unknown as KidRow[],
+    profileRows: (recentProfiles ?? []) as unknown as ProfileRow[],
+    poolRows,
+  };
+}
