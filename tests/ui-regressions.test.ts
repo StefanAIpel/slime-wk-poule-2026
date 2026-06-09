@@ -191,7 +191,7 @@ test("main mobile header and hamburger stay sticky and quick menu has a Live/Sch
   assert.match(heroTopbarBlock, /position: fixed;/);
   assert.match(heroTopbarBlock, /z-index: 45;/);
   assert.match(hamburgerBlock, /position: fixed;/);
-  assert.match(hamburgerBlock, /top: calc\(12px \+ env\(safe-area-inset-top\)\);/);
+  assert.match(hamburgerBlock, /top: calc\(60px \+ env\(safe-area-inset-top\)\);/);
   assert.match(hamburgerBlock, /z-index: 50;/);
   assert.match(quickMenu, /menuPairLinks/);
   assert.match(quickMenu, /LIVE_URL/);

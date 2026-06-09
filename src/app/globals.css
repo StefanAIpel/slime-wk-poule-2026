@@ -3732,7 +3732,8 @@ textarea {
 
 .quick-menu-button {
   position: fixed;
-  top: calc(12px + env(safe-area-inset-top));
+  /* Net onder de mobiele status/headerbalk houden, zodat hij de aftel- en accountchips niet afdekt. */
+  top: calc(60px + env(safe-area-inset-top));
   /* Lijn de hamburger uit met de rechterrand van de content-blokken (page-shell-padding). */
   right: 16px;
   z-index: 50;
