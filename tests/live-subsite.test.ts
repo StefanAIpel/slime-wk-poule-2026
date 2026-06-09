@@ -55,6 +55,14 @@ test("live page has a commercial hero with a Speelschema button, red/green/blue 
   assert.doesNotMatch(livePage, /standing-card-header/);
 });
 
+test("live page links compact result blocks to more matches and full upcoming mode", () => {
+  assert.match(livePage, /view\?: string/);
+  assert.match(livePage, /showAllUpcoming/);
+  assert.match(livePage, /allUpcoming/);
+  assert.match(livePage, /\/live\?view=upcoming#alle-komende/);
+  assert.match(livePage, /href: "\/live\/schema"/);
+});
+
 test("live schema mirrors the main ScheduleExplorer and offers a LIVE button", () => {
   assert.match(liveSchema, /ScheduleExplorer/);
   assert.match(liveSchema, /getScheduleMatches/);

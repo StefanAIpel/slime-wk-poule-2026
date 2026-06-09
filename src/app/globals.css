@@ -2863,6 +2863,35 @@ textarea {
   font-weight: 1000;
 }
 
+.live-section-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #dbe7f7;
+  background: #f7faff;
+  padding: 10px 12px;
+}
+
+.live-section-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  border-radius: 8px;
+  border: 1px solid #bfd3ed;
+  background: #fff;
+  padding: 7px 12px;
+  color: #0f5aa0;
+  font-size: 0.82rem;
+  font-weight: 1000;
+  text-decoration: none;
+}
+
+.live-section-more:hover {
+  border-color: #1e73b8;
+  color: #081634;
+}
+
 /* Titel + LIVE-knop op de schema-pagina. */
 .live-schema-head {
   display: flex;

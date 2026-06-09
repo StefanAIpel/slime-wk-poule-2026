@@ -1,4 +1,4 @@
-import { CalendarDays } from "lucide-react";
+import { ArrowRight, CalendarDays, ListOrdered } from "lucide-react";
 import { LiveAutoRefresh } from "@/components/live-auto-refresh";
 import { ShareRow } from "@/components/share-button";
 import { TeamFlag } from "@/components/team-flag";
@@ -21,6 +21,10 @@ const copy = {
     now: "Nu bezig",
     latest: "Laatste uitslagen",
     upcoming: "Aankomend",
+    upcomingAll: "Alle komende wedstrijden",
+    moreMatches: "Meer wedstrijden",
+    allUpcoming: "Alle komende WK-wedstrijden",
+    compactUpcoming: "Compact overzicht",
     emptyNow: "Op dit moment is er geen WK-wedstrijd bezig.",
     emptyLatest: "Nog geen gespeelde wedstrijden.",
     emptyUpcoming: "Geen geplande wedstrijden gevonden.",
@@ -40,6 +44,10 @@ const copy = {
     now: "Now playing",
     latest: "Latest results",
     upcoming: "Upcoming",
+    upcomingAll: "All upcoming matches",
+    moreMatches: "More matches",
+    allUpcoming: "All upcoming WC matches",
+    compactUpcoming: "Compact view",
     emptyNow: "No World Cup match is being played right now.",
     emptyLatest: "No matches played yet.",
     emptyUpcoming: "No scheduled matches found.",
@@ -118,10 +126,25 @@ function MatchCard({ fixture, locale, featured = false }: { fixture: LiveFixture
   );
 }
 
-function Section({ title, tone, fixtures, empty, locale }: { title: string; tone: "live" | "latest" | "upcoming"; fixtures: LiveFixture[]; empty: string; locale: Locale }) {
+function Section({
+  title,
+  tone,
+  fixtures,
+  empty,
+  locale,
+  action,
+}: {
+  title: string;
+  tone: "live" | "latest" | "upcoming";
+  fixtures: LiveFixture[];
+  empty: string;
+  locale: Locale;
+  action?: { href: string; label: string; icon: "arrow" | "list" };
+}) {
   const isLive = tone === "live";
+  const ActionIcon = action?.icon === "list" ? ListOrdered : ArrowRight;
   return (
-    <section className={`panel live-section live-section-${tone} overflow-hidden`}>
+    <section id={tone === "upcoming" ? "alle-komende" : undefined} className={`panel live-section live-section-${tone} overflow-hidden`}>
       <header className={`live-section-header is-${tone}`}>
         <span>{title}</span>
         {fixtures.length && isLive ? <span className="live-section-count">{fixtures.length}</span> : null}
@@ -131,6 +154,14 @@ function Section({ title, tone, fixtures, empty, locale }: { title: string; tone
       ) : (
         <p className="p-4 text-sm font-bold text-[#48617f]">{empty}</p>
       )}
+      {action ? (
+        <footer className="live-section-footer">
+          <a href={action.href} className="live-section-more">
+            <ActionIcon aria-hidden="true" className="size-4" />
+            {action.label}
+          </a>
+        </footer>
+      ) : null}
     </section>
   );
 }
@@ -170,8 +201,9 @@ function Hero({ locale }: { locale: Locale }) {
   );
 }
 
-export default async function LivePage() {
+export default async function LivePage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   const locale = await getServerLocale();
+  const params = await searchParams;
   const c = copy[locale];
   const all = await getWcFixtures();
 
@@ -185,6 +217,9 @@ export default async function LivePage() {
   }
 
   const { live, recent, upcoming } = splitFixtures(all);
+  const allUpcoming = all.filter((f) => !f.friendly && f.statusShort === "NS").sort((a, b) => a.date.localeCompare(b.date));
+  const showAllUpcoming = params.view === "upcoming";
+  const upcomingFixtures = showAllUpcoming ? allUpcoming : upcoming;
 
   return (
     <div className="grid gap-4">
@@ -192,8 +227,15 @@ export default async function LivePage() {
       <Hero locale={locale} />
       <div className="live-sections-grid">
         <Section title={c.now} tone="live" fixtures={live} empty={c.emptyNow} locale={locale} />
-        <Section title={c.latest} tone="latest" fixtures={recent} empty={c.emptyLatest} locale={locale} />
-        <Section title={c.upcoming} tone="upcoming" fixtures={upcoming} empty={c.emptyUpcoming} locale={locale} />
+        <Section title={c.latest} tone="latest" fixtures={recent} empty={c.emptyLatest} locale={locale} action={{ href: "/live/schema", label: c.moreMatches, icon: "arrow" }} />
+        <Section
+          title={showAllUpcoming ? c.upcomingAll : c.upcoming}
+          tone="upcoming"
+          fixtures={upcomingFixtures}
+          empty={c.emptyUpcoming}
+          locale={locale}
+          action={showAllUpcoming ? { href: "/live", label: c.compactUpcoming, icon: "arrow" } : { href: "/live?view=upcoming#alle-komende", label: c.allUpcoming, icon: "list" }}
+        />
       </div>
     </div>
   );
