@@ -13,13 +13,11 @@ const navCopy = {
   nl: [
     { appHref: "/live", liveHref: "/", label: "Live" },
     { appHref: "/live/schema", liveHref: "/schema", label: "Schema" },
-    { appHref: "/live/schema/knockout", liveHref: "/schema/knockout", label: "Finales" },
     { appHref: SITE_URL, liveHref: SITE_URL, label: "WK voorspellen", emphasis: true },
   ],
   en: [
     { appHref: "/live", liveHref: "/", label: "Live" },
     { appHref: "/live/schema", liveHref: "/schema", label: "Schedule" },
-    { appHref: "/live/schema/knockout", liveHref: "/schema/knockout", label: "Finals" },
     { appHref: SITE_URL, liveHref: SITE_URL, label: "Predict WC", emphasis: true },
   ],
 } as const;

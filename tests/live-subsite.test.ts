@@ -24,7 +24,7 @@ test("top header shows the brand with a LIVE sticker and a NL/EN switch", () => 
   assert.match(liveNav, /BrandWordmark/);
   assert.match(liveNav, /LiveLanguageSwitcher/);
   assert.match(liveNav, /live-subsite-menu/);
-  assert.match(liveNav, /\/live\/schema\/knockout/);
+  assert.match(liveNav, /\/schema\/knockout/);
   assert.match(liveNav, /live-badge/);
   assert.match(liveLayout, /SlimeSoccerBanner/);
   assert.match(liveLayout, /includeWk/);

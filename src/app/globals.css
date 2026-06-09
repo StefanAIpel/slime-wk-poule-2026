@@ -2327,7 +2327,7 @@ textarea {
 
 .live-subsite-header-inner {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px 10px;
   width: min(1100px, 100%);
@@ -2395,8 +2395,6 @@ textarea {
 
 .live-menu-button {
   display: inline-flex;
-  grid-column: 3;
-  grid-row: 1;
   width: 40px;
   height: 40px;
   align-items: center;
@@ -2614,6 +2612,16 @@ textarea {
     z-index: 0;
   }
 
+  .live-menu-button {
+    position: fixed;
+    top: calc(112px + env(safe-area-inset-top));
+    right: 18px;
+    z-index: 1002;
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+  }
+
   .live-lang-menu {
     position: fixed;
     top: calc(101px + env(safe-area-inset-top));
@@ -2656,6 +2664,35 @@ textarea {
   z-index: 2;
   padding-top: 8px;
   padding-bottom: 18px;
+}
+
+.live-hero-brandline {
+  display: inline-flex;
+  max-width: min(100%, 318px);
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.live-hero-brandline .brand-wordmark {
+  min-width: 0;
+  flex: 0 1 auto;
+  font-size: clamp(1.08rem, 5.1vw, 1.35rem);
+}
+
+.live-hero-brandline .brand-wordmark-logo {
+  width: 34px;
+  height: 34px;
+}
+
+.live-hero-brandline .brand-wordmark-text {
+  padding: 7px 11px 8px 12px;
+}
+
+.live-badge-hero {
+  flex: 0 0 auto;
+  padding: 5px 10px;
+  font-size: 0.72rem;
 }
 
 /* Kleine mascotte rechtsonder in de hero (subtiel, niet zo groot als de hoofdpagina). */

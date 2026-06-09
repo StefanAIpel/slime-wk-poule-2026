@@ -1,4 +1,5 @@
 import { CalendarDays } from "lucide-react";
+import { BrandWordmark } from "@/components/brand-wordmark";
 import { LiveAutoRefresh } from "@/components/live-auto-refresh";
 import { ShareRow } from "@/components/share-button";
 import { TeamFlag } from "@/components/team-flag";
@@ -14,7 +15,7 @@ const copy = {
     kicker: "WK 2026 live",
     heroTitle: "WK 2026 Live:",
     heroTitleSub: "uitslagen, standen & schema",
-    heroSub: "Volg elke WK 2026-wedstrijd live — tussenstanden, opstellingen en statistieken, plus het volledige speelschema. Gratis, zonder gedoe.",
+    heroSub: "Volg elke WK 2026-wedstrijd live — tussenstanden, opstellingen en statistieken, plus het volledige speelschema.",
     schedule: "Hele WK speelschema",
     shareText: "Volg het WK 2026 live op SlimeScore: uitslagen, stand en schema.",
     shareTitle: "WK 2026 live — SlimeScore",
@@ -33,7 +34,7 @@ const copy = {
     kicker: "World Cup 2026 live",
     heroTitle: "World Cup 2026 Live:",
     heroTitleSub: "scores, standings & schedule",
-    heroSub: "Follow every 2026 World Cup match live — live scores, line-ups and stats, plus the full schedule. Free, no fuss.",
+    heroSub: "Follow every 2026 World Cup match live — live scores, line-ups and stats, plus the full schedule.",
     schedule: "Total World Cup Schedule",
     shareText: "Follow the 2026 World Cup live on SlimeScore: scores, standings and schedule.",
     shareTitle: "World Cup 2026 live — SlimeScore",
@@ -143,6 +144,13 @@ function Hero({ locale }: { locale: Locale }) {
         <img src="/assets/stadion-3to5.webp" alt="" aria-hidden="true" fetchPriority="high" decoding="async" />
       </picture>
       <div className="hero-content">
+        <div className="live-hero-brandline" aria-label={locale === "en" ? "SlimeScore live" : "SlimeScore live"}>
+          <span className="live-badge live-badge-hero">
+            <span className="live-badge-dot" aria-hidden="true" />
+            LIVE
+          </span>
+          <BrandWordmark onDark />
+        </div>
         <div className="world-cup-kicker">
           <span>{c.kicker}</span>
           <span>USA</span>
