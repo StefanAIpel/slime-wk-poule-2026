@@ -18,6 +18,8 @@ const cspReportOnly = [
   "base-uri 'self'",
   "form-action 'self'",
   "object-src 'none'",
+  // Overtredingen verzamelen we op /api/csp-report (zie src/app/api/csp-report).
+  "report-uri /api/csp-report",
 ].join("; ");
 
 const securityHeaders = [
