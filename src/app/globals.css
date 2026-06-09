@@ -538,14 +538,23 @@ textarea {
   gap: 14px;
 }
 
+.public-desktop-bottom-stack {
+  display: none;
+  gap: 14px;
+}
+
 .public-mobile-bottom-stack {
   display: grid;
   gap: 14px;
 }
 
 @media (min-width: 768px) {
+  .public-desktop-bottom-stack {
+    display: grid;
+  }
+
   .public-mobile-bottom-stack {
-    grid-column: 1;
+    display: none;
   }
 }
 

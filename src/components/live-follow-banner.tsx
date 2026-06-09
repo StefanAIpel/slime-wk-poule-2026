@@ -7,7 +7,7 @@ const copy = {
   nl: {
     kicker: "WK 2026 live",
     title: "Volg live",
-    text: "Stand, uitslagen en speelschema zonder gedoe.",
+    text: "Volg elke WK 2026-wedstrijd live — tussenstanden, opstellingen en statistieken, plus het volledige speelschema.",
     alt: "Volg het WK live op SlimeScore",
   },
   en: {
