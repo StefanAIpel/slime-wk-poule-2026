@@ -221,6 +221,8 @@ export async function adminSetResult(formData: FormData) {
   const { user } = await requireAdmin();
 
   const admin = createAdminClient();
+  // Ruime limiet: admins voeren legitiem veel uitslagen achter elkaar in.
+  if (!(await rateLimit(admin, `admin_setresult:${user.id}`, 120, 60))) redirect("/admin?fout=te-snel");
   const matchId = Number.parseInt(String(formData.get("match_id") ?? ""), 10);
   if (!Number.isFinite(matchId)) redirect("/admin?fout=match");
   const homeScore = clampInt(formData.get("home_score"), 0, 0, 50);
@@ -264,6 +266,7 @@ export async function createKidAccount(formData: FormData) {
   const { user } = await requireAdmin();
 
   const admin = createAdminClient();
+  if (!(await rateLimit(admin, `admin_kid:${user.id}`, 30, 60))) redirect("/admin?fout=te-snel");
   const nickname = cleanText(formData.get("nickname"), NICKNAME_MAX_LENGTH);
   if (nickname.length < 2) redirect("/admin?fout=kind-naam");
 
@@ -306,6 +309,8 @@ export async function adminRecalculate() {
   const { user } = await requireAdmin();
 
   const admin = createAdminClient();
+  // Zware operatie (herrekent alle ranglijsten): krappe limiet tegen dubbelklik/spam.
+  if (!(await rateLimit(admin, `admin_recalc:${user.id}`, 10, 60))) redirect("/admin?fout=te-snel");
   const recalc = await recalculateAllScores(admin);
   await admin.from("admin_audit_log").insert({
     actor_email: user.email,
