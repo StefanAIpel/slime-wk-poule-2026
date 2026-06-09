@@ -912,7 +912,7 @@ textarea {
 
 /* Hero met geïntegreerde header: ruimte bovenin voor de balk (alleen mobiel). */
 .hero-band-topbar {
-  padding-top: 72px;
+  padding-top: 16px;
 }
 
 @media (min-width: 768px) {
@@ -1573,9 +1573,8 @@ textarea {
   justify-content: space-between;
   gap: 12px;
   padding: 12px 72px 12px 16px;
-  background: linear-gradient(180deg, rgba(4, 16, 43, 0.64), rgba(4, 16, 43, 0.18));
-  -webkit-backdrop-filter: blur(10px) saturate(1.15);
-  backdrop-filter: blur(10px) saturate(1.15);
+  background: linear-gradient(180deg, rgba(4, 16, 43, 0.96), rgba(4, 16, 43, 0.9));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 @media (min-width: 768px) {
@@ -3755,8 +3754,6 @@ textarea {
   overflow: hidden;
   overscroll-behavior: contain;
   background: rgba(8, 22, 52, 0.42);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
 }
 
 .quick-menu-panel {
@@ -3831,6 +3828,28 @@ textarea {
   text-align: left;
   text-decoration: none;
   cursor: pointer;
+}
+
+.quick-menu-home-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.quick-menu-home-row .language-switcher {
+  align-self: stretch;
+}
+
+.quick-menu-home-row .language-switcher-btn {
+  min-height: 52px;
+  padding-inline: 12px;
+  border-radius: 12px;
+}
+
+.quick-menu-home-row .language-switcher-menu {
+  right: 0;
+  z-index: 130;
 }
 
 .quick-menu-form {

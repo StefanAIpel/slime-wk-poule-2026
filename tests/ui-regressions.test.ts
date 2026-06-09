@@ -187,13 +187,17 @@ test("desktop UI uses compact page heroes, right-column rules banners and aligne
 
 test("main mobile header and hamburger stay sticky and quick menu has a Schema/Live half-row", () => {
   const heroTopbarBlock = globalsCss.match(/\.hero-topbar \{[\s\S]*?\}/)?.[0] ?? "";
+  const heroBandTopbarBlock = globalsCss.match(/\.hero-band-topbar \{[\s\S]*?\}/)?.[0] ?? "";
   const hamburgerBlock = globalsCss.match(/\.quick-menu-button \{[\s\S]*?\}/)?.[0] ?? "";
+  const quickMenuHomeRowBlock = globalsCss.match(/\.quick-menu-home-row \{[\s\S]*?\}/)?.[0] ?? "";
   const splitRowBlock = globalsCss.match(/\.quick-menu-split-row \{[\s\S]*?\}/)?.[0] ?? "";
   const halfLinkBlock = globalsCss.match(/\.quick-menu-link-half \{[\s\S]*?\}/)?.[0] ?? "";
   const liveLinkBlock = globalsCss.match(/\.quick-menu-live-link \{[\s\S]*?\}/)?.[0] ?? "";
   const pairConfig = quickMenu.slice(quickMenu.indexOf("const menuPairLinks"), quickMenu.indexOf("const privateLinks"));
   assert.match(heroTopbarBlock, /position: fixed;/);
   assert.match(heroTopbarBlock, /z-index: 45;/);
+  assert.doesNotMatch(heroTopbarBlock, /backdrop-filter|blur\(/);
+  assert.match(heroBandTopbarBlock, /padding-top: 16px;/);
   assert.match(hamburgerBlock, /position: fixed;/);
   assert.match(hamburgerBlock, /top: calc\(60px \+ env\(safe-area-inset-top\)\);/);
   assert.match(hamburgerBlock, /z-index: 50;/);
@@ -203,6 +207,8 @@ test("main mobile header and hamburger stay sticky and quick menu has a Schema/L
   assert.match(pairConfig, /href: "\/schema"[\s\S]*href: LIVE_URL/);
   assert.match(quickMenu, /quick-menu-brand-name/);
   assert.match(quickMenu, /quick-menu-brand-slime/);
+  assert.match(quickMenu, /quick-menu-home-row/);
+  assert.match(quickMenuHomeRowBlock, /grid-template-columns: minmax\(0, 1fr\) auto;/);
   assert.doesNotMatch(quickMenu, /text-xl font-bold text-\[#081634\]">\{locale === "en" \? "Menu" : "Menu"\}/);
   assert.match(splitRowBlock, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
   assert.match(halfLinkBlock, /justify-content: flex-start;/);

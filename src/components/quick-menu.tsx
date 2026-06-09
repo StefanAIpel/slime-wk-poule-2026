@@ -112,7 +112,6 @@ export function QuickMenu() {
                 </div>
               </div>
               <div className="flex shrink-0 items-center gap-1">
-                <LanguageSwitcher className="quick-menu-language-switcher" />
                 <button className="button-secondary min-h-10 px-3" type="button" onClick={() => setOpen(false)}>
                   <X aria-hidden="true" className="size-5" />
                   <span className="sr-only">{locale === "en" ? "Close menu" : "Menu sluiten"}</span>
@@ -123,10 +122,13 @@ export function QuickMenu() {
               {primaryLink ? (() => {
                 const Icon = primaryLink.icon;
                 return (
-                  <Link key={primaryLink.href} href={localizedHref(primaryLink.href, locale)} className="quick-menu-link" onClick={() => setOpen(false)}>
-                    <Icon aria-hidden="true" className="size-5" />
-                    <span>{locale === "en" ? primaryLink.labelEn : primaryLink.label}</span>
-                  </Link>
+                  <div className="quick-menu-home-row">
+                    <Link key={primaryLink.href} href={localizedHref(primaryLink.href, locale)} className="quick-menu-link quick-menu-home-link" onClick={() => setOpen(false)}>
+                      <Icon aria-hidden="true" className="size-5" />
+                      <span>{locale === "en" ? primaryLink.labelEn : primaryLink.label}</span>
+                    </Link>
+                    <LanguageSwitcher className="quick-menu-language-switcher" />
+                  </div>
                 );
               })() : null}
               <div className="quick-menu-split-row" aria-label={locale === "en" ? "Live and schedule" : "Live en schema"}>
