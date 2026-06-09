@@ -157,13 +157,16 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.37"/);
+  assert.match(constants, /APP_VERSION = "0.38"/);
 });
 test("entry deadline is extended until the first World Cup match", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00\+02:00"/);
-  assert.match(homePage, /Deadline verlengd: invullen kan tot de eerste WK-wedstrijd/);
+  assert.match(constants, /ENTRY_GRACE_DEADLINE_ISO = "2026-06-14T21:00:00\+02:00"/);
+  assert.match(homePage, /Deadline: 11 juni 21:00\. Respijt t\/m zondag 14 juni voor niet-gespeelde wedstrijden/);
   assert.match(statusBar, /tot de eerste wedstrijd/);
-  assert.match(rulesPage, /de eerste WK-wedstrijd/);
+  assert.match(rulesPage, /Respijtperiode: niet-gespeelde groepswedstrijden/);
+  assert.match(rulesPage, /ENTRY_GRACE_DEADLINE_ISO/);
+  assert.match(rulesPage, /zondag 14 juni 21:00/);
 });
 
 test("desktop UI uses compact page heroes, right-column rules banners and aligned game stage", () => {
