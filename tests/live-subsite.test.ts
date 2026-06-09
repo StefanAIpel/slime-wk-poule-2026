@@ -42,13 +42,16 @@ test("live data is WC-only, server-side, mapped to our flags and degrades withou
   assert.match(liveLib, /fixtures\/events/);
 });
 
-test("live page has a commercial hero with a Speelschema button, blue/green headers and flags", () => {
+test("live page has a commercial hero with a Speelschema button, red/green/blue headers and flags", () => {
   assert.match(livePage, /splitFixtures/);
   assert.match(livePage, /LiveAutoRefresh/);
   assert.match(livePage, /heroTitle/);
   assert.match(livePage, /\/live\/schema/);
   assert.match(livePage, /TeamFlag/);
   assert.match(livePage, /live-section-header/);
+  assert.match(livePage, /tone="live"/);
+  assert.match(livePage, /tone="latest"/);
+  assert.match(livePage, /tone="upcoming"/);
   assert.doesNotMatch(livePage, /standing-card-header/);
 });
 

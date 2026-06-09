@@ -2386,6 +2386,7 @@ textarea {
 .live-subsite-menu-link {
   display: inline-flex;
   min-height: 34px;
+  width: 104px;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
@@ -2408,16 +2409,29 @@ textarea {
 }
 
 .live-subsite-menu-link-predict {
-  border-color: rgba(255, 255, 255, 0.36);
-  background: linear-gradient(135deg, #ff9800, #f26a1b);
+  width: 182px;
+  margin-left: 8px;
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.12);
   color: #fff;
-  box-shadow: 0 8px 18px rgba(242, 106, 27, 0.26);
+  box-shadow: none;
 }
 
 .live-subsite-menu-link-predict.is-active,
 .live-subsite-menu-link-predict:hover {
-  background: linear-gradient(135deg, #ff8a00, #ea580c);
+  border-color: rgba(255, 255, 255, 0.78);
+  background: #ffffff;
+  color: #114b82;
+}
+
+.live-subsite-menu-link-predict:hover {
+  background: rgba(255, 255, 255, 0.2);
   color: #fff;
+}
+
+.live-subsite-menu-link-predict.is-active:hover {
+  background: #ffffff;
+  color: #114b82;
 }
 
 .live-menu-button {
@@ -2664,14 +2678,19 @@ textarea {
   .live-subsite-header-inner {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
+    gap: 16px;
   }
 
   .live-subsite-menu {
     grid-column: auto;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     justify-content: center;
     overflow: visible;
+  }
+
+  .live-subsite-menu-link,
+  .live-subsite-menu-link-predict {
+    width: 126px;
   }
 
   .live-menu-button {
@@ -2781,9 +2800,32 @@ textarea {
   }
 }
 
-/* Sectie-headers: blauw (standaard) en groen voor de live-sectie i.p.v. beige. */
+.live-sections-grid {
+  display: grid;
+  gap: 14px;
+}
 
-/* Sectie-headers: blauw (standaard) en groen voor de live-sectie i.p.v. beige. */
+@media (min-width: 860px) {
+  .live-sections-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "live live"
+      "upcoming latest";
+  }
+
+  .live-section-live {
+    grid-area: live;
+  }
+
+  .live-section-latest {
+    grid-area: latest;
+  }
+
+  .live-section-upcoming {
+    grid-area: upcoming;
+  }
+}
+
 .live-section-header {
   display: flex;
   align-items: center;
@@ -2797,7 +2839,15 @@ textarea {
 }
 
 .live-section-header.is-live {
+  background: linear-gradient(135deg, #e1262f, #b91c1c);
+}
+
+.live-section-header.is-latest {
   background: linear-gradient(135deg, #16a34a, #0e7a44);
+}
+
+.live-section-header.is-upcoming {
+  background: linear-gradient(135deg, #1e73b8, #0f5aa0);
 }
 
 .live-section-count {
@@ -2837,13 +2887,14 @@ textarea {
 }
 
 .live-subsite-main {
+  width: min(1050px, 100%);
   padding-top: 16px;
   padding-bottom: 16px;
 }
 
 .live-subsite-footer {
   margin: 12px auto 28px;
-  width: min(1100px, 100%);
+  width: min(1050px, 100%);
   padding: 0 16px;
 }
 
@@ -2941,14 +2992,18 @@ textarea {
   text-decoration: none;
 }
 
+.live-match-card-featured {
+  padding: 14px 16px 16px;
+}
+
 .live-match-card:hover {
   background: #f7faff;
 }
 
 .live-match-meta {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
-  justify-content: space-between;
   gap: 10px;
   font-size: 0.74rem;
   font-weight: 700;
@@ -2963,7 +3018,8 @@ textarea {
 }
 
 .live-match-when {
-  flex: 0 0 auto;
+  min-width: max-content;
+  justify-self: end;
 }
 
 .live-match-when.is-live {
@@ -2974,7 +3030,7 @@ textarea {
 /* Kolommen uitgelijnd zoals slimescore.com: thuis (links) | - | uit | uitslag. */
 .live-match-body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) 3.4rem;
+  grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr) 58px;
   align-items: center;
   gap: 8px;
 }
@@ -2994,8 +3050,10 @@ textarea {
 
 .live-match-score {
   justify-self: end;
+  width: 58px;
+  min-width: 58px;
   text-align: right;
-  padding-right: 6px;
+  padding-right: 0;
   font-weight: 1000;
   font-variant-numeric: tabular-nums;
   color: #081634;
@@ -3005,6 +3063,93 @@ textarea {
 .live-match-score-todo {
   color: #94a3b8;
   font-weight: 800;
+}
+
+.live-match-card-featured .live-match-meta {
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.live-match-card-featured .live-match-when {
+  border-radius: 999px;
+  background: #fee2e2;
+  padding: 5px 10px;
+  color: #b91c1c;
+  font-weight: 1000;
+}
+
+.live-match-card-featured .live-match-body {
+  grid-template-columns: minmax(0, 1fr) 42px minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.live-match-card-featured .live-match-team {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  text-align: center;
+}
+
+.live-match-card-featured .live-match-sep {
+  display: none;
+}
+
+.live-match-card-featured .live-match-score {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  padding: 0;
+  font-size: 1.85rem;
+  line-height: 1;
+}
+
+.live-match-card-featured .live-match-team:last-of-type {
+  grid-column: 3;
+}
+
+.live-match-card-featured .live-row-name {
+  display: inline;
+  max-width: 100%;
+  font-size: 1.18rem;
+  line-height: 1.12;
+  white-space: normal;
+}
+
+.live-match-card-featured .live-row-code {
+  display: none;
+}
+
+.live-match-card-featured .live-match-team img,
+.live-match-card-featured .live-match-team > span:first-child {
+  width: 34px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+@media (min-width: 760px) {
+  .live-match-card-featured {
+    padding: 18px 22px 20px;
+  }
+
+  .live-match-card-featured .live-match-body {
+    grid-template-columns: minmax(0, 1fr) 92px minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .live-match-card-featured .live-match-score {
+    font-size: 2.75rem;
+  }
+
+  .live-match-card-featured .live-row-name {
+    font-size: 1.55rem;
+  }
+
+  .live-match-card-featured .live-match-team img,
+  .live-match-card-featured .live-match-team > span:first-child {
+    width: 46px;
+    height: 31px;
+  }
 }
 
 /* Merk netjes gecentreerd in de header-pill. */

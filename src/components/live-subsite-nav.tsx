@@ -52,7 +52,10 @@ export function LiveSubsiteNav() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    setIsLiveHost(window.location.hostname.startsWith("live."));
+    const frame = window.requestAnimationFrame(() => {
+      setIsLiveHost(window.location.hostname.startsWith("live."));
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {

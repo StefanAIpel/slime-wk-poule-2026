@@ -96,12 +96,12 @@ function TeamInline({ team, locale }: { team: LiveTeam; locale: Locale }) {
   );
 }
 
-function MatchCard({ fixture, locale }: { fixture: LiveFixture; locale: Locale }) {
+function MatchCard({ fixture, locale, featured = false }: { fixture: LiveFixture; locale: Locale; featured?: boolean }) {
   const when = statusWhen(fixture, locale);
   const played = when.live || ["FT", "AET", "PEN"].includes(fixture.statusShort);
   const meta = [roundLabel(fixture, locale), fixture.venue].filter(Boolean).join(" · ");
   return (
-    <a href={`/live/match/${fixture.id}`} className="live-match-card">
+    <a href={`/live/match/${fixture.id}`} className={featured ? "live-match-card live-match-card-featured" : "live-match-card"}>
       <div className="live-match-meta">
         <span className="live-match-round">{meta}</span>
         <span className={when.live ? "live-match-when is-live" : "live-match-when"}>{when.text}</span>
@@ -118,15 +118,16 @@ function MatchCard({ fixture, locale }: { fixture: LiveFixture; locale: Locale }
   );
 }
 
-function Section({ title, accent, fixtures, empty, locale }: { title: string; accent?: "live"; fixtures: LiveFixture[]; empty: string; locale: Locale }) {
+function Section({ title, tone, fixtures, empty, locale }: { title: string; tone: "live" | "latest" | "upcoming"; fixtures: LiveFixture[]; empty: string; locale: Locale }) {
+  const isLive = tone === "live";
   return (
-    <section className="panel overflow-hidden">
-      <header className={accent === "live" ? "live-section-header is-live" : "live-section-header"}>
+    <section className={`panel live-section live-section-${tone} overflow-hidden`}>
+      <header className={`live-section-header is-${tone}`}>
         <span>{title}</span>
-        {fixtures.length && accent === "live" ? <span className="live-section-count">{fixtures.length}</span> : null}
+        {fixtures.length && isLive ? <span className="live-section-count">{fixtures.length}</span> : null}
       </header>
       {fixtures.length ? (
-        <div className="divide-y divide-slate-200">{fixtures.map((f) => <MatchCard key={f.id} fixture={f} locale={locale} />)}</div>
+        <div className="divide-y divide-slate-200">{fixtures.map((f) => <MatchCard key={f.id} fixture={f} locale={locale} featured={isLive} />)}</div>
       ) : (
         <p className="p-4 text-sm font-bold text-[#48617f]">{empty}</p>
       )}
@@ -189,9 +190,11 @@ export default async function LivePage() {
     <div className="grid gap-4">
       <LiveAutoRefresh seconds={15} />
       <Hero locale={locale} />
-      <Section title={c.now} accent="live" fixtures={live} empty={c.emptyNow} locale={locale} />
-      <Section title={c.latest} fixtures={recent} empty={c.emptyLatest} locale={locale} />
-      <Section title={c.upcoming} fixtures={upcoming} empty={c.emptyUpcoming} locale={locale} />
+      <div className="live-sections-grid">
+        <Section title={c.now} tone="live" fixtures={live} empty={c.emptyNow} locale={locale} />
+        <Section title={c.latest} tone="latest" fixtures={recent} empty={c.emptyLatest} locale={locale} />
+        <Section title={c.upcoming} tone="upcoming" fixtures={upcoming} empty={c.emptyUpcoming} locale={locale} />
+      </div>
     </div>
   );
 }

@@ -254,7 +254,6 @@ test("live sticky header has visible menu tabs, predict CTA, hamburger and high-
   const linkBlock = globalsCss.match(/\.live-subsite-menu-link \{[\s\S]*?\}/)?.[0] ?? "";
   const predictLinkBlock = globalsCss.match(/\.live-subsite-menu-link-predict \{[\s\S]*?\}/)?.[0] ?? "";
   const hamburgerBlock = globalsCss.match(/\.live-menu-button \{[\s\S]*?\}/)?.[0] ?? "";
-  const mobileHeaderBlock = globalsCss.match(/@media \(max-width: 759px\) \{[\s\S]*?\.live-menu-button \{[\s\S]*?\}\n[\s\S]*?\.live-lang-menu/)?.[0] ?? "";
   const backdropBlock = globalsCss.match(/\.live-menu-backdrop \{[\s\S]*?\}/)?.[0] ?? "";
   const langButtonBlock = globalsCss.match(/\.live-lang-btn \{[\s\S]*?\}/)?.[0] ?? "";
   const langMenuBlock = globalsCss.match(/\.live-lang-menu \{[\s\S]*?\}/)?.[0] ?? "";
@@ -275,7 +274,9 @@ test("live sticky header has visible menu tabs, predict CTA, hamburger and high-
   assert.match(menuBlock, /grid-row: 2;/);
   assert.match(menuBlock, /overflow-x: auto;/);
   assert.match(linkBlock, /font-size: 0\.86rem;/);
-  assert.match(predictLinkBlock, /linear-gradient\(135deg, #ff9800, #f26a1b\)/);
+  assert.match(predictLinkBlock, /width: 182px;/);
+  assert.match(predictLinkBlock, /margin-left: 8px;/);
+  assert.match(predictLinkBlock, /background: rgba\(255, 255, 255, 0\.12\);/);
   assert.match(hamburgerBlock, /linear-gradient\(135deg, #ff9800, #f26a1b\)/);
   assert.match(globalsCss, /\.live-menu-button \{\n    position: fixed;\n    top: calc\(112px \+ env\(safe-area-inset-top\)\);/);
   assert.match(backdropBlock, /justify-content: flex-start;/);
@@ -568,8 +569,8 @@ test("shared SlimeScore links use the app icon instead of the wide banner", () =
   assert.doesNotMatch(layout, /og-slimescore-wk2026-v2\.png/);
 });
 
-test("SlimeScore brand wordmark uses the neutral WK slime and a richer pill lockup", () => {
-  assert.match(brandWordmark, /wk_slime_700_transparant\.webp/);
+test("SlimeScore brand wordmark uses the Memphis slime and a richer pill lockup", () => {
+  assert.match(brandWordmark, /memphis_wkbal_700_transparant\.webp/);
   assert.match(siteHeader, /wk_slime_700_transparant\.webp/);
   assert.doesNotMatch(`${brandWordmark}\n${siteHeader}`, /trump_slime_700_transparant\.webp/);
   assert.match(globalsCss, /\.brand-wordmark-text \{[\s\S]*border-radius: 999px;[\s\S]*linear-gradient\(135deg, #061a3c/);
