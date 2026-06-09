@@ -18,6 +18,7 @@ const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
 const livePage = await readFile(new URL("../src/app/live/page.tsx", import.meta.url), "utf8");
+const liveLayout = await readFile(new URL("../src/app/live/layout.tsx", import.meta.url), "utf8");
 const liveNav = await readFile(new URL("../src/components/live-subsite-nav.tsx", import.meta.url), "utf8");
 const liveFollowBanner = await readFile(new URL("../src/components/live-follow-banner.tsx", import.meta.url), "utf8");
 const slimeSoccerBanner = await readFile(new URL("../src/components/slime-soccer-banner.tsx", import.meta.url), "utf8");
@@ -258,6 +259,7 @@ test("live sticky header has visible menu tabs, predict CTA, hamburger and high-
   assert.match(liveNav, /href: SITE_URL/);
   assert.match(liveNav, /target=\{external \? "_blank" : undefined\}/);
   assert.match(liveNav, /rel=\{external \? "noopener noreferrer" : undefined\}/);
+  assert.match(liveLayout, /className=\"live-pool-banner\"[\s\S]*target=\"_blank\"[\s\S]*rel=\"noopener noreferrer\"/);
   assert.match(liveNav, /live-menu-button/);
   assert.match(liveNav, /live-menu-panel/);
   assert.match(liveNav, /window\.location\.hostname\.startsWith\("live\."\)/);
