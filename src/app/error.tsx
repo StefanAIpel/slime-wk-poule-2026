@@ -22,8 +22,8 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
           height={720}
           priority
         />
-        <h1 className="text-2xl font-bold text-[#081634]">Er ging even iets mis</h1>
-        <p className="text-sm font-medium leading-6 text-[#48617f]">
+        <h1 className="text-2xl font-bold text-[var(--ink)]">Er ging even iets mis</h1>
+        <p className="text-sm font-medium leading-6 text-[var(--text-muted)]">
           Probeer het opnieuw. Blijft het misgaan? Laat het ons weten via{" "}
           <a className="font-bold text-[#0e7a44]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
         </p>

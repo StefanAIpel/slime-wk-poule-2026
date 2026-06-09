@@ -186,19 +186,19 @@ export default async function AccountPage({
         <div className="grid gap-4">
           <div className="panel grid gap-4 p-5">
             <div className="flex items-center gap-3">
-              <UserCog aria-hidden="true" className="size-7 text-[#064ed6]" />
-              <h2 className="text-2xl font-bold text-[#081634]">{copy.profile}</h2>
+              <UserCog aria-hidden="true" className="size-7 text-[var(--accent-blue)]" />
+              <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.profile}</h2>
             </div>
-            <p className="text-sm font-medium leading-6 text-[#48617f]">{copy.fixedProfile}</p>
+            <p className="text-sm font-medium leading-6 text-[var(--text-muted)]">{copy.fixedProfile}</p>
             <form action={updateAccount} className="grid gap-3 rounded-xl border border-slate-200 bg-[#f7faff] p-3">
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className="grid gap-2 text-sm font-bold text-[#081634]">
+                <div className="grid gap-2 text-sm font-bold text-[var(--ink)]">
                   {copy.playerName}
-                  <div className="field flex items-center bg-slate-100 text-[#48617f]" aria-label={`${copy.playerName}: ${nickname || copy.player}`}>
+                  <div className="field flex items-center bg-slate-100 text-[var(--text-muted)]" aria-label={`${copy.playerName}: ${nickname || copy.player}`}>
                     {nickname || copy.player}
                   </div>
                 </div>
-                <label className="grid gap-2 text-sm font-bold text-[#081634]">
+                <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
                   {copy.teamName}
                   <input
                     className="field"
@@ -212,7 +212,7 @@ export default async function AccountPage({
                   />
                 </label>
               </div>
-              <div className="text-sm font-bold text-[#081634]">{copy.avatar}</div>
+              <div className="text-sm font-bold text-[var(--ink)]">{copy.avatar}</div>
               <AvatarPicker initialKey={profile?.avatar_key} name={nickname || copy.player} locale={locale} />
               <button className="button-secondary w-fit" type="submit">
                 {copy.saveAvatar}
@@ -223,10 +223,10 @@ export default async function AccountPage({
           <form action={updateAccount} className="panel grid gap-3 p-5">
             <div className="flex items-center gap-3">
               <Languages aria-hidden="true" className="size-7 text-[#0e8a49]" />
-              <h2 className="text-xl font-bold text-[#081634]">{copy.languageTitle}</h2>
+              <h2 className="text-xl font-bold text-[var(--ink)]">{copy.languageTitle}</h2>
             </div>
-            <p className="text-sm font-medium leading-6 text-[#48617f]">{copy.languageIntro}</p>
-            <label className="grid gap-2 text-sm font-bold text-[#081634]">
+            <p className="text-sm font-medium leading-6 text-[var(--text-muted)]">{copy.languageIntro}</p>
+            <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
               {copy.accountLanguage}
               <select className="field" name="preferred_locale" defaultValue={preferredLocale}>
                 <option value="nl">🇳🇱 {copy.dutch}</option>
@@ -241,12 +241,12 @@ export default async function AccountPage({
           <details className="panel p-5">
             <summary className="flex cursor-pointer items-center gap-3">
               <AtSign aria-hidden="true" className="size-6 text-[#25a84a]" />
-              <span className="text-lg font-bold text-[#081634]">E-mail</span>
+              <span className="text-lg font-bold text-[var(--ink)]">E-mail</span>
             </summary>
-            <p className="mt-3 break-all rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm font-semibold text-[#081634]">
+            <p className="mt-3 break-all rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm font-semibold text-[var(--ink)]">
               {user.email}
             </p>
-            <p className="mt-2 flex items-center gap-2 text-xs font-medium text-[#48617f]">
+            <p className="mt-2 flex items-center gap-2 text-xs font-medium text-[var(--text-muted)]">
               <ShieldCheck aria-hidden="true" className="size-4 text-[#25a84a]" />
               {copy.emailPrivate}
             </p>
@@ -255,11 +255,11 @@ export default async function AccountPage({
           <details className="panel border-red-200 p-5">
             <summary className="flex cursor-pointer items-center gap-3">
               <Trash2 aria-hidden="true" className="size-6 text-[#b23b46]" />
-              <span className="text-lg font-bold text-[#081634]">{copy.deleteTitle}</span>
+              <span className="text-lg font-bold text-[var(--ink)]">{copy.deleteTitle}</span>
             </summary>
             <form action={deleteAccount} className="mt-3 grid gap-3">
-              <p className="text-sm font-medium leading-6 text-[#48617f]">{copy.deleteCopy}</p>
-              <label className="grid gap-2 text-sm font-bold text-[#081634]">
+              <p className="text-sm font-medium leading-6 text-[var(--text-muted)]">{copy.deleteCopy}</p>
+              <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
                 {copy.deleteConfirm} <span className="text-[#b23b46]">VERWIJDER</span> {copy.deleteConfirmSuffix}
                 <input className="field" name="confirm" placeholder="VERWIJDER" autoComplete="off" />
               </label>
@@ -277,7 +277,7 @@ export default async function AccountPage({
           <div className="panel grid gap-3 p-5">
             <div className="flex items-center gap-3">
               <Trophy aria-hidden="true" className="size-7 text-[#e1a93a]" />
-              <h2 className="text-xl font-bold text-[#081634]">{copy.pointsTitle}</h2>
+              <h2 className="text-xl font-bold text-[var(--ink)]">{copy.pointsTitle}</h2>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <ScoreStat label={copy.total} value={`${score?.points ?? 0} pt`} highlight />
@@ -287,7 +287,7 @@ export default async function AccountPage({
               <ScoreStat label={copy.bonusPoints} value={String(score?.bonus_points ?? 0)} />
               <ScoreStat label={copy.lastCalculated} value={score?.updated_at ? formatAmsterdam(score.updated_at, locale === "en" ? "en-GB" : "nl-NL") : copy.notYet} />
             </div>
-            <p className="text-xs font-medium leading-5 text-[#48617f]">
+            <p className="text-xs font-medium leading-5 text-[var(--text-muted)]">
               {copy.scoreExplanation}{" "}
               <a className="font-bold text-[#0e7a44]" href={localizedHref("/regels", locale)}>{copy.scoringLink}</a>.
             </p>
@@ -295,18 +295,18 @@ export default async function AccountPage({
 
           <details className="panel p-5">
             <summary className="flex cursor-pointer items-center gap-3">
-              <LifeBuoy aria-hidden="true" className="size-6 text-[#064ed6]" />
-              <span className="text-lg font-bold text-[#081634]">{copy.supportTitle}</span>
+              <LifeBuoy aria-hidden="true" className="size-6 text-[var(--accent-blue)]" />
+              <span className="text-lg font-bold text-[var(--ink)]">{copy.supportTitle}</span>
             </summary>
-            <p className="mt-2 text-xs font-medium leading-5 text-[#48617f]">
+            <p className="mt-2 text-xs font-medium leading-5 text-[var(--text-muted)]">
               {copy.supportIntro}{" "}
               <a className="font-bold text-[#0e7a44]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
             </p>
-            <dl className="mt-3 grid gap-1 text-xs text-[#48617f]">
-              <div className="flex justify-between gap-3"><dt>{copy.userId}</dt><dd className="font-mono text-[#081634]">{user.id.slice(0, 8)}…</dd></div>
-              <div className="flex justify-between gap-3"><dt>{copy.predictions}</dt><dd className="text-[#081634]">{filled}/72</dd></div>
-              <div className="flex justify-between gap-3"><dt>{copy.lastScoreUpdate}</dt><dd className="text-[#081634]">{score?.updated_at ? formatAmsterdam(score.updated_at, locale === "en" ? "en-GB" : "nl-NL") : "—"}</dd></div>
-              <div className="flex justify-between gap-3"><dt>{copy.appVersion}</dt><dd className="text-[#081634]">{copy.beta} {APP_VERSION}</dd></div>
+            <dl className="mt-3 grid gap-1 text-xs text-[var(--text-muted)]">
+              <div className="flex justify-between gap-3"><dt>{copy.userId}</dt><dd className="font-mono text-[var(--ink)]">{user.id.slice(0, 8)}…</dd></div>
+              <div className="flex justify-between gap-3"><dt>{copy.predictions}</dt><dd className="text-[var(--ink)]">{filled}/72</dd></div>
+              <div className="flex justify-between gap-3"><dt>{copy.lastScoreUpdate}</dt><dd className="text-[var(--ink)]">{score?.updated_at ? formatAmsterdam(score.updated_at, locale === "en" ? "en-GB" : "nl-NL") : "—"}</dd></div>
+              <div className="flex justify-between gap-3"><dt>{copy.appVersion}</dt><dd className="text-[var(--ink)]">{copy.beta} {APP_VERSION}</dd></div>
             </dl>
           </details>
         </div>
@@ -320,8 +320,8 @@ export default async function AccountPage({
 function ScoreStat({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className={`rounded-lg border border-slate-200 p-3 ${highlight ? "bg-[#fff7e8]" : "bg-white"}`}>
-      <div className="text-xs font-medium text-[#48617f]">{label}</div>
-      <div className={`font-bold ${highlight ? "text-lg text-[#b25a00]" : "text-[#081634]"}`}>{value}</div>
+      <div className="text-xs font-medium text-[var(--text-muted)]">{label}</div>
+      <div className={`font-bold ${highlight ? "text-lg text-[#b25a00]" : "text-[var(--ink)]"}`}>{value}</div>
     </div>
   );
 }

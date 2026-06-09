@@ -137,10 +137,10 @@ export default async function PrivacyPage() {
       <section className="grid gap-4 lg:grid-cols-2 lg:items-start">
         <article className="panel p-5">
           <div className="flex items-center gap-3">
-            <Database aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-bold text-[#081634]">{copy.dataTitle as string}</h2>
+            <Database aria-hidden="true" className="size-7 text-[var(--accent-blue)]" />
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.dataTitle as string}</h2>
           </div>
-          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
+          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[var(--text-muted)]">
             {dataItems.map((item) => <li key={item}>{item}</li>)}
           </ul>
         </article>
@@ -148,9 +148,9 @@ export default async function PrivacyPage() {
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <Lock aria-hidden="true" className="size-7 text-[#25a84a]" />
-            <h2 className="text-2xl font-bold text-[#081634]">{copy.purposeTitle as string}</h2>
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.purposeTitle as string}</h2>
           </div>
-          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
+          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[var(--text-muted)]">
             {purposeItems.map((item) => <li key={item}>{item}</li>)}
           </ul>
         </article>
@@ -158,24 +158,24 @@ export default async function PrivacyPage() {
         <article className="panel p-5">
           <div className="flex items-center gap-3">
             <Cookie aria-hidden="true" className="size-7 text-[#e1262f]" />
-            <h2 className="text-2xl font-bold text-[#081634]">{copy.cookiesTitle as string}</h2>
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.cookiesTitle as string}</h2>
           </div>
-          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
+          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[var(--text-muted)]">
             {cookiesItems.map((item) => <li key={item}>{item}</li>)}
-            <li>{copy.mailFrom as string} <strong className="text-[#081634]">{MAIL_FROM}</strong>.</li>
+            <li>{copy.mailFrom as string} <strong className="text-[var(--ink)]">{MAIL_FROM}</strong>.</li>
           </ul>
         </article>
 
         <article className="panel p-5">
           <div className="flex items-center gap-3">
-            <Trash2 aria-hidden="true" className="size-7 text-[#064ed6]" />
-            <h2 className="text-2xl font-bold text-[#081634]">{copy.controlTitle as string}</h2>
+            <Trash2 aria-hidden="true" className="size-7 text-[var(--accent-blue)]" />
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.controlTitle as string}</h2>
           </div>
-          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[#48617f]">
+          <ul className="mt-4 grid gap-2 text-sm font-medium leading-7 text-[var(--text-muted)]">
             {controlItems.map((item) => <li key={item}>{item}</li>)}
             <li className="flex items-center gap-2">
-              <Mail aria-hidden="true" className="size-4 text-[#064ed6]" />
-              <a className="font-bold text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+              <Mail aria-hidden="true" className="size-4 text-[var(--accent-blue)]" />
+              <a className="font-bold text-[var(--accent-blue)]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
             </li>
           </ul>
           <p className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#f4fbf0] px-3 py-2 text-sm font-bold text-[#137c35]">
@@ -187,31 +187,31 @@ export default async function PrivacyPage() {
 
       <section className="panel mt-4 p-5">
         <div className="flex items-center gap-3">
-          <ShieldCheck aria-hidden="true" className="size-7 text-[#064ed6]" />
-          <h2 className="text-2xl font-bold text-[#081634]">{copy.detailsTitle as string}</h2>
+          <ShieldCheck aria-hidden="true" className="size-7 text-[var(--accent-blue)]" />
+          <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.detailsTitle as string}</h2>
         </div>
-        <div className="mt-4 grid gap-4 text-sm font-medium leading-7 text-[#48617f]">
-          <div><h3 className="font-bold text-[#081634]">{copy.controllerTitle as string}</h3><p>{copy.controller as string} {COMPANY_NAME} (<a className="font-semibold text-[#064ed6]" href={COMPANY_URL} target="_blank" rel="noopener noreferrer">{COMPANY_URL.replace("https://", "")}</a>), {copy.controllerSuffix as string} <a className="font-bold text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p></div>
-          <div><h3 className="font-bold text-[#081634]">{copy.basisTitle as string}</h3><p>{copy.basis as string}</p></div>
-          <div><h3 className="font-bold text-[#081634]">{copy.retentionTitle as string}</h3><p>{copy.retention as string}</p></div>
-          <div><h3 className="font-bold text-[#081634]">{copy.processorsTitle as string}</h3><p>{copy.processors as string}</p></div>
-          <div><h3 className="font-bold text-[#081634]">{copy.childrenTitle as string}</h3><p>{copy.children as string}</p></div>
+        <div className="mt-4 grid gap-4 text-sm font-medium leading-7 text-[var(--text-muted)]">
+          <div><h3 className="font-bold text-[var(--ink)]">{copy.controllerTitle as string}</h3><p>{copy.controller as string} {COMPANY_NAME} (<a className="font-semibold text-[var(--accent-blue)]" href={COMPANY_URL} target="_blank" rel="noopener noreferrer">{COMPANY_URL.replace("https://", "")}</a>), {copy.controllerSuffix as string} <a className="font-bold text-[var(--accent-blue)]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p></div>
+          <div><h3 className="font-bold text-[var(--ink)]">{copy.basisTitle as string}</h3><p>{copy.basis as string}</p></div>
+          <div><h3 className="font-bold text-[var(--ink)]">{copy.retentionTitle as string}</h3><p>{copy.retention as string}</p></div>
+          <div><h3 className="font-bold text-[var(--ink)]">{copy.processorsTitle as string}</h3><p>{copy.processors as string}</p></div>
+          <div><h3 className="font-bold text-[var(--ink)]">{copy.childrenTitle as string}</h3><p>{copy.children as string}</p></div>
           <div>
-            <h3 className="font-bold text-[#081634]">{copy.rightsTitle as string}</h3>
+            <h3 className="font-bold text-[var(--ink)]">{copy.rightsTitle as string}</h3>
             <p>
-              {copy.rights as string} <a className="font-bold text-[#064ed6]" href={localizedHref("/account", locale)}>{copy.accountLink as string}</a>; {copy.rightsSuffix as string} <a className="font-bold text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. {copy.complaint as string}
+              {copy.rights as string} <a className="font-bold text-[var(--accent-blue)]" href={localizedHref("/account", locale)}>{copy.accountLink as string}</a>; {copy.rightsSuffix as string} <a className="font-bold text-[var(--accent-blue)]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. {copy.complaint as string}
             </p>
           </div>
         </div>
       </section>
 
-      <p className="mt-5 text-sm font-medium text-[#48617f]">
-        {copy.seeTerms as string} <a className="font-bold text-[#064ed6]" href={localizedHref("/voorwaarden", locale)}>{copy.terms as string}</a>.
+      <p className="mt-5 text-sm font-medium text-[var(--text-muted)]">
+        {copy.seeTerms as string} <a className="font-bold text-[var(--accent-blue)]" href={localizedHref("/voorwaarden", locale)}>{copy.terms as string}</a>.
       </p>
       <p className="mt-2 text-xs font-medium text-[#7a879b]">
         {copy.beta as string} (v{APP_VERSION}) van{" "}
-        <a className="font-semibold text-[#064ed6]" href={COMPANY_URL} target="_blank" rel="noopener noreferrer">{COMPANY_NAME}</a>.
-        {" "}{copy.contact as string}: <a className="font-semibold text-[#064ed6]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+        <a className="font-semibold text-[var(--accent-blue)]" href={COMPANY_URL} target="_blank" rel="noopener noreferrer">{COMPANY_NAME}</a>.
+        {" "}{copy.contact as string}: <a className="font-semibold text-[var(--accent-blue)]" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
       </p>
 
       <BottomNav current="/privacy" />

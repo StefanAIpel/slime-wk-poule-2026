@@ -87,12 +87,12 @@ export function PasswordResetForm({ locale = "nl" }: { locale?: Locale }) {
     <form onSubmit={onSubmit} className="panel grid gap-4 p-5" aria-label={copy.formAria}>
       <div>
         <p className="text-sm font-black uppercase tracking-normal text-[#0e7a44]">{copy.kicker}</p>
-        <h1 className="mt-1 text-2xl font-black text-[#081634]">{copy.title}</h1>
-        <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
+        <h1 className="mt-1 text-2xl font-black text-[var(--ink)]">{copy.title}</h1>
+        <p className="mt-2 text-sm font-semibold leading-6 text-[var(--text-muted)]">
           {copy.intro}
         </p>
       </div>
-      <label className="grid gap-2 text-sm font-bold text-[#081634]">
+      <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
         {copy.newPassword}
         <input
           className="field"
@@ -105,7 +105,7 @@ export function PasswordResetForm({ locale = "nl" }: { locale?: Locale }) {
           placeholder={copy.newPasswordPlaceholder}
         />
       </label>
-      <label className="grid gap-2 text-sm font-bold text-[#081634]">
+      <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
         {copy.repeat}
         <input
           className="field"
@@ -122,7 +122,7 @@ export function PasswordResetForm({ locale = "nl" }: { locale?: Locale }) {
         {status === "success" ? <Check aria-hidden="true" className="size-5" /> : <KeyRound aria-hidden="true" className="size-5" />}
         {status === "loading" ? copy.saving : status === "success" ? copy.savedButton : copy.saveButton}
       </button>
-      <p aria-live="polite" className={`text-sm font-bold leading-5 ${status === "error" ? "text-red-700" : "text-[#48617f]"}`}>
+      <p aria-live="polite" className={`text-sm font-bold leading-5 ${status === "error" ? "text-red-700" : "text-[var(--text-muted)]"}`}>
         {message || copy.helper}
       </p>
     </form>

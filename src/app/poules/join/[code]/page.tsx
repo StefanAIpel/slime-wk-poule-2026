@@ -104,8 +104,8 @@ export default async function JoinPoolPage({ params }: { params: Promise<{ code:
           <div className="flex items-center gap-3">
             <Users aria-hidden="true" className="size-7 text-[#25a84a]" />
             <div>
-              <h2 className="text-2xl font-bold text-[#081634]">{copy.invitationTitle}</h2>
-              <p className="text-sm font-semibold text-[#48617f]">{copy.poolCode}: <span className="font-black text-[#081634]">{code}</span></p>
+              <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.invitationTitle}</h2>
+              <p className="text-sm font-semibold text-[var(--text-muted)]">{copy.poolCode}: <span className="font-black text-[var(--ink)]">{code}</span></p>
             </div>
           </div>
           {poolInfo ? (
@@ -126,8 +126,8 @@ export default async function JoinPoolPage({ params }: { params: Promise<{ code:
         {user ? (
           <form action={joinPool} className="panel grid gap-3 p-5">
             <input type="hidden" name="code" value={code} />
-            <h2 className="text-2xl font-bold text-[#081634]">{copy.loggedInTitle}</h2>
-            <p className="text-sm font-semibold leading-6 text-[#48617f]">
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.loggedInTitle}</h2>
+            <p className="text-sm font-semibold leading-6 text-[var(--text-muted)]">
               {copy.loggedInCopy}
             </p>
             <button className="button-primary" type="submit">

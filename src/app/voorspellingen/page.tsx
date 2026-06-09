@@ -227,14 +227,14 @@ export default async function PredictionsPage({
         </section>
 
         <div className="panel p-4">
-          <div className="flex items-center justify-between text-sm font-bold text-[#081634]">
+          <div className="flex items-center justify-between text-sm font-bold text-[var(--ink)]">
             <span>{copy.progressTitle}</span>
             <span className="tabular-nums">{filledGroupMatches}/{groupMatchTotal} {copy.filled} · {groupProgress}%</span>
           </div>
           <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-slate-200">
             <div className="h-full rounded-full bg-[var(--green)] transition-all" style={{ width: `${groupProgress}%` }} />
           </div>
-          <p className="mt-1 text-xs font-medium text-[#48617f]">{copy.progressHint}</p>
+          <p className="mt-1 text-xs font-medium text-[var(--text-muted)]">{copy.progressHint}</p>
         </div>
 
         {groupProgress === 100 ? <PredictionsComplete locale={locale} /> : null}
@@ -310,7 +310,7 @@ export default async function PredictionsPage({
           </div>
           <div className="p-4 pt-0">
           <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!preKickoffBonusOpen}>
-            <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
+            <label className="grid gap-2 text-sm font-bold text-[var(--ink)] md:col-span-2">
               {copy.teamMostGoals}
               <select className="field choice-select" name="team_most_goals_code" defaultValue={special?.team_most_goals_code ?? ""}>
                 <option value="">{copy.chooseCountry}</option>
@@ -329,11 +329,11 @@ export default async function PredictionsPage({
         </section>
 
         <section className="panel p-4">
-          <h2 className="text-2xl font-bold text-[#081634]">{copy.lateTitle}</h2>
-          <p className="mt-1 text-sm font-medium text-[#48617f]">{copy.lateIntro}</p>
+          <h2 className="text-2xl font-bold text-[var(--ink)]">{copy.lateTitle}</h2>
+          <p className="mt-1 text-sm font-medium text-[var(--text-muted)]">{copy.lateIntro}</p>
           <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!lateOpen}>
-            <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
-              {copy.champion} <span className="font-medium text-[#48617f]">{copy.championHelp}</span>
+            <label className="grid gap-2 text-sm font-bold text-[var(--ink)] md:col-span-2">
+              {copy.champion} <span className="font-medium text-[var(--text-muted)]">{copy.championHelp}</span>
               <select className="field choice-select" name="champion_code" defaultValue={initialChampion}>
                 <option value="">{copy.chooseChampion}</option>
                 {typedTeams.map((team) => (
@@ -343,7 +343,7 @@ export default async function PredictionsPage({
                 ))}
               </select>
             </label>
-            <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
+            <label className="grid gap-2 text-sm font-bold text-[var(--ink)] md:col-span-2">
               {copy.oranje}
               <select className="field choice-select" name="oranje_stage" defaultValue={special?.oranje_stage ?? ""}>
                 <option value="">{copy.chooseOranje}</option>
@@ -395,7 +395,7 @@ function NumberField({
   helperText: string;
 }) {
   return (
-    <label className="grid gap-2 text-sm font-bold text-[#081634]">
+    <label className="grid gap-2 text-sm font-bold text-[var(--ink)]">
       {label}
       <input
         className="field"
@@ -409,7 +409,7 @@ function NumberField({
         placeholder={placeholder}
         autoComplete="off"
       />
-      <span className="text-xs font-medium text-[#48617f]">{helperText}</span>
+      <span className="text-xs font-medium text-[var(--text-muted)]">{helperText}</span>
     </label>
   );
 }

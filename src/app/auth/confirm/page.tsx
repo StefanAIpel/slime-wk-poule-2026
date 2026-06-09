@@ -9,8 +9,8 @@ export default function AuthConfirmPage() {
         <div className="inline-flex w-fit rounded-full bg-green-100 px-3 py-1 text-sm font-bold text-[#0f7a39]">
           Bevestiging geopend
         </div>
-        <h1 className="text-3xl font-bold leading-none text-[#081634]">We bevestigen je account</h1>
-        <p className="text-sm font-medium leading-6 text-[#48617f]">
+        <h1 className="text-3xl font-bold leading-none text-[var(--ink)]">We bevestigen je account</h1>
+        <p className="text-sm font-medium leading-6 text-[var(--text-muted)]">
           Je registratie wordt veilig afgerond. Duurt dit langer dan een paar seconden, vraag dan een nieuwe
           bevestigingsmail aan.
         </p>

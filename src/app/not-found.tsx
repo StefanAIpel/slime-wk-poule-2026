@@ -57,23 +57,23 @@ export default function NotFound() {
 
         <section className="grid gap-3 md:grid-cols-3">
           <div className="panel p-4">
-            <div className="flex items-center gap-2 text-lg font-black text-[#081634]">
+            <div className="flex items-center gap-2 text-lg font-black text-[var(--ink)]">
               <Wrench aria-hidden="true" className="size-5 text-[#ff7a00]" />
               Handleiding kwijt?
             </div>
-            <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
+            <p className="mt-2 text-sm font-semibold leading-6 text-[var(--text-muted)]">
               Check de spelling of ga terug naar de startpagina. De WK-poule staat nog gewoon stevig in elkaar.
             </p>
           </div>
           <a className="panel p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-xl" href={SLIME_GAME_URL} target="_blank" rel="noopener noreferrer">
-            <div className="text-lg font-black text-[#081634]">/soccer</div>
-            <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
+            <div className="text-lg font-black text-[var(--ink)]">/soccer</div>
+            <p className="mt-2 text-sm font-semibold leading-6 text-[var(--text-muted)]">
               Direct door naar Slime Soccer voor even rammen tegen de bal.
             </p>
           </a>
           <a className="panel p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-xl" href={VOLLEY_GAME_URL} target="_blank" rel="noopener noreferrer">
-            <div className="text-lg font-black text-[#081634]">/volley</div>
-            <p className="mt-2 text-sm font-semibold leading-6 text-[#48617f]">
+            <div className="text-lg font-black text-[var(--ink)]">/volley</div>
+            <p className="mt-2 text-sm font-semibold leading-6 text-[var(--text-muted)]">
               Direct door naar Slime Volley als je liever over het net kliedert.
             </p>
           </a>

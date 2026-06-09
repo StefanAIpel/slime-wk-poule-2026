@@ -22,8 +22,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       <main className="page-shell grid min-h-[60vh] place-items-center">
         <div className="panel grid max-w-md gap-2 p-6 text-center">
           <ShieldAlert aria-hidden="true" className="mx-auto size-8 text-[#b23b46]" />
-          <h1 className="text-xl font-bold text-[#081634]">Geen toegang</h1>
-          <p className="text-sm font-medium text-[#48617f]">Deze pagina is alleen voor beheerders.</p>
+          <h1 className="text-xl font-bold text-[var(--ink)]">Geen toegang</h1>
+          <p className="text-sm font-medium text-[var(--text-muted)]">Deze pagina is alleen voor beheerders.</p>
           <Link className="button-secondary mx-auto mt-2" href="/">Naar home</Link>
         </div>
       </main>
@@ -43,8 +43,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     <main className="page-shell">
       <header className="mb-5 grid gap-3">
         <Brand />
-        <h1 className="text-2xl font-bold text-[#081634]">Beheer</h1>
-        <p className="text-sm font-medium text-[#48617f]">Ingelogd als {user.email}</p>
+        <h1 className="text-2xl font-bold text-[var(--ink)]">Beheer</h1>
+        <p className="text-sm font-medium text-[var(--text-muted)]">Ingelogd als {user.email}</p>
       </header>
 
       {params.ok ? <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-3 font-bold text-green-800">Opgeslagen en herberekend.</div> : null}
@@ -66,7 +66,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       </section>
 
       <section className="mt-4 panel p-4">
-        <h2 className="text-lg font-bold text-[#081634]">Datacontrole (alleen-lezen)</h2>
+        <h2 className="text-lg font-bold text-[var(--ink)]">Datacontrole (alleen-lezen)</h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           {anomalyItems.map((item) => {
             const flagged = item.value > 0;
@@ -75,8 +75,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                 key={item.label}
                 className={`rounded-lg border p-3 ${flagged ? "border-amber-300 bg-amber-50" : "border-slate-200 bg-slate-50"}`}
               >
-                <div className={`text-2xl font-bold tabular-nums ${flagged ? "text-[#8a5a00]" : "text-[#081634]"}`}>{item.value}</div>
-                <div className="text-xs font-medium text-[#48617f]">{item.label}</div>
+                <div className={`text-2xl font-bold tabular-nums ${flagged ? "text-[#8a5a00]" : "text-[var(--ink)]"}`}>{item.value}</div>
+                <div className="text-xs font-medium text-[var(--text-muted)]">{item.label}</div>
               </div>
             );
           })}
@@ -84,8 +84,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       </section>
 
       <div className="mt-4 panel flex flex-wrap items-center justify-between gap-3 p-4">
-        <div className="text-sm font-medium text-[#48617f]">
-          Laatste herberekening: <span className="font-bold text-[#081634]">{lastUpdate ? formatAmsterdam(lastUpdate) : "nog niet"}</span>
+        <div className="text-sm font-medium text-[var(--text-muted)]">
+          Laatste herberekening: <span className="font-bold text-[var(--ink)]">{lastUpdate ? formatAmsterdam(lastUpdate) : "nog niet"}</span>
         </div>
         <form action={adminRecalculate}>
           <PendingButton
@@ -100,34 +100,34 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
       <section className="mt-4 grid gap-3 lg:grid-cols-2">
         <div className="panel p-4">
-          <h2 className="text-lg font-bold text-[#081634]">Nieuwste spelers (20)</h2>
+          <h2 className="text-lg font-bold text-[var(--ink)]">Nieuwste spelers (20)</h2>
           <div className="mt-2 grid gap-1 text-sm">
             {profileRows.length ? (
               profileRows.map((p) => (
                 <div key={p.id} className="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-100 py-1 last:border-b-0">
-                  <span className="font-bold text-[#081634]">{p.nickname ?? "(geen naam)"}</span>
-                  <span className="text-[#48617f]">{p.team_name ?? "—"}</span>
+                  <span className="font-bold text-[var(--ink)]">{p.nickname ?? "(geen naam)"}</span>
+                  <span className="text-[var(--text-muted)]">{p.team_name ?? "—"}</span>
                   <span className="text-xs text-[#7a8aa3]">{formatAmsterdam(p.created_at)}</span>
                 </div>
               ))
             ) : (
-              <p className="font-medium text-[#48617f]">Nog geen spelers.</p>
+              <p className="font-medium text-[var(--text-muted)]">Nog geen spelers.</p>
             )}
           </div>
         </div>
         <div className="panel p-4">
-          <h2 className="text-lg font-bold text-[#081634]">Nieuwste WK-poules (20)</h2>
+          <h2 className="text-lg font-bold text-[var(--ink)]">Nieuwste WK-poules (20)</h2>
           <div className="mt-2 grid gap-1 text-sm">
             {poolRows.length ? (
               poolRows.map((p) => (
                 <div key={p.id} className="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-100 py-1 last:border-b-0">
-                  <span className="font-bold text-[#081634]">{p.name}</span>
-                  <span className="text-[#48617f]">{p.memberCount} leden</span>
+                  <span className="font-bold text-[var(--ink)]">{p.name}</span>
+                  <span className="text-[var(--text-muted)]">{p.memberCount} leden</span>
                   <span className="text-xs text-[#7a8aa3]">{formatAmsterdam(p.created_at)}</span>
                 </div>
               ))
             ) : (
-              <p className="font-medium text-[#48617f]">Nog geen poules.</p>
+              <p className="font-medium text-[var(--text-muted)]">Nog geen poules.</p>
             )}
           </div>
         </div>
@@ -135,18 +135,18 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
       <section className="mt-4 panel p-4">
         <div className="flex items-center gap-2">
-          <KeyRound aria-hidden="true" className="size-5 text-[#064ed6]" />
-          <h2 className="text-lg font-bold text-[#081634]">Vaste inlogcodes zonder e-mail</h2>
+          <KeyRound aria-hidden="true" className="size-5 text-[var(--accent-blue)]" />
+          <h2 className="text-lg font-bold text-[var(--ink)]">Vaste inlogcodes zonder e-mail</h2>
         </div>
-        <p className="mt-1 text-sm font-medium text-[#48617f]">
+        <p className="mt-1 text-sm font-medium text-[var(--text-muted)]">
           Maak een account voor iemand zonder e-mail. Diegene logt steeds in met dezelfde vaste code en kiest bij de eerste login zelf naam + teamnaam. Houd codes privé.
         </p>
         <form action={createKidAccount} className="mt-3 flex flex-wrap items-end gap-2">
-          <label className="grid gap-1 text-xs font-bold text-[#081634]">
+          <label className="grid gap-1 text-xs font-bold text-[var(--ink)]">
             Naam/speler (voor jouw overzicht)
             <input className="field min-h-10" name="nickname" required minLength={2} maxLength={NICKNAME_MAX_LENGTH} placeholder="Bijv. Fedde" />
           </label>
-          <label className="grid gap-1 text-xs font-bold text-[#081634]">
+          <label className="grid gap-1 text-xs font-bold text-[var(--ink)]">
             Vaste code (optioneel, anders willekeurig — min. 8 tekens)
             <input className="field min-h-10" name="code" minLength={8} maxLength={16} placeholder="Bijv. fedde2026" autoComplete="off" />
           </label>
@@ -158,13 +158,13 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           <div className="mt-3 overflow-hidden rounded-lg border border-slate-200">
             {kidRows.map((k) => (
               <div key={k.user_id} className="flex items-center justify-between gap-3 border-b border-slate-100 px-3 py-2 text-sm last:border-b-0">
-                <span className="font-bold text-[#081634]">{k.nickname ?? "Kind"}</span>
+                <span className="font-bold text-[var(--ink)]">{k.nickname ?? "Kind"}</span>
                 <span className="font-mono font-bold text-[var(--blue-2)]">{k.code}</span>
               </div>
             ))}
           </div>
         ) : (
-          <p className="mt-2 text-sm font-medium text-[#48617f]">Nog geen kind-accounts.</p>
+          <p className="mt-2 text-sm font-medium text-[var(--text-muted)]">Nog geen kind-accounts.</p>
         )}
       </section>
 
@@ -179,9 +179,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               <div className="flex items-center gap-2 text-sm">
                 <span className="grid size-5 place-items-center rounded-full bg-[#e7eef8] text-[10px] font-bold text-[var(--blue-2)]">{m.group_letter ?? "KO"}</span>
                 <TeamFlag code={m.home_code} name={m.home?.name_nl} />
-                <span className="font-medium text-[#081634]">{m.home?.name_nl ?? m.home_label ?? m.home_code}</span>
+                <span className="font-medium text-[var(--ink)]">{m.home?.name_nl ?? m.home_label ?? m.home_code}</span>
                 <span className="text-[var(--muted)]">–</span>
-                <span className="font-medium text-[#081634]">{m.away?.name_nl ?? m.away_label ?? m.away_code}</span>
+                <span className="font-medium text-[var(--ink)]">{m.away?.name_nl ?? m.away_label ?? m.away_code}</span>
                 <TeamFlag code={m.away_code} name={m.away?.name_nl} />
                 {m.status === "finished" ? <span className="rounded bg-green-100 px-1.5 text-xs font-bold text-green-800">klaar</span> : null}
               </div>
@@ -189,7 +189,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                 <input className="score-input" name="home_score" inputMode="numeric" defaultValue={m.home_score ?? ""} aria-label="Thuis" />
                 <span className="text-[var(--muted)]">–</span>
                 <input className="score-input" name="away_score" inputMode="numeric" defaultValue={m.away_score ?? ""} aria-label="Uit" />
-                <label className="flex items-center gap-1 text-xs font-semibold text-[#48617f]">
+                <label className="flex items-center gap-1 text-xs font-semibold text-[var(--text-muted)]">
                   <input type="checkbox" name="finished" defaultChecked={m.status === "finished"} /> klaar
                 </label>
                 <PendingButton className="button-secondary min-h-10 px-3 text-sm" pendingText="…">Opslaan</PendingButton>
@@ -200,19 +200,19 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       </section>
 
       <section className="mt-4 panel p-4">
-        <h2 className="text-lg font-bold text-[#081634]">Auditlog (laatste 15)</h2>
+        <h2 className="text-lg font-bold text-[var(--ink)]">Auditlog (laatste 15)</h2>
         <div className="mt-2 grid gap-1 text-xs">
           {auditRows.length ? (
             auditRows.map((a) => (
               <div key={a.id} className="flex flex-wrap justify-between gap-2 border-b border-slate-100 py-1">
-                <span className="font-mono text-[#081634]">{a.action}</span>
-                <span className="text-[#48617f]">{a.actor_email}</span>
+                <span className="font-mono text-[var(--ink)]">{a.action}</span>
+                <span className="text-[var(--text-muted)]">{a.actor_email}</span>
                 <span className="text-[#7a8aa3]">{formatAmsterdam(a.created_at)}</span>
                 <span className="w-full font-mono text-[#7a8aa3]">{JSON.stringify(a.detail)}</span>
               </div>
             ))
           ) : (
-            <p className="text-sm font-medium text-[#48617f]">Nog geen acties.</p>
+            <p className="text-sm font-medium text-[var(--text-muted)]">Nog geen acties.</p>
           )}
         </div>
       </section>
@@ -225,8 +225,8 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
     <div className="panel flex items-center gap-3 p-4">
       <span className="grid size-9 place-items-center rounded-lg bg-[#e7eef8] text-[var(--blue-2)]">{icon}</span>
       <div>
-        <div className="text-xs font-medium text-[#48617f]">{label}</div>
-        <div className="text-lg font-bold text-[#081634]">{value}</div>
+        <div className="text-xs font-medium text-[var(--text-muted)]">{label}</div>
+        <div className="text-lg font-bold text-[var(--ink)]">{value}</div>
       </div>
     </div>
   );
