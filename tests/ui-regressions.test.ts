@@ -156,6 +156,16 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
   assert.doesNotMatch(globalsCss, /\.pool-member-world \{\n\s*display: none;\n\s*\}/);
 });
 
+test("logged-in status header uses the user's avatar instead of the trophy icon", () => {
+  assert.match(apiMeRoute, /select\("nickname,team_name,avatar_key,preferred_locale"\)/);
+  assert.match(apiMeRoute, /avatarKey: profile\?\.avatar_key \?\? null/);
+  assert.match(statusBar, /import \{ Avatar \} from "@\/components\/avatar";/);
+  assert.match(statusBar, /type Me = \{ loggedIn: boolean; nickname\?: string \| null; avatarKey\?: string \| null; rank\?: number \| null; progress\?: number \}/);
+  assert.match(statusBar, /<Avatar name=\{me\.nickname \?\? \(locale === "en" \? "Player" : "Speler"\)\} avatarKey=\{me\.avatarKey\} size=\{18\} \/>/);
+  assert.doesNotMatch(statusBar, /<Trophy aria-hidden="true"/);
+  assert.match(globalsCss, /\.status-chip-account \.avatar-img \{[\s\S]*width: 18px;[\s\S]*height: 18px;[\s\S]*background: rgba\(255, 255, 255, 0\.22\);/);
+});
+
 test("footer version is bumped for this high-priority deploy", () => {
   assert.match(constants, /APP_VERSION = "0.38"/);
 });
@@ -543,6 +553,13 @@ test("pool ranking rows are compact and keep player metadata on one line", () =>
   assert.match(globalsCss, /\.pool-member-world \{[\s\S]*vertical-align: baseline;/);
 });
 
+test("pool ranking enlarges a player's avatar when the row is opened", () => {
+  assert.match(poolMembers, /<Avatar name=\{member\.name\} avatarKey=\{member\.avatarKey\} size=\{open \? 34 : 22\} \/>/);
+  assert.doesNotMatch(poolMembers, /<Avatar name=\{member\.name\} avatarKey=\{member\.avatarKey\} size=\{22\} \/>/);
+  assert.match(globalsCss, /\.pool-member-button \.avatar-img \{[\s\S]*transition: width 160ms ease, height 160ms ease, transform 160ms ease;/);
+  assert.match(globalsCss, /\.pool-member-button\[aria-expanded="true"\] \.avatar-img \{[\s\S]*transform: scale\(1\.03\);/);
+});
+
 test("pool message board has a green title bar and light-green messages", () => {
   assert.match(poulesPage, /<h3 className="pool-board-titlebar">\{copy\.board\}<\/h3>/);
   assert.match(globalsCss, /\.pool-board-section \{[\s\S]*background: #f2fbf5;/);
@@ -839,7 +856,7 @@ test("English preference persists sitewide in browser storage and Supabase accou
   assert.match(localePreferenceSync, /reloadIfRenderedLocaleDiffers\(me\.preferredLocale\)/);
   assert.match(localePreferenceSync, /fetch\("\/api\/me"[\s\S]*fetch\("\/api\/locale"/);
   assert.match(layout, /<LocalePreferenceSync \/>/);
-  assert.match(apiMeRoute, /select\("nickname,team_name,preferred_locale"\)/);
+  assert.match(apiMeRoute, /select\("nickname,team_name,avatar_key,preferred_locale"\)/);
   assert.match(apiMeRoute, /preferredLocale: profile\?\.preferred_locale/);
   assert.match(accountPage, /name="preferred_locale"/);
   assert.match(accountPage, /Account language/);

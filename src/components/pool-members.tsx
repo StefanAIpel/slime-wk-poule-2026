@@ -97,7 +97,7 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
                 <span className="pool-member-rank grid size-7 flex-none place-items-center rounded-full bg-[#20508c] text-xs font-bold text-white" aria-label={`${copy.poolRankLabel} #${member.rank}`}>
                   {member.rank}
                 </span>
-                <Avatar name={member.name} avatarKey={member.avatarKey} size={22} />
+                <Avatar name={member.name} avatarKey={member.avatarKey} size={open ? 34 : 22} />
                 <span className="pool-member-main min-w-0 flex-1 truncate">
                   <span className="pool-member-name font-bold text-[#081634]">{member.name}</span>
                   {member.isOwner ? (
