@@ -1069,6 +1069,34 @@ textarea {
   align-self: start;
 }
 
+@media (max-width: 759px) {
+  .hero-band-page {
+    min-height: 138px;
+    max-height: 166px;
+    padding: 16px 18px;
+  }
+
+  .hero-band-page .hero-content {
+    max-width: 68%;
+  }
+
+  .hero-band-page h1 {
+    font-size: 2rem;
+    line-height: 1.04;
+  }
+
+  .hero-band-page p {
+    margin-top: 6px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .hero-band-page.hero-band-visual .hero-mascot {
+    max-height: 58%;
+    max-width: 32%;
+  }
+}
+
 @media (min-width: 800px) {
   .hero-band-page {
     min-height: 168px;
@@ -1271,6 +1299,52 @@ textarea {
   .hero-band-art {
     width: 104px;
     height: 104px;
+  }
+}
+
+/* Voorspellingen: compacte blauwe sectiebanners. */
+.prediction-title-banner {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(43, 195, 95, 0.16) 0 18%, transparent 18%),
+    linear-gradient(150deg, #1e73b8 0%, #114b82 58%, #0b345d 100%);
+  padding: 13px 16px;
+  color: #fff;
+  box-shadow: 0 12px 26px rgba(14, 42, 71, 0.18);
+}
+
+.prediction-title-banner-inset {
+  margin: 12px;
+}
+
+.prediction-title-banner h2 {
+  font-size: clamp(1.28rem, 5vw, 1.7rem);
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.prediction-title-banner p {
+  margin-top: 4px;
+  color: #dbeafe;
+  font-size: 0.88rem;
+  font-weight: 550;
+  line-height: 1.45;
+}
+
+.prediction-helper-panel {
+  border-color: rgba(30, 115, 184, 0.14);
+  background: linear-gradient(135deg, #f7fbff, #fff7e8);
+}
+
+@media (min-width: 760px) {
+  .prediction-title-banner {
+    padding: 15px 18px;
+  }
+
+  .prediction-title-banner-inset {
+    margin: 14px;
   }
 }
 

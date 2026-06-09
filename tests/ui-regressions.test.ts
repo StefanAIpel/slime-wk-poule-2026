@@ -749,7 +749,9 @@ test("prediction saves sync the global status bar progress without requiring rel
 test("prediction page keeps deadline and scoring explanation out of the form because details live in rules", () => {
   assert.match(predictionsPage, /heroSubtitle: "Vul je voorspellingen in en sla op\."/);
   assert.match(predictionsPage, /heroSubtitle: "Fill in your predictions and save\."/);
-  assert.match(predictionsPage, /groupOpen: ""/);
+  assert.match(predictionsPage, /Vraag je AI-agent om een eerste invulling/);
+  assert.match(predictionsPage, /groupOpen: "Geen perfecte glazen bol nodig: vul eerst je gevoel in, verfijn later\."/);
+  assert.match(predictionsPage, /prediction-title-banner/);
   assert.doesNotMatch(predictionsPage, /Deadlines en puntentelling staan bij Regels/);
   assert.doesNotMatch(predictionsPage, /Details and deadlines are in Rules/);
   assert.doesNotMatch(predictionsPage, /T\/m 14 juni 21:00: niet-gestarte wedstrijden invullen en opslaan\./);
@@ -1047,7 +1049,8 @@ test("schema defaults to groups, keeps knockout separate, and removes the all-ma
 
 test("schema copy is public-facing and group/date are chosen via pickers", () => {
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Alle WK-wedstrijden op een rij met datum, tijd en stadion/);
-  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Geen account nodig — deel het schema gerust in je groepsapp/);
+  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Deel het schema gerust in je groepsapp/);
+  assert.doesNotMatch(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Geen account nodig/);
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /shareTitle: "WK 2026 speelschema"/);
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /shareTitle: "WC 2026 schedule"/);
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /<ShareButton[\s\S]*title=\{[^}]+shareTitle|title=\{scheduleTitle\}[\s\S]*label=\{[^}]+shareLabel|label=\{scheduleCopy\[locale\]\.shareLabel\}[\s\S]*locale=\{locale\}/);

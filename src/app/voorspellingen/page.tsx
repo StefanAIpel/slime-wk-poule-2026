@@ -33,9 +33,10 @@ const predictionCopy = {
     metaDescription: "Vul je SlimeScore WK 2026-voorspellingen in en pas ze aan tot de deadline.",
     heroTitle: "Voorspellingen",
     heroSubtitle: "Vul je voorspellingen in en sla op.",
+    motivation: "Vul eerst grof in: 1-1 is beter dan leeg. Geen zin om alles zelf te bedenken? Vraag je AI-agent om een eerste invulling en pas daarna je favorieten aan.",
     saved: "Opgeslagen.",
     groupTitle: "Groepswedstrijden",
-    groupOpen: "",
+    groupOpen: "Geen perfecte glazen bol nodig: vul eerst je gevoel in, verfijn later.",
     groupClosed: "De hoofdvoorspellingen zijn gesloten.",
     progressTitle: "Voortgang groepswedstrijden",
     filled: "ingevuld",
@@ -43,12 +44,12 @@ const predictionCopy = {
     jumpLabel: "Spring naar groep",
     jumpText: "Selecteer groep",
     knockoutTitle: "Knock-outrondes",
-    knockoutIntro: "De laatste 32 worden uit je groepsstanden berekend. Daarna kies je simpelweg welke landen verder komen. De wereldkampioen kies je los onderaan (vrij uit alle landen).",
+    knockoutIntro: "De laatste 32 worden uit je groepsstanden berekend. Daarna kies je simpelweg welke landen verder komen. Kom je er niet uit? Laat je AI-agent een voorstel maken en pas zelf de gekke keuzes aan.",
     last32: "Laatste 32: automatisch uitgerekend met nummers 1 en 2 per groep plus de beste acht nummers 3.",
     incomplete: (filled: number, total: number) =>
       `Let op: je hebt ${filled} van ${total} groepswedstrijden ingevuld. Vul ze allemaal in, anders klopt je automatische laatste 32 nog niet en mis je punten.`,
     bonusTitle: "Bonusvragen",
-    bonusIntro: "Start leeg: vul je eigen schatting in vóór 11 juni 21:00. Lege bonusvelden leveren geen punten op.",
+    bonusIntro: "Start leeg: gok slim, gok brutaal, of laat je AI-agent een eerste schatting maken. Lege bonusvelden leveren geen punten op.",
     teamMostGoals: "Team met de meeste doelpunten",
     chooseCountry: "Kies land",
     totalGoals: "Totaal aantal goals",
@@ -71,9 +72,10 @@ const predictionCopy = {
     metaDescription: "Fill in your SlimeScore World Cup 2026 predictions and edit them until the deadline.",
     heroTitle: "Predictions",
     heroSubtitle: "Fill in your predictions and save.",
+    motivation: "Start rough: 1-1 is better than blank. Not in the mood to think through everything? Ask your AI agent for a first draft and tweak your favorites after.",
     saved: "Saved.",
     groupTitle: "Group matches",
-    groupOpen: "",
+    groupOpen: "No perfect crystal ball needed: start with your gut and tweak later.",
     groupClosed: "The main predictions are closed.",
     progressTitle: "Group match progress",
     filled: "filled in",
@@ -81,12 +83,12 @@ const predictionCopy = {
     jumpLabel: "Jump to group",
     jumpText: "Select group",
     knockoutTitle: "Knockout rounds",
-    knockoutIntro: "The last 32 are calculated from your group standings. Then simply choose which countries keep going. Pick the world champion separately below (from all countries).",
+    knockoutIntro: "The last 32 are calculated from your group standings. Then simply choose which countries keep going. Stuck? Ask your AI agent for a first draft and tweak the wild picks yourself.",
     last32: "Last 32: automatically calculated with numbers 1 and 2 from each group plus the best eight number 3 teams.",
     incomplete: (filled: number, total: number) =>
       `Heads up: you filled in ${filled} of ${total} group matches. Fill them all in, otherwise your automatic last 32 may be wrong and you can miss points.`,
     bonusTitle: "Bonus questions",
-    bonusIntro: "Start empty: enter your own estimate before 11 June 21:00. Empty bonus fields score no points.",
+    bonusIntro: "Start empty: guess smart, guess bold, or let your AI agent make a first estimate. Empty bonus fields score no points.",
     teamMostGoals: "Team with most goals",
     chooseCountry: "Choose country",
     totalGoals: "Total number of goals",
@@ -213,12 +215,16 @@ export default async function PredictionsPage({
       ) : null}
 
       <form action={savePredictions} className="grid gap-5">
-        <section className="dark-panel p-4 text-white">
-          <h2 className="text-2xl font-bold">{copy.groupTitle}</h2>
+        <div className="panel prediction-helper-panel p-4 text-sm font-bold leading-6 text-[#174176]">
+          {copy.motivation}
+        </div>
+
+        <section className="prediction-title-banner">
+          <h2>{copy.groupTitle}</h2>
           {mainOpen && copy.groupOpen ? (
-            <p className="mt-1 text-sm font-medium text-blue-100">{copy.groupOpen}</p>
+            <p>{copy.groupOpen}</p>
           ) : null}
-          {!mainOpen ? <p className="mt-1 text-sm font-medium text-blue-100">{copy.groupClosed}</p> : null}
+          {!mainOpen ? <p>{copy.groupClosed}</p> : null}
         </section>
 
         <div className="panel p-4">
@@ -271,9 +277,12 @@ export default async function PredictionsPage({
           );
         })}
 
-        <section id="knockouts" className="panel p-4">
-          <h2 className="text-2xl font-bold text-[#081634]">{copy.knockoutTitle}</h2>
-          <p className="mt-1 text-sm font-medium text-[#48617f]">{copy.knockoutIntro}</p>
+        <section id="knockouts" className="panel overflow-hidden">
+          <div className="prediction-title-banner prediction-title-banner-inset">
+            <h2>{copy.knockoutTitle}</h2>
+            <p>{copy.knockoutIntro}</p>
+          </div>
+          <div className="p-4 pt-0">
           <div className="mt-4 rounded-lg border border-[#bce8c8] bg-[#f4fbf0] p-3 text-sm font-bold leading-6 text-[#137c35]">
             {copy.last32}
           </div>
@@ -292,11 +301,15 @@ export default async function PredictionsPage({
               locale={locale}
             />
           </div>
+          </div>
         </section>
 
-        <section id="bonusvragen" className="panel p-4">
-          <h2 className="text-2xl font-bold text-[#081634]">{copy.bonusTitle}</h2>
-          <p className="mt-1 text-sm font-medium text-[#48617f]">{copy.bonusIntro}</p>
+        <section id="bonusvragen" className="panel overflow-hidden">
+          <div className="prediction-title-banner prediction-title-banner-inset">
+            <h2>{copy.bonusTitle}</h2>
+            <p>{copy.bonusIntro}</p>
+          </div>
+          <div className="p-4 pt-0">
           <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!preKickoffBonusOpen}>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
               {copy.teamMostGoals}
@@ -313,6 +326,7 @@ export default async function PredictionsPage({
             <NumberField name="total_red_cards" label={copy.redCards} value={special?.total_red_cards} min={0} max={50} placeholder={`${copy.examplePrefix} 8`} helperText={copy.helper} />
             <NumberField name="fastest_goal_minute" label={copy.fastestGoal} value={special?.fastest_goal_minute} min={1} max={120} placeholder={`${copy.examplePrefix} 3`} helperText={copy.helper} />
           </fieldset>
+          </div>
         </section>
 
         <section className="panel p-4">
