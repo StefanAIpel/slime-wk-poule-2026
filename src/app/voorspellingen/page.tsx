@@ -271,7 +271,7 @@ export default async function PredictionsPage({
           );
         })}
 
-        <section className="panel p-4">
+        <section id="knockouts" className="panel p-4">
           <h2 className="text-2xl font-bold text-[#081634]">{copy.knockoutTitle}</h2>
           <p className="mt-1 text-sm font-medium text-[#48617f]">{copy.knockoutIntro}</p>
           <div className="mt-4 rounded-lg border border-[#bce8c8] bg-[#f4fbf0] p-3 text-sm font-bold leading-6 text-[#137c35]">
@@ -294,13 +294,13 @@ export default async function PredictionsPage({
           </div>
         </section>
 
-        <section className="panel p-4">
+        <section id="bonusvragen" className="panel p-4">
           <h2 className="text-2xl font-bold text-[#081634]">{copy.bonusTitle}</h2>
           <p className="mt-1 text-sm font-medium text-[#48617f]">{copy.bonusIntro}</p>
           <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!mainOpen}>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
               {copy.teamMostGoals}
-              <select className="field" name="team_most_goals_code" defaultValue={special?.team_most_goals_code ?? ""}>
+              <select className="field choice-select" name="team_most_goals_code" defaultValue={special?.team_most_goals_code ?? ""}>
                 <option value="">{copy.chooseCountry}</option>
                 {typedTeams.map((team) => (
                   <option key={team.code} value={team.code}>
@@ -321,7 +321,7 @@ export default async function PredictionsPage({
           <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!lateOpen}>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
               {copy.champion} <span className="font-medium text-[#48617f]">{copy.championHelp}</span>
-              <select className="field" name="champion_code" defaultValue={initialChampion}>
+              <select className="field choice-select" name="champion_code" defaultValue={initialChampion}>
                 <option value="">{copy.chooseChampion}</option>
                 {typedTeams.map((team) => (
                   <option key={team.code} value={team.code}>
@@ -332,7 +332,7 @@ export default async function PredictionsPage({
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
               {copy.oranje}
-              <select className="field" name="oranje_stage" defaultValue={special?.oranje_stage ?? ""}>
+              <select className="field choice-select" name="oranje_stage" defaultValue={special?.oranje_stage ?? ""}>
                 <option value="">{copy.chooseOranje}</option>
                 {oranjeStageOrder.map((stage) => (
                   <option key={stage} value={stage}>

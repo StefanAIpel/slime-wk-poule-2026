@@ -1862,6 +1862,16 @@ textarea {
   border-color: var(--blue);
 }
 
+.choice-select:has(option[value=""]:checked) {
+  border-color: #f59e0b;
+  background: #fff7d6;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.16), inset 0 1px 2px rgba(8, 22, 52, 0.05);
+}
+
+.choice-select:has(option[value=""]:checked):focus {
+  border-color: #d97706;
+}
+
 .match-group {
   display: inline-grid;
   width: 34px;
