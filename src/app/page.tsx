@@ -404,7 +404,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold leading-tight md:text-4xl">{copy.dashboardTitle}</h1>
-                <p className="mt-2 max-w-xl text-base font-medium text-blue-100">
+                <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-blue-100 md:text-base md:leading-7">
                   {copy.dashboardIntroBefore}{" "}
                   <strong className="font-bold text-white">{deadlineLabel}</strong>
                   {copy.dashboardIntroAfter}
@@ -420,12 +420,12 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                   <p className="text-xs font-bold uppercase tracking-normal text-blue-100">{copy.progressTitle}</p>
                   <p className="text-3xl font-bold">{progress}%</p>
                 </div>
-                <p className="text-right text-sm font-semibold text-blue-100">{copy.progressCount(predictionCount ?? 0)}</p>
+                <p className="text-right text-xs font-semibold text-blue-100 sm:text-sm">{copy.progressCount(predictionCount ?? 0)}</p>
               </div>
               <div className="dashboard-progress-bar mt-2 h-3 overflow-hidden rounded-full bg-black/32">
                 <div className="h-full rounded-full bg-[#25a84a]" style={{ width: `${Math.min(progress, 100)}%` }} />
               </div>
-              <p className="mt-2 text-sm font-semibold text-blue-100">
+              <p className="mt-2 text-xs font-semibold text-blue-100 sm:text-sm">
                 {remaining > 0 ? copy.remaining(remaining) : copy.complete}
               </p>
               <div className={`mt-3 rounded-lg border p-2.5 ${extraRemaining > 0 ? "border-amber-300 bg-amber-50 text-[#8a5a00]" : "border-green-300 bg-green-50 text-[#137c35]"}`}>
@@ -434,7 +434,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                     <p className="text-xs font-bold uppercase tracking-normal">{copy.extraProgressTitle}</p>
                     <p className="text-2xl font-bold tabular-nums">{extraProgress}%</p>
                   </div>
-                  <p className="text-right text-sm font-bold tabular-nums">{copy.extraProgressCount(extraFilled, EXTRA_PROGRESS_TOTAL)}</p>
+                  <p className="text-right text-xs font-bold tabular-nums sm:text-sm">{copy.extraProgressCount(extraFilled, EXTRA_PROGRESS_TOTAL)}</p>
                 </div>
                 <div className="dashboard-extra-progress-bar mt-2 h-2 overflow-hidden rounded-full bg-white/70">
                   <div
@@ -442,7 +442,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                     style={{ width: `${Math.min(extraProgress, 100)}%` }}
                   />
                 </div>
-                <p className="mt-2 text-sm font-bold">
+                <p className="mt-2 text-xs font-bold sm:text-sm">
                   {extraRemaining > 0 ? copy.extraProgressOpen(knockoutRemaining, bonusRemaining) : copy.extraProgressComplete}
                 </p>
               </div>
@@ -457,9 +457,9 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
           <form id="meedoen" action={joinPool} className="panel grid gap-3 p-5 scroll-mt-24">
             <div className="flex items-center gap-2">
               <KeyRound aria-hidden="true" className="size-5 flex-none text-[#064ed6]" />
-              <h2 className="text-lg font-bold text-[#081634]">{copy.joinPoolTitle}</h2>
+              <h2 className="text-base font-bold text-[#081634] sm:text-lg">{copy.joinPoolTitle}</h2>
             </div>
-            <p className="text-sm font-medium leading-6 text-[#48617f]">
+            <p className="text-xs font-medium leading-5 text-[#48617f] sm:text-sm sm:leading-6">
               {copy.joinPoolIntro}
             </p>
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -480,9 +480,9 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
           <form action={createPool} className="panel create-pool-card grid gap-3 p-5">
             <div className="flex items-center gap-2">
               <PlusCircle aria-hidden="true" className="create-pool-icon size-5 flex-none" />
-              <h2 className="create-pool-title text-lg font-bold">{copy.createPoolTitle}</h2>
+              <h2 className="create-pool-title text-base font-bold sm:text-lg">{copy.createPoolTitle}</h2>
             </div>
-            <p className="create-pool-copy text-sm font-medium leading-6">
+            <p className="create-pool-copy text-xs font-medium leading-5 sm:text-sm sm:leading-6">
               {copy.createPoolIntro}
             </p>
             <div className="flex flex-col gap-2 sm:flex-row">

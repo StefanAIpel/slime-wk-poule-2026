@@ -703,6 +703,9 @@ test("dashboard copy matches the current prediction deadline and password flow",
   assert.match(homePage, /Voorspel je WK 2026/);
   assert.match(homePage, /Invullen tot de eerste WK-wedstrijd op/);
   assert.match(homePage, /respijtperiode tot de eerste wedstrijd van Oranje/);
+  assert.match(homePage, /mt-2 max-w-xl text-sm font-medium leading-6 text-blue-100 md:text-base md:leading-7/);
+  assert.match(homePage, /text-base font-bold text-\[#081634\] sm:text-lg/);
+  assert.match(homePage, /create-pool-title text-base font-bold sm:text-lg/);
   assert.doesNotMatch(homePage, /geen wachtwoord/);
 });
 
