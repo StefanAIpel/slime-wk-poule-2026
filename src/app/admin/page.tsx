@@ -3,26 +3,21 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { adminRecalculate, adminSetResult, createKidAccount } from "@/app/actions";
 import { Brand } from "@/components/brand";
-import { ConfirmPendingButton } from "@/components/confirm-pending-button";
 import { PendingButton } from "@/components/pending-button";
 import { TeamFlag } from "@/components/team-flag";
-import { isAdminEmail } from "@/lib/admin";
 import { getAdminDashboard } from "@/lib/admin-data";
+import { getAdminUser } from "@/lib/admin-guard";
 import { formatAmsterdam } from "@/lib/format";
 import { NICKNAME_MAX_LENGTH } from "@/lib/limits";
-import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ ok?: string; fout?: string; kind?: string }> }) {
   const params = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, isAdmin } = await getAdminUser();
 
   if (!user) redirect("/");
-  if (!isAdminEmail(user.email)) {
+  if (!isAdmin) {
     return (
       <main className="page-shell grid min-h-[60vh] place-items-center">
         <div className="panel grid max-w-md gap-2 p-6 text-center">
@@ -35,7 +30,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     );
   }
 
-  const { userCount, predictionCount, poolCount, lastUpdate, matchRows, auditRows, kidRows, profileRows, poolRows, membersByPool } =
+  const { userCount, predictionCount, poolCount, lastUpdate, matchRows, auditRows, kidRows, profileRows, poolRows } =
     await getAdminDashboard();
   const finishedCount = matchRows.filter((m) => m.status === "finished").length;
 
@@ -67,13 +62,13 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           Laatste herberekening: <span className="font-bold text-[#081634]">{lastUpdate ? formatAmsterdam(lastUpdate) : "nog niet"}</span>
         </div>
         <form action={adminRecalculate}>
-          <ConfirmPendingButton
+          <PendingButton
+            className="button-secondary"
             confirmText="Alle ranglijsten opnieuw doorrekenen? Dit raakt alle spelers en kan even duren."
-            pendingText="Bezig…"
           >
             <RefreshCw aria-hidden="true" className="size-4" />
             Herbereken nu
-          </ConfirmPendingButton>
+          </PendingButton>
         </form>
       </div>
 
@@ -101,7 +96,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               poolRows.map((p) => (
                 <div key={p.id} className="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-100 py-1 last:border-b-0">
                   <span className="font-bold text-[#081634]">{p.name}</span>
-                  <span className="text-[#48617f]">{membersByPool.get(p.id) ?? 0} leden</span>
+                  <span className="text-[#48617f]">{p.memberCount} leden</span>
                   <span className="text-xs text-[#7a8aa3]">{formatAmsterdam(p.created_at)}</span>
                 </div>
               ))

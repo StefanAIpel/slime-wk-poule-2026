@@ -26,12 +26,16 @@ function isActive(pathname: string, href: string) {
 }
 
 /** Sticky live-header: merk + LIVE-sticker + menu op alle live-tabs + compacte vlag-taalwissel. */
+// Hostname verandert nooit binnen een sessie: lege subscribe, module-niveau
+// zodat React niet elke render opnieuw abonneert.
+const emptySubscribe = () => () => {};
+
 export function LiveSubsiteNav() {
   const pathname = usePathname() || "/live";
   const locale = useActiveLocale(pathname);
-  // Hostname is client-only en verandert nooit binnen een sessie; server rendert app-links.
+  // Hostname is client-only; server rendert app-links (snapshot false).
   const isLiveHost = useSyncExternalStore(
-    () => () => {},
+    emptySubscribe,
     () => window.location.hostname.startsWith("live."),
     () => false,
   );

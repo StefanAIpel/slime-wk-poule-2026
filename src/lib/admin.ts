@@ -1,3 +1,5 @@
+import "server-only";
+
 /** Adminlijst uit env `ADMIN_EMAILS` (komma-gescheiden e-mailadressen). */
 export function adminEmails(): string[] {
   return (process.env.ADMIN_EMAILS ?? "")

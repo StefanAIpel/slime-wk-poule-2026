@@ -3,9 +3,11 @@ name: CI
 # Houdt elke push/PR groen: tests, lint en productie-build.
 # Geen secrets nodig: de build werkt zonder env (Supabase/API-clients geven
 # dan netjes null/placeholder terug, zoals lokaal).
+# push alleen op main (merges); PR-commits worden al gedekt door pull_request —
+# beide triggers tegelijk zou elke PR-commit dubbel laten draaien.
 on:
   push:
-    branches: ["**"]
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch: {}
