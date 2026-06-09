@@ -10,16 +10,22 @@ const avatarPickerCopy = {
     selected: "Jouw gekozen slime.",
     automatic: (name: string) => `Geen keuze: dan krijg je automatisch een vaste slime voor "${name}".`,
     autoTitle: "Automatisch (op naam)",
+    pickerTitle: "Kies avatar",
   },
   en: {
     selected: "Your selected slime.",
     automatic: (name: string) => `No choice: you automatically get a fixed slime for "${name}".`,
     autoTitle: "Automatic (based on name)",
+    pickerTitle: "Choose avatar",
   },
-} satisfies Record<Locale, { selected: string; automatic: (name: string) => string; autoTitle: string }>;
+} satisfies Record<Locale, { selected: string; automatic: (name: string) => string; autoTitle: string; pickerTitle: string }>;
 
 const avatarLabelsEn: Record<string, string> = {
+  "wk-slime": "World Cup slime",
   netherlands: "Netherlands",
+  "memphis-slime": "Memphis",
+  "virgil-slime": "Virgil",
+  "ronaldo-slime": "Ronaldo",
   "oranje-aanvoerder": "Captain",
   "oranje-spelmaker": "Playmaker",
   "oranje-aanvaller": "Forward",
@@ -29,6 +35,7 @@ const avatarLabelsEn: Record<string, string> = {
   keeper: "Goalkeeper",
   "appel-slime": "Apple",
   brazil: "Brazil",
+  "messi-slime": "Messi",
   argentina: "Argentina",
   france: "France",
   spain: "Spain",
@@ -45,6 +52,7 @@ const avatarLabelsEn: Record<string, string> = {
   curacao: "Curaçao",
   duitsland: "Germany",
   "rode-duivel": "Belgium",
+  "trump-slime": "Trump",
 };
 
 function avatarLabel(option: { key: string; label: string }, locale: Locale) {
@@ -77,32 +85,35 @@ export function AvatarPicker({ initialKey, name, locale = "nl" }: { initialKey?:
           {selected ? copy.selected : copy.automatic(name)}
         </p>
       </div>
-      <div className="avatar-grid">
-        <button
-          type="button"
-          className={`avatar-choice ${selected === "" ? "is-selected" : ""}`}
-          onClick={() => setSelected("")}
-          aria-pressed={selected === ""}
-          title={copy.autoTitle}
-        >
-          <span className="avatar-choice-auto">Auto</span>
-        </button>
-        {avatarOptions.map((option) => {
-          const label = avatarLabel(option, locale);
-          return (
-            <button
-              key={option.key}
-              type="button"
-              className={`avatar-choice ${selected === option.key ? "is-selected" : ""}`}
-              onClick={() => setSelected(option.key)}
-              aria-pressed={selected === option.key}
-              title={label}
-            >
-              <img src={avatarSrcForKey(option.key)} alt={label} width={48} height={48} loading="lazy" />
-            </button>
-          );
-        })}
-      </div>
+      <details className="avatar-picker-menu">
+        <summary>{copy.pickerTitle}</summary>
+        <div className="avatar-grid">
+          <button
+            type="button"
+            className={`avatar-choice ${selected === "" ? "is-selected" : ""}`}
+            onClick={() => setSelected("")}
+            aria-pressed={selected === ""}
+            title={copy.autoTitle}
+          >
+            <span className="avatar-choice-auto">Auto</span>
+          </button>
+          {avatarOptions.map((option) => {
+            const label = avatarLabel(option, locale);
+            return (
+              <button
+                key={option.key}
+                type="button"
+                className={`avatar-choice ${selected === option.key ? "is-selected" : ""}`}
+                onClick={() => setSelected(option.key)}
+                aria-pressed={selected === option.key}
+                title={label}
+              >
+                <img src={avatarSrcForKey(option.key)} alt={label} width={48} height={48} loading="lazy" />
+              </button>
+            );
+          })}
+        </div>
+      </details>
     </div>
   );
 }

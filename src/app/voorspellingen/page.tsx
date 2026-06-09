@@ -33,7 +33,7 @@ const predictionCopy = {
     metaDescription: "Vul je SlimeScore WK 2026-voorspellingen in en pas ze aan tot de deadline.",
     heroTitle: "Voorspellingen",
     heroSubtitle: "Vul je voorspellingen in en sla op.",
-    motivation: "Vul eerst grof in: 1-1 is beter dan leeg. Geen zin om alles zelf te bedenken? Vraag je AI-agent om een eerste invulling en pas daarna je favorieten aan.",
+    motivation: "Veel wedstrijden, maar in 10 minuten kun je klaar zijn voor het hele WK. Vul eerst grof in en sla niets over.",
     saved: "Opgeslagen.",
     groupTitle: "Groepswedstrijden",
     groupOpen: "Geen perfecte glazen bol nodig: vul eerst je gevoel in, verfijn later.",
@@ -72,7 +72,7 @@ const predictionCopy = {
     metaDescription: "Fill in your SlimeScore World Cup 2026 predictions and edit them until the deadline.",
     heroTitle: "Predictions",
     heroSubtitle: "Fill in your predictions and save.",
-    motivation: "Start rough: 1-1 is better than blank. Not in the mood to think through everything? Ask your AI agent for a first draft and tweak your favorites after.",
+    motivation: "Lots of matches, but in 10 minutes you can be ready for the whole World Cup. Fill in a rough first pass and skip nothing.",
     saved: "Saved.",
     groupTitle: "Group matches",
     groupOpen: "No perfect crystal ball needed: start with your gut and tweak later.",
@@ -205,7 +205,9 @@ export default async function PredictionsPage({
           subtitle={copy.heroSubtitle}
           slime="/assets/hd-voorspel.webp"
           className="hero-title-mascot-large"
-        />
+        >
+          <p className="hero-inline-note">{copy.motivation}</p>
+        </PageHero>
       </header>
       <StatusProgressSync progress={groupProgress} />
 
@@ -216,10 +218,6 @@ export default async function PredictionsPage({
       ) : null}
 
       <form action={savePredictions} className="grid gap-5">
-        <div className="panel prediction-helper-panel p-4 text-sm font-bold leading-6 text-[#174176]">
-          {copy.motivation}
-        </div>
-
         <section className="prediction-title-banner">
           <h2>{copy.groupTitle}</h2>
           {mainOpen && copy.groupOpen ? (

@@ -5,7 +5,11 @@ export type AvatarOption = { key: string; label: string };
 
 export const avatarOptions: AvatarOption[] = [
   { key: "wk2026-international", label: "WK 2026" },
+  { key: "wk-slime", label: "WK slime" },
   { key: "netherlands", label: "Nederland" },
+  { key: "memphis-slime", label: "Memphis" },
+  { key: "virgil-slime", label: "Virgil" },
+  { key: "ronaldo-slime", label: "Ronaldo" },
   { key: "oranje-aanvoerder", label: "Aanvoerder" },
   { key: "oranje-spelmaker", label: "Spelmaker" },
   { key: "oranje-aanvaller", label: "Aanvaller" },
@@ -15,6 +19,7 @@ export const avatarOptions: AvatarOption[] = [
   { key: "keeper", label: "Keeper" },
   { key: "appel-slime", label: "Appel" },
   { key: "brazil", label: "Brazilië" },
+  { key: "messi-slime", label: "Messi" },
   { key: "argentina", label: "Argentinië" },
   { key: "france", label: "Frankrijk" },
   { key: "spain", label: "Spanje" },
@@ -43,6 +48,8 @@ const webpAvatarKeys = new Set([
   "france",
   "japan-sumo",
   "keeper",
+  "memphis-slime",
+  "messi-slime",
   "mexico",
   "morocco-fan",
   "netherlands",
@@ -58,8 +65,12 @@ const webpAvatarKeys = new Set([
   "spain",
   "sweden-fan",
   "switzerland-alpine",
+  "trump-slime",
   "turkey-fan",
   "usa",
+  "virgil-slime",
+  "wk-slime",
+  "appel-slime",
 ]);
 
 export function avatarSrcForKey(key: string) {
