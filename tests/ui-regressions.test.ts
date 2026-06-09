@@ -594,6 +594,13 @@ test("pool share text includes the poulecode and account-before-join guidance", 
   assert.doesNotMatch(joinPoolPage, /Geen wachtwoord\. Link klikken/);
 });
 
+test("profile shows the selected slime preview twice as large as the automatic preview", () => {
+  assert.match(avatarPicker, /const previewSize = selected \? 112 : 56/);
+  assert.match(avatarPicker, /width=\{previewSize\}/);
+  assert.match(avatarPicker, /height=\{previewSize\}/);
+  assert.match(avatarPicker, /style=\{\{ width: previewSize, height: previewSize \}\}/);
+});
+
 test("account page saves profile, avatar, password and language safely", () => {
   assert.match(profileForm, /name=\"nickname\"/);
   assert.match(profileForm, /name=\"team_name\"/);
