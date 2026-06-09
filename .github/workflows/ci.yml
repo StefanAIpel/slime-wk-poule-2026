@@ -1,0 +1,30 @@
+name: CI
+
+# Houdt elke push/PR groen: tests, lint en productie-build.
+# Geen secrets nodig: de build werkt zonder env (Supabase/API-clients geven
+# dan netjes null/placeholder terug, zoals lokaal).
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      - run: npm run build
