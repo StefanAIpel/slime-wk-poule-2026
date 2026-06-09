@@ -5,6 +5,7 @@ import { createPool, joinPool } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
+import { Avatar } from "@/components/avatar";
 import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { LiveFollowBanner } from "@/components/live-follow-banner";
@@ -287,7 +288,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
     { data: bracketPredictions },
     { data: specialPrediction },
   ] = await Promise.all([
-    supabase.from("profiles").select("id,nickname,team_name").eq("id", user.id).single(),
+    supabase.from("profiles").select("id,nickname,team_name,avatar_key").eq("id", user.id).single(),
     supabase.from("predictions").select("match_id", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("pool_members").select("role,pools(id,name,code,badge_emoji)").eq("user_id", user.id).limit(3),
     supabase.from("scores").select("points, exact_scores, correct_results").eq("user_id", user.id).single(),
@@ -335,6 +336,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
   }
 
   const progress = Math.round(((predictionCount ?? 0) / 72) * 100);
+  const nickname = profile.nickname ?? "";
   const homeMemberships = (memberships ?? []) as unknown as HomeMembership[];
   const myPoints = score?.points ?? 0;
   const remaining = 72 - (predictionCount ?? 0);
@@ -388,7 +390,12 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
   return (
     <main className="page-shell">
       <header className="mb-6 grid gap-4 md:max-w-xl">
-        <Brand locale={locale} />
+        <div className="home-mobile-user-row">
+          <a href={localizedHref("/account", locale)} className="home-mobile-user-avatar" aria-label={locale === "en" ? "My account" : "Mijn account"}>
+            <Avatar name={nickname || copy.you} avatarKey={profile?.avatar_key} size={42} />
+          </a>
+          <Brand locale={locale} />
+        </div>
       </header>
 
       <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
@@ -447,7 +454,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
 
           {remaining === 0 && extraRemaining === 0 ? <PredictionsComplete locale={locale} /> : null}
 
-          <form action={joinPool} className="panel grid gap-3 p-5">
+          <form id="meedoen" action={joinPool} className="panel grid gap-3 p-5 scroll-mt-24">
             <div className="flex items-center gap-2">
               <KeyRound aria-hidden="true" className="size-5 flex-none text-[#064ed6]" />
               <h2 className="text-lg font-bold text-[#081634]">{copy.joinPoolTitle}</h2>

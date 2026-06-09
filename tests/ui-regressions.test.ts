@@ -795,7 +795,9 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(globalsCss, /\.site-header \{[\s\S]*position: sticky;[\s\S]*top: 0;[\s\S]*z-index: 90;/);
   assert.match(quickMenu, /label: "Voorspellen"/);
   assert.doesNotMatch(quickMenu, /WK-poule invullen \/ wijzigen/);
-  assert.match(quickMenu, /\[publicLinks\[0\], privateLinks\[0\], \.\.\.publicLinks\.slice\(1\), \.\.\.privateLinks\.slice\(1\)\]/);
+  assert.match(quickMenu, /joinPoolLink = \{ href: "\/#meedoen"/);
+  assert.match(quickMenu, /aria-label=\{locale === "en" \? "Pools and joining" : "WK-poules en meedoen"\}/);
+  assert.match(quickMenu, /\[privateLinks\[1\], joinPoolLink\]\.map/);
   assert.match(quickMenu, /<form className=\"quick-menu-form\" action=\"\/logout\" method=\"post\">/);
   assert.match(quickMenu, /quick-menu-link-compact/);
   assert.match(quickMenu, /slime-soccer-icon\.webp/);

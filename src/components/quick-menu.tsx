@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, ClipboardList, Home, ListChecks, LogOut, Menu, Radio, Trophy, UserCog, Users, X } from "lucide-react";
+import { CalendarDays, ClipboardList, Home, KeyRound, ListChecks, LogOut, Menu, Radio, Trophy, UserCog, Users, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -28,6 +28,7 @@ const privateLinks = [
 ];
 
 const accountLink = { href: "/account", label: "Mijn account", labelEn: "My account", icon: UserCog };
+const joinPoolLink = { href: "/#meedoen", label: "Meedoen", labelEn: "Join pool", icon: KeyRound };
 
 export function QuickMenu() {
   const [open, setOpen] = useState(false);
@@ -77,7 +78,7 @@ export function QuickMenu() {
     };
   }, [open]);
 
-  const links = loggedIn ? [publicLinks[0], privateLinks[0], ...publicLinks.slice(1), ...privateLinks.slice(1)] : publicLinks;
+  const links = loggedIn ? [publicLinks[0], privateLinks[0], ...publicLinks.slice(1)] : publicLinks;
   const [primaryLink, ...tailLinks] = links;
   const AccountIcon = accountLink.icon;
 
@@ -151,6 +152,19 @@ export function QuickMenu() {
                   );
                 })}
               </div>
+              {loggedIn ? (
+                <div className="quick-menu-split-row" aria-label={locale === "en" ? "Pools and joining" : "WK-poules en meedoen"}>
+                  {[privateLinks[1], joinPoolLink].map((link) => {
+                    const Icon = link.icon;
+                    return (
+                      <Link key={link.href} href={localizedHref(link.href, locale)} className="quick-menu-link quick-menu-link-half" onClick={() => setOpen(false)}>
+                        <Icon aria-hidden="true" className="size-5" />
+                        <span>{locale === "en" ? link.labelEn : link.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : null}
               {tailLinks.map((link) => {
                 const Icon = link.icon;
                 return (
