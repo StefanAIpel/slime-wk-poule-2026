@@ -198,6 +198,17 @@ test("desktop UI uses compact page heroes, right-column rules banners and aligne
   assert.match(globalsCss, /\.game-frame \{[\s\S]*width: 100%;/);
 });
 
+test("mobile tab page heroes use larger bottom-right mascots behind the title copy", () => {
+  assert.match(predictionsPage, /className="hero-title-mascot-large"/);
+  assert.match(rulesPage, /className="hero-title-mascot-large"/);
+  assert.match(rankingPage, /className="hero-title-mascot-large"/);
+  assert.match(accountPage, /className="hero-title-mascot-large"/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large \.hero-content \{\n    max-width: 86%;\n  \}/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large\.hero-band-visual \.hero-mascot \{[\s\S]*right: -12px;[\s\S]*bottom: -10px;[\s\S]*max-height: 88%;[\s\S]*max-width: 54%;/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-band-visual \.hero-mascot-account-avatar \{[\s\S]*width: 106px;[\s\S]*height: 106px;/);
+  assert.match(globalsCss, /\.hero-title-mascot-large \.hero-content \{[\s\S]*text-shadow: 0 2px 10px/);
+});
+
 test("main mobile header and hamburger stay sticky and quick menu has a Schema/Live half-row", () => {
   const heroTopbarBlock = globalsCss.match(/\.hero-topbar \{[\s\S]*?\}/)?.[0] ?? "";
   const heroBandTopbarBlock = globalsCss.match(/\.hero-band-topbar \{[\s\S]*?\}/)?.[0] ?? "";

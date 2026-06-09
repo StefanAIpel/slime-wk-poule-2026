@@ -204,6 +204,7 @@ export default async function PredictionsPage({
           title={copy.heroTitle}
           subtitle={copy.heroSubtitle}
           slime="/assets/hd-voorspel.webp"
+          className="hero-title-mascot-large"
         />
       </header>
       <StatusProgressSync progress={groupProgress} />

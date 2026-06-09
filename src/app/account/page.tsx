@@ -167,6 +167,7 @@ export default async function AccountPage({
           title={copy.title}
           subtitle={copy.subtitle}
           slime={resolveAvatarSrc(nickname || copy.player, profile?.avatar_key)}
+          className="hero-title-mascot-large"
           mascotClassName="hero-mascot-account-avatar"
         />
       </header>

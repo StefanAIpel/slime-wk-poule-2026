@@ -222,6 +222,7 @@ export default async function RulesPage() {
           title={copy.heroTitle}
           subtitle={copy.heroSubtitle}
           slime="/assets/regels-koeslime-transparant-640.webp"
+          className="hero-title-mascot-large"
           mascotClassName="hero-mascot-field hero-mascot-regels"
         />
       </header>
