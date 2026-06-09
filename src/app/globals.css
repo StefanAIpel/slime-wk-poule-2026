@@ -4162,7 +4162,7 @@ textarea {
   flex-wrap: nowrap;
   align-items: center;
   gap: 6px;
-  overflow-x: auto;
+  overflow: visible;
   scrollbar-width: none;
 }
 

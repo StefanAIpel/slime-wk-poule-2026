@@ -103,9 +103,9 @@ const homeCopy = {
       "2. Kies je landen voor de knock-outfase.",
       "3. Maak of join een WK-poule met een code.",
     ],
-    dashboardTitle: "Jouw Slime Score, alles op één plek.",
-    dashboardIntroBefore: "De voortgang hieronder telt je 72 groepsuitslagen. Knock-outkeuzes en bonusvragen kun je invullen tot de eerste WK-wedstrijd op",
-    dashboardIntroAfter: " — daarna staat alles vast.",
+    dashboardTitle: "Voorspel je WK 2026",
+    dashboardIntroBefore: "Invullen tot de eerste WK-wedstrijd op",
+    dashboardIntroAfter: " — er is een respijtperiode tot de eerste wedstrijd van Oranje: niet-gespeelde wedstrijden kun je wijzigen tot 14 juni 2026 om 21:00. Daarna staat alles vast, behalve 3 bonusvragen die je nog kunt wijzigen tot het einde van de groepsfase.",
     progressTitle: "Voortgang",
     progressCount: (filled: number) => `${filled} van 72 uitslagen`,
     remaining: (count: number) => `Nog ${count} wedstrijden in te vullen.`,
@@ -177,9 +177,9 @@ const homeCopy = {
       "2. Pick your teams for the knockout stage.",
       "3. Create or join a World Cup pool with a code.",
     ],
-    dashboardTitle: "Your Slime Score, all in one place.",
-    dashboardIntroBefore: "The progress below counts your 72 group-stage results. Knockout picks and bonus questions can be filled in until the first World Cup match on",
-    dashboardIntroAfter: " — after that everything is locked.",
+    dashboardTitle: "Predict your World Cup 2026",
+    dashboardIntroBefore: "Fill in until the first World Cup match on",
+    dashboardIntroAfter: " — there is a grace period until the Netherlands’ first match: unplayed matches can be changed until 14 June 2026 at 21:00. After that everything is locked, except 3 bonus questions that remain editable until the end of the group stage.",
     progressTitle: "Progress",
     progressCount: (filled: number) => `${filled} of 72 results`,
     remaining: (count: number) => `${count} matches left to predict.`,
@@ -407,29 +407,29 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                 <Trophy aria-hidden="true" className="size-10 text-[#ffd44d]" />
               </div>
             </div>
-            <div className="mt-5 rounded-lg bg-[#061b47] p-4">
+            <div className="dashboard-progress-card mt-4 rounded-lg bg-[#061b47] p-3">
               <div className="flex items-end justify-between gap-3">
                 <div>
-                  <p className="text-sm font-bold uppercase tracking-normal text-blue-100">{copy.progressTitle}</p>
-                  <p className="text-4xl font-bold">{progress}%</p>
+                  <p className="text-xs font-bold uppercase tracking-normal text-blue-100">{copy.progressTitle}</p>
+                  <p className="text-3xl font-bold">{progress}%</p>
                 </div>
                 <p className="text-right text-sm font-semibold text-blue-100">{copy.progressCount(predictionCount ?? 0)}</p>
               </div>
-              <div className="mt-3 h-4 overflow-hidden rounded-full bg-black/32">
+              <div className="dashboard-progress-bar mt-2 h-3 overflow-hidden rounded-full bg-black/32">
                 <div className="h-full rounded-full bg-[#25a84a]" style={{ width: `${Math.min(progress, 100)}%` }} />
               </div>
               <p className="mt-2 text-sm font-semibold text-blue-100">
                 {remaining > 0 ? copy.remaining(remaining) : copy.complete}
               </p>
-              <div className={`mt-4 rounded-lg border p-3 ${extraRemaining > 0 ? "border-amber-300 bg-amber-50 text-[#8a5a00]" : "border-green-300 bg-green-50 text-[#137c35]"}`}>
+              <div className={`mt-3 rounded-lg border p-2.5 ${extraRemaining > 0 ? "border-amber-300 bg-amber-50 text-[#8a5a00]" : "border-green-300 bg-green-50 text-[#137c35]"}`}>
                 <div className="flex items-end justify-between gap-3">
                   <div>
-                    <p className="text-sm font-bold uppercase tracking-normal">{copy.extraProgressTitle}</p>
-                    <p className="text-3xl font-bold tabular-nums">{extraProgress}%</p>
+                    <p className="text-xs font-bold uppercase tracking-normal">{copy.extraProgressTitle}</p>
+                    <p className="text-2xl font-bold tabular-nums">{extraProgress}%</p>
                   </div>
                   <p className="text-right text-sm font-bold tabular-nums">{copy.extraProgressCount(extraFilled, EXTRA_PROGRESS_TOTAL)}</p>
                 </div>
-                <div className="mt-2 h-3 overflow-hidden rounded-full bg-white/70">
+                <div className="dashboard-extra-progress-bar mt-2 h-2 overflow-hidden rounded-full bg-white/70">
                   <div
                     className={`h-full rounded-full ${extraRemaining > 0 ? "bg-[#f59e0b]" : "bg-[#25a84a]"}`}
                     style={{ width: `${Math.min(extraProgress, 100)}%` }}

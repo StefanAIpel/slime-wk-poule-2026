@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { isAdminEmail } from "@/lib/admin";
 import { isAvatarKey } from "@/lib/avatars";
-import { ENTRY_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START, isMatchLocked } from "@/lib/constants";
+import { ENTRY_DEADLINE, ENTRY_GRACE_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START, isMatchLocked } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
 import { LOCALE_COOKIE, isSupportedLocale, localizedHref, type Locale } from "@/lib/i18n";
@@ -629,7 +629,8 @@ export async function setMemberRole(formData: FormData) {
 export async function savePredictions(formData: FormData) {
   const { supabase, user } = await requireUser();
   const now = new Date();
-  const canEditMain = now < ENTRY_DEADLINE;
+  const canEditPreKickoffBonus = now < ENTRY_DEADLINE;
+  const canEditMain = now < ENTRY_GRACE_DEADLINE;
   // Wereldkampioen, finalisten, penaltyseries en "hoe ver komt Oranje" blijven
   // wijzigbaar t/m 28 juni 21:00 (niet pas óp 28 juni).
   const canEditLate = now < POST_GROUP_DEADLINE;
@@ -714,7 +715,7 @@ export async function savePredictions(formData: FormData) {
     // zodat ze niet worden overschreven.
     const special: Record<string, unknown> = { user_id: user.id };
 
-    if (canEditMain) {
+    if (canEditPreKickoffBonus) {
       // Vooraf vast te leggen bonusvragen (sluiten bij de aftrap).
       special.total_goals = optionalInt(formData.get("total_goals"), 100, 400);
       special.total_red_cards = optionalInt(formData.get("total_red_cards"), 0, 50);

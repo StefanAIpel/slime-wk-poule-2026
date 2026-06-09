@@ -338,11 +338,35 @@ test("schedule filters fit one row with a compact Dutch flag chip", () => {
   assert.match(scheduleExplorer, /aria-label=\{scheduleCopy\[locale\]\.netherlandsFilter\}/);
   assert.match(scheduleExplorer, /<span aria-hidden="true">🇳🇱<\/span>/);
   assert.match(controlsBlock, /flex-wrap: nowrap;/);
-  assert.match(controlsBlock, /overflow-x: auto;/);
+  assert.match(controlsBlock, /overflow: visible;/);
+  assert.doesNotMatch(controlsBlock, /overflow-x: auto;/);
   assert.match(pickerButtonBlock, /font-size: 0\.76rem;/);
   assert.match(pickerButtonBlock, /white-space: nowrap;/);
   assert.match(nlChipBlock, /min-width: 36px;/);
   assert.doesNotMatch(scheduleExplorer, />\s*\{scheduleCopy\[locale\]\.netherlandsFilter\}\s*<\/button>/);
+});
+
+test("logged-in homepage uses the new prediction deadline copy and compact progress bars", () => {
+  assert.match(homePage, /dashboardTitle: "Voorspel je WK 2026"/);
+  assert.match(homePage, /Invullen tot de eerste WK-wedstrijd op/);
+  assert.match(homePage, /niet-gespeelde wedstrijden kun je wijzigen tot 14 juni 2026 om 21:00/);
+  assert.match(homePage, /behalve 3 bonusvragen/);
+  assert.match(homePage, /dashboard-progress-card mt-4 rounded-lg bg-\[#061b47\] p-3/);
+  assert.match(homePage, /dashboard-progress-bar mt-2 h-3/);
+  assert.match(homePage, /dashboard-extra-progress-bar mt-2 h-2/);
+  assert.match(homePage, /<p className="text-3xl font-bold">\{progress\}%<\/p>/);
+  assert.match(homePage, /<p className="text-2xl font-bold tabular-nums">\{extraProgress\}%<\/p>/);
+});
+
+test("prediction edits stay open through the Oranje grace window while pre-kickoff bonus fields still close at kickoff", () => {
+  assert.match(constants, /ENTRY_GRACE_DEADLINE_ISO = "2026-06-14T21:00:00\+02:00"/);
+  assert.match(actions, /const canEditPreKickoffBonus = now < ENTRY_DEADLINE;/);
+  assert.match(actions, /const canEditMain = now < ENTRY_GRACE_DEADLINE;/);
+  assert.match(actions, /if \(isMatchLocked\(match\.starts_at, now\)\) continue;/);
+  assert.match(predictionsPage, /const preKickoffBonusOpen = now < ENTRY_DEADLINE;/);
+  assert.match(predictionsPage, /const mainOpen = now < ENTRY_GRACE_DEADLINE;/);
+  assert.match(predictionsPage, /disabled=\{!preKickoffBonusOpen\}/);
+  assert.match(predictionsPage, /disabled=\{!mainOpen\}/);
 });
 
 test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
@@ -621,9 +645,11 @@ test("homepage promo/ranking stacks keep desktop ranking tight below the pool bl
   assert.match(liveBannerBlock, /min-height: 118px;/);
 });
 
-test("dashboard copy matches the 72-group-result progress metric and password flow", () => {
+test("dashboard copy matches the current prediction deadline and password flow", () => {
   assert.doesNotMatch(homePage, /Vul je wedstrijden en knock-outkeuzes in/);
-  assert.match(homePage, /De voortgang hieronder telt je 72 groepsuitslagen/);
+  assert.match(homePage, /Voorspel je WK 2026/);
+  assert.match(homePage, /Invullen tot de eerste WK-wedstrijd op/);
+  assert.match(homePage, /respijtperiode tot de eerste wedstrijd van Oranje/);
   assert.doesNotMatch(homePage, /geen wachtwoord/);
 });
 

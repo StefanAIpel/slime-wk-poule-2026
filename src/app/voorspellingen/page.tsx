@@ -8,7 +8,7 @@ import { KnockoutPredictionPicker } from "@/components/knockout-prediction-picke
 import { PageHero } from "@/components/page-hero";
 import { PredictionsComplete } from "@/components/predictions-complete";
 import { StatusProgressSync } from "@/components/status-progress-sync";
-import { ENTRY_DEADLINE, groupLetters, isMatchLocked, POST_GROUP_DEADLINE } from "@/lib/constants";
+import { ENTRY_DEADLINE, ENTRY_GRACE_DEADLINE, groupLetters, isMatchLocked, POST_GROUP_DEADLINE } from "@/lib/constants";
 import { teamNameForLocale } from "@/lib/format";
 import { calculateRound32 } from "@/lib/group-standings";
 import { localizedHref } from "@/lib/i18n";
@@ -151,7 +151,8 @@ export default async function PredictionsPage({
   const predictionByMatch = new Map((predictions ?? []).map((prediction) => [prediction.match_id, prediction]));
   const bracketByStage = new Map((bracket ?? []).map((row) => [row.stage_key, new Set(row.team_codes as string[])]));
   const now = new Date();
-  const mainOpen = now < ENTRY_DEADLINE;
+  const preKickoffBonusOpen = now < ENTRY_DEADLINE;
+  const mainOpen = now < ENTRY_GRACE_DEADLINE;
   const lateOpen = now < POST_GROUP_DEADLINE;
   // Wedstrijden die binnen 30 min vóór de aftrap (of al begonnen) zijn: vergrendeld.
   const lockedMatchIds = (matches ?? []).filter((match) => isMatchLocked(match.starts_at, now)).map((match) => match.id);
@@ -297,7 +298,7 @@ export default async function PredictionsPage({
         <section id="bonusvragen" className="panel p-4">
           <h2 className="text-2xl font-bold text-[#081634]">{copy.bonusTitle}</h2>
           <p className="mt-1 text-sm font-medium text-[#48617f]">{copy.bonusIntro}</p>
-          <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!mainOpen}>
+          <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!preKickoffBonusOpen}>
             <label className="grid gap-2 text-sm font-bold text-[#081634] md:col-span-2">
               {copy.teamMostGoals}
               <select className="field choice-select" name="team_most_goals_code" defaultValue={special?.team_most_goals_code ?? ""}>
