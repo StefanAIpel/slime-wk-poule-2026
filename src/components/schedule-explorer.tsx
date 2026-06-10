@@ -355,7 +355,7 @@ export function ScheduleExplorer({ matches, initialView = "groups", locale = "nl
 
   return (
     <section className="schedule-explorer grid gap-3">
-      <nav className="schedule-tabs" aria-label={scheduleCopy[locale].partsLabel}>
+      <nav className={initialView === "knockout" ? "schedule-tabs schedule-tabs-knockout" : "schedule-tabs"} aria-label={scheduleCopy[locale].partsLabel}>
         {viewLinks.map((item) => {
           const Icon = item.icon === "table" ? Table2 : Trophy;
           return (
@@ -750,7 +750,6 @@ function KnockoutPanel({ matches, locale }: { matches: ScheduleMatch[]; locale: 
           <article key={stage} id={`ko-${stage}`} className="panel scroll-mt-24 overflow-hidden">
             <header className="standing-card-header knockout-stage-header">
               <span>{knockoutStageTabs[stage] ? `${knockoutStageTabs[stage]} · ${stageLabels[locale][stage] ?? "Knockout"}` : stageLabels[locale][stage] ?? "Knockout"}</span>
-              <span className="knockout-stage-meta">{scheduleCopy[locale].winner} · {stageMatches.length} {stageMatches.length === 1 ? scheduleCopy[locale].match : scheduleCopy[locale].matches}</span>
             </header>
             <div className="divide-y divide-slate-200 knockout-match-list">
               {stageMatches.map((match) => <MatchRow key={match.id} match={match} locale={locale} knockout />)}
