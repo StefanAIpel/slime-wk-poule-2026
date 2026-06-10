@@ -31,8 +31,9 @@ export default async function PredictionsPage({
 
   if (!user) redirect("/");
 
-  const [{ data: teams }, { data: matches }, { data: predictions }, { data: bracket }, { data: special }] =
+  const [{ data: profile }, { data: teams }, { data: matches }, { data: predictions }, { data: bracket }, { data: special }] =
     await Promise.all([
+      supabase.from("profiles").select("avatar_key").eq("id", user.id).maybeSingle(),
       supabase.from("teams").select("*").order("group_letter").order("sort_order"),
       supabase
         .from("matches")
@@ -55,10 +56,11 @@ export default async function PredictionsPage({
   return (
     <main className="page-shell">
       <header className="mb-6 grid gap-4">
-        <Brand />
+        <Brand avatarKey={profile?.avatar_key} />
         <PageHero
           title="Voorspellingen"
           subtitle="Snel invullen, later nog bijschaven tot 11 juni 21:00 Nederlandse tijd. Na de groepsfase is er een kleine optionele herziening tot 28 juni 21:00."
+          avatarKey={profile?.avatar_key}
         />
       </header>
 

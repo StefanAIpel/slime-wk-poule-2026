@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { SlimeAvatar } from "@/components/slime-avatar";
 
 /**
  * Kleurrijke koptekst-band bovenaan een pagina. Vervangt de witte titel op
@@ -9,10 +10,12 @@ export function PageHero({
   title,
   subtitle,
   children,
+  avatarKey,
 }: {
   title: string;
   subtitle?: string;
   children?: React.ReactNode;
+  avatarKey?: string | null;
 }) {
   return (
     <div className="hero-band">
@@ -23,14 +26,21 @@ export function PageHero({
         ) : null}
         {children ? <div className="mt-3">{children}</div> : null}
       </div>
-      <Image
-        className="hero-band-art justify-self-start md:justify-self-end"
-        src="/icon.png"
-        alt=""
-        aria-hidden="true"
-        width={208}
-        height={208}
-      />
+      {avatarKey ? (
+        <SlimeAvatar
+          avatarKey={avatarKey}
+          className="hero-band-art justify-self-start md:justify-self-end"
+        />
+      ) : (
+        <Image
+          className="hero-band-art justify-self-start md:justify-self-end"
+          src="/icon.png"
+          alt=""
+          aria-hidden="true"
+          width={208}
+          height={208}
+        />
+      )}
     </div>
   );
 }

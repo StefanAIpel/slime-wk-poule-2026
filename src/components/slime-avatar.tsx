@@ -4,22 +4,24 @@ import { getAvatar } from "@/lib/avatars";
 export function SlimeAvatar({
   avatarKey,
   label,
-  size = 42,
+  size,
+  className,
 }: {
   avatarKey?: string | null;
   label?: string;
   size?: number;
+  className?: string;
 }) {
   const avatar = getAvatar(avatarKey);
 
   return (
     <Image
-      className="slime-avatar"
+      className={["slime-avatar", className].filter(Boolean).join(" ")}
       src={avatar.src}
       alt={label ? `${label} avatar` : ""}
       width={64}
       height={64}
-      style={{ width: size, height: size }}
+      style={size ? { width: size, height: size } : undefined}
     />
   );
 }

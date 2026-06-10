@@ -137,10 +137,17 @@ textarea {
 }
 
 .hero-band-art {
-  width: 84px;
-  height: 84px;
-  border-radius: 18px;
+  width: 59px;
+  height: 59px;
+  border-radius: 16px;
+  object-fit: contain;
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
+}
+
+.hero-band-art.slime-avatar {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px;
 }
 
 @media (min-width: 800px) {
@@ -151,8 +158,8 @@ textarea {
   }
 
   .hero-band-art {
-    width: 104px;
-    height: 104px;
+    width: 73px;
+    height: 73px;
   }
 }
 

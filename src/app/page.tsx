@@ -52,7 +52,7 @@ export default async function Home({
 
   const [{ data: profile }, { count: predictionCount }, { data: memberships }, { data: leaderboard }, { data: score }] =
     await Promise.all([
-      supabase.from("profiles").select("id,nickname,team_name").eq("id", user.id).single(),
+      supabase.from("profiles").select("id,nickname,team_name,avatar_key").eq("id", user.id).single(),
       supabase.from("predictions").select("match_id", { count: "exact", head: true }).eq("user_id", user.id),
       supabase.from("pool_members").select("role,pools(id,name,code)").eq("user_id", user.id).limit(3),
       supabase
@@ -67,7 +67,7 @@ export default async function Home({
     return (
       <main className="page-shell grid min-h-screen gap-6 md:grid-cols-[0.85fr_1fr] md:content-center md:items-center">
         <section className="grid gap-5">
-          <Brand />
+          <Brand avatarKey={profile?.avatar_key} />
           <Image
             className="w-full max-w-[360px] rounded-3xl shadow-2xl shadow-black/30"
             src="/icon.png"
@@ -99,7 +99,7 @@ export default async function Home({
   return (
     <main className="page-shell">
       <header className="mb-6 grid gap-4 md:max-w-xl">
-        <Brand />
+        <Brand avatarKey={profile.avatar_key} />
         <div className="flex flex-wrap items-center gap-2">
           <span className="chip bg-[#eaf1ff] text-[#0b1f4d]">
             <CalendarDays aria-hidden="true" className="size-4" />

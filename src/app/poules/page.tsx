@@ -48,7 +48,8 @@ export default async function PoolsPage({
 
   if (!user) redirect("/");
 
-  const [{ data }, { data: messages }] = await Promise.all([
+  const [{ data: profile }, { data }, { data: messages }] = await Promise.all([
+    supabase.from("profiles").select("avatar_key").eq("id", user.id).maybeSingle(),
     supabase
       .from("pool_members")
       .select("pool_id,user_id,role,profiles(nickname,team_name),pools(id,name,code,owner_id,description,badge_emoji,accent_color)")
@@ -67,10 +68,11 @@ export default async function PoolsPage({
   return (
     <main className="page-shell">
       <header className="mb-6 grid gap-4">
-        <Brand />
+        <Brand avatarKey={profile?.avatar_key} />
         <PageHero
           title="Mijn poules"
           subtitle="Maak een eigen groep, deel de code via WhatsApp en beheer als eigenaar wie erin blijft."
+          avatarKey={profile?.avatar_key}
         />
       </header>
 
