@@ -8,7 +8,9 @@ import { KnockoutPredictionPicker } from "@/components/knockout-prediction-picke
 import { PageHero } from "@/components/page-hero";
 import { PredictionsComplete } from "@/components/predictions-complete";
 import { StatusProgressSync } from "@/components/status-progress-sync";
+import { TeamFlag } from "@/components/team-flag";
 import { ENTRY_DEADLINE, ENTRY_GRACE_DEADLINE, groupLetters, isMatchLocked, POST_GROUP_DEADLINE } from "@/lib/constants";
+import { fifaRankLabel, fifaRanking, fifaRankingPublishedAt, fifaRankingSource, squadValueSource, type FifaRankingRow } from "@/lib/fifa-ranking";
 import { teamNameForLocale } from "@/lib/format";
 import { calculateRound32 } from "@/lib/group-standings";
 import { localizedHref } from "@/lib/i18n";
@@ -66,6 +68,19 @@ const predictionCopy = {
     penalties: "Penaltyseries in knock-outfase",
     save: "Voorspellingen opslaan",
     helper: "Vul in voor punten; leeg bewaren mag om later af te maken.",
+    fifaHelpSummary: "Extra hulp: FIFA-ranking",
+    fifaTitle: "FIFA-ranking top 100",
+    fifaIntro: "Wereldranglijst met selectiewaarde. WK-deelnemers zijn groen gemarkeerd.",
+    participant: "WK-deelnemer",
+    nonParticipant: "Nog niet in WK-veld",
+    rank: "FIFA",
+    points: "punten",
+    squadValue: "Selectiewaarde",
+    noSquadValue: "Geen selectiewaarde",
+    movementUp: "gestegen",
+    movementDown: "gedaald",
+    movementSame: "gelijk",
+    sourceNote: "Bronnen",
   },
   en: {
     metaTitle: "Fill in predictions",
@@ -105,6 +120,19 @@ const predictionCopy = {
     penalties: "Penalty shootouts in the knockout phase",
     save: "Save predictions",
     helper: "Fill in for points; leaving it empty is fine if you want to finish later.",
+    fifaHelpSummary: "Extra help: FIFA ranking",
+    fifaTitle: "FIFA ranking top 100",
+    fifaIntro: "World ranking with squad value. World Cup teams are highlighted in green.",
+    participant: "World Cup team",
+    nonParticipant: "Not in World Cup field yet",
+    rank: "FIFA",
+    points: "points",
+    squadValue: "Squad value",
+    noSquadValue: "No squad value",
+    movementUp: "up",
+    movementDown: "down",
+    movementSame: "same",
+    sourceNote: "Sources",
   },
 } as const;
 
@@ -171,6 +199,7 @@ export default async function PredictionsPage({
     groupDone.set(group, groupMatches.length > 0 && groupMatches.every((match) => isMatchFilled(match.id)));
   }
   const typedTeams = (teams ?? []) as Team[];
+  const worldCupTeamCodes = new Set(typedTeams.map((team) => team.code));
   // Laatste 32 uit de opgeslagen groepsvoorspellingen — dat is de pool voor de achtste finale.
   const scoreLookup = new Map<number, { home: number; away: number }>();
   for (const prediction of predictions ?? []) {
@@ -238,6 +267,8 @@ export default async function PredictionsPage({
         </div>
 
         {groupProgress === 100 ? <PredictionsComplete locale={locale} /> : null}
+
+        <FifaRankingHelp copy={copy} locale={locale} worldCupTeamCodes={worldCupTeamCodes} />
 
         <nav className="group-jump" aria-label={copy.jumpLabel}>
           <span className="group-jump-label">{copy.jumpText}</span>
@@ -316,7 +347,7 @@ export default async function PredictionsPage({
                 <option value="">{copy.chooseCountry}</option>
                 {typedTeams.map((team) => (
                   <option key={team.code} value={team.code}>
-                    {teamNameForLocale(team.code, team.name_nl, locale)}
+                    {teamOptionLabel(team, locale)}
                   </option>
                 ))}
               </select>
@@ -338,7 +369,7 @@ export default async function PredictionsPage({
                 <option value="">{copy.chooseChampion}</option>
                 {typedTeams.map((team) => (
                   <option key={team.code} value={team.code}>
-                    {teamNameForLocale(team.code, team.name_nl, locale)}
+                    {teamOptionLabel(team, locale)}
                   </option>
                 ))}
               </select>
@@ -365,6 +396,116 @@ export default async function PredictionsPage({
 
       <BottomNav current="/voorspellingen" />
     </main>
+  );
+}
+
+function teamOptionLabel(team: Team, locale: "nl" | "en") {
+  const rank = fifaRankLabel(team.code);
+  const name = teamNameForLocale(team.code, team.name_nl, locale);
+  return rank ? `${name} ${rank}` : name;
+}
+
+function FifaRankingHelp({
+  copy,
+  locale,
+  worldCupTeamCodes,
+}: {
+  copy: (typeof predictionCopy)["nl"] | (typeof predictionCopy)["en"];
+  locale: "nl" | "en";
+  worldCupTeamCodes: Set<string>;
+}) {
+  const worldCupCount = fifaRanking.filter((row) => worldCupTeamCodes.has(row.code)).length;
+
+  return (
+    <details className="panel overflow-hidden">
+      <summary className="cursor-pointer px-4 py-3 text-base font-black text-[var(--ink)]">
+        {copy.fifaHelpSummary}
+      </summary>
+      <div className="grid gap-3 px-4 pb-4">
+        <div className="prediction-title-banner">
+          <h2>{copy.fifaTitle}</h2>
+          <p>{copy.fifaIntro}</p>
+        </div>
+        <div className="grid gap-2 rounded-lg border border-[#bce8c8] bg-[#f4fbf0] p-3 text-sm font-bold text-[#137c35] md:grid-cols-[1fr_auto] md:items-center">
+          <span>
+            {copy.participant}: {worldCupCount} / {fifaRanking.length}
+          </span>
+          <span className="tabular-nums">{fifaRankingPublishedAt}</span>
+        </div>
+        <div className="overflow-hidden rounded-lg border border-slate-200">
+          <div className="hidden grid-cols-[68px_minmax(0,1.5fr)_120px_150px] gap-3 bg-slate-50 px-3 py-2 text-xs font-black uppercase text-slate-500 md:grid">
+            <span>{copy.rank}</span>
+            <span>Land</span>
+            <span>{copy.points}</span>
+            <span>{copy.squadValue}</span>
+          </div>
+          <div className="divide-y divide-slate-100">
+            {fifaRanking.map((row) => (
+              <FifaRankingItem key={row.code} row={row} locale={locale} copy={copy} isWorldCupTeam={worldCupTeamCodes.has(row.code)} />
+            ))}
+          </div>
+        </div>
+        <p className="text-xs font-medium leading-5 text-[var(--text-muted)]">
+          {copy.sourceNote}: {fifaRankingSource}; {squadValueSource}.
+        </p>
+      </div>
+    </details>
+  );
+}
+
+function FifaRankingItem({
+  row,
+  locale,
+  copy,
+  isWorldCupTeam,
+}: {
+  row: FifaRankingRow;
+  locale: "nl" | "en";
+  copy: (typeof predictionCopy)["nl"] | (typeof predictionCopy)["en"];
+  isWorldCupTeam: boolean;
+}) {
+  const movement = row.previousRank - row.rank;
+  const movementLabel =
+    movement > 0
+      ? `+${movement} ${copy.movementUp}`
+      : movement < 0
+        ? `${movement} ${copy.movementDown}`
+        : copy.movementSame;
+  const name = locale === "nl" ? row.nameNl : row.name;
+
+  return (
+    <article
+      className={`grid gap-2 px-3 py-3 text-sm md:grid-cols-[68px_minmax(0,1.5fr)_120px_150px] md:items-center md:gap-3 ${
+        isWorldCupTeam ? "bg-green-50/70" : "bg-white"
+      }`}
+    >
+      <div className="flex items-center justify-between gap-2 md:block">
+        <span className="text-lg font-black tabular-nums text-[var(--ink)]">#{row.rank}</span>
+        <span className={movement === 0 ? "text-xs font-bold text-slate-400" : "text-xs font-bold text-[#137c35]"}>
+          {movementLabel}
+        </span>
+      </div>
+      <div className="flex min-w-0 items-center gap-2">
+        <TeamFlag code={row.code} name={name} size="sm" locale={locale} />
+        <span className="font-black text-[#064ed6]">{row.code}</span>
+        <span className={`truncate ${isWorldCupTeam ? "font-black text-[var(--ink)]" : "font-bold text-slate-700"}`}>{name}</span>
+        {isWorldCupTeam ? (
+          <span className="ml-auto rounded-full bg-[#137c35] px-2 py-1 text-[10px] font-black uppercase tracking-normal text-white md:ml-1">
+            {copy.participant}
+          </span>
+        ) : null}
+      </div>
+      <div className="flex justify-between gap-2 md:block">
+        <span className="text-xs font-bold uppercase text-slate-500 md:hidden">{copy.points}</span>
+        <span className="font-black tabular-nums text-[var(--ink)]">{row.points.toFixed(2)}</span>
+      </div>
+      <div className="flex justify-between gap-2 md:block">
+        <span className="text-xs font-bold uppercase text-slate-500 md:hidden">{copy.squadValue}</span>
+        <span className={row.marketValue ? "font-black tabular-nums text-[var(--ink)]" : "font-bold text-slate-400"}>
+          {row.marketValue ?? "—"}
+        </span>
+      </div>
+    </article>
   );
 }
 

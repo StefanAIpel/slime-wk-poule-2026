@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import { TeamFlag } from "@/components/team-flag";
+import { fifaRankLabel } from "@/lib/fifa-ranking";
 import { teamNameForLocale } from "@/lib/format";
 import type { Locale } from "@/lib/i18n";
 import type { Team } from "@/lib/types";
@@ -216,6 +217,7 @@ export function KnockoutPredictionPicker({
           <div className="knockout-picker-grid">
             {options.map((team) => {
               const teamName = teamNameForLocale(team.code, team.name_nl, locale);
+              const rank = fifaRankLabel(team.code);
               return (
                 <label key={`${stage}-${team.code}`} className="knockout-picker-option">
                   <input
@@ -227,7 +229,10 @@ export function KnockoutPredictionPicker({
                   />
                   <TeamFlag code={team.code} name={teamName} size="sm" locale={locale} />
                   <span className="knockout-picker-code">{team.code}</span>
-                  <span className="knockout-picker-name">{teamName}</span>
+                  <span className="knockout-picker-name">
+                    <span>{teamName}</span>
+                    {rank ? <span className="fifa-rank-chip">{rank}</span> : null}
+                  </span>
                 </label>
               );
             })}

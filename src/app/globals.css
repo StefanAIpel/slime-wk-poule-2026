@@ -1471,6 +1471,40 @@ textarea {
   background: linear-gradient(135deg, #f7fbff, #fff7e8);
 }
 
+.prediction-team-label {
+  display: inline-flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.prediction-team-label > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fifa-rank-chip {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  border-radius: 999px;
+  background: #eaf5ff;
+  color: #064ed6;
+  padding: 1px 4px;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
 @media (min-width: 760px) {
   .prediction-title-banner {
     padding: 15px 18px;
@@ -5289,16 +5323,33 @@ textarea {
 }
 
 .knockout-picker-name {
+  display: inline-flex;
   min-width: 0;
+  align-items: baseline;
+  gap: 4px;
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Op smalle telefoons: alleen vlag + code, 2 kolommen passen dan zonder scrollen. */
+.knockout-picker-name > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @media (max-width: 559px) {
+  .knockout-picker-option {
+    gap: 5px;
+    padding-inline: 7px;
+    font-size: 0.76rem;
+  }
+
+  .knockout-picker-code {
+    font-size: 0.74rem;
+  }
+
   .knockout-picker-name {
-    display: none;
+    font-size: 0.72rem;
   }
 }
 

@@ -24,6 +24,7 @@ const liveFollowBanner = await readFile(new URL("../src/components/live-follow-b
 const slimeSoccerBanner = await readFile(new URL("../src/components/slime-soccer-banner.tsx", import.meta.url), "utf8");
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
+const fifaRankingData = await readFile(new URL("../src/lib/fifa-ranking.ts", import.meta.url), "utf8");
 const rankingPage = await readFile(new URL("../src/app/ranglijst/page.tsx", import.meta.url), "utf8");
 const rankingExplorer = await readFile(new URL("../src/components/ranking-explorer.tsx", import.meta.url), "utf8");
 const rulesPage = await readFile(new URL("../src/app/regels/page.tsx", import.meta.url), "utf8");
@@ -1189,6 +1190,31 @@ test("English mode is wired through rankings, rules, pools and predictions pages
   assert.match(knockoutPredictionPicker, /stageCopy\[locale\]/);
   assert.match(knockoutPredictionPicker, /teamNameForLocale/);
   assert.match(predictionsComplete, /locale = "nl"/);
+});
+
+test("prediction page has FIFA ranking help with compact rank badges in prediction choices", () => {
+  assert.match(predictionsPage, /fifaHelpSummary: "Extra hulp: FIFA-ranking"/);
+  assert.match(predictionsPage, /fifaHelpSummary: "Extra help: FIFA ranking"/);
+  assert.match(predictionsPage, /<FifaRankingHelp copy=\{copy\} locale=\{locale\} worldCupTeamCodes=\{worldCupTeamCodes\} \/>/);
+  assert.match(predictionsPage, /<details className="panel overflow-hidden">/);
+  assert.match(predictionsPage, /worldCupTeamCodes=\{worldCupTeamCodes\}/);
+  assert.match(predictionsPage, /isWorldCupTeam \? "bg-green-50\/70" : "bg-white"/);
+  assert.match(predictionsPage, /copy\.participant/);
+  assert.match(predictionsPage, /row\.marketValue \?\? "—"/);
+  assert.match(predictionsPage, /teamOptionLabel\(team, locale\)/);
+  assert.match(groupPredictionCard, /fifaRankLabel\(match\.home_code\)/);
+  assert.match(groupPredictionCard, /className="prediction-team-label justify-end"/);
+  assert.match(knockoutPredictionPicker, /fifaRankLabel\(team\.code\)/);
+  assert.match(knockoutPredictionPicker, /className="fifa-rank-chip"/);
+  assert.match(globalsCss, /@media \(max-width: 559px\) \{[\s\S]*\.knockout-picker-name \{\n    font-size: 0\.72rem;\n  \}/);
+
+  assert.match(fifaRankingData, /fifaRankingPublishedAt = "2026-04-01"/);
+  assert.match(fifaRankingData, /FIFA men's world ranking, fetched 2026-06-10/);
+  assert.match(fifaRankingData, /Transfermarkt most valuable national teams and team profiles, fetched 2026-06-10/);
+  assert.match(fifaRankingData, /code: "FRA"[\s\S]*marketValue: "€1\.52bn"/);
+  assert.match(fifaRankingData, /code: "NED"[\s\S]*marketValue: "€754\.20m"/);
+  assert.match(fifaRankingData, /code: "CUW"[\s\S]*marketValue: "€25\.78m"/);
+  assert.match(fifaRankingData, /code: "QAT"[\s\S]*marketValue: "€19\.93m"/);
 });
 
 test("mobile landing hero keeps title and host pills compact on one line", () => {

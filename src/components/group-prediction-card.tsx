@@ -3,6 +3,7 @@
 import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { TeamFlag } from "@/components/team-flag";
+import { fifaRankLabel } from "@/lib/fifa-ranking";
 import { formatAmsterdam, teamAbbrev, teamNameForLocale, venueLabel } from "@/lib/format";
 import {
   calculateGroupStandings,
@@ -131,6 +132,8 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled, l
             const existing = scores[match.id] ?? { home: null, away: null };
             const homeName = teamNameForLocale(match.home_code, match.home?.name_nl, locale);
             const awayName = teamNameForLocale(match.away_code, match.away?.name_nl, locale);
+            const homeRank = fifaRankLabel(match.home_code);
+            const awayRank = fifaRankLabel(match.away_code);
             const locked = lockedSet.has(match.id);
             return (
               <div key={match.id} className={`p-3 md:p-4${locked ? " opacity-60" : ""}`}>
@@ -151,7 +154,10 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled, l
                 >
                   <legend className="sr-only">{copy.predict(homeName, awayName)}</legend>
                   <div className="flex min-w-0 items-center justify-end gap-2">
-                    <span className="font-medium tracking-wide text-[var(--ink-soft)]" title={homeName}>{teamAbbrev(match.home_code, homeName)}</span>
+                    <span className="prediction-team-label justify-end" title={homeName}>
+                      <span>{teamAbbrev(match.home_code, homeName)}</span>
+                      {homeRank ? <span className="fifa-rank-chip">{homeRank}</span> : null}
+                    </span>
                     <TeamFlag code={match.home_code} name={homeName} locale={locale} />
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -183,7 +189,10 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled, l
                   </div>
                   <div className="flex min-w-0 items-center justify-start gap-2">
                     <TeamFlag code={match.away_code} name={awayName} locale={locale} />
-                    <span className="font-medium tracking-wide text-[var(--ink-soft)]" title={awayName}>{teamAbbrev(match.away_code, awayName)}</span>
+                    <span className="prediction-team-label" title={awayName}>
+                      <span>{teamAbbrev(match.away_code, awayName)}</span>
+                      {awayRank ? <span className="fifa-rank-chip">{awayRank}</span> : null}
+                    </span>
                   </div>
                 </fieldset>
               </div>
