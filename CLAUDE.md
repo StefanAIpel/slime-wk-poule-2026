@@ -25,9 +25,12 @@ docs               productdocumentatie + werklijsten
 
 ## Werkwijze / conventies
 - **Branch:** feature/fix/docs-branch + PR; productie = `main` (Vercel deployt vanaf `main`).
-- **HARDE REGEL — productie alléén via git:** nooit `vercel --prod`/CLI/API-deploys naar
-  productie (bouwt vanaf een lokale tree; zette op 2026-06-10 tweemaal een oude branch live).
-  Previews zonder `--prod` mogen. `/api/health` toont `build.sha`; `null` = buiten git om gedeployed.
+- **VEILIG DEPLOYEN (flexibel + vangnet):** merge naar `main` is de norm. Een directe/CLI
+  productie-deploy mag voor een snelle fix, mits: (1) **main-tip**, niet je lokale tree —
+  eerst `git fetch origin main`, bouw die commit (geen oude/ongesyncte branch; zette op
+  2026-06-10 tweemaal een oude branch live); (2) `test`/`lint`/`build` groen; (3) check
+  `/api/health` `build.sha` zodat je geen nieuwer werk overschrijft; (4) bij problemen
+  meteen **Rollback/promote vorige deploy** (Vercel bewaart ze). `build.sha: null` = buiten git om.
 - **Altijd groen houden:** `npm test`, `npm run lint`, `npm run build`.
 - **Taal:** Nederlands is hoofdmoot; NL/BE default NL. Bij iedere UI-copy wijziging NL én EN bijwerken (`/` en `/en`, plus aria/metadata/share/form/footer/deeproutes).
 - **Versie:** app/UI-deploys verhogen `APP_VERSION` in `src/lib/constants.ts`; live footer moet `bèta/beta <versie>` tonen. Docs-only zonder app/UI-deploy hoeft geen bump.

@@ -15,14 +15,20 @@ These instructions apply to this repository (`StefanAIpel/slime-wk-poule-2026`) 
 
 ## Standard workflow
 
-> **HARD RULE — production deploys go through git ONLY.**
-> NEVER run `vercel --prod`, `vercel promote`, or any CLI/API deploy that targets
-> production. Production deploys happen exclusively by merging to `main` (Vercel
-> auto-builds from git). CLI deploys build from a LOCAL working tree, which on
-> 2026-06-10 put a stale feature branch live in production twice. Preview deploys
-> (`vercel` without `--prod`) are fine. If production looks broken, fix `main` and
-> merge — do not CLI-deploy over it. `/api/health` exposes the build's git sha;
-> `build.sha: null` means someone deployed outside git.
+> **SAFE DEPLOY — flexibel, mét vangnet.** Merge naar `main` (Vercel bouwt vanaf git)
+> is de norm en de veiligste weg. Een directe/CLI productie-deploy (`vercel --prod`)
+> mag als een fix snel live moet, MITS alle vier:
+> 1. **Deploy main-tip, niet je lokale tree.** Eerst `git fetch origin main` en bouw
+>    exact die commit. Nooit een ongesynchroniseerde/oude branch naar productie
+>    (dat zette op 2026-06-10 tweemaal een verouderde branch live).
+> 2. **Groen**: `npm test`, `npm run lint`, `npm run build` slagen.
+> 3. **Niet over nieuwer werk heen.** Check eerst wat live staat via `/api/health`
+>    (`build.sha`); is de live-sha nieuwer dan die van jou, stem eerst af.
+> 4. **Vangnet bekend**: Vercel bewaart elke vorige deploy → bij problemen meteen
+>    **Rollback** / promote de vorige deploy (geen rebuild nodig).
+>
+> Previews (`vercel` zonder `--prod`) mogen altijd. `/api/health` `build.sha: null`
+> betekent dat er buiten git om is gedeployed.
 
 1. Start from a clean, current `origin/main` or a named feature branch.
 2. For code/UI changes, use branch + PR unless Stefan explicitly asks for a different flow.
