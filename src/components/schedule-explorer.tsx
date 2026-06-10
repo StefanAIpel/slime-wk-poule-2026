@@ -625,15 +625,10 @@ function buildBracketGraph(matches: ScheduleMatch[]): BracketGraph {
   return { feedsInto, feedersOf, half };
 }
 
-function BracketCard({ match, locale, graph, byId, final = false }: { match: ScheduleMatch; locale: Locale; graph: BracketGraph; byId: Map<number, ScheduleMatch>; final?: boolean }) {
-  const c = scheduleCopy[locale];
+function BracketCard({ match, locale, final = false }: { match: ScheduleMatch; locale: Locale; final?: boolean }) {
   const homeWin = Boolean(match.winnerCode) && match.winnerCode === match.homeCode;
   const awayWin = Boolean(match.winnerCode) && match.winnerCode === match.awayCode;
   const played = match.status === "finished" || match.status === "live";
-  const nextId = graph.feedsInto.get(match.id);
-  const next = nextId ? byId.get(nextId) : undefined;
-  const sibId = next ? (graph.feedersOf.get(next.id) ?? []).find((f) => f !== match.id) : undefined;
-  const sib = sibId ? byId.get(sibId) : undefined;
   return (
     <article className={final ? "ko-card ko-card-final" : "ko-card"}>
       <div className="ko-card-row">
@@ -651,14 +646,6 @@ function BracketCard({ match, locale, graph, byId, final = false }: { match: Sch
         <span className="ko-score">{played ? match.awayScore ?? 0 : ""}</span>
       </div>
       <div className="ko-card-meta">{formatAmsterdam(match.startsAt, locale === "en" ? "en-GB" : "nl-NL")}</div>
-      {sib ? (
-        <div className="ko-next">
-          <span className="ko-next-arrow" aria-hidden="true">↳</span>
-          <span>{c.nextMeets} <b>{teamText(sib, "home", locale, true)}</b> / <b>{teamText(sib, "away", locale, true)}</b></span>
-        </div>
-      ) : !final && next ? (
-        <div className="ko-next"><span className="ko-next-arrow" aria-hidden="true">↳</span><span>{c.toFinal}</span></div>
-      ) : null}
     </article>
   );
 }
@@ -667,7 +654,6 @@ function KnockoutBracket({ matches, locale }: { matches: ScheduleMatch[]; locale
   const c = scheduleCopy[locale];
   const [half, setHalf] = useState<"top" | "bottom">("top");
   const graph = useMemo(() => buildBracketGraph(matches), [matches]);
-  const byId = useMemo(() => new Map(matches.map((m) => [m.id, m])), [matches]);
   const rounds = useMemo(
     () =>
       ["round32", "round16", "quarterfinal", "semifinal"]
@@ -691,7 +677,7 @@ function KnockoutBracket({ matches, locale }: { matches: ScheduleMatch[]; locale
           <div key={stage} className="ko-round">
             <div className="ko-round-head">{stageLabels[locale][stage] ?? "KO"}</div>
             <div className="ko-round-matches">
-              {list.map((m) => <BracketCard key={m.id} match={m} locale={locale} graph={graph} byId={byId} />)}
+              {list.map((m) => <BracketCard key={m.id} match={m} locale={locale} />)}
             </div>
           </div>
         ))}
@@ -699,7 +685,7 @@ function KnockoutBracket({ matches, locale }: { matches: ScheduleMatch[]; locale
           <div className="ko-round ko-round-final">
             <div className="ko-round-head">{c.finalPath}</div>
             <div className="ko-round-matches">
-              {finals.map((m) => <BracketCard key={m.id} match={m} locale={locale} graph={graph} byId={byId} final />)}
+              {finals.map((m) => <BracketCard key={m.id} match={m} locale={locale} final />)}
             </div>
           </div>
         ) : null}
