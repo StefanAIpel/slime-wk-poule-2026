@@ -155,7 +155,10 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled, l
                   <legend className="sr-only">{copy.predict(homeName, awayName)}</legend>
                   <div className="flex min-w-0 items-center justify-end gap-2">
                     <span className="prediction-team-label justify-end" title={homeName}>
-                      <span>{teamAbbrev(match.home_code, homeName)}</span>
+                      <span>
+                        <span className="sm:hidden">{teamAbbrev(match.home_code, homeName)}</span>
+                        <span className="hidden sm:inline">{homeName}</span>
+                      </span>
                       {homeRank ? <span className="fifa-rank-chip">{homeRank}</span> : null}
                     </span>
                     <TeamFlag code={match.home_code} name={homeName} locale={locale} />
@@ -190,7 +193,10 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled, l
                   <div className="flex min-w-0 items-center justify-start gap-2">
                     <TeamFlag code={match.away_code} name={awayName} locale={locale} />
                     <span className="prediction-team-label" title={awayName}>
-                      <span>{teamAbbrev(match.away_code, awayName)}</span>
+                      <span>
+                        <span className="sm:hidden">{teamAbbrev(match.away_code, awayName)}</span>
+                        <span className="hidden sm:inline">{awayName}</span>
+                      </span>
                       {awayRank ? <span className="fifa-rank-chip">{awayRank}</span> : null}
                     </span>
                   </div>

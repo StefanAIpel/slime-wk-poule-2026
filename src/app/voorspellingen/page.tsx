@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { savePredictions } from "@/app/actions";
@@ -430,8 +431,9 @@ function FifaRankingHelp({
 
   return (
     <details className="panel overflow-hidden" open={searchQuery ? true : undefined}>
-      <summary className="cursor-pointer px-4 py-3 text-base font-black text-[var(--ink)]">
-        {copy.fifaHelpSummary}
+      <summary className="fifa-help-summary">
+        <span>{copy.fifaHelpSummary}</span>
+        <ChevronDown aria-hidden="true" className="fifa-help-chevron size-5" />
       </summary>
       <div className="grid gap-2 px-4 pb-4">
         <div className="grid gap-1">
