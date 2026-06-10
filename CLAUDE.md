@@ -25,6 +25,9 @@ docs               productdocumentatie + werklijsten
 
 ## Werkwijze / conventies
 - **Branch:** feature/fix/docs-branch + PR; productie = `main` (Vercel deployt vanaf `main`).
+- **HARDE REGEL — productie alléén via git:** nooit `vercel --prod`/CLI/API-deploys naar
+  productie (bouwt vanaf een lokale tree; zette op 2026-06-10 tweemaal een oude branch live).
+  Previews zonder `--prod` mogen. `/api/health` toont `build.sha`; `null` = buiten git om gedeployed.
 - **Altijd groen houden:** `npm test`, `npm run lint`, `npm run build`.
 - **Taal:** Nederlands is hoofdmoot; NL/BE default NL. Bij iedere UI-copy wijziging NL én EN bijwerken (`/` en `/en`, plus aria/metadata/share/form/footer/deeproutes).
 - **Versie:** app/UI-deploys verhogen `APP_VERSION` in `src/lib/constants.ts`; live footer moet `bèta/beta <versie>` tonen. Docs-only zonder app/UI-deploy hoeft geen bump.

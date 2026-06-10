@@ -61,5 +61,13 @@ export async function GET(request: NextRequest) {
     finishedWithoutResult: finishedWithoutResult ?? 0,
   };
 
-  return NextResponse.json({ ok: true, ts: new Date().toISOString(), counts, anomalies });
+  // Build-herkomst: bij een git-deploy vult Vercel deze env-vars; bij een
+  // CLI-deploy (lokale tree) ontbreken ze -> sha/ref null = buiten git om
+  // gedeployed, en dan weet je dat productie ≠ gegarandeerd main.
+  const build = {
+    sha: process.env.VERCEL_GIT_COMMIT_SHA ?? null,
+    ref: process.env.VERCEL_GIT_COMMIT_REF ?? null,
+  };
+
+  return NextResponse.json({ ok: true, ts: new Date().toISOString(), build, counts, anomalies });
 }

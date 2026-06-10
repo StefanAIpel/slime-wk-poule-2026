@@ -15,6 +15,15 @@ These instructions apply to this repository (`StefanAIpel/slime-wk-poule-2026`) 
 
 ## Standard workflow
 
+> **HARD RULE — production deploys go through git ONLY.**
+> NEVER run `vercel --prod`, `vercel promote`, or any CLI/API deploy that targets
+> production. Production deploys happen exclusively by merging to `main` (Vercel
+> auto-builds from git). CLI deploys build from a LOCAL working tree, which on
+> 2026-06-10 put a stale feature branch live in production twice. Preview deploys
+> (`vercel` without `--prod`) are fine. If production looks broken, fix `main` and
+> merge — do not CLI-deploy over it. `/api/health` exposes the build's git sha;
+> `build.sha: null` means someone deployed outside git.
+
 1. Start from a clean, current `origin/main` or a named feature branch.
 2. For code/UI changes, use branch + PR unless Stefan explicitly asks for a different flow.
 3. Before commit/PR/merge, run:
