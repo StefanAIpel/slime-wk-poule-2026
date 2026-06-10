@@ -80,6 +80,8 @@ test("health endpoint is secret-guarded and exposes only counts (no PII)", () =>
   // Alleen head-counts; nooit hele rijen/kid-codes teruggeven.
   assert.doesNotMatch(health, /kid_accounts/);
   assert.doesNotMatch(health, /\.select\("code/);
+  // Build-herkomst: CLI-deploys (buiten git) zijn herkenbaar aan sha null.
+  assert.match(health, /VERCEL_GIT_COMMIT_SHA/);
 });
 
 test("admin mutations are rate-limited (defense in depth)", () => {
