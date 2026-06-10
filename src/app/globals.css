@@ -5789,14 +5789,22 @@ textarea {
   font-weight: 600;
   color: var(--text-muted);
 }
-/* Horizontaal swipebaar (mobiel-first): per ronde een kolom; veeg naar rechts
-   van 1/16 → 1/8 → 1/4 → 1/2 → finale. Compacte kaarten, kleine fonts. */
+/* Echte bracket: kolom per ronde, alle kolommen even hoog en de duels per ronde
+   met space-around verdeeld -> elke volgende ronde komt op het midden van z'n
+   twee voorgaande duels. Horizontaal scrollbaar BINNEN de paginabreedte (nooit
+   breder dan de header): veeg van 1/16 naar de finale; je ziet ~2 kolommen. */
+.ko-bracket-wrap {
+  max-width: 100%;
+  min-width: 0;
+}
 .ko-bracket {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 10px;
+  align-items: stretch;
+  gap: 8px;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
   padding-bottom: 10px;
@@ -5804,21 +5812,24 @@ textarea {
 }
 .ko-round {
   flex: 0 0 auto;
-  width: min(76vw, 208px);
+  width: min(56vw, 168px);
+  display: flex;
+  flex-direction: column;
   scroll-snap-align: start;
 }
 .ko-round-head {
-  position: sticky;
-  top: 0;
   font-weight: 800;
   color: var(--ink);
-  font-size: 0.82rem;
-  margin-bottom: 7px;
-  padding-left: 2px;
+  font-size: 0.8rem;
+  text-align: center;
+  margin-bottom: 8px;
 }
 .ko-round-matches {
-  display: grid;
-  gap: 9px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 8px;
 }
 .ko-card {
   border: 1px solid #e2e8f0;
@@ -5843,7 +5854,7 @@ textarea {
   gap: 6px;
   min-width: 0;
   font-weight: 700;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   line-height: 1.15;
   color: var(--ink);
 }
@@ -5859,42 +5870,23 @@ textarea {
 .ko-score {
   flex: 0 0 auto;
   font-weight: 900;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-variant-numeric: tabular-nums;
   color: var(--ink);
 }
 .ko-card-meta {
   margin-top: 3px;
-  font-size: 0.66rem;
+  font-size: 0.64rem;
   font-weight: 600;
   color: var(--text-muted);
-}
-.ko-next {
-  margin-top: 6px;
-  padding-top: 5px;
-  border-top: 1px dashed #e2e8f0;
-  display: flex;
-  align-items: flex-start;
-  gap: 4px;
-  font-size: 0.66rem;
-  font-weight: 700;
-  line-height: 1.25;
-  color: var(--green-deep);
-}
-.ko-next-arrow {
-  color: #94a3b8;
-  flex: 0 0 auto;
 }
 
 @media (min-width: 768px) {
   .ko-bracket {
-    gap: 16px;
+    gap: 14px;
   }
   .ko-round {
-    width: 230px;
-  }
-  .ko-round-matches {
-    gap: 16px;
+    width: 210px;
   }
   .ko-team {
     font-size: 0.82rem;

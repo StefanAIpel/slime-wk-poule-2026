@@ -167,7 +167,7 @@ test("logged-in status header uses the user's avatar instead of the trophy icon"
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.45"/);
+  assert.match(constants, /APP_VERSION = "0.46"/);
 });
 test("entry deadline is extended until the first World Cup match", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00\+02:00"/);
