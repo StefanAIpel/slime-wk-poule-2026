@@ -174,6 +174,16 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         )}
         {children}
         {isLiveSurface ? null : <SiteFooter locale={htmlLang} />}
+        {/* FOUC-vangnet: als de stylesheet niet laadt (bv. vlak na een deploy die
+            de oude CSS-hash verving), is #css-probe niet 'display:none' en herladen
+            we de pagina één keer, zodat niemand een kale pagina ziet. */}
+        <span id="css-probe" aria-hidden="true" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              '(function(){function c(){try{var p=document.getElementById("css-probe");if(!p)return;if(getComputedStyle(p).display==="none"){sessionStorage.removeItem("ss_css_retry");return;}if(!sessionStorage.getItem("ss_css_retry")){sessionStorage.setItem("ss_css_retry","1");location.reload();}}catch(e){}}if(document.readyState==="complete"){requestAnimationFrame(c);}else{window.addEventListener("load",function(){requestAnimationFrame(c);});}})();',
+          }}
+        />
       </body>
     </html>
   );

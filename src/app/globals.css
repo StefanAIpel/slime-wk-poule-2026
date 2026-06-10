@@ -6002,3 +6002,6 @@ textarea {
     font-size: 0.82rem;
   }
 }
+
+/* FOUC-vangnet: verbergt de probe wanneer de stylesheet is geladen (zie layout.tsx). */
+#css-probe { display: none; }
