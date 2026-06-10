@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { TeamFlag } from "@/components/team-flag";
 import { getFixtureById, getFixtureDetail, getHeadToHead, isLiveStatus, manOfTheMatch, type LiveFixture, type MatchEvent, type TeamLineup, type TeamPlayers, type TeamStatistics } from "@/lib/apifootball-live";
+import { formatEventMinute } from "@/lib/live-events";
 import { getServerLocale } from "@/lib/server-locale";
 import type { Locale } from "@/lib/i18n";
 
@@ -147,17 +148,6 @@ export function sortMatchEventsNewestFirst(events: MatchEvent[]) {
 
 function cleanApiDetail(detail: string) {
   return detail.trim().replace(/\s+\d+$/, "");
-}
-
-export function formatEventMinute(event: Pick<MatchEvent, "time" | "comments">) {
-  const elapsed = event.time.elapsed ?? 0;
-  const extra = event.time.extra;
-  // The provider exposes stoppage time as time.extra, e.g. elapsed=90 + extra=6 => 90+6'.
-  if (typeof extra === "number" && extra > 0) return `${elapsed}+${extra}'`;
-  // Some providers put the 90+6 notation in comments instead of time.extra; preserve it if present.
-  const commentMinute = event.comments?.match(/\b(45|90)\s*\+\s*(\d{1,2})\b/);
-  if (commentMinute) return `${commentMinute[1]}+${commentMinute[2]}'`;
-  return `${elapsed}'`;
 }
 
 function eventPresentation(event: MatchEvent, locale: Locale) {
