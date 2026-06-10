@@ -86,13 +86,27 @@ function HeadToHead({ fixtures, title, locale }: { fixtures: LiveFixture[]; titl
   );
 }
 
+export function sortMatchEventsNewestFirst(events: MatchEvent[]) {
+  return events
+    .map((event, index) => ({ event, index }))
+    .sort((a, b) => {
+      const elapsedDiff = (b.event.time.elapsed ?? 0) - (a.event.time.elapsed ?? 0);
+      if (elapsedDiff) return elapsedDiff;
+      const extraDiff = (b.event.time.extra ?? 0) - (a.event.time.extra ?? 0);
+      if (extraDiff) return extraDiff;
+      return b.index - a.index;
+    })
+    .map(({ event }) => event);
+}
+
 function Events({ events, title }: { events: MatchEvent[]; title: string }) {
   if (!events.length) return null;
+  const sortedEvents = sortMatchEventsNewestFirst(events);
   return (
     <section className="panel p-4">
       <h2 className="mb-3 text-lg font-bold text-[var(--ink)]">{title}</h2>
       <ul className="grid gap-2">
-        {events.map((event, index) => (
+        {sortedEvents.map((event, index) => (
           <li key={index} className="flex items-baseline gap-2 text-sm text-[#2f3d57]">
             <span className="w-9 flex-none font-bold tabular-nums text-[var(--text-muted)]">{`${event.time.elapsed ?? 0}${event.time.extra ? `+${event.time.extra}` : ""}'`}</span>
             <span className="font-bold text-[var(--ink)]">{event.detail || event.type}</span>
