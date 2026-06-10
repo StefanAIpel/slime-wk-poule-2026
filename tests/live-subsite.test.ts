@@ -69,8 +69,12 @@ test("live schema mirrors the main ScheduleExplorer and offers a LIVE button", (
   assert.match(liveSchema, /live-badge-btn/);
 });
 
-test("match detail uses our flags and avoids technical jargon", () => {
+test("match detail uses our flags, newest-first events and avoids technical jargon", () => {
   assert.match(liveMatch, /TeamFlag/);
+  assert.match(liveMatch, /sortMatchEventsNewestFirst/);
+  assert.match(liveMatch, /elapsedDiff/);
+  assert.match(liveMatch, /return b\.index - a\.index/);
+  assert.match(liveMatch, /sortedEvents\.map/);
   assert.doesNotMatch(liveMatch, /API-Football/);
 });
 
