@@ -78,10 +78,10 @@ test("match detail uses our flags, newest-first events and avoids technical jarg
   assert.match(liveEvents, /time\.extra/);
   assert.match(liveEvents, /90\+6/);
   assert.match(liveEvents, /elapsed > 90/);
-  assert.match(liveMatch, /inferredFinalStoppageExtras/);
-  assert.match(liveMatch, /missingApiStoppageExtra/);
-  assert.match(liveMatch, /90\+\$\{inferredExtra\}/);
-  assert.match(liveMatch, /const inferredExtras = \[6, 2, 1\]/);
+  assert.doesNotMatch(liveMatch, /inferredFinalStoppageExtras/);
+  assert.doesNotMatch(liveMatch, /missingApiStoppageExtra/);
+  assert.doesNotMatch(liveMatch, /90\+\$\{inferredExtra\}/);
+  assert.doesNotMatch(liveMatch, /const inferredExtras = \[6, 2, 1\]/);
   assert.match(liveMatch, /sortedEvents\.map/);
   assert.match(liveMatch, /eventPresentation/);
   assert.doesNotMatch(liveMatch, /yellowCard: "Gele kaart"/);

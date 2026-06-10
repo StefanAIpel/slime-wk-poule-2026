@@ -19,6 +19,10 @@ test("formatEventMinute reconstructs first-half stoppage when API sends elapsed 
   assert.equal(formatEventMinute({ time: { elapsed: 47, extra: null }, detail: "Substitution", comments: null }), "45+2'");
 });
 
+test("formatEventMinute shows plain 90 when API does not provide stoppage data", () => {
+  assert.equal(formatEventMinute({ time: { elapsed: 90, extra: null }, detail: "Penalty", comments: null }), "90'");
+});
+
 test("formatEventMinute preserves extra-time minutes when explicitly marked as extra time", () => {
   assert.equal(formatEventMinute({ time: { elapsed: 96, extra: null }, detail: "Normal Goal", comments: "extra time" }), "96'");
 });
