@@ -159,6 +159,12 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
   assert.doesNotMatch(globalsCss, /\.pool-member-world \{\n\s*display: none;\n\s*\}/);
 });
 
+test("desktop header uses a sharp larger logo icon instead of the tiny trophy crop", () => {
+  assert.match(siteHeader, /header-slime-memphis-v2\.webp/);
+  assert.doesNotMatch(siteHeader, /wk_slime_700_transparant\.webp/);
+  assert.match(globalsCss, /\.site-header-logo img\.site-header-avatar \{[\s\S]*width: 60px;[\s\S]*height: 60px;[\s\S]*transform: none;/);
+});
+
 test("logged-in status header uses the user's avatar instead of the trophy icon", () => {
   assert.match(apiMeRoute, /select\("nickname,team_name,avatar_key,preferred_locale"\)/);
   assert.match(apiMeRoute, /avatarKey: profile\?\.avatar_key \?\? null/);
@@ -690,7 +696,7 @@ test("shared SlimeScore links use the app icon instead of the wide banner", () =
 
 test("SlimeScore brand wordmarks stay connected and use blue/green on light backgrounds", () => {
   assert.match(brandWordmark, /memphis_wkbal_700_transparant\.webp/);
-  assert.match(siteHeader, /wk_slime_700_transparant\.webp/);
+  assert.match(siteHeader, /header-slime-memphis-v2\.webp/);
   assert.doesNotMatch(`${brandWordmark}\n${siteHeader}`, /trump_slime_700_transparant\.webp/);
   assert.match(brand, /<span className="brand-lockup-slime">Slime<\/span><span className="brand-lockup-score">Score<\/span>/);
   assert.doesNotMatch(`${brand}\n${siteHeader}\n${brandWordmark}\n${quickMenu}`, /Slime Score/);
