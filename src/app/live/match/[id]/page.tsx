@@ -13,26 +13,17 @@ const copy = {
 
 const EVENT_TRANSLATIONS = {
   nl: {
-    substitution: "Wissel",
-    yellowCard: "Gele kaart",
-    redCard: "Rode kaart",
-    secondYellow: "Tweede geel",
     normalGoal: "Doelpunt",
     ownGoal: "Eigen goal",
-    penalty: "Strafschop",
-    missedPenalty: "Strafschop gemist",
-    penaltyCancelled: "Strafschop geannuleerd",
+    penalty: "Penalty",
+    missedPenalty: "Penalty gemist",
+    penaltyCancelled: "Penalty geannuleerd",
     goalCancelled: "Goal afgekeurd",
     var: "VAR",
-    card: "Kaart",
     in: "erin",
     out: "eruit",
   },
   en: {
-    substitution: "Substitution",
-    yellowCard: "Yellow card",
-    redCard: "Red card",
-    secondYellow: "Second yellow",
     normalGoal: "Goal",
     ownGoal: "Own goal",
     penalty: "Penalty",
@@ -40,7 +31,6 @@ const EVENT_TRANSLATIONS = {
     penaltyCancelled: "Penalty cancelled",
     goalCancelled: "Goal cancelled",
     var: "VAR",
-    card: "Card",
     in: "on",
     out: "off",
   },
@@ -159,16 +149,27 @@ function cleanApiDetail(detail: string) {
   return detail.trim().replace(/\s+\d+$/, "");
 }
 
+export function formatEventMinute(event: Pick<MatchEvent, "time" | "comments">) {
+  const elapsed = event.time.elapsed ?? 0;
+  const extra = event.time.extra;
+  // The provider exposes stoppage time as time.extra, e.g. elapsed=90 + extra=6 => 90+6'.
+  if (typeof extra === "number" && extra > 0) return `${elapsed}+${extra}'`;
+  // Some providers put the 90+6 notation in comments instead of time.extra; preserve it if present.
+  const commentMinute = event.comments?.match(/\b(45|90)\s*\+\s*(\d{1,2})\b/);
+  if (commentMinute) return `${commentMinute[1]}+${commentMinute[2]}'`;
+  return `${elapsed}'`;
+}
+
 function eventPresentation(event: MatchEvent, locale: Locale) {
   const c = EVENT_TRANSLATIONS[locale];
   const rawDetail = cleanApiDetail(event.detail || "");
   const detail = rawDetail.toLowerCase();
   const type = event.type.toLowerCase();
 
-  if (type.includes("subst") || detail.includes("substitution")) return { icon: "🔁", label: c.substitution, tone: "text-sky-700" };
-  if (detail.includes("second yellow")) return { icon: "🟨", label: c.secondYellow, tone: "text-amber-700" };
-  if (detail.includes("yellow")) return { icon: "🟨", label: c.yellowCard, tone: "text-amber-700" };
-  if (detail.includes("red")) return { icon: "🟥", label: c.redCard, tone: "text-red-700" };
+  if (type.includes("subst") || detail.includes("substitution")) return { icon: "🔁", label: null, tone: "text-sky-700" };
+  if (detail.includes("second yellow")) return { icon: "🟨", label: null, tone: "text-amber-700" };
+  if (detail.includes("yellow")) return { icon: "🟨", label: null, tone: "text-amber-700" };
+  if (detail.includes("red")) return { icon: "🟥", label: null, tone: "text-red-700" };
   if (detail.includes("own goal")) return { icon: "⚽", label: c.ownGoal, tone: "text-emerald-700" };
   if (detail.includes("missed penalty")) return { icon: "❌", label: c.missedPenalty, tone: "text-red-700" };
   if (detail.includes("penalty cancelled")) return { icon: "❌", label: c.penaltyCancelled, tone: "text-red-700" };
@@ -176,7 +177,7 @@ function eventPresentation(event: MatchEvent, locale: Locale) {
   if (detail.includes("normal goal") || type.includes("goal")) return { icon: "⚽", label: c.normalGoal, tone: "text-emerald-700" };
   if (detail.includes("cancelled")) return { icon: "❌", label: c.goalCancelled, tone: "text-red-700" };
   if (type.includes("var")) return { icon: "📺", label: c.var, tone: "text-violet-700" };
-  if (type.includes("card")) return { icon: "🟨", label: c.card, tone: "text-amber-700" };
+  if (type.includes("card")) return { icon: "🟨", label: null, tone: "text-amber-700" };
   return { icon: "•", label: rawDetail || event.type, tone: "text-[var(--ink)]" };
 }
 
@@ -206,11 +207,11 @@ function Events({ events, title, fixture, locale }: { events: MatchEvent[]; titl
           const text = eventText(event, locale);
           return (
             <li key={index} className="grid grid-cols-[2.6rem_2rem_minmax(0,1fr)] items-start gap-x-2 text-sm text-[#2f3d57]">
-              <span className="pt-1 font-bold tabular-nums text-[var(--text-muted)]">{`${event.time.elapsed ?? 0}${event.time.extra ? `+${event.time.extra}` : ""}'`}</span>
+              <span className="pt-1 font-bold tabular-nums text-[var(--text-muted)]">{formatEventMinute(event)}</span>
               <span className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-base leading-none" aria-hidden="true">{presentation.icon}</span>
               <span className="min-w-0 leading-snug">
-                <span className={`font-bold ${presentation.tone}`}>{presentation.label}</span>
-                {text ? <span> {text}</span> : null}
+                {presentation.label ? <span className={`font-bold ${presentation.tone}`}>{presentation.label}</span> : null}
+                {text ? <span>{presentation.label ? " " : ""}{text}</span> : null}
                 <span className="text-[var(--text-muted)]"> ({teamNameForEvent(event, fixture)})</span>
               </span>
             </li>
