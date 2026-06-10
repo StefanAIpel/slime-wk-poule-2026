@@ -180,6 +180,7 @@ export type MatchEvent = {
   assist: { name: string | null };
   type: string;
   detail: string;
+  comments?: string | null;
 };
 
 export type PlayerLine = {
