@@ -75,6 +75,13 @@ test("match detail uses our flags, newest-first events and avoids technical jarg
   assert.match(liveMatch, /elapsedDiff/);
   assert.match(liveMatch, /return b\.index - a\.index/);
   assert.match(liveMatch, /sortedEvents\.map/);
+  assert.match(liveMatch, /eventPresentation/);
+  assert.match(liveMatch, /Gele kaart/);
+  assert.match(liveMatch, /Rode kaart/);
+  assert.match(liveMatch, /Wissel/);
+  assert.match(liveMatch, /cleanApiDetail/);
+  assert.match(liveMatch, /Schoten op doel/);
+  assert.match(liveMatch, /Balbezit/);
   assert.doesNotMatch(liveMatch, /API-Football/);
 });
 
