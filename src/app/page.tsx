@@ -389,7 +389,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
 
   return (
     <main className="page-shell">
-      <header className="mb-6 grid gap-4 md:max-w-xl">
+      <header className="mb-6 grid gap-4 md:hidden">
         <div className="home-mobile-user-row">
           <a href={localizedHref("/account", locale)} className="home-mobile-user-avatar" aria-label={locale === "en" ? "My account" : "Mijn account"}>
             <Avatar name={nickname || copy.you} avatarKey={profile?.avatar_key} size={78} />
@@ -400,7 +400,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
 
       <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
         <div className="grid gap-4">
-          <div className="dark-panel p-4 text-white sm:p-5">
+          <div className="dark-panel p-4 text-white sm:p-5 dashboard-hero-panel">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h1 className="text-[1.45rem] font-bold leading-tight md:text-4xl">{copy.dashboardTitle}</h1>
@@ -410,9 +410,9 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                   {copy.dashboardIntroAfter}
                 </p>
               </div>
-              <div className="hidden rounded-lg bg-white/10 p-3 md:block">
-                <Trophy aria-hidden="true" className="size-10 text-[#ffd44d]" />
-              </div>
+              <a href={localizedHref("/account", locale)} className="dashboard-hero-avatar-link hidden md:inline-flex" aria-label={locale === "en" ? "My account" : "Mijn account"}>
+                <Avatar name={nickname || copy.you} avatarKey={profile?.avatar_key} size={116} />
+              </a>
             </div>
             <div className="dashboard-progress-card mt-3 rounded-lg bg-[#061b47] p-2.5 sm:p-3">
               <div className="flex items-end justify-between gap-3">
