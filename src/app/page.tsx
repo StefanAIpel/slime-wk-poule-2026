@@ -392,9 +392,9 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
       <header className="mb-6 grid gap-4 md:max-w-xl">
         <div className="home-mobile-user-row">
           <a href={localizedHref("/account", locale)} className="home-mobile-user-avatar" aria-label={locale === "en" ? "My account" : "Mijn account"}>
-            <Avatar name={nickname || copy.you} avatarKey={profile?.avatar_key} size={42} />
+            <Avatar name={nickname || copy.you} avatarKey={profile?.avatar_key} size={78} />
           </a>
-          <Brand locale={locale} />
+          <Brand hideIcon locale={locale} />
         </div>
       </header>
 

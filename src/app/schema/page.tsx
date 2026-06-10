@@ -3,7 +3,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
 import { ScheduleExplorer } from "@/components/schedule-explorer";
-import { ShareButton } from "@/components/share-button";
+import { SchemaHeroActions } from "@/components/schema-hero-actions";
 import { LIVE_URL, SITE_URL } from "@/lib/constants";
 import { getScheduleMatches } from "@/lib/schedule-data";
 import { getServerLocale } from "@/lib/server-locale";
@@ -57,13 +57,15 @@ export default async function SchedulePage() {
           slime="/assets/hd-schema-orange-transparent-640.webp"
           mascotClassName="hero-mascot-field hero-mascot-schema"
         >
-          <div className="schema-hero-actions">
-            <a href={LIVE_URL} className="schema-live-follow-button" aria-label={scheduleCopy[locale].liveLabel}>
-              <span aria-hidden="true" className="schema-live-dot" />
-              {scheduleCopy[locale].liveLabel}
-            </a>
-            <ShareButton url={scheduleShareUrl} text={scheduleIntro} title={scheduleTitle} label={scheduleCopy[locale].shareLabel} locale={locale} />
-          </div>
+          <SchemaHeroActions
+            liveUrl={LIVE_URL}
+            shareUrl={scheduleShareUrl}
+            shareText={scheduleIntro}
+            shareTitle={scheduleTitle}
+            liveLabel={scheduleCopy[locale].liveLabel}
+            shareLabel={scheduleCopy[locale].shareLabel}
+            locale={locale}
+          />
         </PageHero>
       </header>
 

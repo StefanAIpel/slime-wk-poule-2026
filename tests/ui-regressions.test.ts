@@ -314,18 +314,19 @@ test("live sticky header has visible menu tabs, predict CTA, hamburger and high-
   assert.match(globalsCss, /\.live-subsite-main :where\(\.live-hero-band\) \{[\s\S]*position: relative;[\s\S]*z-index: 0;/);
 });
 
-test("schema hero has a red Follow live CTA and larger schedule section tabs", () => {
-  const scheduleTabBlock = globalsCss.match(/\.schedule-tab \{[\s\S]*?\}/)?.[0] ?? "";
-  const liveButtonBlock = globalsCss.match(/\.schema-live-follow-button \{[\s\S]*?\}/)?.[0] ?? "";
+test("schema hero uses compact live/share actions and smaller schedule tabs", () => {
   assert.match(schemaPage, /import \{ LIVE_URL, SITE_URL \}/);
-  assert.match(schemaPage, /href=\{LIVE_URL\}/);
+  assert.match(schemaPage, /SchemaHeroActions/);
+  assert.match(schemaPage, /liveUrl=\{LIVE_URL\}/);
   assert.match(schemaPage, /Volg live/);
   assert.match(schemaPage, /Follow live/);
-  assert.match(liveButtonBlock, /#ef4444/);
-  assert.match(liveButtonBlock, /#dc2626/);
-  assert.match(liveButtonBlock, /#b91c1c/);
-  assert.match(scheduleTabBlock, /font-size: 0\.9rem;/);
-  assert.match(scheduleTabBlock, /font-weight: 950;/);
+  assert.match(globalsCss, /\.schema-live-follow-button,[\s\S]*\.schema-share-trigger \{[\s\S]*#ef4444/);
+  assert.match(globalsCss, /\.schema-live-follow-button,[\s\S]*\.schema-share-trigger \{[\s\S]*#dc2626/);
+  assert.match(globalsCss, /\.schema-live-follow-button,[\s\S]*\.schema-share-trigger \{[\s\S]*#b91c1c/);
+  assert.match(globalsCss, /\.schema-share-popover \{[\s\S]*position: absolute;/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.schema-live-follow-button,[\s\S]*\.schema-share-trigger \{[\s\S]*width: 42px;/);
+  assert.match(globalsCss, /\.schedule-tab \{[\s\S]*min-height: 40px;[\s\S]*font-size: 0\.8rem;[\s\S]*font-weight: 950;/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.schedule-tab \{[\s\S]*min-height: 36px;[\s\S]*font-size: 0\.72rem;/);
 });
 
 test("live mobile hero moves host pills up, splits the title and keeps the schema CTA half-width", () => {
@@ -384,6 +385,12 @@ test("logged-in homepage uses shorter prediction deadline copy and compact mobil
   assert.match(homePage, /dashboard-extra-progress-bar mt-2 h-2/);
   assert.match(homePage, /<p className="text-2xl font-bold sm:text-3xl">\{progress\}%<\/p>/);
   assert.match(homePage, /<p className="text-xl font-bold tabular-nums sm:text-2xl">\{extraProgress\}%<\/p>/);
+  assert.match(homePage, /<Avatar name=\{nickname \|\| copy\.you\} avatarKey=\{profile\?\.avatar_key\} size=\{78\} \/>/);
+  assert.match(homePage, /<Brand hideIcon locale=\{locale\} \/>/);
+  assert.match(globalsCss, /\.home-mobile-user-avatar \{[\s\S]*display: inline-flex;/);
+  assert.match(globalsCss, /\.home-mobile-user-avatar \.avatar-img \{[\s\S]*width: 84px;[\s\S]*height: 84px;/);
+  assert.match(globalsCss, /\.home-mobile-user-avatar \.avatar-img \{[\s\S]*border: 2px solid rgba\(242, 106, 27, 0\.92\);[\s\S]*background: transparent;/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.home-mobile-user-avatar \.avatar-img \{[\s\S]*width: 78px;[\s\S]*height: 78px;/);
 });
 
 test("prediction edits stay open through the Oranje grace window while pre-kickoff bonus fields still close at kickoff", () => {
@@ -1079,14 +1086,16 @@ test("schema copy is public-facing and group/date are chosen via pickers", () =>
   assert.doesNotMatch(schemaPage + schemaGroupsPage + schemaKnockoutPage, /Geen account nodig/);
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /shareTitle: "WK 2026 speelschema"/);
   assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /shareTitle: "WC 2026 schedule"/);
-  assert.match(schemaPage + schemaGroupsPage + schemaKnockoutPage, /<ShareButton[\s\S]*title=\{[^}]+shareTitle|title=\{scheduleTitle\}[\s\S]*label=\{[^}]+shareLabel|label=\{scheduleCopy\[locale\]\.shareLabel\}[\s\S]*locale=\{locale\}/);
+  assert.match(schemaPage, /<SchemaHeroActions[\s\S]*shareTitle=\{scheduleTitle\}[\s\S]*shareLabel=\{scheduleCopy\[locale\]\.shareLabel\}[\s\S]*locale=\{locale\}/);
+  assert.match(schemaGroupsPage + schemaKnockoutPage, /<ShareButton[\s\S]*title=\{[^}]+shareTitle[\s\S]*label=\{[^}]+shareLabel[\s\S]*locale=\{locale\}/);
   assert.doesNotMatch(schemaPage + schemaGroupsPage + schemaKnockoutPage, /AI-score|API-score|feedback|pagina staat/i);
   assert.match(scheduleExplorer, /Nederland - Oranje/);
   assert.match(scheduleExplorer, /schedule-picker-pop/);
   assert.match(scheduleExplorer, /schedule-group-grid/);
   assert.match(scheduleExplorer, /groupFilter/);
   assert.match(scheduleExplorer, /dateFilter/);
-  assert.match(globalsCss, /\.group-phase-card \.standing-card-header \{[\s\S]*linear-gradient\(100deg, #0b62d9 0%, #0a8f47 48%, #ffb000 74%, #e1262f 100%\)/);
+  assert.match(globalsCss, /\.group-phase-card \.standing-card-header \{[\s\S]*linear-gradient\(100deg, #1e73b8 0%, #0e7a44 100%\)/);
+  assert.doesNotMatch(globalsCss, /\.group-phase-card \.standing-card-header \{[\s\S]*#ffb000[\s\S]*#e1262f/);
 });
 
 test("Nederland - Oranje filter supports the app seed code NED as well as external NLD", () => {
