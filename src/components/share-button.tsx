@@ -84,7 +84,7 @@ function withUrl(message: string, url: string) {
 export function ShareButton({
   url,
   text,
-  title = "Slime Score WK 2026",
+  title = "SlimeScore WK 2026",
   label = "Delen",
   variant = "primary",
   locale = "nl",
@@ -130,7 +130,7 @@ export function ShareButton({
 export function ShareRow({
   url,
   text,
-  title = "Slime Score WK 2026",
+  title = "SlimeScore WK 2026",
   compact = false,
   onDark = false,
   messages,

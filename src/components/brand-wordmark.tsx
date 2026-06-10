@@ -7,7 +7,7 @@ import Link from "next/link";
  */
 export function BrandWordmark({ onDark = false, className = "" }: { onDark?: boolean; className?: string }) {
   return (
-    <Link href="/" className={`brand-wordmark ${onDark ? "brand-wordmark-dark" : ""} ${className}`} aria-label="Slime Score home">
+    <Link href="/" className={`brand-wordmark ${onDark ? "brand-wordmark-dark" : ""} ${className}`} aria-label="SlimeScore home">
       <Image
         className="brand-wordmark-logo header-slime-avatar"
         src="/assets/transparant-avatar/memphis_wkbal_700_transparant.webp"
