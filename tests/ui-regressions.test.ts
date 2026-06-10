@@ -167,7 +167,7 @@ test("logged-in status header uses the user's avatar instead of the trophy icon"
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.47"/);
+  assert.match(constants, /APP_VERSION = "0.48"/);
 });
 test("entry deadline is extended until the first World Cup match", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00\+02:00"/);
@@ -1076,6 +1076,12 @@ test("schema defaults to groups, keeps knockout separate, and removes the all-ma
   assert.doesNotMatch(scheduleExplorer, /view: "matches"/);
   assert.doesNotMatch(scheduleExplorer, /label: "Wedstrijden"/);
   assert.match(scheduleExplorer, /knockoutStageTabs/);
+  assert.match(scheduleExplorer, /schedule-tabs-knockout/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.schedule-tabs-knockout \{\n    display: none;/);
+  assert.doesNotMatch(scheduleExplorer, /knockout-stage-meta/);
+  assert.doesNotMatch(globalsCss, /\.knockout-stage-meta/);
+  assert.match(globalsCss, /\.ko-view-btn\.is-active \{[\s\S]*background: #1e73b8;/);
+  assert.match(globalsCss, /\.knockout-stage-tabs \.schedule-subtab:first-child \{[\s\S]*background: #ff8a00;/);
   assert.match(scheduleExplorer, /schedule-group-grid/);
   assert.match(scheduleExplorer, /Alle datums/);
 });
