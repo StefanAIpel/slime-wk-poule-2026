@@ -11,6 +11,52 @@ const copy = {
   en: { back: "Back to live", finished: "Finished", rest: "HT", events: "Match events", stats: "Statistics", lineups: "Line-ups", coach: "Coach", motm: "Player of the match", h2h: "Head-to-head", notFound: "This match could not be loaded.", soon: "Line-ups and statistics appear around kick-off." },
 } as const;
 
+const EVENT_TRANSLATIONS = {
+  nl: {
+    normalGoal: "Doelpunt",
+    ownGoal: "Eigen goal",
+    penalty: "Penalty",
+    missedPenalty: "Penalty gemist",
+    penaltyCancelled: "Penalty geannuleerd",
+    goalCancelled: "Goal afgekeurd",
+    var: "VAR",
+    in: "erin",
+    out: "eruit",
+  },
+  en: {
+    normalGoal: "Goal",
+    ownGoal: "Own goal",
+    penalty: "Penalty",
+    missedPenalty: "Penalty missed",
+    penaltyCancelled: "Penalty cancelled",
+    goalCancelled: "Goal cancelled",
+    var: "VAR",
+    in: "on",
+    out: "off",
+  },
+} as const;
+
+const STAT_LABELS: Record<string, { icon: string; nl: string; en: string }> = {
+  "Shots on Goal": { icon: "🎯", nl: "Schoten op doel", en: "Shots on target" },
+  "Shots off Goal": { icon: "↗️", nl: "Schoten naast", en: "Shots off target" },
+  "Total Shots": { icon: "⚽", nl: "Schoten totaal", en: "Total shots" },
+  "Blocked Shots": { icon: "🧱", nl: "Geblokte schoten", en: "Blocked shots" },
+  "Shots insidebox": { icon: "📦", nl: "Schoten in 16", en: "Shots inside box" },
+  "Shots outsidebox": { icon: "↔️", nl: "Schoten buiten 16", en: "Shots outside box" },
+  Fouls: { icon: "🛑", nl: "Overtredingen", en: "Fouls" },
+  "Corner Kicks": { icon: "🚩", nl: "Corners", en: "Corners" },
+  Offsides: { icon: "🏁", nl: "Buitenspel", en: "Offsides" },
+  "Ball Possession": { icon: "🌀", nl: "Balbezit", en: "Possession" },
+  "Yellow Cards": { icon: "🟨", nl: "Gele kaarten", en: "Yellow cards" },
+  "Red Cards": { icon: "🟥", nl: "Rode kaarten", en: "Red cards" },
+  "Goalkeeper Saves": { icon: "🧤", nl: "Reddingen keeper", en: "Goalkeeper saves" },
+  "Total passes": { icon: "🔁", nl: "Passes totaal", en: "Total passes" },
+  "Passes accurate": { icon: "✅", nl: "Passes aangekomen", en: "Accurate passes" },
+  "Passes %": { icon: "📊", nl: "Passnauwkeurigheid", en: "Pass accuracy" },
+  expected_goals: { icon: "📈", nl: "Expected goals", en: "Expected goals" },
+  goals_prevented: { icon: "🧤", nl: "Goals voorkomen", en: "Goals prevented" },
+};
+
 function shortWhen(iso: string, locale: Locale) {
   return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "nl-NL", { timeZone: "Europe/Amsterdam", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
 }
@@ -86,40 +132,129 @@ function HeadToHead({ fixtures, title, locale }: { fixtures: LiveFixture[]; titl
   );
 }
 
-function Events({ events, title }: { events: MatchEvent[]; title: string }) {
+export function sortMatchEventsNewestFirst(events: MatchEvent[]) {
+  return events
+    .map((event, index) => ({ event, index }))
+    .sort((a, b) => {
+      const elapsedDiff = (b.event.time.elapsed ?? 0) - (a.event.time.elapsed ?? 0);
+      if (elapsedDiff) return elapsedDiff;
+      const extraDiff = (b.event.time.extra ?? 0) - (a.event.time.extra ?? 0);
+      if (extraDiff) return extraDiff;
+      return b.index - a.index;
+    })
+    .map(({ event }) => event);
+}
+
+function cleanApiDetail(detail: string) {
+  return detail.trim().replace(/\s+\d+$/, "");
+}
+
+export function formatEventMinute(event: Pick<MatchEvent, "time" | "comments">) {
+  const elapsed = event.time.elapsed ?? 0;
+  const extra = event.time.extra;
+  // The provider exposes stoppage time as time.extra, e.g. elapsed=90 + extra=6 => 90+6'.
+  if (typeof extra === "number" && extra > 0) return `${elapsed}+${extra}'`;
+  // Some providers put the 90+6 notation in comments instead of time.extra; preserve it if present.
+  const commentMinute = event.comments?.match(/\b(45|90)\s*\+\s*(\d{1,2})\b/);
+  if (commentMinute) return `${commentMinute[1]}+${commentMinute[2]}'`;
+  return `${elapsed}'`;
+}
+
+function eventPresentation(event: MatchEvent, locale: Locale) {
+  const c = EVENT_TRANSLATIONS[locale];
+  const rawDetail = cleanApiDetail(event.detail || "");
+  const detail = rawDetail.toLowerCase();
+  const type = event.type.toLowerCase();
+
+  if (type.includes("subst") || detail.includes("substitution")) return { icon: "🔁", label: null, tone: "text-sky-700" };
+  if (detail.includes("second yellow")) return { icon: "🟨", label: null, tone: "text-amber-700" };
+  if (detail.includes("yellow")) return { icon: "🟨", label: null, tone: "text-amber-700" };
+  if (detail.includes("red")) return { icon: "🟥", label: null, tone: "text-red-700" };
+  if (detail.includes("own goal")) return { icon: "⚽", label: c.ownGoal, tone: "text-emerald-700" };
+  if (detail.includes("missed penalty")) return { icon: "❌", label: c.missedPenalty, tone: "text-red-700" };
+  if (detail.includes("penalty cancelled")) return { icon: "❌", label: c.penaltyCancelled, tone: "text-red-700" };
+  if (detail === "penalty") return { icon: "⚽", label: c.penalty, tone: "text-emerald-700" };
+  if (detail.includes("normal goal") || type.includes("goal")) return { icon: "⚽", label: c.normalGoal, tone: "text-emerald-700" };
+  if (detail.includes("cancelled")) return { icon: "❌", label: c.goalCancelled, tone: "text-red-700" };
+  if (type.includes("var")) return { icon: "📺", label: c.var, tone: "text-violet-700" };
+  if (type.includes("card")) return { icon: "🟨", label: null, tone: "text-amber-700" };
+  return { icon: "•", label: rawDetail || event.type, tone: "text-[var(--ink)]" };
+}
+
+function eventText(event: MatchEvent, locale: Locale) {
+  const isSubstitution = event.type.toLowerCase().includes("subst") || cleanApiDetail(event.detail || "").toLowerCase().includes("substitution");
+  const player = event.player.name;
+  const assist = event.assist.name;
+  if (isSubstitution && player && assist) return `${assist} ${EVENT_TRANSLATIONS[locale].in} · ${player} ${EVENT_TRANSLATIONS[locale].out}`;
+  return [player, assist].filter(Boolean).join(" · ");
+}
+
+function teamNameForEvent(event: MatchEvent, fixture: LiveFixture) {
+  if (event.team.id === fixture.home.id) return fixture.home.name;
+  if (event.team.id === fixture.away.id) return fixture.away.name;
+  return event.team.name;
+}
+
+function Events({ events, title, fixture, locale }: { events: MatchEvent[]; title: string; fixture: LiveFixture; locale: Locale }) {
   if (!events.length) return null;
+  const sortedEvents = sortMatchEventsNewestFirst(events);
   return (
     <section className="panel p-4">
       <h2 className="mb-3 text-lg font-bold text-[var(--ink)]">{title}</h2>
-      <ul className="grid gap-2">
-        {events.map((event, index) => (
-          <li key={index} className="flex items-baseline gap-2 text-sm text-[#2f3d57]">
-            <span className="w-9 flex-none font-bold tabular-nums text-[var(--text-muted)]">{`${event.time.elapsed ?? 0}${event.time.extra ? `+${event.time.extra}` : ""}'`}</span>
-            <span className="font-bold text-[var(--ink)]">{event.detail || event.type}</span>
-            <span className="min-w-0">{[event.player.name, event.assist.name].filter(Boolean).join(" · ")} ({event.team.name})</span>
-          </li>
-        ))}
+      <ul className="grid gap-3">
+        {sortedEvents.map((event, index) => {
+          const presentation = eventPresentation(event, locale);
+          const text = eventText(event, locale);
+          return (
+            <li key={index} className="grid grid-cols-[2.6rem_2rem_minmax(0,1fr)] items-start gap-x-2 text-sm text-[#2f3d57]">
+              <span className="pt-1 font-bold tabular-nums text-[var(--text-muted)]">{formatEventMinute(event)}</span>
+              <span className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-base leading-none" aria-hidden="true">{presentation.icon}</span>
+              <span className="min-w-0 leading-snug">
+                {presentation.label ? <span className={`font-bold ${presentation.tone}`}>{presentation.label}</span> : null}
+                {text ? <span>{presentation.label ? " " : ""}{text}</span> : null}
+                <span className="text-[var(--text-muted)]"> ({teamNameForEvent(event, fixture)})</span>
+              </span>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
 }
 
-function Statistics({ stats, title }: { stats: TeamStatistics[]; title: string }) {
+function statLabel(type: string, locale: Locale) {
+  const label = STAT_LABELS[type];
+  if (label) return { icon: label.icon, text: label[locale] };
+  return { icon: "📌", text: locale === "nl" ? type.replace(/_/g, " ") : type };
+}
+
+function Statistics({ stats, title, fixture, locale }: { stats: TeamStatistics[]; title: string; fixture: LiveFixture; locale: Locale }) {
   if (stats.length < 2) return null;
   const [home, away] = stats;
   const value = (team: TeamStatistics, type: string) => team.statistics.find((s) => s.type === type)?.value ?? "–";
-  const types = Array.from(new Set(home.statistics.map((s) => s.type)));
+  const types = Array.from(new Set([...home.statistics, ...away.statistics].map((s) => s.type)));
   return (
     <section className="panel p-4">
       <h2 className="mb-3 text-lg font-bold text-[var(--ink)]">{title}</h2>
       <div className="grid gap-2">
-        {types.map((type) => (
-          <div key={type} className="grid grid-cols-[3rem_1fr_3rem] items-center gap-2 text-sm">
-            <span className="text-left font-bold tabular-nums text-[var(--ink)]">{String(value(home, type))}</span>
-            <span className="text-center text-xs font-medium text-[var(--text-muted)]">{type}</span>
-            <span className="text-right font-bold tabular-nums text-[var(--ink)]">{String(value(away, type))}</span>
-          </div>
-        ))}
+        <div className="grid grid-cols-[4.25rem_minmax(0,1fr)_4.25rem] items-center gap-2 px-2 text-[11px] font-black uppercase tracking-wide text-[var(--text-muted)]">
+          <span className="truncate text-left">{fixture.home.code ?? fixture.home.name}</span>
+          <span aria-hidden="true" />
+          <span className="truncate text-right">{fixture.away.code ?? fixture.away.name}</span>
+        </div>
+        {types.map((type) => {
+          const label = statLabel(type, locale);
+          return (
+            <div key={type} className="grid grid-cols-[4.25rem_minmax(0,1fr)_4.25rem] items-center gap-2 rounded-xl bg-slate-50 px-2 py-2 text-sm">
+              <span className="text-left font-black tabular-nums text-[var(--ink)]">{String(value(home, type))}</span>
+              <span className="flex min-w-0 items-center justify-center gap-1.5 text-center text-xs font-bold text-[var(--text-muted)]">
+                <span aria-hidden="true">{label.icon}</span>
+                <span className="min-w-0 truncate">{label.text}</span>
+              </span>
+              <span className="text-right font-black tabular-nums text-[var(--ink)]">{String(value(away, type))}</span>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
@@ -170,8 +305,8 @@ export default async function LiveMatchPage({ params }: { params: Promise<{ id: 
         <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm font-bold text-[#8a5a00]">{c.notFound}</div>
       )}
       {fixture ? <Motm players={detail.players} label={c.motm} /> : null}
-      {detail.events?.length ? <Events events={detail.events} title={c.events} /> : null}
-      {detail.statistics?.length ? <Statistics stats={detail.statistics} title={c.stats} /> : null}
+      {fixture && detail.events?.length ? <Events events={detail.events} title={c.events} fixture={fixture} locale={locale} /> : null}
+      {fixture && detail.statistics?.length ? <Statistics stats={detail.statistics} title={c.stats} fixture={fixture} locale={locale} /> : null}
       {detail.lineups?.length ? <Lineups lineups={detail.lineups} title={c.lineups} coachLabel={c.coach} /> : null}
       {h2h?.length ? <HeadToHead fixtures={h2h} title={c.h2h} locale={locale} /> : null}
       {fixture && !hasDetail ? <p className="panel p-4 text-sm font-bold text-[var(--text-muted)]">{c.soon}</p> : null}

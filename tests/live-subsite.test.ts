@@ -69,8 +69,23 @@ test("live schema mirrors the main ScheduleExplorer and offers a LIVE button", (
   assert.match(liveSchema, /live-badge-btn/);
 });
 
-test("match detail uses our flags and avoids technical jargon", () => {
+test("match detail uses our flags, newest-first events and avoids technical jargon", () => {
   assert.match(liveMatch, /TeamFlag/);
+  assert.match(liveMatch, /sortMatchEventsNewestFirst/);
+  assert.match(liveMatch, /elapsedDiff/);
+  assert.match(liveMatch, /formatEventMinute/);
+  assert.match(liveMatch, /time\.extra/);
+  assert.match(liveMatch, /90\+6/);
+  assert.match(liveMatch, /return b\.index - a\.index/);
+  assert.match(liveMatch, /sortedEvents\.map/);
+  assert.match(liveMatch, /eventPresentation/);
+  assert.doesNotMatch(liveMatch, /yellowCard: "Gele kaart"/);
+  assert.doesNotMatch(liveMatch, /redCard: "Rode kaart"/);
+  assert.doesNotMatch(liveMatch, /substitution: "Wissel"/);
+  assert.match(liveMatch, /penalty: "Penalty"/);
+  assert.match(liveMatch, /cleanApiDetail/);
+  assert.match(liveMatch, /Schoten op doel/);
+  assert.match(liveMatch, /Balbezit/);
   assert.doesNotMatch(liveMatch, /API-Football/);
 });
 

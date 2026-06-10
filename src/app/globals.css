@@ -234,6 +234,40 @@ textarea {
   box-shadow: 0 14px 26px rgba(8, 22, 52, 0.14);
 }
 
+.dashboard-hero-panel {
+  margin-top: 0;
+}
+
+.dashboard-hero-avatar-link {
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 7px;
+  text-decoration: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24), 0 18px 34px rgba(8, 22, 52, 0.24);
+}
+
+.dashboard-hero-avatar-link .avatar-img {
+  width: 116px;
+  height: 116px;
+  border: 3px solid rgba(255, 255, 255, 0.72);
+  background: transparent;
+  box-shadow: 0 12px 24px rgba(8, 22, 52, 0.24);
+}
+
+@media (min-width: 760px) {
+  .dashboard-hero-panel {
+    min-height: 420px;
+    padding: 30px !important;
+  }
+
+  .dashboard-hero-panel .dashboard-progress-card {
+    margin-top: 24px;
+  }
+}
+
 @media (max-width: 759px) {
   .home-mobile-user-avatar .avatar-img {
     width: 78px;
@@ -4439,6 +4473,12 @@ textarea {
   box-shadow: 0 8px 18px rgba(242, 106, 27, 0.28);
 }
 
+@media (max-width: 759px) {
+  .schedule-tabs-knockout {
+    display: none;
+  }
+}
+
 .schedule-tab svg {
   width: 15px;
   height: 15px;
@@ -4452,6 +4492,32 @@ textarea {
   background: rgba(255, 255, 255, 0.88);
   padding: 14px;
   box-shadow: 0 10px 26px rgba(8, 22, 52, 0.07);
+}
+
+.schedule-section-tools-knockout {
+  border-color: rgba(30, 115, 184, 0.22);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.16), transparent 38%),
+    linear-gradient(120deg, #1e73b8 0%, #0e7a44 100%);
+  color: #fff;
+  box-shadow: 0 14px 34px rgba(30, 115, 184, 0.18);
+}
+
+.schedule-section-tools-knockout .schedule-section-kicker,
+.schedule-section-tools-knockout .schedule-section-titlebar h2,
+.schedule-section-tools-knockout .schedule-filter-help {
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(8, 22, 52, 0.2);
+}
+
+.schedule-section-tools-knockout .schedule-section-titlebar h2 svg {
+  color: #fcd34d;
+}
+
+.schedule-section-tools-knockout .schedule-count-pill {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.26);
 }
 
 .schedule-section-titlebar {
@@ -4654,6 +4720,13 @@ textarea {
   font-size: 0.78rem;
   font-weight: 750;
   line-height: 1.45;
+}
+
+.schedule-filter-help-inline {
+  margin-top: 7px;
+  max-width: 48rem;
+  font-size: 0.9rem;
+  font-weight: 850;
 }
 
 .schedule-result-count {
@@ -4923,23 +4996,45 @@ textarea {
 }
 
 .knockout-stage-tabs {
-  border: 1px solid rgba(8, 22, 52, 0.08);
-  background: #fff;
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid rgba(30, 115, 184, 0.14);
+  border-radius: 18px;
+  background: #f8fbff;
   padding: 6px;
   box-shadow: 0 8px 18px rgba(8, 22, 52, 0.06);
 }
 
 .knockout-stage-header {
   align-items: flex-start;
+  border-bottom: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 40%),
+    linear-gradient(100deg, #1e73b8 0%, #0e7a44 100%);
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(8, 22, 52, 0.25);
 }
 
-.knockout-stage-meta {
-  max-width: 46%;
-  color: #48617f;
-  font-size: 0.68rem;
-  font-weight: 900;
-  line-height: 1.15;
-  text-align: right;
+.knockout-stage-tabs .schedule-subtab {
+  border: 1px solid rgba(30, 115, 184, 0.18);
+  background: #fff;
+  color: #0b1f4d;
+  box-shadow: 0 2px 5px rgba(8, 22, 52, 0.05);
+}
+
+.knockout-stage-tabs .schedule-subtab:first-child {
+  border-color: transparent;
+  background: #ff8a00;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(255, 138, 0, 0.24);
+}
+
+.knockout-stage-tabs .schedule-subtab:hover {
+  border-color: transparent;
+  background: #1e73b8;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(30, 115, 184, 0.22);
 }
 
 @media (max-width: 460px) {
@@ -5238,7 +5333,7 @@ textarea {
   overflow: hidden;
   border-top: 4px solid var(--pool-accent, #114b82);
   background:
-    linear-gradient(90deg, rgba(4, 12, 32, 0.8) 0%, rgba(4, 12, 32, 0.45) 58%, rgba(4, 12, 32, 0.2) 100%),
+    linear-gradient(90deg, rgba(4, 12, 32, 0.42) 0%, rgba(4, 12, 32, 0.16) 48%, rgba(4, 12, 32, 0.04) 100%),
     var(--pool-banner-image, none),
     var(--pool-accent, #114b82);
   background-position: center, center, center;
@@ -5728,29 +5823,33 @@ textarea {
    desktop kolommen per ronde. Toont per duel wie de winnaar volgende ronde treft. */
 .ko-view-toggle {
   display: inline-flex;
-  gap: 4px;
-  background: #eef2f8;
-  border-radius: 10px;
-  padding: 3px;
+  gap: 6px;
   width: fit-content;
+  max-width: 100%;
+  border: 1px solid rgba(30, 115, 184, 0.18);
+  border-radius: 14px;
+  background: #f8fbff;
+  padding: 5px;
+  box-shadow: 0 8px 18px rgba(8, 22, 52, 0.06);
 }
 .ko-view-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border: 0;
-  background: transparent;
-  padding: 7px 14px;
-  border-radius: 8px;
-  font-weight: 700;
+  border: 1px solid rgba(30, 115, 184, 0.16);
+  background: #fff;
+  padding: 8px 15px;
+  border-radius: 10px;
+  font-weight: 900;
   font-size: 0.85rem;
   color: var(--text-muted);
   cursor: pointer;
 }
 .ko-view-btn.is-active {
-  background: #fff;
-  color: var(--ink);
-  box-shadow: 0 1px 3px rgba(8, 22, 52, 0.14);
+  border-color: transparent;
+  background: #1e73b8;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(30, 115, 184, 0.22);
 }
 .ko-bracket-toolbar {
   display: flex;
@@ -5762,25 +5861,29 @@ textarea {
 }
 .ko-half-toggle {
   display: inline-flex;
-  gap: 4px;
-  background: #eef2f8;
-  border-radius: 10px;
-  padding: 3px;
+  gap: 6px;
+  max-width: 100%;
+  border: 1px solid rgba(30, 115, 184, 0.18);
+  border-radius: 14px;
+  background: #f8fbff;
+  padding: 5px;
+  box-shadow: 0 8px 18px rgba(8, 22, 52, 0.06);
 }
 .ko-half-btn {
-  border: 0;
-  background: transparent;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-weight: 700;
+  border: 1px solid rgba(30, 115, 184, 0.16);
+  background: #fff;
+  padding: 8px 13px;
+  border-radius: 10px;
+  font-weight: 900;
   font-size: 0.82rem;
   color: var(--text-muted);
   cursor: pointer;
 }
 .ko-half-btn.is-active {
-  background: #fff;
-  color: var(--ink);
-  box-shadow: 0 1px 3px rgba(8, 22, 52, 0.14);
+  border-color: transparent;
+  background: #1e73b8;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(30, 115, 184, 0.22);
 }
 .ko-bracket-help {
   flex: 1 1 220px;
@@ -5818,11 +5921,18 @@ textarea {
   scroll-snap-align: start;
 }
 .ko-round-head {
-  font-weight: 800;
-  color: var(--ink);
+  margin-bottom: 8px;
+  border-radius: 11px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 38%),
+    linear-gradient(100deg, #1e73b8 0%, #0e7a44 100%);
+  color: #fff;
+  padding: 8px 10px;
+  font-weight: 950;
   font-size: 0.8rem;
   text-align: center;
-  margin-bottom: 8px;
+  text-shadow: 0 1px 1px rgba(8, 22, 52, 0.22);
+  box-shadow: 0 8px 16px rgba(30, 115, 184, 0.16);
 }
 .ko-round-matches {
   flex: 1 1 auto;
