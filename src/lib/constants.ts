@@ -14,7 +14,7 @@ export const SLIME_GAME_URL = "https://soccer.slimescore.com";
 export const SITE_URL = "https://slimescore.com";
 /** Alternatief domein (PWA), wijst naar dezelfde app. */
 export const SITE_URL_APP = "https://slimescore.app";
-export const SITE_NAME = "Slime Score";
+export const SITE_NAME = "SlimeScore";
 
 /** Afzender van de inlog-/systeemmails. */
 export const MAIL_FROM = "noreply@slimescore.com";

@@ -12,7 +12,7 @@ type Variant = "primary" | "secondary";
 export function ShareButton({
   url,
   text,
-  title = "Slime Score WK 2026",
+  title = "SlimeScore WK 2026",
   label = "Delen",
   variant = "primary",
 }: {

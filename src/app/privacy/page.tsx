@@ -7,7 +7,7 @@ import { CONTACT_EMAIL, MAIL_FROM } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Privacy",
-  description: "Hoe Slime Score met je gegevens omgaat: minimale data en geen tracking-cookies.",
+  description: "Hoe SlimeScore met je gegevens omgaat: minimale data en geen tracking-cookies.",
 };
 
 export default function PrivacyPage() {

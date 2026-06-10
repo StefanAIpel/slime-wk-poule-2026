@@ -25,8 +25,8 @@ const appleTouchIcon = "/icons/slimescore-apple-touch-icon-v2-180.png";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Slime Score · Gratis WK 2026-poule",
-    template: "%s · Slime Score",
+    default: "SlimeScore · Gratis WK 2026-poule",
+    template: "%s · SlimeScore",
   },
   description,
   applicationName: SITE_NAME,
@@ -51,13 +51,13 @@ export const metadata: Metadata = {
     locale: "nl_NL",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "Slime Score · Gratis WK 2026-poule",
+    title: "SlimeScore · Gratis WK 2026-poule",
     description,
-    images: [{ url: appIcon, width: 512, height: 512, alt: "Slime Score app icon" }],
+    images: [{ url: appIcon, width: 512, height: 512, alt: "SlimeScore app icon" }],
   },
   twitter: {
     card: "summary",
-    title: "Slime Score · Gratis WK 2026-poule",
+    title: "SlimeScore · Gratis WK 2026-poule",
     description,
     images: [appIcon],
   },

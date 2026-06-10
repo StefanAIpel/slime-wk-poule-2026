@@ -3,6 +3,7 @@
 import { CalendarDays, ClipboardList, Gamepad2, Home, ListChecks, Menu, Trophy, Users, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Brand } from "@/components/brand";
 import { SLIME_GAME_URL } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/browser";
 
@@ -54,10 +55,7 @@ export function QuickMenu() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between gap-3">
-              <div>
-                <div className="text-xl font-black text-[#081634]">Menu</div>
-                <div className="text-sm font-black text-[#128f47]">Slime Score WK 2026</div>
-              </div>
+              <Brand compact />
               <button className="button-secondary min-h-10 px-3" type="button" onClick={() => setOpen(false)}>
                 <X aria-hidden="true" className="size-5" />
                 <span className="sr-only">Menu sluiten</span>

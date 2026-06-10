@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Slime Score WK 2026",
-    short_name: "Slime Score",
+    name: "SlimeScore WK 2026",
+    short_name: "SlimeScore",
     description: "Gratis Nederlandse WK 2026-poule met groepsscores, subpoules en ranglijsten. Eén keer invullen.",
     start_url: "/",
     scope: "/",

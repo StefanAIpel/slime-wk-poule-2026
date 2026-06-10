@@ -71,7 +71,7 @@ export default async function Home({
           <Image
             className="w-full max-w-[360px] rounded-3xl shadow-2xl shadow-black/30"
             src="/icon.png"
-            alt="Slime Score app icon"
+            alt="SlimeScore app icon"
             width={512}
             height={512}
             priority
@@ -113,7 +113,7 @@ export default async function Home({
         <div className="dark-panel p-5 text-white">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-black leading-tight md:text-5xl">Jouw Slime Score in een helder overzicht.</h1>
+              <h1 className="text-3xl font-black leading-tight md:text-5xl">Jouw SlimeScore in een helder overzicht.</h1>
               <p className="mt-2 max-w-xl text-base font-semibold text-blue-100">
                 Vul je scores en rondekeuzes op één plek in. Je kunt alles aanpassen tot de aftrap op{" "}
                 {new Intl.DateTimeFormat("nl-NL", {
@@ -234,7 +234,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
             </a>
             <ShareButton
               url={SITE_URL}
-              text="Doe je mee met de gratis Slime Score WK 2026-poule?"
+              text="Doe je mee met de gratis SlimeScore WK 2026-poule?"
               label="Nodig je groep uit"
               variant="secondary"
             />
@@ -243,7 +243,7 @@ function PublicHome({ authError, leaderboard }: { authError: boolean; leaderboar
         <Image
           className="public-hero-icon"
           src="/icon.png"
-          alt="Slime Score app icon"
+          alt="SlimeScore app icon"
           width={512}
           height={512}
           sizes="(min-width: 1024px) 200px, 160px"

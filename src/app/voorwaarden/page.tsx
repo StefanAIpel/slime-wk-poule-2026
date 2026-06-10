@@ -7,7 +7,7 @@ import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Voorwaarden",
-  description: "De spelregels voor het gebruik van Slime Score: gratis, eerlijk en voor de lol.",
+  description: "De spelregels voor het gebruik van SlimeScore: gratis, eerlijk en voor de lol.",
 };
 
 export default function TermsPage() {
@@ -17,7 +17,7 @@ export default function TermsPage() {
         <Brand />
         <PageHero
           title="Voorwaarden"
-          subtitle="Slime Score is een gratis WK-poule voor de lol. Hou het sportief, dan houdt iedereen het leuk."
+          subtitle="SlimeScore is een gratis WK-poule voor de lol. Hou het sportief, dan houdt iedereen het leuk."
         />
       </header>
 
@@ -28,7 +28,7 @@ export default function TermsPage() {
             <h2 className="text-2xl font-black text-[#081634]">Eerlijk spel</h2>
           </div>
           <ul className="mt-4 grid gap-2 text-sm font-semibold leading-7 text-[#48617f]">
-            <li>Slime Score is gratis voor deelnemers.</li>
+            <li>SlimeScore is gratis voor deelnemers.</li>
             <li>Eén account per persoon; geen nepaccounts om de ranglijst te beïnvloeden.</li>
             <li>Kies een nette bijnaam en teamnaam. Kwetsende namen kunnen worden verwijderd.</li>
             <li>Bij misbruik kunnen we toegang of een poule-account intrekken.</li>

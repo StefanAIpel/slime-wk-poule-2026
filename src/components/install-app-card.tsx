@@ -46,7 +46,7 @@ export function InstallAppCard() {
           <Download className="size-5" />
         </div>
         <div className="min-w-0">
-          <h2 className="text-base font-black text-[#081634]">Zet Slime Score op je beginscherm</h2>
+          <h2 className="text-base font-black text-[#081634]">Zet SlimeScore op je beginscherm</h2>
           <p className="mt-1 text-sm font-semibold leading-5 text-[#48617f]">
             Werkt als app op je telefoon en gewoon in de browser.
           </p>
