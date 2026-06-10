@@ -174,10 +174,26 @@ textarea {
   .status-bar {
     top: var(--mobile-browser-chrome-gap);
     margin-top: var(--mobile-browser-chrome-gap);
+    /* Full-bleed PWA/mobile chrome: cover safe-area gutters and viewport edges. */
+    isolation: isolate;
+  }
+
+  .status-bar::before {
+    position: absolute;
+    top: 0;
+    right: calc(50% - 50vw);
+    bottom: 0;
+    left: calc(50% - 50vw);
+    z-index: 0;
+    content: "";
+    background: inherit;
+    pointer-events: none;
   }
 }
 
 .status-bar-inner {
+  position: relative;
+  z-index: 1;
   width: min(1100px, 100%);
   margin: 0 auto;
   display: flex;
@@ -1164,15 +1180,15 @@ textarea {
   }
 
   .hero-band-page.hero-title-mascot-large.hero-band-visual .hero-mascot {
-    right: -12px;
-    bottom: -10px;
-    max-height: 104%;
-    max-width: 54%;
+    right: -8px;
+    bottom: -7px;
+    max-height: 73%;
+    max-width: 38%;
   }
 
   .hero-band-page.hero-band-visual .hero-mascot-account-avatar {
-    width: 106px;
-    height: 106px;
+    width: 74px;
+    height: 74px;
     max-width: none;
     max-height: none;
     right: 8px;
@@ -1206,10 +1222,10 @@ textarea {
 }
 
 .hero-mascot-account-messi {
-  right: -14px;
-  bottom: -12px;
-  max-height: 108%;
-  max-width: 56%;
+  right: -10px;
+  bottom: -8px;
+  max-height: 76%;
+  max-width: 39%;
   filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.42));
 }
 
@@ -1228,8 +1244,8 @@ textarea {
 
 @media (min-width: 800px) {
   .hero-band-page .hero-mascot-account-avatar {
-    width: 138px;
-    height: 138px;
+    width: 97px;
+    height: 97px;
     right: 32px;
     bottom: 18px;
     max-height: none;
@@ -1237,10 +1253,10 @@ textarea {
   }
 
   .hero-band-page .hero-mascot-account-messi {
-    right: 20px;
-    bottom: -16px;
-    max-height: 112%;
-    max-width: 38%;
+    right: 14px;
+    bottom: -11px;
+    max-height: 78%;
+    max-width: 27%;
   }
 }
 
@@ -5803,19 +5819,26 @@ textarea {
 }
 
 @media (max-width: 759px) {
-  .hero-band-page.hero-title-mascot-large .hero-mascot-regels {
-    right: -18px;
-    bottom: -12px;
+  .hero-band-page.hero-title-mascot-large.hero-band-visual .hero-mascot-regels {
+    right: -13px;
+    bottom: -8px;
+    max-height: 53%;
+    max-width: 43%;
+  }
+
+  .hero-band-page.hero-title-mascot-large.hero-band-visual .hero-mascot-account-messi {
+    right: -10px;
+    bottom: -8px;
     max-height: 76%;
-    max-width: 62%;
+    max-width: 39%;
   }
 }
 
 @media (min-width: 800px) {
   .hero-mascot-regels {
-    right: 14px;
-    max-height: 90%;
-    max-width: 42%;
+    right: 10px;
+    max-height: 63%;
+    max-width: 29%;
   }
 }
 

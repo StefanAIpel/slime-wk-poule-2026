@@ -30,6 +30,8 @@ const rulesPage = await readFile(new URL("../src/app/regels/page.tsx", import.me
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
 const manifest = await readFile(new URL("../src/app/manifest.ts", import.meta.url), "utf8");
 const constants = await readFile(new URL("../src/lib/constants.ts", import.meta.url), "utf8");
+const packageJson = await readFile(new URL("../package.json", import.meta.url), "utf8");
+const prodBuildGuard = await readFile(new URL("../scripts/assert-git-production-build.mjs", import.meta.url), "utf8");
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
 const quickMenu = await readFile(new URL("../src/components/quick-menu.tsx", import.meta.url), "utf8");
 const languageSwitcher = await readOptional("../src/components/language-switcher.tsx");
@@ -167,8 +169,22 @@ test("logged-in status header uses the user's avatar instead of the trophy icon"
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.51"/);
+  assert.match(constants, /APP_VERSION = "0.52"/);
 });
+
+
+test("mobile status bar background bleeds to viewport edges", () => {
+  assert.match(globalsCss, /\.status-bar::before \{[\s\S]*right: calc\(50% - 50vw\);[\s\S]*left: calc\(50% - 50vw\);[\s\S]*background: inherit;/);
+});
+
+test("production builds are technically blocked outside Vercel Git main", () => {
+  assert.match(packageJson, /"build": "node scripts\/assert-git-production-build\.mjs && next build"/);
+  assert.match(prodBuildGuard, /VERCEL_ENV === "production"/);
+  assert.match(prodBuildGuard, /VERCEL_GIT_COMMIT_SHA/);
+  assert.match(prodBuildGuard, /VERCEL_GIT_COMMIT_REF/);
+  assert.match(prodBuildGuard, /gitRef !== "main"/);
+});
+
 test("entry deadline is extended until the first World Cup match", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00\+02:00"/);
   assert.match(constants, /ENTRY_GRACE_DEADLINE_ISO = "2026-06-14T21:00:00\+02:00"/);
@@ -204,9 +220,10 @@ test("mobile tab page heroes use larger bottom-right mascots behind the title co
   assert.match(rankingPage, /className="hero-title-mascot-large"/);
   assert.match(accountPage, /className="hero-title-mascot-large"/);
   assert.match(globalsCss, /\.hero-band-page \.hero-content \{\n    max-width: 86%;\n  \}/);
-  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large\.hero-band-visual \.hero-mascot \{[\s\S]*right: -12px;[\s\S]*bottom: -10px;[\s\S]*max-height: 104%;[\s\S]*max-width: 54%;/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large\.hero-band-visual \.hero-mascot \{[\s\S]*right: -8px;[\s\S]*bottom: -7px;[\s\S]*max-height: 73%;[\s\S]*max-width: 38%;/);
   assert.match(accountPage, /slime="\/avatars\/messi-slime\.webp"/);
-  assert.match(globalsCss, /\.hero-mascot-account-messi \{[\s\S]*max-height: 108%;[\s\S]*max-width: 56%;/);
+  assert.match(globalsCss, /\.hero-mascot-account-messi \{[\s\S]*max-height: 76%;[\s\S]*max-width: 39%;/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large\.hero-band-visual \.hero-mascot-regels \{[\s\S]*max-height: 53%;[\s\S]*max-width: 43%;/);
   assert.match(globalsCss, /\.hero-title-mascot-large \.hero-content \{[\s\S]*text-shadow: 0 2px 10px/);
 });
 
