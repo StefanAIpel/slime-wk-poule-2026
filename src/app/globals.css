@@ -5723,3 +5723,163 @@ textarea {
     max-width: 42%;
   }
 }
+
+/* Knock-out bracket (additionele weergave naast de lijst). Mobiel verticaal, op
+   desktop kolommen per ronde. Toont per duel wie de winnaar volgende ronde treft. */
+.ko-view-toggle {
+  display: inline-flex;
+  gap: 4px;
+  background: #eef2f8;
+  border-radius: 10px;
+  padding: 3px;
+  width: fit-content;
+}
+.ko-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.ko-view-btn.is-active {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(8, 22, 52, 0.14);
+}
+.ko-bracket-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 14px;
+  margin-bottom: 10px;
+}
+.ko-half-toggle {
+  display: inline-flex;
+  gap: 4px;
+  background: #eef2f8;
+  border-radius: 10px;
+  padding: 3px;
+}
+.ko-half-btn {
+  border: 0;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.ko-half-btn.is-active {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(8, 22, 52, 0.14);
+}
+.ko-bracket-help {
+  flex: 1 1 220px;
+  min-width: 180px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.ko-bracket {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ko-round-head {
+  font-weight: 800;
+  color: var(--ink);
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  padding-left: 2px;
+}
+.ko-round-matches {
+  display: grid;
+  gap: 10px;
+}
+.ko-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fff;
+}
+.ko-card-final {
+  border-color: #f4cf86;
+  background: #fffbf2;
+}
+.ko-card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+}
+.ko-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-weight: 700;
+  color: var(--ink);
+}
+.ko-team-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ko-team-win {
+  color: var(--green-deep);
+}
+.ko-score {
+  flex: 0 0 auto;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.ko-card-meta {
+  margin-top: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.ko-next {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px dashed #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--green-deep);
+}
+.ko-next-arrow {
+  color: #94a3b8;
+}
+
+@media (min-width: 768px) {
+  .ko-bracket {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 18px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .ko-round {
+    flex: 0 0 240px;
+  }
+  .ko-round-matches {
+    gap: 18px;
+  }
+  .ko-round-final {
+    flex-basis: 220px;
+  }
+}

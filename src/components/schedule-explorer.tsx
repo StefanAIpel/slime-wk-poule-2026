@@ -122,6 +122,14 @@ const scheduleCopy = {
     sameTime: "gelijk",
     versus: "tegen",
     unknownTeam: "Nog onbekend",
+    viewList: "Lijst",
+    viewBracket: "Bracket",
+    bracketHelp: "Volg de route: de winnaar schuift door en treft de winnaar van het buurduel.",
+    topHalf: "Bovenste helft",
+    bottomHalf: "Onderste helft",
+    finalPath: "Finale",
+    nextMeets: "Treft winnaar van",
+    toFinal: "Naar de finale",
   },
   en: {
     partsLabel: "Schedule sections",
@@ -155,6 +163,14 @@ const scheduleCopy = {
     sameTime: "same",
     versus: "versus",
     unknownTeam: "TBD",
+    viewList: "List",
+    viewBracket: "Bracket",
+    bracketHelp: "Follow the path: the winner moves on and meets the winner of the neighbouring tie.",
+    topHalf: "Top half",
+    bottomHalf: "Bottom half",
+    finalPath: "Final",
+    nextMeets: "Meets winner of",
+    toFinal: "To the final",
   },
 } as const;
 
@@ -567,7 +583,133 @@ function StandingsPanel({ matches, standings, locale }: { matches: ScheduleMatch
   );
 }
 
+// Knock-outbracket: koppelingen uit de "Winnaar W{nr}"-labels afleiden, zodat we
+// per duel kunnen tonen wie de winnaar volgende ronde kan treffen, en in welke
+// bracket-helft (boven HF1 / onder HF2) het duel valt.
+function feederId(label: string | null): number | null {
+  const m = label?.match(/Winnaar\s+W(\d+)/i);
+  return m ? Number(m[1]) : null;
+}
+
+type BracketGraph = {
+  feedsInto: Map<number, number>;
+  feedersOf: Map<number, number[]>;
+  half: Map<number, "top" | "bottom">;
+};
+
+function buildBracketGraph(matches: ScheduleMatch[]): BracketGraph {
+  const feedsInto = new Map<number, number>();
+  const feedersOf = new Map<number, number[]>();
+  const stageById = new Map<number, string | null>();
+  for (const m of matches) {
+    stageById.set(m.id, m.stage);
+    const fs = [feederId(m.homeLabel), feederId(m.awayLabel)].filter((x): x is number => x !== null);
+    if (fs.length) feedersOf.set(m.id, fs);
+    for (const f of fs) feedsInto.set(f, m.id);
+  }
+  const semis = matches.filter((m) => m.stage === "semifinal").map((m) => m.id).sort((a, b) => a - b);
+  const [topSemi, bottomSemi] = [semis[0], semis[1]];
+  const half = new Map<number, "top" | "bottom">();
+  for (const m of matches) {
+    if (m.stage === "final" || m.stage === "third_place") continue;
+    let cur = m.id;
+    let guard = 0;
+    while (cur !== topSemi && cur !== bottomSemi && feedsInto.has(cur) && guard++ < 12) {
+      const next = feedsInto.get(cur)!;
+      if (stageById.get(next) === "final") break;
+      cur = next;
+    }
+    if (cur === topSemi) half.set(m.id, "top");
+    else if (cur === bottomSemi) half.set(m.id, "bottom");
+  }
+  return { feedsInto, feedersOf, half };
+}
+
+function BracketCard({ match, locale, graph, byId, final = false }: { match: ScheduleMatch; locale: Locale; graph: BracketGraph; byId: Map<number, ScheduleMatch>; final?: boolean }) {
+  const c = scheduleCopy[locale];
+  const homeWin = Boolean(match.winnerCode) && match.winnerCode === match.homeCode;
+  const awayWin = Boolean(match.winnerCode) && match.winnerCode === match.awayCode;
+  const played = match.status === "finished" || match.status === "live";
+  const nextId = graph.feedsInto.get(match.id);
+  const next = nextId ? byId.get(nextId) : undefined;
+  const sibId = next ? (graph.feedersOf.get(next.id) ?? []).find((f) => f !== match.id) : undefined;
+  const sib = sibId ? byId.get(sibId) : undefined;
+  return (
+    <article className={final ? "ko-card ko-card-final" : "ko-card"}>
+      <div className="ko-card-row">
+        <span className={homeWin ? "ko-team ko-team-win" : "ko-team"}>
+          <TeamFlag code={match.homeCode} name={teamText(match, "home", locale)} size="sm" locale={locale} />
+          <span className="ko-team-name">{teamText(match, "home", locale, true)}</span>
+        </span>
+        <span className="ko-score">{played ? match.homeScore ?? 0 : ""}</span>
+      </div>
+      <div className="ko-card-row">
+        <span className={awayWin ? "ko-team ko-team-win" : "ko-team"}>
+          <TeamFlag code={match.awayCode} name={teamText(match, "away", locale)} size="sm" locale={locale} />
+          <span className="ko-team-name">{teamText(match, "away", locale, true)}</span>
+        </span>
+        <span className="ko-score">{played ? match.awayScore ?? 0 : ""}</span>
+      </div>
+      <div className="ko-card-meta">{formatAmsterdam(match.startsAt, locale === "en" ? "en-GB" : "nl-NL")}</div>
+      {sib ? (
+        <div className="ko-next">
+          <span className="ko-next-arrow" aria-hidden="true">↳</span>
+          <span>{c.nextMeets} <b>{teamText(sib, "home", locale, true)}</b> / <b>{teamText(sib, "away", locale, true)}</b></span>
+        </div>
+      ) : !final && next ? (
+        <div className="ko-next"><span className="ko-next-arrow" aria-hidden="true">↳</span><span>{c.toFinal}</span></div>
+      ) : null}
+    </article>
+  );
+}
+
+function KnockoutBracket({ matches, locale }: { matches: ScheduleMatch[]; locale: Locale }) {
+  const c = scheduleCopy[locale];
+  const [half, setHalf] = useState<"top" | "bottom">("top");
+  const graph = useMemo(() => buildBracketGraph(matches), [matches]);
+  const byId = useMemo(() => new Map(matches.map((m) => [m.id, m])), [matches]);
+  const rounds = useMemo(
+    () =>
+      ["round32", "round16", "quarterfinal", "semifinal"]
+        .map((stage) => ({ stage, list: matches.filter((m) => m.stage === stage && graph.half.get(m.id) === half) }))
+        .filter((r) => r.list.length),
+    [matches, graph, half],
+  );
+  const finals = useMemo(() => matches.filter((m) => m.stage === "final" || m.stage === "third_place"), [matches]);
+
+  return (
+    <div className="ko-bracket-wrap">
+      <div className="ko-bracket-toolbar">
+        <div className="ko-half-toggle" role="tablist" aria-label={scheduleCopy[locale].knockoutRounds}>
+          <button type="button" role="tab" aria-selected={half === "top"} className={half === "top" ? "ko-half-btn is-active" : "ko-half-btn"} onClick={() => setHalf("top")}>{c.topHalf}</button>
+          <button type="button" role="tab" aria-selected={half === "bottom"} className={half === "bottom" ? "ko-half-btn is-active" : "ko-half-btn"} onClick={() => setHalf("bottom")}>{c.bottomHalf}</button>
+        </div>
+        <p className="ko-bracket-help">{c.bracketHelp}</p>
+      </div>
+      <div className="ko-bracket">
+        {rounds.map(({ stage, list }) => (
+          <div key={stage} className="ko-round">
+            <div className="ko-round-head">{stageLabels[locale][stage] ?? "KO"}</div>
+            <div className="ko-round-matches">
+              {list.map((m) => <BracketCard key={m.id} match={m} locale={locale} graph={graph} byId={byId} />)}
+            </div>
+          </div>
+        ))}
+        {finals.length ? (
+          <div className="ko-round ko-round-final">
+            <div className="ko-round-head">{c.finalPath}</div>
+            <div className="ko-round-matches">
+              {finals.map((m) => <BracketCard key={m.id} match={m} locale={locale} graph={graph} byId={byId} final />)}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 function KnockoutPanel({ matches, locale }: { matches: ScheduleMatch[]; locale: Locale }) {
+  const [view, setView] = useState<"list" | "bracket">("list");
   const matchesByStage = useMemo(() => {
     const map = new Map<string, ScheduleMatch[]>();
     for (const match of matches) {
@@ -594,6 +736,17 @@ function KnockoutPanel({ matches, locale }: { matches: ScheduleMatch[]; locale: 
       </div>
 
       {matchesByStage.length ? (
+        <div className="ko-view-toggle" role="tablist" aria-label={scheduleCopy[locale].partsLabel}>
+          <button type="button" role="tab" aria-selected={view === "list"} className={view === "list" ? "ko-view-btn is-active" : "ko-view-btn"} onClick={() => setView("list")}>
+            <Table2 aria-hidden="true" className="size-4" /> {scheduleCopy[locale].viewList}
+          </button>
+          <button type="button" role="tab" aria-selected={view === "bracket"} className={view === "bracket" ? "ko-view-btn is-active" : "ko-view-btn"} onClick={() => setView("bracket")}>
+            <Trophy aria-hidden="true" className="size-4" /> {scheduleCopy[locale].viewBracket}
+          </button>
+        </div>
+      ) : null}
+
+      {matchesByStage.length && view === "list" ? (
         <nav className="schedule-subtabs knockout-stage-tabs" aria-label={scheduleCopy[locale].knockoutRounds}>
           {matchesByStage.map(([stage]) => (
             <a key={stage} className="schedule-subtab" href={`#ko-${stage}`}>
@@ -604,6 +757,9 @@ function KnockoutPanel({ matches, locale }: { matches: ScheduleMatch[]; locale: 
       ) : null}
 
       {matchesByStage.length ? (
+        view === "bracket" ? (
+          <KnockoutBracket matches={matches} locale={locale} />
+        ) : (
         matchesByStage.map(([stage, stageMatches]) => (
           <article key={stage} id={`ko-${stage}`} className="panel scroll-mt-24 overflow-hidden">
             <header className="standing-card-header knockout-stage-header">
@@ -615,6 +771,7 @@ function KnockoutPanel({ matches, locale }: { matches: ScheduleMatch[]; locale: 
             </div>
           </article>
         ))
+        )
       ) : (
         <div className="knockout-roadmap">
           {knockoutRoadmap[locale].map((item, index) => (
