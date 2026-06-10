@@ -684,12 +684,18 @@ test("shared SlimeScore links use the app icon instead of the wide banner", () =
   assert.doesNotMatch(layout, /og-slimescore-wk2026-v2\.png/);
 });
 
-test("SlimeScore brand wordmark uses the Memphis slime and a richer pill lockup", () => {
+test("SlimeScore brand wordmarks stay connected and use blue/green on light backgrounds", () => {
   assert.match(brandWordmark, /memphis_wkbal_700_transparant\.webp/);
   assert.match(siteHeader, /wk_slime_700_transparant\.webp/);
   assert.doesNotMatch(`${brandWordmark}\n${siteHeader}`, /trump_slime_700_transparant\.webp/);
-  assert.match(globalsCss, /\.brand-wordmark-text \{[\s\S]*border-radius: 999px;[\s\S]*linear-gradient\(135deg, #061a3c/);
-  assert.match(globalsCss, /\.brand-wordmark-score \{\n  color: #60f47c;/);
+  assert.match(brand, /<span className="brand-lockup-slime">Slime<\/span><span className="brand-lockup-score">Score<\/span>/);
+  assert.doesNotMatch(`${brand}\n${siteHeader}\n${brandWordmark}\n${quickMenu}`, /Slime Score/);
+  assert.match(globalsCss, /\.brand-lockup-slime,[\s\S]*\.brand-wordmark-slime \{\n  color: #0b1f4d;[\s\S]*text-shadow: none;/);
+  assert.match(globalsCss, /\.brand-lockup-score,[\s\S]*\.brand-wordmark-score \{\n  color: #128f47;[\s\S]*text-shadow: none;/);
+  assert.match(globalsCss, /\.brand-wordmark-dark \.brand-wordmark-slime,[\s\S]*color: #ffffff;/);
+  assert.match(globalsCss, /\.brand-lockup-sub \{[\s\S]*line-height: 1\.22;/);
+  assert.match(globalsCss, /\.quick-menu-brand-slime \{\n  color: #0b1f4d;[\s\S]*text-shadow: none;[\s\S]*-webkit-text-stroke: 0;/);
+  assert.match(globalsCss, /\.quick-menu-brand-sub \{[\s\S]*line-height: 1\.18;/);
 });
 
 test("SlimeScore auth emails use a fixed high-contrast image header", () => {

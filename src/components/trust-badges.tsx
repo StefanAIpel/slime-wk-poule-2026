@@ -9,7 +9,7 @@ const badges = [
 
 export function TrustBadges({ className = "" }: { className?: string }) {
   return (
-    <ul className={`trust-badges ${className}`} aria-label="Waarom Slime Score">
+    <ul className={`trust-badges ${className}`} aria-label="Waarom SlimeScore">
       {badges.map((badge) => {
         const Icon = badge.icon;
         return (

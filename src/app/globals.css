@@ -1673,17 +1673,55 @@ textarea {
   color: #0b1f4d;
 }
 
+.brand-lockup,
 .brand-wordmark {
   display: inline-flex;
   align-items: center;
   gap: 9px;
   font-weight: 900;
-  font-style: italic;
   font-size: 1.35rem;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.04em;
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
+}
+
+.brand-lockup {
+  display: grid;
+  gap: 3px;
+}
+
+.brand-lockup-name,
+.brand-wordmark-text {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.brand-lockup-slime,
+.brand-wordmark-slime {
+  color: #0b1f4d;
+  text-shadow: none;
+}
+
+.brand-lockup-score,
+.brand-wordmark-score {
+  color: #128f47;
+  text-shadow: none;
+}
+
+.brand-lockup-sub {
+  color: #128f47;
+  font-size: 0.62em;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.22;
 }
 
 .brand-wordmark-logo {
@@ -1699,47 +1737,24 @@ textarea {
   filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.3));
 }
 
-.brand-wordmark-text {
-  position: relative;
-  display: inline-flex;
-  align-items: baseline;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 999px;
-  background:
-    linear-gradient(125deg, rgba(255, 255, 255, 0.18) 0 16%, transparent 17% 100%),
-    linear-gradient(135deg, #061a3c 0%, #0a2a61 52%, #0b8f4d 138%);
-  box-shadow:
-    0 10px 22px rgba(8, 22, 52, 0.2),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.2);
-  padding: 8px 13px 9px 14px;
-}
-
-.brand-wordmark-slime {
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 18, 48, 0.6);
-}
-
-.brand-wordmark-score {
-  color: #60f47c;
-  text-shadow: 0 1px 2px rgba(0, 18, 48, 0.5);
-}
-
 .brand-wordmark-tld {
   margin-left: 2px;
   font-size: 0.58em;
   font-weight: 800;
-  font-style: italic;
-  color: #bce8ff;
+  color: #0b1f4d;
   letter-spacing: -0.025em;
-  text-shadow: 0 1px 2px rgba(0, 18, 48, 0.45);
+  text-shadow: none;
 }
 
-.brand-wordmark-dark .brand-wordmark-text {
-  border-color: rgba(255, 255, 255, 0.44);
-  box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.32),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.22);
+.brand-wordmark-dark .brand-wordmark-slime,
+.brand-wordmark-dark .brand-wordmark-tld {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 18, 48, 0.5);
+}
+
+.brand-wordmark-dark .brand-wordmark-score {
+  color: #60f47c;
+  text-shadow: 0 1px 2px rgba(0, 18, 48, 0.45);
 }
 
 .language-switcher {
@@ -4315,26 +4330,29 @@ textarea {
 .quick-menu-brand-name {
   font-size: clamp(1.48rem, 6.7vw, 1.78rem);
   font-weight: 1000;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.05em;
+  line-height: 0.98;
   white-space: nowrap;
 }
 
 .quick-menu-brand-slime {
-  color: #ffffff;
-  -webkit-text-stroke: 1px rgba(8, 22, 52, 0.2);
-  text-shadow: 0 2px 5px rgba(8, 22, 52, 0.5);
+  color: #0b1f4d;
+  text-shadow: none;
+  -webkit-text-stroke: 0;
 }
 
 .quick-menu-brand-score {
   color: #128f47;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  text-shadow: none;
 }
 
 .quick-menu-brand-sub {
+  margin-top: 2px;
   color: #f26a1b;
   font-size: clamp(1rem, 4.7vw, 1.28rem);
   font-weight: 1000;
   letter-spacing: -0.02em;
+  line-height: 1.18;
 }
 
 .quick-menu-link {

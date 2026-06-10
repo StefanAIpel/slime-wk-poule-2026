@@ -20,9 +20,11 @@ export function Brand({ hideIcon = false, locale = "nl" }: { hideIcon?: boolean;
           priority
         />
       )}
-      <div>
-        <div className="text-2xl font-bold leading-none tracking-normal text-[#0b1f4d]">Slime Score</div>
-        <div className="text-sm font-bold leading-none text-[#0f8a43]">{locale === "en" ? "WC pool 2026" : "WK-poule 2026"}</div>
+      <div className="brand-lockup">
+        <div className="brand-lockup-name" aria-label="SlimeScore">
+          <span className="brand-lockup-slime">Slime</span><span className="brand-lockup-score">Score</span>
+        </div>
+        <div className="brand-lockup-sub">{locale === "en" ? "WC pool 2026" : "WK-poule 2026"}</div>
       </div>
     </Link>
   );
