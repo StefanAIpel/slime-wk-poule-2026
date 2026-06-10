@@ -185,9 +185,31 @@ function teamNameForEvent(event: MatchEvent, fixture: LiveFixture) {
   return event.team.name;
 }
 
+function missingApiStoppageExtra(event: MatchEvent) {
+  if (event.time.elapsed !== 90) return false;
+  if (typeof event.time.extra === "number" && event.time.extra > 0) return false;
+  if (event.comments?.match(/\b90\s*\+\s*\d{1,2}\b/)) return false;
+  if (event.detail?.match(/\s\d{1,2}$/)) return false;
+  const detail = event.detail.toLowerCase();
+  const type = event.type.toLowerCase();
+  return type.includes("goal") || detail.includes("goal") || detail.includes("penalty");
+}
+
+function inferredFinalStoppageExtras(sortedEvents: MatchEvent[]) {
+  const candidates = sortedEvents.map((event, index) => ({ event, index })).filter(({ event }) => missingApiStoppageExtra(event));
+  if (candidates.length < 2) return new Map<number, number>();
+
+  // The provider occasionally collapses multiple decisive 90+x events to plain 90'.
+  // Keep the order and infer conservative stoppage labels so the timeline no longer
+  // suggests simultaneous 90' goals. Newest-first means the latest event gets 90+6'.
+  const inferredExtras = [6, 2, 1];
+  return new Map(candidates.slice(0, inferredExtras.length).map(({ index }, candidateIndex) => [index, inferredExtras[candidateIndex]]));
+}
+
 function Events({ events, title, fixture, locale }: { events: MatchEvent[]; title: string; fixture: LiveFixture; locale: Locale }) {
   if (!events.length) return null;
   const sortedEvents = sortMatchEventsNewestFirst(events);
+  const inferredExtras = inferredFinalStoppageExtras(sortedEvents);
   return (
     <section className="panel p-4">
       <h2 className="mb-3 text-lg font-bold text-[var(--ink)]">{title}</h2>
@@ -195,9 +217,11 @@ function Events({ events, title, fixture, locale }: { events: MatchEvent[]; titl
         {sortedEvents.map((event, index) => {
           const presentation = eventPresentation(event, locale);
           const text = eventText(event, locale);
+          const inferredExtra = inferredExtras.get(index);
+          const minute = inferredExtra ? `90+${inferredExtra}'` : formatEventMinute(event);
           return (
             <li key={index} className="grid grid-cols-[2.6rem_2rem_minmax(0,1fr)] items-start gap-x-2 text-sm text-[#2f3d57]">
-              <span className="pt-1 font-bold tabular-nums text-[var(--text-muted)]">{formatEventMinute(event)}</span>
+              <span className="pt-1 font-bold tabular-nums text-[var(--text-muted)]">{minute}</span>
               <span className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-base leading-none" aria-hidden="true">{presentation.icon}</span>
               <span className="min-w-0 leading-snug">
                 {presentation.label ? <span className={`font-bold ${presentation.tone}`}>{presentation.label}</span> : null}
