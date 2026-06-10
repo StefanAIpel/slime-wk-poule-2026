@@ -1521,6 +1521,65 @@ textarea {
   white-space: nowrap;
 }
 
+.fifa-ranking-search .field {
+  min-height: 40px;
+  padding-block: 9px;
+}
+
+.fifa-ranking-list {
+  background: #ffffff;
+}
+
+.fifa-ranking-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 7px 10px;
+  font-size: 0.88rem;
+  line-height: 1.1;
+}
+
+.fifa-ranking-rank {
+  font-weight: 900;
+  color: #081634;
+}
+
+.fifa-ranking-team {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.fifa-ranking-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fifa-ranking-value {
+  justify-self: end;
+  white-space: nowrap;
+  color: #081634;
+  font-weight: 900;
+}
+
+@media (max-width: 420px) {
+  .fifa-ranking-row {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 6px;
+    padding-inline: 8px;
+    font-size: 0.78rem;
+  }
+
+  .fifa-ranking-team {
+    gap: 5px;
+  }
+}
+
 @media (min-width: 760px) {
   .prediction-title-banner {
     padding: 15px 18px;

@@ -1218,12 +1218,15 @@ test("English mode is wired through rankings, rules, pools and predictions pages
 test("prediction page has FIFA ranking help with compact rank badges in prediction choices", () => {
   assert.match(predictionsPage, /fifaHelpSummary: "Extra hulp: FIFA-ranking"/);
   assert.match(predictionsPage, /fifaHelpSummary: "Extra help: FIFA ranking"/);
-  assert.match(predictionsPage, /<FifaRankingHelp copy=\{copy\} locale=\{locale\} worldCupTeamCodes=\{worldCupTeamCodes\} \/>/);
-  assert.match(predictionsPage, /<details className="panel overflow-hidden">/);
+  assert.match(predictionsPage, /<FifaRankingHelp copy=\{copy\} locale=\{locale\} searchQuery=\{fifaSearchQuery\} worldCupTeamCodes=\{worldCupTeamCodes\} \/>/);
+  assert.match(predictionsPage, /<details className="panel overflow-hidden" open=\{searchQuery \? true : undefined\}>/);
   assert.match(predictionsPage, /worldCupTeamCodes=\{worldCupTeamCodes\}/);
-  assert.match(predictionsPage, /isWorldCupTeam \? "bg-green-50\/70" : "bg-white"/);
-  assert.match(predictionsPage, /copy\.participant/);
-  assert.match(predictionsPage, /row\.marketValue \?\? "—"/);
+  assert.match(predictionsPage, /name="fifa" type="search"/);
+  assert.match(predictionsPage, /formatMarketValue\(row\.marketValueMillions, locale\)/);
+  assert.match(predictionsPage, /€ \$\{value\.toLocaleString\("nl-NL", \{ maximumFractionDigits: 2 \}\)\} mld/);
+  assert.match(predictionsPage, /€\$\{value\.toFixed\(2\)\}bn/);
+  assert.match(globalsCss, /\.fifa-ranking-row \{/);
+  assert.match(globalsCss, /grid-template-columns: 42px minmax\(0, 1fr\) auto;/);
   assert.match(predictionsPage, /teamOptionLabel\(team, locale\)/);
   assert.match(groupPredictionCard, /fifaRankLabel\(match\.home_code\)/);
   assert.match(groupPredictionCard, /className="prediction-team-label justify-end"/);
