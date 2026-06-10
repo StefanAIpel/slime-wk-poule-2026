@@ -20,7 +20,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
           style={{ width: "min(240px, 82vw)", height: "auto", borderRadius: 24, boxShadow: "0 16px 40px rgba(8, 22, 52, 0.18)", marginBottom: 18 }}
         />
         <h1 style={{ fontSize: "1.5rem", fontWeight: 700 }}>Er ging iets mis</h1>
-        <p style={{ color: "var(--text-muted)", maxWidth: 460, margin: "8px auto 16px" }}>
+        <p style={{ color: "#48617f", maxWidth: 460, margin: "8px auto 16px" }}>
           Vernieuw de pagina of probeer het later opnieuw.
         </p>
         <button
