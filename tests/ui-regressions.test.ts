@@ -388,6 +388,7 @@ test("logged-in homepage uses shorter prediction deadline copy and compact mobil
   assert.match(homePage, /<Brand hideIcon locale=\{locale\} \/>/);
   assert.match(globalsCss, /\.home-mobile-user-avatar \{[\s\S]*display: inline-flex;/);
   assert.match(globalsCss, /\.home-mobile-user-avatar \.avatar-img \{[\s\S]*width: 84px;[\s\S]*height: 84px;/);
+  assert.match(globalsCss, /\.home-mobile-user-avatar \.avatar-img \{[\s\S]*border: 2px solid rgba\(242, 106, 27, 0\.92\);[\s\S]*background: transparent;/);
   assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.home-mobile-user-avatar \.avatar-img \{[\s\S]*width: 78px;[\s\S]*height: 78px;/);
 });
 
