@@ -317,7 +317,8 @@ export default async function PoolsPage({
         errorCorrectionLevel: "M",
         margin: 1,
         width: 180,
-        color: { dark: "var(--ink)", light: "#ffffff" },
+        // Echte hex (geen CSS-var): qrcode-lib parseert dit als kleurwaarde.
+        color: { dark: "#081634", light: "#ffffff" },
       });
       poolJoinAssets.set(pool.id, { joinUrl, qrDataUrl });
     }),
