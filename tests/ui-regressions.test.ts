@@ -293,6 +293,7 @@ test("live subsite header respects the iOS status bar (safe-area-inset-top)", ()
 });
 
 test("live sticky header has visible menu tabs, predict CTA, hamburger and high-z-index flag dropdown", () => {
+  const headerInnerBlock = globalsCss.match(/\.live-subsite-header-inner \{[\s\S]*?\}/)?.[0] ?? "";
   const menuBlock = globalsCss.match(/\.live-subsite-menu \{[\s\S]*?\}/)?.[0] ?? "";
   const linkBlock = globalsCss.match(/\.live-subsite-menu-link \{[\s\S]*?\}/)?.[0] ?? "";
   const predictLinkBlock = globalsCss.match(/\.live-subsite-menu-link-predict \{[\s\S]*?\}/)?.[0] ?? "";
@@ -310,6 +311,8 @@ test("live sticky header has visible menu tabs, predict CTA, hamburger and high-
   assert.match(liveNav, /live-menu-button/);
   assert.match(liveNav, /live-menu-panel/);
   assert.match(liveNav, /window\.location\.hostname\.startsWith\("live\."\)/);
+  assert.match(headerInnerBlock, /width: min\(1050px, 100%\);/);
+  assert.match(headerInnerBlock, /padding-inline: 16px;/);
   const topNavConfig = liveNav.slice(liveNav.indexOf("const navCopy"), liveNav.indexOf("const drawerLinks"));
   assert.doesNotMatch(topNavConfig, /Finales|Finals|schema\/knockout/);
   assert.match(liveNav, /href === "\/schema" \|\| href === "\/live\/schema"/);

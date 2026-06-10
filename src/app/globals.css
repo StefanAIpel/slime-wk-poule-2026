@@ -2766,8 +2766,9 @@ textarea {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px 10px;
-  width: min(1100px, 100%);
+  width: min(1050px, 100%);
   margin: 0 auto;
+  padding-inline: 16px;
 }
 
 .live-subsite-brandwrap {
