@@ -10,6 +10,7 @@ const liveLayout = await readFile(new URL("../src/app/live/layout.tsx", import.m
 const liveNav = await readFile(new URL("../src/components/live-subsite-nav.tsx", import.meta.url), "utf8");
 const liveSchema = await readFile(new URL("../src/app/live/schema/page.tsx", import.meta.url), "utf8");
 const liveMatch = await readFile(new URL("../src/app/live/match/[id]/page.tsx", import.meta.url), "utf8");
+const liveEvents = await readFile(new URL("../src/lib/live-events.ts", import.meta.url), "utf8");
 
 test("live subsite is host-routed and hides the main chrome", () => {
   assert.match(middleware, /live\.slimescore\.com/);
@@ -74,9 +75,13 @@ test("match detail uses our flags, newest-first events and avoids technical jarg
   assert.match(liveMatch, /sortMatchEventsNewestFirst/);
   assert.match(liveMatch, /elapsedDiff/);
   assert.match(liveMatch, /formatEventMinute/);
-  assert.match(liveMatch, /time\.extra/);
-  assert.match(liveMatch, /90\+6/);
-  assert.match(liveMatch, /return b\.index - a\.index/);
+  assert.match(liveEvents, /time\.extra/);
+  assert.match(liveEvents, /90\+6/);
+  assert.match(liveEvents, /elapsed > 90/);
+  assert.doesNotMatch(liveMatch, /inferredFinalStoppageExtras/);
+  assert.doesNotMatch(liveMatch, /missingApiStoppageExtra/);
+  assert.doesNotMatch(liveMatch, /90\+\$\{inferredExtra\}/);
+  assert.doesNotMatch(liveMatch, /const inferredExtras = \[6, 2, 1\]/);
   assert.match(liveMatch, /sortedEvents\.map/);
   assert.match(liveMatch, /eventPresentation/);
   assert.doesNotMatch(liveMatch, /yellowCard: "Gele kaart"/);

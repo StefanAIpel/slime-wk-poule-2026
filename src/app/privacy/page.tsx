@@ -12,8 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: locale === "en" ? "Privacy policy" : "Privacy",
     description: locale === "en"
-      ? "How Slime Score handles your data: minimal data and no tracking cookies."
-      : "Hoe Slime Score met je gegevens omgaat: minimale data en geen tracking-cookies.",
+      ? "How SlimeScore handles your data: minimal data and no tracking cookies."
+      : "Hoe SlimeScore met je gegevens omgaat: minimale data en geen tracking-cookies.",
     alternates: { canonical: "/privacy" },
   };
 }
@@ -48,7 +48,7 @@ const privacyCopy = {
     badge: "Gratis · geen onnodige data · privé",
     detailsTitle: "Details & je rechten (AVG)",
     controllerTitle: "Wie is verantwoordelijke",
-    controller: "Slime Score is een product van",
+    controller: "SlimeScore is een product van",
     controllerSuffix: "de verwerkingsverantwoordelijke voor je gegevens. Vragen of verzoeken? Mail",
     basisTitle: "Waarom we dit mogen verwerken (grondslag)",
     basis: "We verwerken je gegevens om de poule te kunnen leveren waar je je voor aanmeldt (uitvoering van de overeenkomst). Voor kind-accounts gebeurt dit op basis van toestemming van de ouder/verzorger, die het account aanmaakt. We gebruiken je gegevens niet voor reclame en verkopen ze nooit.",
@@ -65,7 +65,7 @@ const privacyCopy = {
     complaint: "Ben je het ergens niet mee eens? Je mag een klacht indienen bij de Autoriteit Persoonsgegevens.",
     seeTerms: "Zie ook onze",
     terms: "voorwaarden",
-    beta: "Slime Score is een bèta-product",
+    beta: "SlimeScore is een bèta-product",
     contact: "Contact",
   },
   en: {
@@ -97,7 +97,7 @@ const privacyCopy = {
     badge: "Free · no unnecessary data · private",
     detailsTitle: "Details & your rights (GDPR)",
     controllerTitle: "Who is responsible",
-    controller: "Slime Score is a product of",
+    controller: "SlimeScore is a product of",
     controllerSuffix: "the controller for your data. Questions or requests? Email",
     basisTitle: "Why we may process this data (legal basis)",
     basis: "We process your data to provide the pool you sign up for (performance of the agreement). Child accounts are created with consent from the parent/guardian or pool manager. We do not use your data for advertising and never sell it.",
@@ -114,7 +114,7 @@ const privacyCopy = {
     complaint: "If you disagree with something, you may file a complaint with the Dutch Data Protection Authority.",
     seeTerms: "See also our",
     terms: "terms",
-    beta: "Slime Score is a beta product",
+    beta: "SlimeScore is a beta product",
     contact: "Contact",
   },
 } satisfies Record<Locale, Record<string, string | string[]>>;

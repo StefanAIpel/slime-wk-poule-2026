@@ -12,8 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: locale === "en" ? "Terms of use" : "Voorwaarden",
     description: locale === "en"
-      ? "The rules for using Slime Score: free, fair and for fun."
-      : "De spelregels voor het gebruik van Slime Score: gratis, eerlijk en voor de lol.",
+      ? "The rules for using SlimeScore: free, fair and for fun."
+      : "De spelregels voor het gebruik van SlimeScore: gratis, eerlijk en voor de lol.",
     alternates: { canonical: "/voorwaarden" },
   };
 }
@@ -21,10 +21,10 @@ export async function generateMetadata(): Promise<Metadata> {
 const termsCopy = {
   nl: {
     title: "Voorwaarden",
-    subtitle: "Slime Score is een gratis WK-poule voor de lol. Hou het sportief, dan houdt iedereen het leuk.",
+    subtitle: "SlimeScore is een gratis WK-poule voor de lol. Hou het sportief, dan houdt iedereen het leuk.",
     fairTitle: "Eerlijk spel",
     fairItems: [
-      "Slime Score is gratis voor deelnemers.",
+      "SlimeScore is gratis voor deelnemers.",
       "Eén account per persoon; geen nepaccounts om de ranglijst te beïnvloeden.",
       "Kies een nette bijnaam en teamnaam. Kwetsende namen kunnen worden verwijderd.",
       "Bij misbruik kunnen we toegang of een WK-poule-account intrekken.",
@@ -49,10 +49,10 @@ const termsCopy = {
   },
   en: {
     title: "Terms of use",
-    subtitle: "Slime Score is a free World Cup pool for fun. Keep it sporty so everyone can enjoy it.",
+    subtitle: "SlimeScore is a free World Cup pool for fun. Keep it sporty so everyone can enjoy it.",
     fairTitle: "Fair play",
     fairItems: [
-      "Slime Score is free for participants.",
+      "SlimeScore is free for participants.",
       "One account per person; no fake accounts to influence the ranking.",
       "Choose a decent nickname and team name. Offensive names may be removed.",
       "In case of abuse, we may revoke access or a World Cup pool account.",

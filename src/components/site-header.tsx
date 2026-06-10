@@ -48,12 +48,13 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="site-header-inner">
-        <Link href={localizedHref("/", locale)} className="site-header-logo" aria-label="Slime Score home">
+        <Link href={localizedHref("/", locale)} className="site-header-logo" aria-label="SlimeScore home">
           <Image
             className="site-header-avatar header-slime-avatar"
             src="/assets/transparant-avatar/wk_slime_700_transparant.webp"
-            width={96}
-            height={96}
+            width={700}
+            height={700}
+            sizes="60px"
             alt=""
             aria-hidden="true"
             priority

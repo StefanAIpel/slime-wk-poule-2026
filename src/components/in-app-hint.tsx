@@ -34,7 +34,7 @@ export function InAppHint() {
     <div className="inapp-hint" role="note">
       <ExternalLink aria-hidden="true" className="size-5 flex-none" />
       <p className="inapp-hint-text">
-        Je opent dit in een app-browser. Voor de beste ervaring (en om Slime Score als app te
+        Je opent dit in een app-browser. Voor de beste ervaring (en om SlimeScore als app te
         installeren): tik op {isIOS ? "het deel-icoon en kies “Open in Safari”." : "het menu (⋮) en kies “Openen in Chrome”."}
       </p>
       <button type="button" className="inapp-hint-close" onClick={dismiss} aria-label="Sluiten">

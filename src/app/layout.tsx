@@ -34,8 +34,8 @@ const ogImage = appIcon;
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Slime Score · Gratis WK 2026-poule",
-    template: "%s · Slime Score",
+    default: "SlimeScore · Gratis WK 2026-poule",
+    template: "%s · SlimeScore",
   },
   description,
   keywords: [
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     "office football pool",
     "USA Canada Mexico 2026",
     "SlimeScore",
-    "Slime Score",
+    "SlimeScore",
   ],
   applicationName: SITE_NAME,
   appleWebApp: {
@@ -87,13 +87,13 @@ export const metadata: Metadata = {
     alternateLocale: ["en_GB", "en_US"],
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "Slime Score · Gratis WK 2026-poule",
+    title: "SlimeScore · Gratis WK 2026-poule",
     description,
-    images: [{ url: ogImage, width: 512, height: 512, alt: "Slime Score app icon" }],
+    images: [{ url: ogImage, width: 512, height: 512, alt: "SlimeScore app icon" }],
   },
   twitter: {
     card: "summary",
-    title: "Slime Score · Gratis WK 2026-poule",
+    title: "SlimeScore · Gratis WK 2026-poule",
     description,
     images: [ogImage],
   },
@@ -119,7 +119,7 @@ const structuredData = [
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: SITE_NAME,
-    alternateName: ["Slime Score", "World Cup 2026 pool", "WK 2026 poule"],
+    alternateName: ["SlimeScore", "World Cup 2026 pool", "WK 2026 poule"],
     url: SITE_URL,
     inLanguage: ["nl-NL", "en"],
     keywords: "World Cup 2026 pool, free World Cup pool, WK 2026 poule, voetbalpoule, football pool, soccer pool",

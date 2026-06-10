@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { TeamFlag } from "@/components/team-flag";
 import { getFixtureById, getFixtureDetail, getHeadToHead, isLiveStatus, manOfTheMatch, type LiveFixture, type MatchEvent, type TeamLineup, type TeamPlayers, type TeamStatistics } from "@/lib/apifootball-live";
+import { formatEventMinute } from "@/lib/live-events";
 import { getServerLocale } from "@/lib/server-locale";
 import type { Locale } from "@/lib/i18n";
 
@@ -149,17 +150,6 @@ function cleanApiDetail(detail: string) {
   return detail.trim().replace(/\s+\d+$/, "");
 }
 
-export function formatEventMinute(event: Pick<MatchEvent, "time" | "comments">) {
-  const elapsed = event.time.elapsed ?? 0;
-  const extra = event.time.extra;
-  // The provider exposes stoppage time as time.extra, e.g. elapsed=90 + extra=6 => 90+6'.
-  if (typeof extra === "number" && extra > 0) return `${elapsed}+${extra}'`;
-  // Some providers put the 90+6 notation in comments instead of time.extra; preserve it if present.
-  const commentMinute = event.comments?.match(/\b(45|90)\s*\+\s*(\d{1,2})\b/);
-  if (commentMinute) return `${commentMinute[1]}+${commentMinute[2]}'`;
-  return `${elapsed}'`;
-}
-
 function eventPresentation(event: MatchEvent, locale: Locale) {
   const c = EVENT_TRANSLATIONS[locale];
   const rawDetail = cleanApiDetail(event.detail || "");
@@ -205,9 +195,10 @@ function Events({ events, title, fixture, locale }: { events: MatchEvent[]; titl
         {sortedEvents.map((event, index) => {
           const presentation = eventPresentation(event, locale);
           const text = eventText(event, locale);
+          const minute = formatEventMinute(event);
           return (
             <li key={index} className="grid grid-cols-[2.6rem_2rem_minmax(0,1fr)] items-start gap-x-2 text-sm text-[#2f3d57]">
-              <span className="pt-1 font-bold tabular-nums text-[var(--text-muted)]">{formatEventMinute(event)}</span>
+              <span className="pt-1 font-bold tabular-nums text-[var(--text-muted)]">{minute}</span>
               <span className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-base leading-none" aria-hidden="true">{presentation.icon}</span>
               <span className="min-w-0 leading-snug">
                 {presentation.label ? <span className={`font-bold ${presentation.tone}`}>{presentation.label}</span> : null}

@@ -15,6 +15,7 @@ const profileForm = await readFile(new URL("../src/components/profile-form.tsx",
 const accountPage = await readFile(new URL("../src/app/account/page.tsx", import.meta.url), "utf8");
 const passwordChangeForm = await readFile(new URL("../src/components/password-change-form.tsx", import.meta.url), "utf8");
 const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx", import.meta.url), "utf8");
+const avatarsLib = await readFile(new URL("../src/lib/avatars.ts", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
 const livePage = await readFile(new URL("../src/app/live/page.tsx", import.meta.url), "utf8");
@@ -24,12 +25,15 @@ const liveFollowBanner = await readFile(new URL("../src/components/live-follow-b
 const slimeSoccerBanner = await readFile(new URL("../src/components/slime-soccer-banner.tsx", import.meta.url), "utf8");
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
+const fifaRankingData = await readFile(new URL("../src/lib/fifa-ranking.ts", import.meta.url), "utf8");
 const rankingPage = await readFile(new URL("../src/app/ranglijst/page.tsx", import.meta.url), "utf8");
 const rankingExplorer = await readFile(new URL("../src/components/ranking-explorer.tsx", import.meta.url), "utf8");
 const rulesPage = await readFile(new URL("../src/app/regels/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
 const manifest = await readFile(new URL("../src/app/manifest.ts", import.meta.url), "utf8");
 const constants = await readFile(new URL("../src/lib/constants.ts", import.meta.url), "utf8");
+const packageJson = await readFile(new URL("../package.json", import.meta.url), "utf8");
+const prodBuildGuard = await readFile(new URL("../scripts/assert-git-production-build.mjs", import.meta.url), "utf8");
 const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
 const quickMenu = await readFile(new URL("../src/components/quick-menu.tsx", import.meta.url), "utf8");
 const languageSwitcher = await readOptional("../src/components/language-switcher.tsx");
@@ -156,6 +160,13 @@ test("mobile rankings distinguish individual players from sub-pools", () => {
   assert.doesNotMatch(globalsCss, /\.pool-member-world \{\n\s*display: none;\n\s*\}/);
 });
 
+test("desktop header renders the WK slime logo larger and sharper", () => {
+  assert.match(siteHeader, /wk_slime_700_transparant\.webp/);
+  assert.doesNotMatch(siteHeader, /header-slime-memphis-v2\.webp/);
+  assert.match(siteHeader, /sizes=\"60px\"/);
+  assert.match(globalsCss, /\.site-header-logo img\.site-header-avatar \{[\s\S]*width: 60px;[\s\S]*height: 60px;[\s\S]*transform: none;/);
+});
+
 test("logged-in status header uses the user's avatar instead of the trophy icon", () => {
   assert.match(apiMeRoute, /select\("nickname,team_name,avatar_key,preferred_locale"\)/);
   assert.match(apiMeRoute, /avatarKey: profile\?\.avatar_key \?\? null/);
@@ -167,8 +178,22 @@ test("logged-in status header uses the user's avatar instead of the trophy icon"
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.52"/);
+  assert.match(constants, /APP_VERSION = "0.53"/);
 });
+
+
+test("mobile status bar background bleeds to viewport edges", () => {
+  assert.match(globalsCss, /\.status-bar::before \{[\s\S]*right: calc\(50% - 50vw\);[\s\S]*left: calc\(50% - 50vw\);[\s\S]*background: inherit;/);
+});
+
+test("production builds are technically blocked outside Vercel Git main", () => {
+  assert.match(packageJson, /"build": "node scripts\/assert-git-production-build\.mjs && next build"/);
+  assert.match(prodBuildGuard, /VERCEL_ENV === "production"/);
+  assert.match(prodBuildGuard, /VERCEL_GIT_COMMIT_SHA/);
+  assert.match(prodBuildGuard, /VERCEL_GIT_COMMIT_REF/);
+  assert.match(prodBuildGuard, /gitRef !== "main"/);
+});
+
 test("entry deadline is extended until the first World Cup match", () => {
   assert.match(constants, /ENTRY_DEADLINE_ISO = "2026-06-11T21:00:00\+02:00"/);
   assert.match(constants, /ENTRY_GRACE_DEADLINE_ISO = "2026-06-14T21:00:00\+02:00"/);
@@ -204,9 +229,10 @@ test("mobile tab page heroes use larger bottom-right mascots behind the title co
   assert.match(rankingPage, /className="hero-title-mascot-large"/);
   assert.match(accountPage, /className="hero-title-mascot-large"/);
   assert.match(globalsCss, /\.hero-band-page \.hero-content \{\n    max-width: 86%;\n  \}/);
-  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large\.hero-band-visual \.hero-mascot \{[\s\S]*right: -12px;[\s\S]*bottom: -10px;[\s\S]*max-height: 104%;[\s\S]*max-width: 54%;/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large\.hero-band-visual \.hero-mascot \{[\s\S]*right: -8px;[\s\S]*bottom: -7px;[\s\S]*max-height: 73%;[\s\S]*max-width: 38%;/);
   assert.match(accountPage, /slime="\/avatars\/messi-slime\.webp"/);
-  assert.match(globalsCss, /\.hero-mascot-account-messi \{[\s\S]*max-height: 108%;[\s\S]*max-width: 56%;/);
+  assert.match(globalsCss, /\.hero-mascot-account-messi \{[\s\S]*max-height: 76%;[\s\S]*max-width: 39%;/);
+  assert.match(globalsCss, /\.hero-band-page\.hero-title-mascot-large\.hero-band-visual \.hero-mascot-regels \{[\s\S]*max-height: 53%;[\s\S]*max-width: 43%;/);
   assert.match(globalsCss, /\.hero-title-mascot-large \.hero-content \{[\s\S]*text-shadow: 0 2px 10px/);
 });
 
@@ -275,6 +301,7 @@ test("live subsite header respects the iOS status bar (safe-area-inset-top)", ()
 });
 
 test("live sticky header has visible menu tabs, predict CTA, hamburger and high-z-index flag dropdown", () => {
+  const headerInnerBlock = globalsCss.match(/\.live-subsite-header-inner \{[\s\S]*?\}/)?.[0] ?? "";
   const menuBlock = globalsCss.match(/\.live-subsite-menu \{[\s\S]*?\}/)?.[0] ?? "";
   const linkBlock = globalsCss.match(/\.live-subsite-menu-link \{[\s\S]*?\}/)?.[0] ?? "";
   const predictLinkBlock = globalsCss.match(/\.live-subsite-menu-link-predict \{[\s\S]*?\}/)?.[0] ?? "";
@@ -292,6 +319,8 @@ test("live sticky header has visible menu tabs, predict CTA, hamburger and high-
   assert.match(liveNav, /live-menu-button/);
   assert.match(liveNav, /live-menu-panel/);
   assert.match(liveNav, /window\.location\.hostname\.startsWith\("live\."\)/);
+  assert.match(headerInnerBlock, /width: min\(1050px, 100%\);/);
+  assert.match(headerInnerBlock, /padding-inline: 16px;/);
   const topNavConfig = liveNav.slice(liveNav.indexOf("const navCopy"), liveNav.indexOf("const drawerLinks"));
   assert.doesNotMatch(topNavConfig, /Finales|Finals|schema\/knockout/);
   assert.match(liveNav, /href === "\/schema" \|\| href === "\/live\/schema"/);
@@ -627,6 +656,19 @@ test("profile shows the selected slime preview twice as large as the automatic p
   assert.match(avatarPicker, /style=\{\{ width: previewSize, height: previewSize \}\}/);
 });
 
+test("avatar picker adds the latest slime pack options without the visual duplicate picks", () => {
+  for (const key of ["koe-slime", "scheidsrechter-slime", "portugal-slime", "seychellen-slime"]) {
+    assert.match(avatarsLib, new RegExp(`key: "${key}"`));
+    assert.match(avatarsLib, new RegExp(`"${key}"`));
+  }
+  assert.doesNotMatch(avatarsLib, /key: "messi-slime"/);
+  assert.doesNotMatch(avatarsLib, /key: "wk-slime"/);
+  assert.match(avatarsLib, /legacyAvatarKeys = \["messi-slime", "wk-slime"\]/);
+  assert.match(avatarPicker, /"koe-slime": "Cow"/);
+  assert.match(avatarPicker, /"scheidsrechter-slime": "Referee"/);
+  assert.match(avatarPicker, /"seychellen-slime": "Seychelles"/);
+});
+
 test("account page saves profile, avatar, password and language safely", () => {
   assert.match(profileForm, /name=\"nickname\"/);
   assert.match(profileForm, /name=\"team_name\"/);
@@ -667,12 +709,18 @@ test("shared SlimeScore links use the app icon instead of the wide banner", () =
   assert.doesNotMatch(layout, /og-slimescore-wk2026-v2\.png/);
 });
 
-test("SlimeScore brand wordmark uses the Memphis slime and a richer pill lockup", () => {
+test("SlimeScore brand wordmarks stay connected and use blue/green on light backgrounds", () => {
   assert.match(brandWordmark, /memphis_wkbal_700_transparant\.webp/);
   assert.match(siteHeader, /wk_slime_700_transparant\.webp/);
   assert.doesNotMatch(`${brandWordmark}\n${siteHeader}`, /trump_slime_700_transparant\.webp/);
-  assert.match(globalsCss, /\.brand-wordmark-text \{[\s\S]*border-radius: 999px;[\s\S]*linear-gradient\(135deg, #061a3c/);
-  assert.match(globalsCss, /\.brand-wordmark-score \{\n  color: #60f47c;/);
+  assert.match(brand, /<span className="brand-lockup-slime">Slime<\/span><span className="brand-lockup-score">Score<\/span>/);
+  assert.doesNotMatch(`${brand}\n${siteHeader}\n${brandWordmark}\n${quickMenu}`, /Slime Score/);
+  assert.match(globalsCss, /\.brand-lockup-slime,[\s\S]*\.brand-wordmark-slime \{\n  color: #0b1f4d;[\s\S]*text-shadow: none;/);
+  assert.match(globalsCss, /\.brand-lockup-score,[\s\S]*\.brand-wordmark-score \{\n  color: #128f47;[\s\S]*text-shadow: none;/);
+  assert.match(globalsCss, /\.brand-wordmark-dark \.brand-wordmark-slime,[\s\S]*color: #ffffff;/);
+  assert.match(globalsCss, /\.brand-lockup-sub \{[\s\S]*line-height: 1\.22;/);
+  assert.match(globalsCss, /\.quick-menu-brand-slime \{\n  color: #0b1f4d;[\s\S]*text-shadow: none;[\s\S]*-webkit-text-stroke: 0;/);
+  assert.match(globalsCss, /\.quick-menu-brand-sub \{[\s\S]*line-height: 1\.18;/);
 });
 
 test("SlimeScore auth emails use a fixed high-contrast image header", () => {
@@ -1189,6 +1237,34 @@ test("English mode is wired through rankings, rules, pools and predictions pages
   assert.match(knockoutPredictionPicker, /stageCopy\[locale\]/);
   assert.match(knockoutPredictionPicker, /teamNameForLocale/);
   assert.match(predictionsComplete, /locale = "nl"/);
+});
+
+test("prediction page has FIFA ranking help with compact rank badges in prediction choices", () => {
+  assert.match(predictionsPage, /fifaHelpSummary: "Extra hulp: FIFA-ranking"/);
+  assert.match(predictionsPage, /fifaHelpSummary: "Extra help: FIFA ranking"/);
+  assert.match(predictionsPage, /<FifaRankingHelp copy=\{copy\} locale=\{locale\} searchQuery=\{fifaSearchQuery\} worldCupTeamCodes=\{worldCupTeamCodes\} \/>/);
+  assert.match(predictionsPage, /<details className="panel overflow-hidden" open=\{searchQuery \? true : undefined\}>/);
+  assert.match(predictionsPage, /worldCupTeamCodes=\{worldCupTeamCodes\}/);
+  assert.match(predictionsPage, /name="fifa" type="search"/);
+  assert.match(predictionsPage, /formatMarketValue\(row\.marketValueMillions, locale\)/);
+  assert.match(predictionsPage, /€ \$\{value\.toLocaleString\("nl-NL", \{ maximumFractionDigits: 2 \}\)\} mld/);
+  assert.match(predictionsPage, /€\$\{value\.toFixed\(2\)\}bn/);
+  assert.match(globalsCss, /\.fifa-ranking-row \{/);
+  assert.match(globalsCss, /grid-template-columns: 42px minmax\(0, 1fr\) auto;/);
+  assert.match(predictionsPage, /teamOptionLabel\(team, locale\)/);
+  assert.match(groupPredictionCard, /fifaRankLabel\(match\.home_code\)/);
+  assert.match(groupPredictionCard, /className="prediction-team-label justify-end"/);
+  assert.match(knockoutPredictionPicker, /fifaRankLabel\(team\.code\)/);
+  assert.match(knockoutPredictionPicker, /className="fifa-rank-chip"/);
+  assert.match(globalsCss, /@media \(max-width: 559px\) \{[\s\S]*\.knockout-picker-name \{\n    font-size: 0\.72rem;\n  \}/);
+
+  assert.match(fifaRankingData, /fifaRankingPublishedAt = "2026-04-01"/);
+  assert.match(fifaRankingData, /FIFA men's world ranking, fetched 2026-06-10/);
+  assert.match(fifaRankingData, /Transfermarkt most valuable national teams and team profiles, fetched 2026-06-10/);
+  assert.match(fifaRankingData, /code: "FRA"[\s\S]*marketValue: "€1\.52bn"/);
+  assert.match(fifaRankingData, /code: "NED"[\s\S]*marketValue: "€754\.20m"/);
+  assert.match(fifaRankingData, /code: "CUW"[\s\S]*marketValue: "€25\.78m"/);
+  assert.match(fifaRankingData, /code: "QAT"[\s\S]*marketValue: "€19\.93m"/);
 });
 
 test("mobile landing hero keeps title and host pills compact on one line", () => {

@@ -96,7 +96,7 @@ const homeCopy = {
       instagram: "100% gratis WK-poule voor vrienden. 1x ±10 min invullen. Volg speelschema & uitslagen.",
       native: "Maak je eigen 100% gratis vrienden-WK-poule. 1x ±10 min invullen; volg speelschema en uitslagen.",
     },
-    appIconAlt: "Slime Score app icon",
+    appIconAlt: "SlimeScore app icon",
     authExpired: "Deze bevestigingslink is verlopen. Vraag een nieuwe aan.",
     afterProfileTitle: "Na deze stap",
     afterProfileSteps: [
@@ -170,7 +170,7 @@ const homeCopy = {
       instagram: "100% free World Cup pool for friends. Fill in predictions once. Follow fixtures & results.",
       native: "Create your own 100% free World Cup pool for friends. Fill in predictions once in about ten minutes; follow fixtures and results.",
     },
-    appIconAlt: "Slime Score app icon",
+    appIconAlt: "SlimeScore app icon",
     authExpired: "This confirmation link has expired. Request a new one.",
     afterProfileTitle: "After this step",
     afterProfileSteps: [
