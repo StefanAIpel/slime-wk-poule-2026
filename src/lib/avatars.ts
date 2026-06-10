@@ -5,7 +5,6 @@ export type AvatarOption = { key: string; label: string };
 
 export const avatarOptions: AvatarOption[] = [
   { key: "wk2026-international", label: "WK 2026" },
-  { key: "wk-slime", label: "WK slime" },
   { key: "netherlands", label: "Nederland" },
   { key: "memphis-slime", label: "Memphis" },
   { key: "virgil-slime", label: "Virgil" },
@@ -19,8 +18,11 @@ export const avatarOptions: AvatarOption[] = [
   { key: "keeper", label: "Keeper" },
   { key: "appel-slime", label: "Appel" },
   { key: "brazil", label: "Brazilië" },
-  { key: "messi-slime", label: "Messi" },
   { key: "argentina", label: "Argentinië" },
+  { key: "portugal-slime", label: "Portugal" },
+  { key: "seychellen-slime", label: "Seychellen" },
+  { key: "koe-slime", label: "Koe" },
+  { key: "scheidsrechter-slime", label: "Scheidsrechter" },
   { key: "france", label: "Frankrijk" },
   { key: "spain", label: "Spanje" },
   { key: "england", label: "Engeland" },
@@ -38,7 +40,10 @@ export const avatarOptions: AvatarOption[] = [
   { key: "rode-duivel", label: "België" },
 ];
 
-const avatarKeys = avatarOptions.map((option) => option.key);
+// Legacy keys blijven geldig voor bestaande profielen, maar staan niet meer in de picker
+// zodat visuele dubbelen (Messi/Argentinië en WK-slime/WK 2026) verdwijnen.
+const legacyAvatarKeys = ["messi-slime", "wk-slime"];
+const avatarKeys = Array.from(new Set([...avatarOptions.map((option) => option.key), ...legacyAvatarKeys]));
 const webpAvatarKeys = new Set([
   "argentina",
   "brazil",
@@ -48,6 +53,7 @@ const webpAvatarKeys = new Set([
   "france",
   "japan-sumo",
   "keeper",
+  "koe-slime",
   "memphis-slime",
   "messi-slime",
   "mexico",
@@ -60,8 +66,11 @@ const webpAvatarKeys = new Set([
   "oranje-president",
   "oranje-spelmaker",
   "oranje-supporter",
+  "portugal-slime",
   "rode-duivel",
+  "scheidsrechter-slime",
   "scotland-fan",
+  "seychellen-slime",
   "spain",
   "sweden-fan",
   "switzerland-alpine",

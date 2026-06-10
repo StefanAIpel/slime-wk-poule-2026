@@ -15,6 +15,7 @@ const profileForm = await readFile(new URL("../src/components/profile-form.tsx",
 const accountPage = await readFile(new URL("../src/app/account/page.tsx", import.meta.url), "utf8");
 const passwordChangeForm = await readFile(new URL("../src/components/password-change-form.tsx", import.meta.url), "utf8");
 const avatarPicker = await readFile(new URL("../src/components/avatar-picker.tsx", import.meta.url), "utf8");
+const avatarsLib = await readFile(new URL("../src/lib/avatars.ts", import.meta.url), "utf8");
 const actions = await readFile(new URL("../src/app/actions.ts", import.meta.url), "utf8");
 const homePage = await readFile(new URL("../src/app/page.tsx", import.meta.url), "utf8");
 const livePage = await readFile(new URL("../src/app/live/page.tsx", import.meta.url), "utf8");
@@ -653,6 +654,19 @@ test("profile shows the selected slime preview twice as large as the automatic p
   assert.match(avatarPicker, /width=\{previewSize\}/);
   assert.match(avatarPicker, /height=\{previewSize\}/);
   assert.match(avatarPicker, /style=\{\{ width: previewSize, height: previewSize \}\}/);
+});
+
+test("avatar picker adds the latest slime pack options without the visual duplicate picks", () => {
+  for (const key of ["koe-slime", "scheidsrechter-slime", "portugal-slime", "seychellen-slime"]) {
+    assert.match(avatarsLib, new RegExp(`key: "${key}"`));
+    assert.match(avatarsLib, new RegExp(`"${key}"`));
+  }
+  assert.doesNotMatch(avatarsLib, /key: "messi-slime"/);
+  assert.doesNotMatch(avatarsLib, /key: "wk-slime"/);
+  assert.match(avatarsLib, /legacyAvatarKeys = \["messi-slime", "wk-slime"\]/);
+  assert.match(avatarPicker, /"koe-slime": "Cow"/);
+  assert.match(avatarPicker, /"scheidsrechter-slime": "Referee"/);
+  assert.match(avatarPicker, /"seychellen-slime": "Seychelles"/);
 });
 
 test("account page saves profile, avatar, password and language safely", () => {
