@@ -51,9 +51,10 @@ export function SiteHeader() {
         <Link href={localizedHref("/", locale)} className="site-header-logo" aria-label="SlimeScore home">
           <Image
             className="site-header-avatar header-slime-avatar"
-            src="/assets/transparant-avatar/wk_slime_700_transparant.webp"
-            width={96}
-            height={96}
+            src="/assets/header-slime-memphis-v2.webp"
+            width={256}
+            height={256}
+            sizes="60px"
             alt=""
             aria-hidden="true"
             priority

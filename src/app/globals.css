@@ -1974,9 +1974,10 @@ textarea {
   }
 
   .site-header-logo img.site-header-avatar {
-    width: 50px;
-    height: 50px;
-    transform: rotate(-4deg);
+    width: 60px;
+    height: 60px;
+    transform: none;
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.22));
   }
 
   .site-header-logo .brand-wordmark {
