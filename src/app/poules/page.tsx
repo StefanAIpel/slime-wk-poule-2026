@@ -17,6 +17,7 @@ import { Avatar } from "@/components/avatar";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PendingButton } from "@/components/pending-button";
+import { PoolBoardComposer } from "@/components/pool-board-composer";
 import { PoolMembers, type MatchLine, type PoolMember } from "@/components/pool-members";
 import { PoolQr } from "@/components/pool-qr";
 import { PoolQuickShare } from "@/components/pool-quick-share";
@@ -61,6 +62,7 @@ const poolCopy = {
     codeLabel: "Code",
     board: "Prikbord",
     boardPlaceholder: "Schrijf iets voor je WK-poule… (min. 10 tekens)",
+    addEmoji: "Emoji toevoegen",
     pin: "Vastzetten bovenaan",
     posting: "Plaatsen…",
     post: "Plaats",
@@ -121,6 +123,7 @@ const poolCopy = {
     codeLabel: "Code",
     board: "Message board",
     boardPlaceholder: "Write something for your World Cup pool… (min. 10 characters)",
+    addEmoji: "Add emoji",
     pin: "Pin to the top",
     posting: "Posting…",
     post: "Post",
@@ -386,14 +389,7 @@ export default async function PoolsPage({
                   <h3 className="pool-board-titlebar">{copy.board}</h3>
                   <form action={postPoolMessage} className="mt-3 grid gap-2">
                     <input type="hidden" name="pool_id" value={pool.id} />
-                    <textarea
-                      className="field min-h-20 pool-board-textarea"
-                      name="body"
-                      minLength={10}
-                      maxLength={500}
-                      required
-                      placeholder={copy.boardPlaceholder}
-                    />
+                    <PoolBoardComposer placeholder={copy.boardPlaceholder} addLabel={copy.addEmoji} />
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       {isManager ? (
                         <label className="flex items-center gap-2 text-sm font-medium text-[#101a2b]">
@@ -408,7 +404,7 @@ export default async function PoolsPage({
                       </PendingButton>
                     </div>
                   </form>
-                  <div className="mt-3 grid gap-2">
+                  <div className="mt-3 grid gap-2 pool-board-messages">
                     {(messagesByPool.get(pool.id) ?? []).slice(0, 6).map((message) => {
                       const canDelete = isManager || message.author_id === user.id;
                       return (

@@ -58,6 +58,7 @@ const joinPoolPage = await readFile(new URL("../src/app/poules/join/[code]/page.
 const poolMembers = await readFile(new URL("../src/components/pool-members.tsx", import.meta.url), "utf8");
 const poolQuickShare = await readFile(new URL("../src/components/pool-quick-share.tsx", import.meta.url), "utf8");
 const poolTabs = await readFile(new URL("../src/components/pool-tabs.tsx", import.meta.url), "utf8");
+const poolBoardComposer = await readFile(new URL("../src/components/pool-board-composer.tsx", import.meta.url), "utf8");
 const poolQr = await readFile(new URL("../src/components/pool-qr.tsx", import.meta.url), "utf8");
 const appFirstShareLink = await readFile(new URL("../src/components/app-first-share-link.tsx", import.meta.url), "utf8");
 const installAppCard = await readFile(new URL("../src/components/install-app-card.tsx", import.meta.url), "utf8");
@@ -180,7 +181,7 @@ test("logged-in status header uses the user's avatar instead of the trophy icon"
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.60"/);
+  assert.match(constants, /APP_VERSION = "0.61"/);
 });
 
 
@@ -648,6 +649,18 @@ test("mobile pool navigation uses a dropdown selector instead of wrapping all po
   assert.match(poolTabs, /searchParams\.set\("pool", id\)/);
   assert.match(globalsCss, /\.pool-selector-mobile \{\n  display: none;\n\}/);
   assert.match(globalsCss, /@media \(max-width: 640px\) \{[\s\S]*\.poules-page-shell \.pool-tabs \{\n    display: none;\n  \}[\s\S]*\.pool-selector-mobile \{\n    display: grid;/);
+});
+
+test("pool board has a WK emoji picker and a 2-column message grid on desktop", () => {
+  assert.match(poolBoardComposer, /"use client"/);
+  assert.match(poolBoardComposer, /const WK_EMOJIS = \[/);
+  assert.match(poolBoardComposer, /name="body"/);
+  assert.match(poolBoardComposer, /setSelectionRange\(caret, caret\)/);
+  assert.match(poulesPage, /<PoolBoardComposer placeholder=\{copy\.boardPlaceholder\} addLabel=\{copy\.addEmoji\} \/>/);
+  assert.match(poulesPage, /addEmoji: "Emoji toevoegen"/);
+  assert.match(poulesPage, /className="mt-3 grid gap-2 pool-board-messages"/);
+  assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.pool-board-messages \{[\s\S]*grid-template-columns: 1fr 1fr;/);
+  assert.match(globalsCss, /\.pool-emoji-btn \{/);
 });
 
 test("pool share text includes the poulecode and account-before-join guidance", () => {
