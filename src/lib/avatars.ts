@@ -38,6 +38,8 @@ export const avatarOptions: AvatarOption[] = [
   { key: "curacao", label: "Curaçao" },
   { key: "duitsland", label: "Duitsland" },
   { key: "rode-duivel", label: "België" },
+  { key: "fc-den-bosch-slime", label: "FC Den Bosch" },
+  { key: "ajax-slime", label: "Ajax" },
 ];
 
 // Legacy keys blijven geldig voor bestaande profielen, maar staan niet meer in de picker
@@ -45,11 +47,13 @@ export const avatarOptions: AvatarOption[] = [
 const legacyAvatarKeys = ["messi-slime", "wk-slime"];
 const avatarKeys = Array.from(new Set([...avatarOptions.map((option) => option.key), ...legacyAvatarKeys]));
 const webpAvatarKeys = new Set([
+  "ajax-slime",
   "argentina",
   "brazil",
   "curacao",
   "duitsland",
   "england",
+  "fc-den-bosch-slime",
   "france",
   "japan-sumo",
   "keeper",

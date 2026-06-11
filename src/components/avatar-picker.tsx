@@ -21,6 +21,7 @@ const avatarPickerCopy = {
 } satisfies Record<Locale, { selected: string; automatic: (name: string) => string; autoTitle: string; pickerTitle: string }>;
 
 const avatarLabelsEn: Record<string, string> = {
+  "ajax-slime": "Ajax",
   "wk-slime": "World Cup slime",
   netherlands: "Netherlands",
   "memphis-slime": "Memphis",
@@ -40,6 +41,7 @@ const avatarLabelsEn: Record<string, string> = {
   "seychellen-slime": "Seychelles",
   "koe-slime": "Cow",
   "scheidsrechter-slime": "Referee",
+  "fc-den-bosch-slime": "FC Den Bosch",
   france: "France",
   spain: "Spain",
   england: "England",

@@ -675,10 +675,12 @@ test("profile shows the selected slime preview twice as large as the automatic p
   assert.match(avatarPicker, /style=\{\{ width: previewSize, height: previewSize \}\}/);
 });
 
-test("avatar picker adds the latest slime pack options without the visual duplicate picks", () => {
-  for (const key of ["koe-slime", "scheidsrechter-slime", "portugal-slime", "seychellen-slime"]) {
+test("avatar picker adds the latest slime pack options without the visual duplicate picks", async () => {
+  const avatarFiles = await readdir(new URL("../public/avatars/", import.meta.url));
+  for (const key of ["koe-slime", "scheidsrechter-slime", "portugal-slime", "seychellen-slime", "fc-den-bosch-slime", "ajax-slime"]) {
     assert.match(avatarsLib, new RegExp(`key: "${key}"`));
     assert.match(avatarsLib, new RegExp(`"${key}"`));
+    assert.ok(avatarFiles.includes(`${key}.webp`), `${key}.webp is present in public avatars`);
   }
   assert.doesNotMatch(avatarsLib, /key: "messi-slime"/);
   assert.doesNotMatch(avatarsLib, /key: "wk-slime"/);
@@ -686,6 +688,8 @@ test("avatar picker adds the latest slime pack options without the visual duplic
   assert.match(avatarPicker, /"koe-slime": "Cow"/);
   assert.match(avatarPicker, /"scheidsrechter-slime": "Referee"/);
   assert.match(avatarPicker, /"seychellen-slime": "Seychelles"/);
+  assert.match(avatarPicker, /"fc-den-bosch-slime": "FC Den Bosch"/);
+  assert.match(avatarPicker, /"ajax-slime": "Ajax"/);
 });
 
 test("account page saves profile, avatar, password and language safely", () => {
