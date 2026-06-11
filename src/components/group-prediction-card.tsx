@@ -1,7 +1,8 @@
 "use client";
 
 import { Check } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { autosavePrediction } from "@/app/actions";
 import { TeamFlag } from "@/components/team-flag";
 import { fifaRankLabel } from "@/lib/fifa-ranking";
 import { formatAmsterdam, teamAbbrev, teamNameForLocale, venueLabel } from "@/lib/format";
@@ -39,6 +40,10 @@ const groupPredictionCopy = {
     goalDifference: "DS",
     locked: "Gesloten",
     advance: "Nummers 1 en 2 gaan door; de beste acht nummers 3 tellen automatisch mee in de laatste 32.",
+    saving: "Opslaan…",
+    autoSaved: "Opgeslagen ✓",
+    saveError: "Niet opgeslagen",
+    retry: "Opnieuw",
   },
   en: {
     group: "Group",
@@ -52,8 +57,14 @@ const groupPredictionCopy = {
     goalDifference: "GD",
     locked: "Closed",
     advance: "Numbers 1 and 2 advance; the best eight number 3 teams automatically count toward the last 32.",
+    saving: "Saving…",
+    autoSaved: "Saved ✓",
+    saveError: "Not saved",
+    retry: "Retry",
   },
 } as const;
+
+type SaveStatus = "saving" | "saved" | "error";
 
 function scoreMapFromState(scores: Record<number, Score>): ScoreLookup {
   const map: ScoreLookup = new Map();
@@ -68,6 +79,51 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled, l
   const dateLocale = locale === "en" ? "en-GB" : "nl-NL";
   const [scores, setScores] = useState<Record<number, Score>>(initialScores);
   const lockedSet = useMemo(() => new Set(lockedIds ?? []), [lockedIds]);
+
+  // Autosave per wedstrijd: zodra beide scores ingevuld zijn, schrijven we de rij
+  // direct weg (gedebounced). De grote "Voorspellingen opslaan"-knop blijft bestaan
+  // als vangnet en voor knock-out/bonus.
+  const [saveStatus, setSaveStatus] = useState<Record<number, SaveStatus>>({});
+  const scoresRef = useRef<Record<number, Score>>(initialScores);
+  const timers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
+
+  useEffect(() => {
+    const pending = timers.current;
+    return () => {
+      for (const timer of Object.values(pending)) clearTimeout(timer);
+    };
+  }, []);
+
+  async function runAutosave(matchId: number, home: number, away: number) {
+    setSaveStatus((current) => ({ ...current, [matchId]: "saving" }));
+    try {
+      const result = await autosavePrediction({ matchId, home, away });
+      setSaveStatus((current) => ({ ...current, [matchId]: result.ok ? "saved" : "error" }));
+    } catch {
+      setSaveStatus((current) => ({ ...current, [matchId]: "error" }));
+    }
+  }
+
+  function scheduleAutosave(matchId: number, score: Score) {
+    if (disabled || lockedSet.has(matchId)) return;
+    if (timers.current[matchId]) clearTimeout(timers.current[matchId]);
+    // Alleen opslaan als beide scores ingevuld zijn; half ingevulde rijen laten we
+    // ongemoeid (verwijderen niet, net als de grote opslag).
+    if (score.home === null || score.away === null) {
+      setSaveStatus((current) => {
+        if (!(matchId in current)) return current;
+        const next = { ...current };
+        delete next[matchId];
+        return next;
+      });
+      return;
+    }
+    const home = score.home;
+    const away = score.away;
+    timers.current[matchId] = setTimeout(() => {
+      void runAutosave(matchId, home, away);
+    }, 700);
+  }
 
   // Alle landen in de groep (uit de wedstrijden), zodat de stand ook met nullen
   // alvast volledig zichtbaar is.
@@ -91,14 +147,11 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled, l
   function update(matchId: number, side: "home" | "away", raw: string) {
     const digits = raw.replace(/\D/g, "").slice(0, 2);
     const value = digits === "" ? null : Math.min(20, Number(digits));
-    setScores((current) => ({
-      ...current,
-      [matchId]: {
-        home: current[matchId]?.home ?? null,
-        away: current[matchId]?.away ?? null,
-        [side]: value,
-      },
-    }));
+    const previous = scoresRef.current[matchId] ?? { home: null, away: null };
+    const updated: Score = { ...previous, [side]: value };
+    scoresRef.current = { ...scoresRef.current, [matchId]: updated };
+    setScores((current) => ({ ...current, [matchId]: updated }));
+    scheduleAutosave(matchId, updated);
   }
 
   const filledCount = matches.filter((match) => {
@@ -201,6 +254,26 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled, l
                     </span>
                   </div>
                 </fieldset>
+                {saveStatus[match.id] ? (
+                  <div className="prediction-save-status-row">
+                    {saveStatus[match.id] === "error" ? (
+                      <button
+                        type="button"
+                        className="prediction-save-status prediction-save-status--error"
+                        onClick={() => {
+                          const score = scoresRef.current[match.id];
+                          if (score?.home != null && score?.away != null) void runAutosave(match.id, score.home, score.away);
+                        }}
+                      >
+                        {copy.saveError} · {copy.retry}
+                      </button>
+                    ) : (
+                      <span className={`prediction-save-status prediction-save-status--${saveStatus[match.id]}`}>
+                        {saveStatus[match.id] === "saving" ? copy.saving : copy.autoSaved}
+                      </span>
+                    )}
+                  </div>
+                ) : null}
               </div>
             );
           })}
