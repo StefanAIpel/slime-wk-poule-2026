@@ -105,3 +105,20 @@ test("admin site messages: editor per page, audit log and banner wiring", () => 
   assert.match(homePage, /<SiteMessageBanner body=\{siteMessage\} \/>/);
   assert.match(predictionsPage, /<SiteMessageBanner body=\{siteMessage\} \/>/);
 });
+
+test("site messages also cover the live subsite", () => {
+  const livePage = readFileSync(new URL("../src/app/live/page.tsx", import.meta.url), "utf8");
+  assert.match(actionBody("adminSetSiteMessage"), /placement !== "live"/);
+  assert.match(adminPage, /placement: "live" as const/);
+  assert.match(livePage, /fetchSiteMessage\(supabase, "live"\)/);
+  assert.match(livePage, /<SiteMessageBanner body=\{siteMessage\} \/>/);
+});
+
+test("admin shows per-user completion from the server-side aggregate view (no full fetch)", () => {
+  // Aggregatie-view i.p.v. duizenden voorspellingsrijen (PostgREST max-rows-cap).
+  assert.match(adminData, /from\("prediction_completion"\)/);
+  assert.doesNotMatch(adminData, /from\("predictions"\)\.select\("[^"]*match_id/);
+  assert.match(adminData, /predictionCompletion\(\{/);
+  assert.match(adminPage, /Invulvoortgang per speler/);
+  assert.match(adminPage, /completionRows\.map/);
+});

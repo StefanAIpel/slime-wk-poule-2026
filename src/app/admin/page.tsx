@@ -9,6 +9,7 @@ import { getAdminDashboard } from "@/lib/admin-data";
 import { getAdminUser } from "@/lib/admin-guard";
 import { formatAmsterdam } from "@/lib/format";
 import { NICKNAME_MAX_LENGTH } from "@/lib/limits";
+import { BONUS_TOTAL, GROUP_MATCH_TOTAL, KNOCKOUT_TOTAL } from "@/lib/prediction-progress";
 
 export const dynamic = "force-dynamic";
 
@@ -30,11 +31,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     );
   }
 
-  const { userCount, predictionCount, poolCount, bracketCount, specialCount, scoreCount, anomalies, lastUpdate, matchRows, auditRows, kidRows, profileRows, poolRows, siteMessageRows } =
+  const { userCount, predictionCount, poolCount, bracketCount, specialCount, scoreCount, anomalies, lastUpdate, matchRows, auditRows, kidRows, profileRows, poolRows, siteMessageRows, completionRows } =
     await getAdminDashboard();
   const messagePlacements = [
     { placement: "home" as const, label: "Ingelogde home", hint: "Banner bovenaan het dashboard van ingelogde spelers." },
     { placement: "voorspellingen" as const, label: "Voorspellen", hint: "Banner bovenaan de voorspelpagina." },
+    { placement: "live" as const, label: "Live (live.slimescore.com)", hint: "Banner bovenaan de live-subsite." },
   ];
   const finishedCount = matchRows.filter((m) => m.status === "finished").length;
   const anomalyItems = [
@@ -174,6 +176,52 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
       <section className="mt-4 panel p-4">
         <div className="flex items-center gap-2">
+          <ClipboardList aria-hidden="true" className="size-5 text-[var(--accent-blue)]" />
+          <h2 className="text-lg font-bold text-[var(--ink)]">Invulvoortgang per speler</h2>
+        </div>
+        <p className="mt-1 text-sm font-medium text-[var(--text-muted)]">
+          Percentage ingevuld per onderdeel — groep ({GROUP_MATCH_TOTAL} wedstrijden), knock-out ({KNOCKOUT_TOTAL} landen) en bonus ({BONUS_TOTAL} vragen).
+          Minst-ingevuld eerst (max 50). “Poules” = aantal subpoules waar de speler in zit.
+        </p>
+        <div className="mt-3 overflow-x-auto">
+          <table className="admin-completion-table w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                <th className="py-1 pr-2">Speler</th>
+                <th className="px-2">Totaal</th>
+                <th className="px-2">Groep</th>
+                <th className="px-2">Knock-out</th>
+                <th className="px-2">Bonus</th>
+                <th className="px-2 text-right">Poules</th>
+              </tr>
+            </thead>
+            <tbody>
+              {completionRows.length ? (
+                completionRows.map((row) => (
+                  <tr key={row.userId} className="border-t border-slate-100">
+                    <td className="py-1.5 pr-2">
+                      <span className="font-bold text-[var(--ink)]">{row.nickname ?? "(geen naam)"}</span>
+                      {row.teamName ? <span className="ml-2 text-xs text-[var(--text-muted)]">{row.teamName}</span> : null}
+                    </td>
+                    <td className="px-2"><CompletionPct value={row.completion.overallPct} strong /></td>
+                    <td className="px-2"><CompletionPct value={row.completion.groupPct} /></td>
+                    <td className="px-2"><CompletionPct value={row.completion.knockoutPct} /></td>
+                    <td className="px-2"><CompletionPct value={row.completion.bonusPct} /></td>
+                    <td className="px-2 text-right font-bold tabular-nums text-[var(--ink)]">{row.poolCount}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="py-2 font-medium text-[var(--text-muted)]">Nog geen spelers.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="mt-4 panel p-4">
+        <div className="flex items-center gap-2">
           <Megaphone aria-hidden="true" className="size-5 text-[var(--accent-blue)]" />
           <h2 className="text-lg font-bold text-[var(--ink)]">Mededelingen op de site</h2>
         </div>
@@ -283,6 +331,18 @@ function toAmsterdamLocalInput(iso: string | null): string {
   })
     .format(new Date(iso))
     .replace(" ", "T");
+}
+
+function CompletionPct({ value, strong = false }: { value: number; strong?: boolean }) {
+  const tone = value >= 100 ? "bg-[#25a84a]" : value >= 50 ? "bg-[#f59e0b]" : "bg-[#cbd5e1]";
+  return (
+    <div className="flex items-center gap-2">
+      <div className="h-1.5 w-16 overflow-hidden rounded-full bg-slate-200">
+        <div className={`h-full rounded-full ${tone}`} style={{ width: `${Math.min(value, 100)}%` }} />
+      </div>
+      <span className={`tabular-nums ${strong ? "font-bold text-[var(--ink)]" : "text-[var(--text-muted)]"}`}>{value}%</span>
+    </div>
+  );
 }
 
 function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | number }) {

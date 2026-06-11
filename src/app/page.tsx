@@ -20,6 +20,7 @@ import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
 import { localizedHref, type Locale } from "@/lib/i18n";
 import { POOL_NAME_MAX_LENGTH, POOL_NAME_MIN_LENGTH } from "@/lib/limits";
+import { BONUS_FIELD_KEYS, KNOCKOUT_TARGETS } from "@/lib/prediction-progress";
 import { compareScoresAlphabetical, withPublicRankScores, worldRankForUser, type RankedScore } from "@/lib/ranking";
 import { activeSiteMessage, fetchSiteMessage } from "@/lib/site-messages";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
@@ -55,23 +56,6 @@ type HomeSpecialPrediction = {
   penalty_shootouts_ko: number | null;
   finalists: string[] | null;
 };
-
-const KNOCKOUT_TARGETS = {
-  round16: 16,
-  quarterfinal: 8,
-  semifinal: 4,
-  finalists: 2,
-  champion: 1,
-} as const;
-
-const BONUS_FIELD_KEYS = [
-  "team_most_goals_code",
-  "total_goals",
-  "total_red_cards",
-  "fastest_goal_minute",
-  "oranje_stage",
-  "penalty_shootouts_ko",
-] as const;
 
 const KNOCKOUT_TOTAL = Object.values(KNOCKOUT_TARGETS).reduce((sum, value) => sum + value, 0);
 const EXTRA_PROGRESS_TOTAL = KNOCKOUT_TOTAL + BONUS_FIELD_KEYS.length;
