@@ -197,3 +197,9 @@ test("match detail has a subtle share row (specific match url, 'Volg nu live') a
   assert.match(matchPage, /<ul className="grid gap-1\.5">/);
   assert.match(matchPage, /grid-cols-\[2\.3rem_1\.6rem_minmax\(0,1fr\)\] items-start gap-x-2 text-xs/);
 });
+
+test("hero share icons are outline-style on dark (no white fill, 50% border, white glyphs)", async () => {
+  const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
+  assert.match(globalsCss, /\.share-row-on-dark \.share-link \{\n  border: 1px solid rgba\(255, 255, 255, 0\.5\);\n  background: transparent;/);
+  assert.match(globalsCss, /\/\* Witte icoontjes op de donkere hero[\s\S]*?\.share-row-on-dark \.share-link \{\n  color: #ffffff;/);
+});

@@ -4322,15 +4322,17 @@ textarea {
   padding: 0;
 }
 
+/* Op de donkere hero: geen dikke witte vulling, maar een dunne 50%-transparante
+   rand met witte icoontjes (leesbaarder op de foto/gradient dan merkkleuren). */
 .share-row-on-dark .share-link {
-  border-color: rgba(255, 255, 255, 0.7);
-  background: #ffffff;
-  box-shadow: 0 8px 18px rgba(7, 18, 46, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: transparent;
+  box-shadow: none;
 }
 
 .share-row-on-dark .share-link:hover {
-  background: #ffffff;
-  border-color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
 .share-link:hover {
@@ -4367,6 +4369,11 @@ textarea {
 .share-link-instagram,
 .share-row-on-dark .share-link-instagram {
   color: #c13584;
+}
+
+/* Witte icoontjes op de donkere hero (overrulet de merkkleuren hierboven). */
+.share-row-on-dark .share-link {
+  color: #ffffff;
 }
 
 .slime-banner {
