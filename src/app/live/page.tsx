@@ -1,10 +1,13 @@
 import { ArrowRight, CalendarDays, ListOrdered } from "lucide-react";
 import { LiveAutoRefresh } from "@/components/live-auto-refresh";
 import { ShareRow } from "@/components/share-button";
+import { SiteMessageBanner } from "@/components/site-message-banner";
 import { TeamFlag } from "@/components/team-flag";
 import { getWcFixtures, isLiveStatus, splitFixtures, type LiveFixture, type LiveTeam } from "@/lib/apifootball-live";
 import { LIVE_URL } from "@/lib/constants";
 import { getServerLocale } from "@/lib/server-locale";
+import { activeSiteMessage, fetchSiteMessage } from "@/lib/site-messages";
+import { createClient } from "@/lib/supabase/server";
 import type { Locale } from "@/lib/i18n";
 
 export const revalidate = 15;
@@ -205,12 +208,15 @@ export default async function LivePage({ searchParams }: { searchParams: Promise
   const locale = await getServerLocale();
   const params = await searchParams;
   const c = copy[locale];
-  const all = await getWcFixtures();
+  const supabase = await createClient();
+  const [all, messageRow] = await Promise.all([getWcFixtures(), fetchSiteMessage(supabase, "live")]);
+  const siteMessage = activeSiteMessage(messageRow, locale);
 
   if (!all) {
     return (
       <div className="grid gap-4">
         <Hero locale={locale} />
+        <SiteMessageBanner body={siteMessage} />
         <div className="rounded-lg border border-sky-200 bg-sky-50 p-4 text-sm font-bold leading-6 text-[#114b82]">{c.soon}</div>
       </div>
     );
@@ -225,6 +231,7 @@ export default async function LivePage({ searchParams }: { searchParams: Promise
     <div className="grid gap-4">
       <LiveAutoRefresh seconds={15} />
       <Hero locale={locale} />
+      <SiteMessageBanner body={siteMessage} />
       <div className="live-sections-grid">
         <Section title={c.now} tone="live" fixtures={live} empty={c.emptyNow} locale={locale} />
         <Section title={c.latest} tone="latest" fixtures={recent} empty={c.emptyLatest} locale={locale} action={{ href: "/live/schema", label: c.moreMatches, icon: "arrow" }} />

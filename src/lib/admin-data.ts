@@ -1,6 +1,7 @@
 import "server-only";
 
 import { requireAdmin } from "@/lib/admin-guard";
+import { predictionCompletion, type PredictionCompletion } from "@/lib/prediction-progress";
 import type { SiteMessageRow } from "@/lib/site-messages";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -27,6 +28,22 @@ type AuditRow = { id: number; actor_email: string | null; action: string; detail
 type KidRow = { user_id: string; code: string; nickname: string | null; created_at: string };
 type ProfileRow = { id: string; nickname: string | null; team_name: string | null; created_at: string };
 type PoolRow = { id: string; name: string; created_at: string; pool_members: { count: number }[] };
+type CompletionRow = {
+  user_id: string;
+  nickname: string | null;
+  team_name: string | null;
+  group_filled: number;
+  knockout_filled: number;
+  bonus_filled: number;
+  pool_count: number;
+};
+export type CompletionEntry = {
+  userId: string;
+  nickname: string | null;
+  teamName: string | null;
+  poolCount: number;
+  completion: PredictionCompletion;
+};
 
 export async function getAdminDashboard() {
   await requireAdmin();
@@ -47,6 +64,7 @@ export async function getAdminDashboard() {
     { data: recentProfiles },
     { data: recentPools },
     { data: siteMessages },
+    { data: completion },
   ] = await Promise.all([
     admin.from("profiles").select("id", { count: "exact", head: true }),
     admin.from("predictions").select("user_id", { count: "exact", head: true }),
@@ -71,7 +89,27 @@ export async function getAdminDashboard() {
     // full-table-fetch: die zou stil afkappen op de PostgREST max-rows-cap.
     admin.from("pools").select("id,name,created_at,pool_members(count)").order("created_at", { ascending: false }).limit(20),
     admin.from("site_messages").select("placement,body_nl,body_en,show_from,show_until").order("placement"),
+    // Per-speler invulvoortgang (server-side aggregate-view): minst-ingevuld eerst,
+    // zodat je snel ziet wie nog moet aanvullen. Cap op 50 voor een overzichtelijk paneel.
+    admin
+      .from("prediction_completion")
+      .select("user_id,nickname,team_name,group_filled,knockout_filled,bonus_filled,pool_count")
+      .order("group_filled", { ascending: true })
+      .order("knockout_filled", { ascending: true })
+      .limit(50),
   ]);
+
+  const completionRows = ((completion ?? []) as unknown as CompletionRow[]).map((row) => ({
+    userId: row.user_id,
+    nickname: row.nickname,
+    teamName: row.team_name,
+    poolCount: row.pool_count,
+    completion: predictionCompletion({
+      groupFilled: row.group_filled,
+      knockoutFilled: row.knockout_filled,
+      bonusFilled: row.bonus_filled,
+    }),
+  })) satisfies CompletionEntry[];
 
   const poolRows = ((recentPools ?? []) as unknown as PoolRow[]).map((pool) => ({
     id: pool.id,
@@ -103,5 +141,6 @@ export async function getAdminDashboard() {
     profileRows: (recentProfiles ?? []) as unknown as ProfileRow[],
     poolRows,
     siteMessageRows: (siteMessages ?? []) as unknown as SiteMessageRow[],
+    completionRows,
   };
 }

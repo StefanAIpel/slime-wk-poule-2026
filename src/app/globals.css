@@ -5881,6 +5881,16 @@ textarea {
   transform: scale(0.92);
 }
 
+/* Admin: invulvoortgang-tabel per speler. */
+.admin-completion-table th,
+.admin-completion-table td {
+  white-space: nowrap;
+}
+
+.admin-completion-table td:first-child {
+  white-space: normal;
+}
+
 /* Admin-mededeling bovenaan home/voorspellen (zie /admin → Mededelingen). */
 .site-message-banner {
   display: flex;

@@ -320,7 +320,7 @@ export async function adminSetSiteMessage(formData: FormData) {
   const admin = createAdminClient();
   if (!(await rateLimit(admin, `admin_sitemsg:${user.id}`, 30, 60))) redirect("/admin?fout=te-snel");
   const placement = String(formData.get("placement") ?? "");
-  if (placement !== "home" && placement !== "voorspellingen") redirect("/admin?fout=mededeling");
+  if (placement !== "home" && placement !== "voorspellingen" && placement !== "live") redirect("/admin?fout=mededeling");
   const bodyNl = cleanText(formData.get("body_nl"), 300);
   const bodyEn = cleanText(formData.get("body_en"), 300);
   const showFrom = parseAmsterdamLocal(formData.get("show_from"));
@@ -350,6 +350,7 @@ export async function adminSetSiteMessage(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/en");
   revalidatePath("/voorspellingen");
+  revalidatePath("/live");
   redirect("/admin?ok=1");
 }
 

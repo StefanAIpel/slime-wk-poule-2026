@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Locale } from "@/lib/i18n";
 
-export type SiteMessagePlacement = "home" | "voorspellingen";
+export type SiteMessagePlacement = "home" | "voorspellingen" | "live";
 
 export type SiteMessageRow = {
   placement: SiteMessagePlacement;
