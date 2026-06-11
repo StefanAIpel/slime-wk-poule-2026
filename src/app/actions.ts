@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-guard";
 import { isAvatarKey } from "@/lib/avatars";
-import { ENTRY_DEADLINE, ENTRY_GRACE_DEADLINE, POST_GROUP_DEADLINE, POST_GROUP_WINDOW_START, isMatchLocked } from "@/lib/constants";
+import { ENTRY_GRACE_DEADLINE, isMatchLocked } from "@/lib/constants";
 import { clampInt } from "@/lib/format";
 import { calculateRound32, type ScoreLookup } from "@/lib/group-standings";
 import { LOCALE_COOKIE, isSupportedLocale, localizedHref, type Locale } from "@/lib/i18n";
@@ -631,11 +631,9 @@ export async function setMemberRole(formData: FormData) {
 export async function savePredictions(formData: FormData) {
   const { supabase, user } = await requireUser();
   const now = new Date();
-  const canEditPreKickoffBonus = now < ENTRY_DEADLINE;
   const canEditMain = now < ENTRY_GRACE_DEADLINE;
-  // Wereldkampioen, finalisten, penaltyseries en "hoe ver komt Oranje" blijven
-  // wijzigbaar t/m 28 juni 21:00 (niet pas óp 28 juni).
-  const canEditLate = now < POST_GROUP_DEADLINE;
+  const canEditBonus = now < ENTRY_GRACE_DEADLINE;
+  const canEditLate = now < ENTRY_GRACE_DEADLINE;
 
   const { data: matches, error: matchError } = await supabase
     .from("matches")
@@ -717,8 +715,8 @@ export async function savePredictions(formData: FormData) {
     // zodat ze niet worden overschreven.
     const special: Record<string, unknown> = { user_id: user.id };
 
-    if (canEditPreKickoffBonus) {
-      // Vooraf vast te leggen bonusvragen (sluiten bij de aftrap).
+    if (canEditBonus) {
+      // Bonusvragen blijven wijzigbaar tot de Oranje-respijtdeadline.
       special.total_goals = optionalInt(formData.get("total_goals"), 100, 400);
       special.total_red_cards = optionalInt(formData.get("total_red_cards"), 0, 50);
       special.fastest_goal_minute = optionalInt(formData.get("fastest_goal_minute"), 1, 120);
@@ -728,7 +726,7 @@ export async function savePredictions(formData: FormData) {
     let champion: string | null = null;
     let finalists: string[] = [];
     if (canEditLate) {
-      // Wijzigbaar t/m 28 juni 21:00.
+      // Wijzigbaar t/m zondag 14 juni 21:00.
       champion = cleanText(formData.get("champion_code"), 3).toUpperCase() || null;
       finalists = Array.from(new Set(formData.getAll("finalists").map(String).filter(Boolean))).slice(0, 2);
       special.champion_code = champion;
@@ -737,7 +735,6 @@ export async function savePredictions(formData: FormData) {
       special.own_goals_ko = null;
       special.cards_ko_team_code = cleanText(formData.get("cards_ko_team_code"), 3).toUpperCase() || null;
       special.oranje_stage = cleanText(formData.get("oranje_stage"), 16) || null;
-      special.post_group_updated_at = now >= POST_GROUP_WINDOW_START ? new Date().toISOString() : null;
     }
 
     const { error } = await supabase.from("special_predictions").upsert(special);
@@ -847,9 +844,9 @@ export async function autosavePrediction(input: {
 export async function autosaveExtras(formData: FormData): Promise<{ ok: true } | { ok: false; error: string }> {
   const { supabase, user } = await requireUser();
   const now = new Date();
-  const canEditPreKickoffBonus = now < ENTRY_DEADLINE;
   const canEditMain = now < ENTRY_GRACE_DEADLINE;
-  const canEditLate = now < POST_GROUP_DEADLINE;
+  const canEditBonus = now < ENTRY_GRACE_DEADLINE;
+  const canEditLate = now < ENTRY_GRACE_DEADLINE;
 
   try {
     if (canEditMain) {
@@ -874,7 +871,7 @@ export async function autosaveExtras(formData: FormData): Promise<{ ok: true } |
     if (canEditMain || canEditLate) {
       const special: Record<string, unknown> = { user_id: user.id };
 
-      if (canEditPreKickoffBonus) {
+      if (canEditBonus) {
         special.total_goals = optionalInt(formData.get("total_goals"), 100, 400);
         special.total_red_cards = optionalInt(formData.get("total_red_cards"), 0, 50);
         special.fastest_goal_minute = optionalInt(formData.get("fastest_goal_minute"), 1, 120);
@@ -892,7 +889,6 @@ export async function autosaveExtras(formData: FormData): Promise<{ ok: true } |
         special.own_goals_ko = null;
         special.cards_ko_team_code = cleanText(formData.get("cards_ko_team_code"), 3).toUpperCase() || null;
         special.oranje_stage = cleanText(formData.get("oranje_stage"), 16) || null;
-        special.post_group_updated_at = now >= POST_GROUP_WINDOW_START ? new Date().toISOString() : null;
       }
 
       const { error } = await supabase.from("special_predictions").upsert(special);

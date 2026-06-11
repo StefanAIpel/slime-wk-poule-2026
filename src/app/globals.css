@@ -253,6 +253,11 @@ textarea {
   margin-top: 0;
 }
 
+.dashboard-grace-highlight {
+  color: #f26a1b;
+  font-weight: 900;
+}
+
 .dashboard-hero-avatar-link {
   flex: 0 0 auto;
   align-items: center;
@@ -1479,6 +1484,11 @@ textarea {
   font-size: 0.88rem;
   font-weight: 550;
   line-height: 1.45;
+}
+
+.prediction-title-banner .prediction-grace-notice {
+  color: #f26a1b;
+  font-weight: 900;
 }
 
 .prediction-helper-panel {
