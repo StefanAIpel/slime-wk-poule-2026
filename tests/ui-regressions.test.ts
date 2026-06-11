@@ -186,7 +186,7 @@ test("special bonus facts do not score before the champion is known", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.65"/);
+  assert.match(constants, /APP_VERSION = "0.66"/);
 });
 
 

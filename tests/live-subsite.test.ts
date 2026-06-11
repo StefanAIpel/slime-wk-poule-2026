@@ -63,6 +63,22 @@ test("match cards show a tappable cta so users find line-ups/details", () => {
   assert.match(livePage, /\{copy\[locale\]\.cardCta\}/);
 });
 
+test("matches promote to 'Nu bezig' (large + soon badge) 30 min before kick-off", async () => {
+  const apifootballLive = await readFile(new URL("../src/lib/apifootball-live.ts", import.meta.url), "utf8");
+  const matchPage = await readFile(new URL("../src/app/live/match/[id]/page.tsx", import.meta.url), "utf8");
+  // splitFixtures promotes starting-soon matches into the live bucket and drops them from upcoming.
+  assert.match(apifootballLive, /isStartingSoon/);
+  assert.match(apifootballLive, /LIVE_STATUSES\.has\(f\.statusShort\) \|\| isStartingSoon\(f, now\)/);
+  assert.match(apifootballLive, /statusShort === "NS" && !isStartingSoon\(f, now\)/);
+  // Featured (large) card already used for the live section, plus a 'soon' badge.
+  assert.match(livePage, /featured=\{isLive\}/);
+  assert.match(livePage, /is-soon/);
+  assert.match(livePage, /startingSoon: "Begint zo"/);
+  // The match detail page auto-refreshes while live or starting soon (stats/line-ups).
+  assert.match(matchPage, /LiveAutoRefresh/);
+  assert.match(matchPage, /isLiveStatus\(fixture\.statusShort\) \|\| isStartingSoon\(fixture\)/);
+});
+
 test("live page links compact result blocks to more matches and full upcoming mode", () => {
   assert.match(livePage, /view\?: string/);
   assert.match(livePage, /showAllUpcoming/);

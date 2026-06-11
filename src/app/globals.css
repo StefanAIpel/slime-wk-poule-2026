@@ -3640,6 +3640,23 @@ textarea {
   font-weight: 900;
 }
 
+/* Wedstrijd binnen 30 min vóór aftrap: gepromoveerd naar "Nu bezig". */
+.live-match-when.is-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #b45309;
+  font-weight: 900;
+}
+
+.live-match-when.is-soon::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f59e0b;
+}
+
 /* Kolommen uitgelijnd zoals slimescore.com: thuis (links) | - | uit | uitslag. */
 .live-match-body {
   display: grid;

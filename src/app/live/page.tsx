@@ -3,7 +3,7 @@ import { LiveAutoRefresh } from "@/components/live-auto-refresh";
 import { ShareRow } from "@/components/share-button";
 import { SiteMessageBanner } from "@/components/site-message-banner";
 import { TeamFlag } from "@/components/team-flag";
-import { getWcFixtures, isLiveStatus, splitFixtures, type LiveFixture, type LiveTeam } from "@/lib/apifootball-live";
+import { getWcFixtures, isLiveStatus, isStartingSoon, splitFixtures, type LiveFixture, type LiveTeam } from "@/lib/apifootball-live";
 import { LIVE_URL } from "@/lib/constants";
 import { getServerLocale } from "@/lib/server-locale";
 import { activeSiteMessage, fetchSiteMessage } from "@/lib/site-messages";
@@ -34,6 +34,7 @@ const copy = {
     rest: "Rust",
     live: "Live",
     finished: "Afgelopen",
+    startingSoon: "Begint zo",
     cardCta: "Opstellingen & details",
     soon: "Zodra het toernooi begint zie je hier de lopende wedstrijd, de laatste uitslagen en het volledige schema — alles op één plek.",
   },
@@ -58,6 +59,7 @@ const copy = {
     rest: "HT",
     live: "Live",
     finished: "Finished",
+    startingSoon: "Starts soon",
     cardCta: "Line-ups & details",
     soon: "Once the tournament kicks off you'll find the live match, the latest results and the full schedule here — all in one place.",
   },
@@ -94,9 +96,10 @@ function roundLabel(fixture: LiveFixture, locale: Locale) {
 
 function statusWhen(fixture: LiveFixture, locale: Locale) {
   const c = copy[locale];
-  if (isLiveStatus(fixture.statusShort)) return { text: fixture.statusShort === "HT" ? c.rest : fixture.elapsed !== null ? `${fixture.elapsed}'` : c.live, live: true };
-  if (["FT", "AET", "PEN"].includes(fixture.statusShort)) return { text: fixture.statusShort === "FT" ? c.finished : fixture.statusShort, live: false };
-  return { text: whenLabel(fixture.date, locale), live: false };
+  if (isLiveStatus(fixture.statusShort)) return { text: fixture.statusShort === "HT" ? c.rest : fixture.elapsed !== null ? `${fixture.elapsed}'` : c.live, live: true, soon: false };
+  if (["FT", "AET", "PEN"].includes(fixture.statusShort)) return { text: fixture.statusShort === "FT" ? c.finished : fixture.statusShort, live: false, soon: false };
+  if (isStartingSoon(fixture)) return { text: c.startingSoon, live: false, soon: true };
+  return { text: whenLabel(fixture.date, locale), live: false, soon: false };
 }
 
 function TeamInline({ team, locale }: { team: LiveTeam; locale: Locale }) {
@@ -117,7 +120,7 @@ function MatchCard({ fixture, locale, featured = false }: { fixture: LiveFixture
     <a href={`/live/match/${fixture.id}`} className={featured ? "live-match-card live-match-card-featured" : "live-match-card"}>
       <div className="live-match-meta">
         <span className="live-match-round">{meta}</span>
-        <span className={when.live ? "live-match-when is-live" : "live-match-when"}>{when.text}</span>
+        <span className={when.live ? "live-match-when is-live" : when.soon ? "live-match-when is-soon" : "live-match-when"}>{when.text}</span>
       </div>
       <div className="live-match-body">
         <TeamInline team={fixture.home} locale={locale} />
@@ -229,7 +232,7 @@ export default async function LivePage({ searchParams }: { searchParams: Promise
   }
 
   const { live, recent, upcoming } = splitFixtures(all);
-  const allUpcoming = all.filter((f) => !f.friendly && f.statusShort === "NS").sort((a, b) => a.date.localeCompare(b.date));
+  const allUpcoming = all.filter((f) => !f.friendly && f.statusShort === "NS" && !isStartingSoon(f)).sort((a, b) => a.date.localeCompare(b.date));
   const showAllUpcoming = params.view === "upcoming";
   const upcomingFixtures = showAllUpcoming ? allUpcoming : upcoming;
 

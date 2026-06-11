@@ -4,6 +4,7 @@
 // aantal bezoekers — binnen de Pro-limiet blijven. Ontbreekt de key, dan geeft alles
 // netjes null terug en toont de UI een nette placeholder.
 
+import { isKickoffSoon } from "@/lib/live-window";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
 const BASE = "https://v3.football.api-sports.io";
@@ -137,13 +138,24 @@ export async function getWcFixtures(): Promise<LiveFixture[] | null> {
   return [...raw.map((item) => normalize(item, teamMap)), ...extra];
 }
 
-export function splitFixtures(all: LiveFixture[]) {
+/**
+ * Staat de aftrap binnen 30 minuten (of is die net geweest terwijl de API nog op
+ * "niet begonnen" staat)? Dan tonen we de wedstrijd groot in "Nu bezig" met
+ * auto-verversing, zodat opstellingen en statistieken meteen in beeld komen.
+ */
+export function isStartingSoon(fixture: LiveFixture, now: number = Date.now()): boolean {
+  return isKickoffSoon(fixture.statusShort, fixture.date, now);
+}
+
+export function splitFixtures(all: LiveFixture[], now: number = Date.now()) {
   const byDateAsc = (a: LiveFixture, b: LiveFixture) => a.date.localeCompare(b.date);
   const byDateDesc = (a: LiveFixture, b: LiveFixture) => b.date.localeCompare(a.date);
+  const isNow = (f: LiveFixture) => LIVE_STATUSES.has(f.statusShort) || isStartingSoon(f, now);
   return {
-    live: all.filter((f) => LIVE_STATUSES.has(f.statusShort)).sort(byDateAsc),
+    live: all.filter(isNow).sort(byDateAsc),
     recent: all.filter((f) => FINISHED_STATUSES.has(f.statusShort)).sort(byDateDesc).slice(0, 3),
-    upcoming: all.filter((f) => f.statusShort === "NS").sort(byDateAsc).slice(0, 8),
+    // Aankomend = geplande wedstrijden die nog níet zijn gepromoveerd naar "Nu bezig".
+    upcoming: all.filter((f) => f.statusShort === "NS" && !isStartingSoon(f, now)).sort(byDateAsc).slice(0, 8),
   };
 }
 
