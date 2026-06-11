@@ -16,3 +16,18 @@ export function isKickoffSoon(statusShort: string, dateIso: string, now: number 
   const diff = new Date(dateIso).getTime() - now;
   return diff <= KICKOFF_SOON_MS && diff >= -KICKOFF_GRACE_MS;
 }
+
+/**
+ * Net afgelopen: blijft nog ±30 min in "Nu bezig" staan voordat hij naar
+ * "Laatste uitslagen" verhuist. De eindtijd schatten we vanaf de aftrap:
+ * een wedstrijd duurt ±2 uur, dus tot 2,5 uur na de aftrap geldt "net klaar".
+ */
+export const FINISHED_LINGER_MS = 150 * 60 * 1000;
+
+const FINISHED_SHORTS = new Set(["FT", "AET", "PEN"]);
+
+export function isJustFinished(statusShort: string, dateIso: string, now: number = Date.now()): boolean {
+  if (!FINISHED_SHORTS.has(statusShort)) return false;
+  const sinceKickoff = now - new Date(dateIso).getTime();
+  return sinceKickoff >= 0 && sinceKickoff <= FINISHED_LINGER_MS;
+}

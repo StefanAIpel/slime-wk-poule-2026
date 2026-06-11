@@ -60,7 +60,29 @@ test("match cards show a tappable cta so users find line-ups/details", () => {
   assert.match(livePage, /live-match-cta/);
   assert.match(livePage, /cardCta: "Opstellingen & details"/);
   assert.match(livePage, /cardCta: "Line-ups & details"/);
-  assert.match(livePage, /\{copy\[locale\]\.cardCta\}/);
+  assert.match(livePage, /copy\[locale\]\.cardCta\}/);
+  // Grote "Nu bezig"-kaart: knop-stijl CTA die uitnodigt om de stats te openen.
+  assert.match(livePage, /live-match-cta-strong/);
+  assert.match(livePage, /cardCtaLive: "Bekijk statistieken, opstellingen & verloop"/);
+  assert.match(livePage, /cardCtaLive: "View stats, line-ups & timeline"/);
+});
+
+test("live cards: blinking badge, scorers under the score, just-finished linger", async () => {
+  const apifootballLive = await readFile(new URL("../src/lib/apifootball-live.ts", import.meta.url), "utf8");
+  const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
+  // Live badge zegt LIVE + minuut en knippert (met reduced-motion uitzondering).
+  assert.match(livePage, /`LIVE · \$\{fixture\.elapsed\}'`/);
+  assert.match(globalsCss, /\.live-match-when\.is-live::before \{[\s\S]*?animation: live-blink/);
+  assert.match(globalsCss, /@keyframes live-blink/);
+  assert.match(globalsCss, /prefers-reduced-motion: reduce[\s\S]*?\.live-match-when\.is-live::before \{\n    animation: none;/);
+  // Doelpuntenmakers (thuis links, uit rechts) op de featured kaart.
+  assert.match(livePage, /goalLines\(await getEvents\(f\.id\)\)/);
+  assert.match(livePage, /live-match-scorers/);
+  // Net afgelopen blijft ±30 min in "Nu bezig" en pas daarna naar "Laatste uitslagen".
+  assert.match(apifootballLive, /isJustFinished\(f, now\)/);
+  assert.match(apifootballLive, /FINISHED_STATUSES\.has\(f\.statusShort\) && !isJustFinished\(f, now\)/);
+  // Featured kaart: 3-letter code op mobiel, volle naam vanaf tablet.
+  assert.match(globalsCss, /\.live-match-card-featured \.live-row-code \{\n  display: inline;/);
 });
 
 test("matches promote to 'Nu bezig' (large + soon badge) 30 min before kick-off", async () => {

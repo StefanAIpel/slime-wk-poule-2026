@@ -4,7 +4,7 @@
 // aantal bezoekers — binnen de Pro-limiet blijven. Ontbreekt de key, dan geeft alles
 // netjes null terug en toont de UI een nette placeholder.
 
-import { isKickoffSoon } from "@/lib/live-window";
+import { isJustFinished as isJustFinishedWindow, isKickoffSoon } from "@/lib/live-window";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
 const BASE = "https://v3.football.api-sports.io";
@@ -147,13 +147,19 @@ export function isStartingSoon(fixture: LiveFixture, now: number = Date.now()): 
   return isKickoffSoon(fixture.statusShort, fixture.date, now);
 }
 
+/** Net afgelopen (±30 min na het eindsignaal): blijft groot in "Nu bezig" staan. */
+export function isJustFinished(fixture: LiveFixture, now: number = Date.now()): boolean {
+  return isJustFinishedWindow(fixture.statusShort, fixture.date, now);
+}
+
 export function splitFixtures(all: LiveFixture[], now: number = Date.now()) {
   const byDateAsc = (a: LiveFixture, b: LiveFixture) => a.date.localeCompare(b.date);
   const byDateDesc = (a: LiveFixture, b: LiveFixture) => b.date.localeCompare(a.date);
-  const isNow = (f: LiveFixture) => LIVE_STATUSES.has(f.statusShort) || isStartingSoon(f, now);
+  const isNow = (f: LiveFixture) => LIVE_STATUSES.has(f.statusShort) || isStartingSoon(f, now) || isJustFinished(f, now);
   return {
     live: all.filter(isNow).sort(byDateAsc),
-    recent: all.filter((f) => FINISHED_STATUSES.has(f.statusShort)).sort(byDateDesc).slice(0, 3),
+    // Laatste uitslagen = afgelopen wedstrijden die niet meer in "Nu bezig" hangen.
+    recent: all.filter((f) => FINISHED_STATUSES.has(f.statusShort) && !isJustFinished(f, now)).sort(byDateDesc).slice(0, 3),
     // Aankomend = geplande wedstrijden die nog níet zijn gepromoveerd naar "Nu bezig".
     upcoming: all.filter((f) => f.statusShort === "NS" && !isStartingSoon(f, now)).sort(byDateAsc).slice(0, 8),
   };
@@ -207,9 +213,9 @@ export type TeamPlayers = {
   players: PlayerLine[];
 };
 
-/** Alleen de events van één wedstrijd (voor de facts-automatisering). */
+/** Alleen de events van één wedstrijd (facts-automatisering + doelpuntenmakers op de live-kaart). */
 export async function getEvents(id: number): Promise<MatchEvent[] | null> {
-  return apiGet<MatchEvent>(`fixtures/events?fixture=${id}`, 300);
+  return apiGet<MatchEvent>(`fixtures/events?fixture=${id}`, 60);
 }
 
 export async function getFixtureDetail(id: number) {
