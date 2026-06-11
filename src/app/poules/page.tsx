@@ -38,6 +38,22 @@ function poolBannerUrl(poolId: string, bannerPath?: string | null, version?: str
   return version ? `${url}?v=${encodeURIComponent(version)}` : url;
 }
 
+/**
+ * Haalt alle rijen op in pagina's van 1000, zodat de PostgREST max-rows-cap niet
+ * stilletjes rijen afkapt (bijv. voorspellingen van sommige poule-leden).
+ */
+async function fetchAllRows<T>(page: (from: number, to: number) => PromiseLike<{ data: T[] | null }>): Promise<T[]> {
+  const pageSize = 1000;
+  const rows: T[] = [];
+  for (let from = 0; ; from += pageSize) {
+    const { data } = await page(from, from + pageSize - 1);
+    if (!data?.length) break;
+    rows.push(...data);
+    if (data.length < pageSize) break;
+  }
+  return rows;
+}
+
 const poolCopy = {
   nl: {
     metaTitle: "Mijn WK-poules",
@@ -260,13 +276,24 @@ export default async function PoolsPage({
   const worldRankByUser = new Map<string, number>();
 
   if (memberIds.length) {
-    const [{ data: matchRows }, { data: predictionRows }, { data: scoreRows }] = await Promise.all([
+    const [{ data: matchRows }, { data: scoreRows }, predictionRows] = await Promise.all([
       admin
         .from("matches")
         .select("id,starts_at,status,home_code,away_code,home_score,away_score,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)")
         .order("starts_at"),
-      admin.from("predictions").select("user_id,match_id,home_score,away_score").in("user_id", memberIds),
       admin.from("scores").select("user_id,points,profiles(nickname,team_name)"),
+      // Gepagineerd: bij genoeg poule-leden overschrijden de voorspellingen (tot
+      // 72 per speler) de PostgREST max-rows-cap (1000). Zónder paginering zou je
+      // dan niet van iedereen de voorspellingen zien.
+      fetchAllRows<PredictionRow>((from, to) =>
+        admin
+          .from("predictions")
+          .select("user_id,match_id,home_score,away_score")
+          .in("user_id", memberIds)
+          .order("user_id")
+          .order("match_id")
+          .range(from, to),
+      ),
     ]);
 
     const realScores = (scoreRows ?? []) as Array<{ user_id: string; points: number }>;

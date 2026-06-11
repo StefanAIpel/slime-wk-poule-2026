@@ -1385,3 +1385,11 @@ test("pool quick-share icons use a thin 70%-transparent white rim, not a solid w
   assert.match(block, /background: rgba\(255, 255, 255, 0\.3\);/);
   assert.doesNotMatch(block, /rgba\(248, 251, 255, 0\.98\)/);
 });
+
+test("pool predictions are fetched paginated so the PostgREST cap can't hide members", () => {
+  assert.match(poulesPage, /async function fetchAllRows</);
+  assert.match(poulesPage, /fetchAllRows<PredictionRow>\(\(from, to\) =>/);
+  assert.match(poulesPage, /\.range\(from, to\)/);
+  // De voorspellingen-fetch mag niet terug naar één ongepagineerde query.
+  assert.doesNotMatch(poulesPage, /admin\.from\("predictions"\)\.select\("user_id,match_id,home_score,away_score"\)\.in\("user_id", memberIds\),/);
+});
