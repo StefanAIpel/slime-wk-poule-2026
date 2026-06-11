@@ -37,7 +37,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const revalidate = 30;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type GlobalScoreRow = {
   user_id: string;
