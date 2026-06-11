@@ -35,7 +35,7 @@ export const MAIL_FROM = "noreply@slimesports.com";
 /** Contactadres voor vragen, privacy en account-verzoeken. */
 export const CONTACT_EMAIL = "contact@slimescore.com";
 /** Bèta-versie, handmatig ophogen bij releases. */
-export const APP_VERSION = "0.58";
+export const APP_VERSION = "0.59";
 /** Maker. */
 export const COMPANY_NAME = "Feliro";
 export const COMPANY_URL = "https://feliro.nl";

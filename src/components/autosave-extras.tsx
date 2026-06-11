@@ -21,19 +21,39 @@ export function AutosaveExtras({ locale = "nl", children }: { locale?: Locale; c
   const text = copy[locale];
   const [status, setStatus] = useState<Status>("idle");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Volgnummer zodat een verouderde (door een nieuwere wijziging ingehaalde) opslag
+  // de status niet meer overschrijft.
+  const seq = useRef(0);
+
+  async function save(form: HTMLFormElement) {
+    const id = ++seq.current;
+    setStatus("saving");
+    // Twee pogingen met een korte pauze: vangt een transiënte hapering op (bv. een
+    // net-vervangen bundel/serviceworker vlak na een deploy) zodat de melding niet
+    // ten onrechte "niet opgeslagen" toont terwijl de data wél landt.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const result = await autosaveExtras(new FormData(form));
+        if (id !== seq.current) return;
+        if (result.ok) {
+          setStatus("saved");
+          return;
+        }
+      } catch {
+        // val door naar een nieuwe poging
+      }
+      if (id !== seq.current) return;
+      if (attempt === 0) await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    if (id === seq.current) setStatus("error");
+  }
 
   function handleChange(event: React.ChangeEvent<HTMLElement>) {
     const form = (event.target as HTMLInputElement | HTMLSelectElement).form;
     if (!form) return;
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(async () => {
-      setStatus("saving");
-      try {
-        const result = await autosaveExtras(new FormData(form));
-        setStatus(result.ok ? "saved" : "error");
-      } catch {
-        setStatus("error");
-      }
+    timer.current = setTimeout(() => {
+      void save(form);
     }, 800);
   }
 

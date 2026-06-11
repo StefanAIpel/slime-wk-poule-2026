@@ -180,7 +180,7 @@ test("logged-in status header uses the user's avatar instead of the trophy icon"
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.58"/);
+  assert.match(constants, /APP_VERSION = "0.59"/);
 });
 
 

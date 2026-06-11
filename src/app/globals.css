@@ -43,7 +43,11 @@ html {
 body {
   min-height: 100dvh;
   margin: 0;
+  /* 'clip' i.p.v. 'hidden': voorkomt horizontaal scrollen zónder een scroll-context
+     te maken, zodat position:sticky-elementen (o.a. de FIFA-hulpbalk) blijven plakken.
+     Oudere browsers vallen terug op 'hidden'. */
   overflow-x: hidden;
+  overflow-x: clip;
   overscroll-behavior-y: none;
   background:
     radial-gradient(circle at 8% -8%, rgba(30, 115, 184, 0.1), transparent 38%),
@@ -6249,8 +6253,18 @@ textarea {
    tijdens het scrollen steeds hulp kunt inroepen; compact zodat het weinig in de weg zit. */
 .fifa-help-details {
   position: sticky;
-  top: calc(env(safe-area-inset-top) + 8px);
+  /* Net onder de vastgezette bovenbalk (mobiel: status-bar). */
+  top: calc(env(safe-area-inset-top) + 40px);
   z-index: 18;
+  /* Iets losgemaakt van het blok erboven + schaduw zodat hij 'zweeft' bij scrollen. */
+  margin-top: 10px;
+  box-shadow: 0 8px 22px rgba(8, 22, 52, 0.16);
+}
+
+@media (min-width: 768px) {
+  .fifa-help-details {
+    top: 72px;
+  }
 }
 
 .fifa-help-summary {
