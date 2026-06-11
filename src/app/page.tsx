@@ -10,6 +10,7 @@ import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { LiveFollowBanner } from "@/components/live-follow-banner";
 import { PasswordResetForm } from "@/components/password-reset-form";
+import { SiteMessageBanner } from "@/components/site-message-banner";
 import { PredictionsComplete } from "@/components/predictions-complete";
 import { ProfileForm } from "@/components/profile-form";
 import { ShareRow } from "@/components/share-button";
@@ -20,6 +21,7 @@ import { displayName } from "@/lib/format";
 import { localizedHref, type Locale } from "@/lib/i18n";
 import { POOL_NAME_MAX_LENGTH, POOL_NAME_MIN_LENGTH } from "@/lib/limits";
 import { compareScoresAlphabetical, withPublicRankScores, worldRankForUser, type RankedScore } from "@/lib/ranking";
+import { activeSiteMessage, fetchSiteMessage } from "@/lib/site-messages";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { persistSignupProfileFromMetadata, type SignupProfileClient } from "@/lib/supabase/signup-profile";
@@ -379,6 +381,8 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
     timeStyle: "short",
   }).format(new Date(ENTRY_DEADLINE_ISO));
 
+  const siteMessage = activeSiteMessage(await fetchSiteMessage(supabase, "home"), locale);
+
   // Jouw plek op de wereldranglijst: punten dalend, bij gelijke punten alfabetisch.
   const admin = createOptionalAdminClient();
   let myRank: number | null = null;
@@ -399,6 +403,8 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
           <Brand hideIcon locale={locale} />
         </div>
       </header>
+
+      <SiteMessageBanner body={siteMessage} />
 
       <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
         <div className="grid gap-4">

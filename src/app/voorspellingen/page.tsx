@@ -9,9 +9,11 @@ import { GroupPredictionCard } from "@/components/group-prediction-card";
 import { KnockoutPredictionPicker } from "@/components/knockout-prediction-picker";
 import { PageHero } from "@/components/page-hero";
 import { PredictionsComplete } from "@/components/predictions-complete";
+import { SiteMessageBanner } from "@/components/site-message-banner";
 import { StatusProgressSync } from "@/components/status-progress-sync";
 import { ENTRY_GRACE_DEADLINE, groupLetters, isMatchLocked } from "@/lib/constants";
 import { fifaRankLabel } from "@/lib/fifa-ranking";
+import { activeSiteMessage, fetchSiteMessage } from "@/lib/site-messages";
 import { teamNameForLocale } from "@/lib/format";
 import { calculateRound32 } from "@/lib/group-standings";
 import { localizedHref } from "@/lib/i18n";
@@ -174,7 +176,7 @@ export default async function PredictionsPage({
   const { data: ownProfile } = await supabase.from("profiles").select("nickname,team_name").eq("id", user.id).maybeSingle();
   if (!ownProfile?.nickname || !ownProfile.team_name) redirect(localizedHref("/", locale));
 
-  const [{ data: teams }, { data: matches }, { data: predictions }, { data: bracket }, { data: special }] =
+  const [{ data: teams }, { data: matches }, { data: predictions }, { data: bracket }, { data: special }, messageRow] =
     await Promise.all([
       supabase.from("teams").select("*").order("group_letter").order("sort_order"),
       supabase
@@ -185,7 +187,9 @@ export default async function PredictionsPage({
       supabase.from("predictions").select("*").eq("user_id", user.id),
       supabase.from("bracket_predictions").select("*").eq("user_id", user.id),
       supabase.from("special_predictions").select("*").eq("user_id", user.id).maybeSingle(),
+      fetchSiteMessage(supabase, "voorspellingen"),
     ]);
+  const siteMessage = activeSiteMessage(messageRow, locale);
 
   const predictionByMatch = new Map((predictions ?? []).map((prediction) => [prediction.match_id, prediction]));
   const bracketByStage = new Map((bracket ?? []).map((row) => [row.stage_key, new Set(row.team_codes as string[])]));
@@ -250,6 +254,8 @@ export default async function PredictionsPage({
         </PageHero>
       </header>
       <StatusProgressSync progress={groupProgress} />
+
+      <SiteMessageBanner body={siteMessage} />
 
       {params.opgeslagen || params.saved ? (
         <div className="mb-4 rounded-lg border border-green-300 bg-green-50 p-4 font-bold text-green-800">

@@ -33,7 +33,7 @@ test("admin data layer enforces the guard itself (defense in depth)", () => {
 });
 
 test("admin server actions all pass through requireAdmin", () => {
-  for (const action of ["adminSetResult", "createKidAccount", "adminRecalculate"]) {
+  for (const action of ["adminSetResult", "createKidAccount", "adminRecalculate", "adminSetSiteMessage"]) {
     assert.match(actionBody(action), /await requireAdmin\(\)/, `${action} mist requireAdmin`);
   }
 });
@@ -85,7 +85,23 @@ test("health endpoint is secret-guarded and exposes only counts (no PII)", () =>
 });
 
 test("admin mutations are rate-limited (defense in depth)", () => {
-  for (const key of ["admin_setresult", "admin_kid", "admin_recalc"]) {
+  for (const key of ["admin_setresult", "admin_kid", "admin_recalc", "admin_sitemsg"]) {
     assert.match(actions, new RegExp(`rateLimit\\(admin, \`${key}:`));
   }
+});
+
+test("admin site messages: editor per page, audit log and banner wiring", () => {
+  const homePage = readFileSync(new URL("../src/app/page.tsx", import.meta.url), "utf8");
+  const predictionsPage = readFileSync(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
+  const body = actionBody("adminSetSiteMessage");
+
+  // Alleen bekende plekken; alles geauditeerd en via upsert (één rij per plek).
+  assert.match(body, /placement !== "home" && placement !== "voorspellingen"/);
+  assert.match(body, /action: "set_site_message"/);
+  assert.match(body, /from\("site_messages"\)\.upsert\(/);
+
+  assert.match(adminPage, /action=\{adminSetSiteMessage\}/);
+  assert.match(adminPage, /type="datetime-local" name="show_from"/);
+  assert.match(homePage, /<SiteMessageBanner body=\{siteMessage\} \/>/);
+  assert.match(predictionsPage, /<SiteMessageBanner body=\{siteMessage\} \/>/);
 });
