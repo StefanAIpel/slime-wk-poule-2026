@@ -186,7 +186,7 @@ test("special bonus facts do not score before the champion is known", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.64"/);
+  assert.match(constants, /APP_VERSION = "0.65"/);
 });
 
 
@@ -652,20 +652,31 @@ test("mobile pool navigation uses a dropdown selector instead of wrapping all po
   // Onthoudt de laatst-actieve poule (localStorage) + houdt de URL in sync.
   assert.match(poolTabs, /localStorage\.setItem\(POOL_STORAGE_KEY/);
   assert.match(poolTabs, /searchParams\.set\("pool", id\)/);
+  assert.match(poolTabs, /className="pool-tabs-root grid gap-4"/);
+  assert.match(poolTabs, /className="pool-tab-panel"/);
+  assert.match(globalsCss, /\.pool-tabs-root,\n\.pool-tab-panel \{\n  min-width: 0;/);
   assert.match(globalsCss, /\.pool-selector-mobile \{\n  display: none;\n\}/);
+  assert.match(globalsCss, /@media \(max-width: 640px\) \{[\s\S]*\.poules-page-shell \{\n    padding: 12px 16px calc\(22px \+ env\(safe-area-inset-bottom\)\);\n  \}/);
+  assert.match(globalsCss, /\.poules-page-shell > section,\n  \.pool-selector-mobile,\n  \.pool-card \{\n    width: 100%;\n    max-width: 100%;/);
   assert.match(globalsCss, /@media \(max-width: 640px\) \{[\s\S]*\.poules-page-shell \.pool-tabs \{\n    display: none;\n  \}[\s\S]*\.pool-selector-mobile \{\n    display: grid;/);
 });
 
-test("pool board has a WK emoji picker and a 2-column message grid on desktop", () => {
+test("pool board has a WhatsApp-style emoji popover and a 2-column message grid on desktop", () => {
   assert.match(poolBoardComposer, /"use client"/);
   assert.match(poolBoardComposer, /const WK_EMOJIS = \[/);
+  assert.match(poolBoardComposer, /useState\(false\)/);
+  assert.match(poolBoardComposer, /className="pool-emoji-trigger"/);
+  assert.match(poolBoardComposer, /className="pool-emoji-popover"/);
+  assert.match(poolBoardComposer, /className="pool-emoji-grid"/);
+  assert.match(poolBoardComposer, /aria-expanded=\{open\}/);
   assert.match(poolBoardComposer, /name="body"/);
   assert.match(poolBoardComposer, /setSelectionRange\(caret, caret\)/);
   assert.match(poulesPage, /<PoolBoardComposer placeholder=\{copy\.boardPlaceholder\} addLabel=\{copy\.addEmoji\} \/>/);
   assert.match(poulesPage, /addEmoji: "Emoji toevoegen"/);
   assert.match(poulesPage, /className="mt-3 grid gap-2 pool-board-messages"/);
   assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.pool-board-messages \{[\s\S]*grid-template-columns: 1fr 1fr;/);
-  assert.match(globalsCss, /\.pool-emoji-btn \{/);
+  assert.match(globalsCss, /\.pool-emoji-popover \{[\s\S]*width: min\(100%, 390px\);/);
+  assert.match(globalsCss, /\.pool-emoji-grid \{[\s\S]*grid-template-columns: repeat\(8, minmax\(0, 1fr\)\);/);
 });
 
 test("pool share text includes the poulecode and account-before-join guidance", () => {
@@ -695,7 +706,7 @@ test("profile shows the selected slime preview twice as large as the automatic p
 
 test("avatar picker adds the latest slime pack options without the visual duplicate picks", async () => {
   const avatarFiles = await readdir(new URL("../public/avatars/", import.meta.url));
-  for (const key of ["koe-slime", "scheidsrechter-slime", "portugal-slime", "seychellen-slime", "fc-den-bosch-slime", "ajax-slime"]) {
+  for (const key of ["koe-slime", "scheidsrechter-slime", "portugal-slime", "seychellen-slime", "fc-den-bosch-slime", "ajax-slime", "ueda-slime"]) {
     assert.match(avatarsLib, new RegExp(`key: "${key}"`));
     assert.match(avatarsLib, new RegExp(`"${key}"`));
     assert.ok(avatarFiles.includes(`${key}.webp`), `${key}.webp is present in public avatars`);
@@ -708,6 +719,7 @@ test("avatar picker adds the latest slime pack options without the visual duplic
   assert.match(avatarPicker, /"seychellen-slime": "Seychelles"/);
   assert.match(avatarPicker, /"fc-den-bosch-slime": "FC Den Bosch"/);
   assert.match(avatarPicker, /"ajax-slime": "Ajax"/);
+  assert.match(avatarPicker, /"ueda-slime": "Ueda"/);
 });
 
 test("account page saves profile, avatar, password and language safely", () => {
