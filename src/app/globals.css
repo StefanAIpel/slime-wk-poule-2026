@@ -1584,23 +1584,35 @@ textarea {
   text-decoration: underline;
 }
 
+/* Autosave-status voor het knock-out/bonus-blok. */
+.autosave-extras {
+  display: grid;
+  gap: 20px;
+}
+
+.autosave-extras-status {
+  display: flex;
+  justify-content: center;
+  margin-top: -8px;
+}
+
 .fifa-ranking-list {
   background: #ffffff;
-  /* ~10 landen zichtbaar, daarna scrollen binnen de lijst zodat de pagina
-     dichtbij de voorspellingen blijft en switchen makkelijk is. */
-  max-height: min(60vh, 460px);
+  /* Compact: ±top 10 zichtbaar, daarna scrollen binnen de lijst zodat de sticky
+     hulpbalk weinig in de weg zit op mobiel én desktop. */
+  max-height: min(44vh, 320px);
   overflow-y: auto;
 }
 
 .fifa-ranking-row {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) auto;
+  grid-template-columns: 30px minmax(0, 1fr) 104px;
   align-items: center;
   gap: 8px;
-  min-height: 36px;
-  padding: 7px 10px;
-  font-size: 0.88rem;
-  line-height: 1.1;
+  min-height: 0;
+  padding: 3px 10px;
+  font-size: 0.8rem;
+  line-height: 1.2;
 }
 
 .fifa-ranking-rank {
@@ -1622,8 +1634,10 @@ textarea {
   white-space: nowrap;
 }
 
+/* Selectiewaarde: eigen kolom, links uitgelijnd, gelijke decimalen → nette uitlijning. */
 .fifa-ranking-value {
-  justify-self: end;
+  justify-self: start;
+  text-align: left;
   white-space: nowrap;
   color: #081634;
   font-weight: 900;
@@ -1631,10 +1645,10 @@ textarea {
 
 @media (max-width: 420px) {
   .fifa-ranking-row {
-    grid-template-columns: 34px minmax(0, 1fr) auto;
+    grid-template-columns: 26px minmax(0, 1fr) 92px;
     gap: 6px;
     padding-inline: 8px;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
   }
 
   .fifa-ranking-team {
@@ -6221,8 +6235,14 @@ textarea {
 /* FOUC-vangnet: verbergt de probe wanneer de stylesheet is geladen (zie layout.tsx). */
 #css-probe { display: none; }
 
-/* Inklapbare "Extra hulp: FIFA-ranking"-balk: oranje zodat duidelijk is dat je hem
-   weer kunt inklappen; chevron draait bij open. */
+/* Inklapbare "Extra hulp: FIFA-ranking"-balk. Sticky bovenaan het formulier zodat je
+   tijdens het scrollen steeds hulp kunt inroepen; compact zodat het weinig in de weg zit. */
+.fifa-help-details {
+  position: sticky;
+  top: calc(env(safe-area-inset-top) + 8px);
+  z-index: 18;
+}
+
 .fifa-help-summary {
   list-style: none;
   cursor: pointer;
@@ -6230,15 +6250,44 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 12px 16px;
+  padding: 9px 12px;
   background: linear-gradient(100deg, var(--orange) 0%, var(--orange-2) 100%);
   color: #fff;
   font-weight: 900;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 .fifa-help-summary::-webkit-details-marker {
   display: none;
 }
+
+.fifa-help-summary-text {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-width: 0;
+}
+
+/* Datum waarop de ranglijst is opgehaald, klein naast de titel. */
+.fifa-help-date {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Duidelijke openklap-affordance: chevron in een rond knopje. */
+.fifa-help-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
 .fifa-help-chevron {
   flex: 0 0 auto;
   transition: transform 0.25s ease;
@@ -6246,6 +6295,21 @@ textarea {
 details[open] > .fifa-help-summary .fifa-help-chevron {
   transform: rotate(180deg);
 }
+
+.fifa-help-body {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px 12px;
+}
+
+.fifa-help-intro {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-muted, #48617f);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fifa-help-chevron {
     transition: none;

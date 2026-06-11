@@ -3,20 +3,20 @@
 import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { TeamFlag } from "@/components/team-flag";
-import { fifaRanking, fifaRankingSource, squadValueSource, type FifaRankingRow } from "@/lib/fifa-ranking";
+import { fifaRanking, type FifaRankingRow } from "@/lib/fifa-ranking";
 
 type FifaHelpCopy = {
   fifaHelpSummary: string;
+  fifaHelpDate: string;
   fifaIntro: string;
   fifaSearch: string;
   fifaNoResults: string;
-  sourceNote: string;
 };
 
 /**
- * Inklapbare FIFA-ranglijst onder de oranje balk. Filtert live tijdens het typen
- * (NL én EN: matcht op code, Nederlandse en Engelse landnaam) en houdt de lijst in
- * een gelimiteerde, scrollbare hoogte zodat je makkelijk terug scrollt naar je voorspellingen.
+ * Inklapbare FIFA-ranglijst. Sticky bovenaan het voorspelformulier zodat je tijdens
+ * het scrollen steeds hulp kunt inroepen; compact (±top 10 zichtbaar) en filtert live
+ * tijdens het typen (NL + EN: code, Nederlandse en Engelse landnaam).
  */
 export function FifaRankingHelp({
   locale,
@@ -38,13 +38,18 @@ export function FifaRankingHelp({
   }, [normalizedSearch, locale]);
 
   return (
-    <details className="panel overflow-hidden">
+    <details className="panel fifa-help-details overflow-hidden">
       <summary className="fifa-help-summary">
-        <span>{copy.fifaHelpSummary}</span>
-        <ChevronDown aria-hidden="true" className="fifa-help-chevron size-5" />
+        <span className="fifa-help-summary-text">
+          <span>{copy.fifaHelpSummary}</span>
+          <span className="fifa-help-date">{copy.fifaHelpDate}</span>
+        </span>
+        <span className="fifa-help-toggle" aria-hidden="true">
+          <ChevronDown className="fifa-help-chevron size-4" />
+        </span>
       </summary>
-      <div className="grid gap-2 px-4 pb-4 pt-3">
-        <p className="text-xs font-medium leading-5 text-[var(--text-muted)]">{copy.fifaIntro}</p>
+      <div className="fifa-help-body">
+        <p className="fifa-help-intro">{copy.fifaIntro}</p>
         <div className="fifa-ranking-search">
           <input
             className="field"
@@ -65,12 +70,9 @@ export function FifaRankingHelp({
               ))}
             </div>
           ) : (
-            <p className="px-3 py-5 text-center text-sm font-medium text-[var(--text-muted)]">{copy.fifaNoResults}</p>
+            <p className="px-3 py-4 text-center text-sm font-medium text-[var(--text-muted)]">{copy.fifaNoResults}</p>
           )}
         </div>
-        <p className="text-xs font-medium leading-5 text-[var(--text-muted)]">
-          {copy.sourceNote}: {fifaRankingSource}; {squadValueSource}.
-        </p>
       </div>
     </details>
   );
@@ -101,13 +103,12 @@ function FifaRankingItem({
   );
 }
 
+/** Alle bedragen uniform in miljoen met één decimaal, bijv. "€ 1.520,0 mln". */
 function formatMarketValue(valueMillions: number | null, locale: "nl" | "en") {
   if (valueMillions === null) return "—";
-  if (valueMillions >= 1000) {
-    const value = valueMillions / 1000;
-    return locale === "nl" ? `€ ${value.toLocaleString("nl-NL", { maximumFractionDigits: 2 })} mld` : `€${value.toFixed(2)}bn`;
-  }
-  return locale === "nl"
-    ? `€ ${valueMillions.toLocaleString("nl-NL", { maximumFractionDigits: 2 })} mln`
-    : `€${valueMillions.toFixed(2)}m`;
+  const formatted = valueMillions.toLocaleString(locale === "nl" ? "nl-NL" : "en-GB", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+  return locale === "nl" ? `€ ${formatted} mln` : `€${formatted}m`;
 }

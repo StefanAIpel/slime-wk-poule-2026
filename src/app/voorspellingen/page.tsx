@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { savePredictions } from "@/app/actions";
+import { AutosaveExtras } from "@/components/autosave-extras";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { FifaRankingHelp } from "@/components/fifa-ranking-help";
@@ -69,6 +70,7 @@ const predictionCopy = {
     save: "Voorspellingen opslaan",
     helper: "Vul in voor punten; leeg bewaren mag om later af te maken.",
     fifaHelpSummary: "Extra hulp: FIFA-ranking",
+    fifaHelpDate: "per 10-06-2026",
     fifaIntro: "Vetgedrukte landen doen mee aan het WK.",
     fifaSearch: "Zoek land of afkorting",
     fifaNoResults: "Geen land gevonden.",
@@ -122,6 +124,7 @@ const predictionCopy = {
     save: "Save predictions",
     helper: "Fill in for points; leaving it empty is fine if you want to finish later.",
     fifaHelpSummary: "Extra help: FIFA ranking",
+    fifaHelpDate: "as of 10-06-2026",
     fifaIntro: "Bold countries are World Cup teams.",
     fifaSearch: "Search country or code",
     fifaNoResults: "No country found.",
@@ -269,21 +272,20 @@ export default async function PredictionsPage({
         </div>
 
         {groupProgress === 100 ? <PredictionsComplete locale={locale} /> : null}
+      </div>
 
+      <form action={savePredictions} className="grid gap-5">
         <FifaRankingHelp
           locale={locale}
           worldCupTeamCodes={Array.from(worldCupTeamCodes)}
           copy={{
             fifaHelpSummary: copy.fifaHelpSummary,
+            fifaHelpDate: copy.fifaHelpDate,
             fifaIntro: copy.fifaIntro,
             fifaSearch: copy.fifaSearch,
             fifaNoResults: copy.fifaNoResults,
-            sourceNote: copy.sourceNote,
           }}
         />
-      </div>
-
-      <form action={savePredictions} className="grid gap-5">
         <nav className="group-jump" aria-label={copy.jumpLabel}>
           <span className="group-jump-label">{copy.jumpText}</span>
           {groupLetters.map((group) =>
@@ -321,6 +323,7 @@ export default async function PredictionsPage({
           );
         })}
 
+        <AutosaveExtras locale={locale}>
         <section id="knockouts" className="panel overflow-hidden">
           <div className="prediction-title-banner prediction-title-banner-inset">
             <h2>{copy.knockoutTitle}</h2>
@@ -402,8 +405,9 @@ export default async function PredictionsPage({
             <NumberField name="penalty_shootouts_ko" label={copy.penalties} value={special?.penalty_shootouts_ko} min={0} max={20} placeholder={`${copy.examplePrefix} 4`} helperText={copy.helper} />
           </fieldset>
         </section>
+        </AutosaveExtras>
 
-        <button className="button-primary sticky bottom-24 z-10 w-full md:static" type="submit">
+        <button className="button-primary mt-1 w-full" type="submit">
           {copy.save}
         </button>
       </form>
