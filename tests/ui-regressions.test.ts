@@ -180,7 +180,7 @@ test("logged-in status header uses the user's avatar instead of the trophy icon"
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.59"/);
+  assert.match(constants, /APP_VERSION = "0.60"/);
 });
 
 
@@ -641,8 +641,11 @@ test("pool message board has a green title bar and light-green messages", () => 
 
 test("mobile pool navigation uses a dropdown selector instead of wrapping all pool tabs", () => {
   assert.match(poolTabs, /className="pool-selector-mobile"/);
-  assert.match(poolTabs, /<select[\s\S]*className="pool-selector-select"[\s\S]*value=\{active\}[\s\S]*onChange=\{\(event\) => setActive\(event\.target\.value\)\}/);
+  assert.match(poolTabs, /<select[\s\S]*className="pool-selector-select"[\s\S]*value=\{active\}[\s\S]*onChange=\{\(event\) => selectPool\(event\.target\.value\)\}/);
   assert.match(poolTabs, /<option key=\{tab\.id\} value=\{tab\.id\}>[\s\S]*\{tab\.emoji\} \{tab\.label\}/);
+  // Onthoudt de laatst-actieve poule (localStorage) + houdt de URL in sync.
+  assert.match(poolTabs, /localStorage\.setItem\(POOL_STORAGE_KEY/);
+  assert.match(poolTabs, /searchParams\.set\("pool", id\)/);
   assert.match(globalsCss, /\.pool-selector-mobile \{\n  display: none;\n\}/);
   assert.match(globalsCss, /@media \(max-width: 640px\) \{[\s\S]*\.poules-page-shell \.pool-tabs \{\n    display: none;\n  \}[\s\S]*\.pool-selector-mobile \{\n    display: grid;/);
 });
@@ -1289,6 +1292,14 @@ test("prediction page has FIFA ranking help with compact rank badges in predicti
   // Sticky, compacte hulpbalk (±top 10 zichtbaar).
   assert.match(globalsCss, /\.fifa-help-details \{[\s\S]*position: sticky;/);
   assert.match(globalsCss, /\.fifa-ranking-list \{[\s\S]*max-height: min\(44vh, 320px\);[\s\S]*overflow-y: auto;/);
+  // Kolomkoppen Rang/Land/Selectiewaarde + geen "vetgedrukte landen"-tekst meer.
+  assert.match(fifaRankingHelp, /fifa-ranking-head/);
+  assert.match(fifaRankingHelp, /\{copy\.colValue\}/);
+  assert.doesNotMatch(fifaRankingHelp, /fifa-help-intro|fifaIntro/);
+  assert.match(predictionsPage, /fifaColValue: "Selectiewaarde"/);
+  assert.match(globalsCss, /\.fifa-ranking-head \{/);
+  // Mobiel: geen interne scroll, standaard alleen de top 8.
+  assert.match(globalsCss, /\.fifa-ranking-list:not\(\.is-searching\) \.fifa-ranking-row:nth-child\(n \+ 9\) \{/);
   assert.match(predictionsPage, /teamOptionLabel\(team, locale\)/);
   assert.match(groupPredictionCard, /fifaRankLabel\(match\.home_code\)/);
   // Autosave per wedstrijd: gedebouncede opslag + status-indicator, en server-action.

@@ -1610,10 +1610,29 @@ textarea {
   margin-top: -8px;
 }
 
+.fifa-ranking-panel {
+  background: #ffffff;
+}
+
+/* Kolomkoppen: Rang / Land / Selectiewaarde — zelfde grid als de rijen zodat ze uitlijnen. */
+.fifa-ranking-head {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 104px;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted, #48617f);
+}
+
 .fifa-ranking-list {
   background: #ffffff;
   /* Compact: ±top 10 zichtbaar, daarna scrollen binnen de lijst zodat de sticky
-     hulpbalk weinig in de weg zit op mobiel én desktop. */
+     hulpbalk weinig in de weg zit op desktop. */
   max-height: min(44vh, 320px);
   overflow-y: auto;
 }
@@ -1657,11 +1676,27 @@ textarea {
   font-weight: 900;
 }
 
+/* Mobiel: geen interne scrollbalk, standaard alleen de top 8 tonen (zoeken toont meer). */
+@media (max-width: 640px) {
+  .fifa-ranking-list {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .fifa-ranking-list:not(.is-searching) .fifa-ranking-row:nth-child(n + 9) {
+    display: none;
+  }
+}
+
 @media (max-width: 420px) {
+  .fifa-ranking-head,
   .fifa-ranking-row {
     grid-template-columns: 26px minmax(0, 1fr) 92px;
     gap: 6px;
     padding-inline: 8px;
+  }
+
+  .fifa-ranking-row {
     font-size: 0.76rem;
   }
 
@@ -5588,6 +5623,13 @@ textarea {
 .poules-page-shell {
   /* 1098 border-box - 24px desktop padding links/rechts = ±1050px bannerbreedte. */
   width: min(1098px, 100%);
+}
+
+/* Poulekaart klemt eventueel net-te-brede inhoud binnen de eigen rand, zodat de
+   rechter marge op mobiel niet wordt opgegeten. overflow-x:clip laat de inklapbare
+   secties verticaal gewoon uitklappen. */
+.pool-card {
+  overflow-x: clip;
 }
 
 .pool-card-hero {

@@ -72,9 +72,11 @@ const predictionCopy = {
     helper: "Vul in voor punten; leeg bewaren mag om later af te maken.",
     fifaHelpSummary: "Extra hulp: FIFA-ranking",
     fifaHelpDate: "per 10-06-2026",
-    fifaIntro: "Vetgedrukte landen doen mee aan het WK.",
     fifaSearch: "Zoek land of afkorting",
     fifaNoResults: "Geen land gevonden.",
+    fifaColRank: "Rang",
+    fifaColCountry: "Land",
+    fifaColValue: "Selectiewaarde",
     participant: "WK-deelnemer",
     nonParticipant: "Nog niet in WK-veld",
     rank: "FIFA",
@@ -127,9 +129,11 @@ const predictionCopy = {
     helper: "Fill in for points; leaving it empty is fine if you want to finish later.",
     fifaHelpSummary: "Extra help: FIFA ranking",
     fifaHelpDate: "as of 10-06-2026",
-    fifaIntro: "Bold countries are World Cup teams.",
     fifaSearch: "Search country or code",
     fifaNoResults: "No country found.",
+    fifaColRank: "Rank",
+    fifaColCountry: "Country",
+    fifaColValue: "Squad value",
     participant: "World Cup team",
     nonParticipant: "Not in World Cup field yet",
     rank: "FIFA",
@@ -284,9 +288,11 @@ export default async function PredictionsPage({
           copy={{
             fifaHelpSummary: copy.fifaHelpSummary,
             fifaHelpDate: copy.fifaHelpDate,
-            fifaIntro: copy.fifaIntro,
             fifaSearch: copy.fifaSearch,
             fifaNoResults: copy.fifaNoResults,
+            colRank: copy.fifaColRank,
+            colCountry: copy.fifaColCountry,
+            colValue: copy.fifaColValue,
           }}
         />
         <nav className="group-jump" aria-label={copy.jumpLabel}>

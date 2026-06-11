@@ -400,7 +400,7 @@ export async function joinPool(formData: FormData) {
   if (memberError) throw new Error(memberError.message);
   revalidatePath("/poules");
   revalidatePath("/");
-  redirect(`/poules?joined=${code}`);
+  redirect(`/poules?joined=${code}&pool=${pool.id}`);
 }
 
 export async function resetPoolCode(formData: FormData) {
@@ -416,7 +416,7 @@ export async function resetPoolCode(formData: FormData) {
     const { error } = await admin.from("pools").update({ code }).eq("id", poolId);
     if (!error) {
       revalidatePath("/poules");
-      redirect(`/poules?aangemaakt=${code}`);
+      redirect(`/poules?aangemaakt=${code}&pool=${poolId}`);
     }
   }
   throw new Error("Kon geen nieuwe poulecode maken.");
@@ -442,7 +442,7 @@ export async function removeMember(formData: FormData) {
   const { error } = await admin.from("pool_members").delete().eq("pool_id", poolId).eq("user_id", memberId);
   if (error) throw new Error(error.message);
   revalidatePath("/poules");
-  redirect("/poules?bijgewerkt=1");
+  redirect(`/poules?bijgewerkt=1&pool=${poolId}`);
 }
 
 export async function updatePoolStyle(formData: FormData) {
@@ -475,7 +475,7 @@ export async function updatePoolStyle(formData: FormData) {
   if (error) throw new Error(error.message);
   revalidatePath("/poules");
   revalidatePath("/");
-  redirect("/poules?bijgewerkt=1");
+  redirect(`/poules?bijgewerkt=1&pool=${poolId}`);
 }
 
 export async function postPoolMessage(formData: FormData) {
@@ -510,7 +510,7 @@ export async function postPoolMessage(formData: FormData) {
 
   if (error) throw new Error(error.message);
   revalidatePath("/poules");
-  redirect("/poules?bericht=geplaatst");
+  redirect(`/poules?bericht=geplaatst&pool=${poolId}`);
 }
 
 export async function deletePoolMessage(formData: FormData) {
@@ -531,7 +531,7 @@ export async function deletePoolMessage(formData: FormData) {
   const { error } = await admin.from("pool_messages").delete().eq("id", messageId).eq("pool_id", poolId);
   if (error) throw new Error(error.message);
   revalidatePath("/poules");
-  redirect("/poules?bijgewerkt=1");
+  redirect(`/poules?bijgewerkt=1&pool=${poolId}`);
 }
 
 const POOL_MEDIA_BUCKET = "pool-media";
@@ -595,7 +595,7 @@ export async function uploadPoolImage(formData: FormData) {
   }
 
   revalidatePath("/poules");
-  redirect("/poules?bijgewerkt=1");
+  redirect(`/poules?bijgewerkt=1&pool=${poolId}`);
 }
 
 export async function setMemberRole(formData: FormData) {
@@ -625,7 +625,7 @@ export async function setMemberRole(formData: FormData) {
 
   if (error) throw new Error(error.message);
   revalidatePath("/poules");
-  redirect("/poules?bijgewerkt=1");
+  redirect(`/poules?bijgewerkt=1&pool=${poolId}`);
 }
 
 export async function savePredictions(formData: FormData) {
