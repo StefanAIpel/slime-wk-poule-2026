@@ -8,9 +8,11 @@ import { fifaRanking, type FifaRankingRow } from "@/lib/fifa-ranking";
 type FifaHelpCopy = {
   fifaHelpSummary: string;
   fifaHelpDate: string;
-  fifaIntro: string;
   fifaSearch: string;
   fifaNoResults: string;
+  colRank: string;
+  colCountry: string;
+  colValue: string;
 };
 
 /**
@@ -49,7 +51,6 @@ export function FifaRankingHelp({
         </span>
       </summary>
       <div className="fifa-help-body">
-        <p className="fifa-help-intro">{copy.fifaIntro}</p>
         <div className="fifa-ranking-search">
           <input
             className="field"
@@ -62,16 +63,23 @@ export function FifaRankingHelp({
             aria-label={copy.fifaSearch}
           />
         </div>
-        <div className="fifa-ranking-list rounded-lg border border-slate-200">
-          {rows.length > 0 ? (
-            <div className="divide-y divide-slate-100">
-              {rows.map((row) => (
-                <FifaRankingItem key={row.code} row={row} locale={locale} isWorldCupTeam={worldCupSet.has(row.code)} />
-              ))}
-            </div>
-          ) : (
-            <p className="px-3 py-4 text-center text-sm font-medium text-[var(--text-muted)]">{copy.fifaNoResults}</p>
-          )}
+        <div className="fifa-ranking-panel rounded-lg border border-slate-200">
+          <div className="fifa-ranking-head">
+            <span>{copy.colRank}</span>
+            <span>{copy.colCountry}</span>
+            <span>{copy.colValue}</span>
+          </div>
+          <div className={`fifa-ranking-list ${query ? "is-searching" : ""}`}>
+            {rows.length > 0 ? (
+              <div className="divide-y divide-slate-100">
+                {rows.map((row) => (
+                  <FifaRankingItem key={row.code} row={row} locale={locale} isWorldCupTeam={worldCupSet.has(row.code)} />
+                ))}
+              </div>
+            ) : (
+              <p className="px-3 py-4 text-center text-sm font-medium text-[var(--text-muted)]">{copy.fifaNoResults}</p>
+            )}
+          </div>
         </div>
       </div>
     </details>

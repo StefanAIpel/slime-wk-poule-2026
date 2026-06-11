@@ -1,7 +1,9 @@
 "use client";
 
-import { Children, useState } from "react";
+import { Children, useEffect, useState } from "react";
 import type { Locale } from "@/lib/i18n";
+
+const POOL_STORAGE_KEY = "slimescore:last-pool";
 
 const poolTabsCopy = {
   nl: {
@@ -37,6 +39,39 @@ export function PoolTabs({
   const panels = Children.toArray(children);
   const multiple = tabs.length > 1;
 
+  // Onthoud de laatst-actieve poule. Bij binnenkomst zonder ?pool= herstellen we die,
+  // zodat opslaan/posten (of gewoon terugkomen) niet terugspringt naar de eerste poule.
+  useEffect(() => {
+    if (initialId && tabs.some((tab) => tab.id === initialId)) {
+      try {
+        localStorage.setItem(POOL_STORAGE_KEY, initialId);
+      } catch {}
+      return;
+    }
+    try {
+      const stored = localStorage.getItem(POOL_STORAGE_KEY);
+      // Twee-fase render (SSR = eerste tab, daarna herstellen) is bewust om een
+      // hydration-mismatch te vermijden; setState in dit mount-effect is hier juist.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (stored && tabs.some((tab) => tab.id === stored)) setActive(stored);
+    } catch {}
+    // Alleen bij mount: de URL (?pool=) of opgeslagen voorkeur bepaalt de start.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function selectPool(id: string) {
+    setActive(id);
+    try {
+      localStorage.setItem(POOL_STORAGE_KEY, id);
+    } catch {}
+    // Houd de URL in sync zodat een herlaad of server-actie dezelfde poule toont.
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("pool", id);
+      window.history.replaceState(null, "", url);
+    } catch {}
+  }
+
   return (
     <div className="grid gap-4">
       {multiple ? (
@@ -47,7 +82,7 @@ export function PoolTabs({
               <select
                 className="pool-selector-select"
                 value={active}
-                onChange={(event) => setActive(event.target.value)}
+                onChange={(event) => selectPool(event.target.value)}
                 aria-label={copy.selectorLabel}
               >
                 {tabs.map((tab) => (
@@ -66,7 +101,7 @@ export function PoolTabs({
                 role="tab"
                 aria-selected={active === tab.id}
                 className={`tab-pill ${active === tab.id ? "is-active" : ""}`}
-                onClick={() => setActive(tab.id)}
+                onClick={() => selectPool(tab.id)}
               >
                 <span aria-hidden="true">{tab.emoji}</span>
                 <span className="truncate">{tab.label}</span>
