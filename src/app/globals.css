@@ -1486,23 +1486,47 @@ textarea {
   background: linear-gradient(135deg, #f7fbff, #fff7e8);
 }
 
+/* Mobiel: vlag + 3-letter-afkorting blijven altijd zichtbaar; de FIFA-rangchip
+   stapelt eronder. Desktop (>=640px): naam + chip weer op één regel. */
 .prediction-team-label {
   display: inline-flex;
+  flex-direction: column;
   min-width: 0;
-  align-items: baseline;
-  gap: 4px;
+  gap: 2px;
   color: var(--ink-soft);
   font-size: 0.86rem;
   font-weight: 650;
   letter-spacing: 0;
-  line-height: 1;
+  line-height: 1.1;
+}
+
+.prediction-team-label--home {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.prediction-team-label--away {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.prediction-team-name {
+  min-width: 0;
+  max-width: 100%;
   white-space: nowrap;
 }
 
-.prediction-team-label > span:first-child {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+@media (min-width: 640px) {
+  .prediction-team-label {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .prediction-team-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .fifa-rank-chip {
@@ -1527,6 +1551,10 @@ textarea {
 
 .fifa-ranking-list {
   background: #ffffff;
+  /* ~10 landen zichtbaar, daarna scrollen binnen de lijst zodat de pagina
+     dichtbij de voorspellingen blijft en switchen makkelijk is. */
+  max-height: min(60vh, 460px);
+  overflow-y: auto;
 }
 
 .fifa-ranking-row {

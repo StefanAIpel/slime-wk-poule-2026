@@ -25,6 +25,7 @@ const liveFollowBanner = await readFile(new URL("../src/components/live-follow-b
 const slimeSoccerBanner = await readFile(new URL("../src/components/slime-soccer-banner.tsx", import.meta.url), "utf8");
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
+const fifaRankingHelp = await readFile(new URL("../src/components/fifa-ranking-help.tsx", import.meta.url), "utf8");
 const fifaRankingData = await readFile(new URL("../src/lib/fifa-ranking.ts", import.meta.url), "utf8");
 const rankingPage = await readFile(new URL("../src/app/ranglijst/page.tsx", import.meta.url), "utf8");
 const rankingExplorer = await readFile(new URL("../src/components/ranking-explorer.tsx", import.meta.url), "utf8");
@@ -178,7 +179,7 @@ test("logged-in status header uses the user's avatar instead of the trophy icon"
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.54"/);
+  assert.match(constants, /APP_VERSION = "0.55"/);
 });
 
 
@@ -1242,18 +1243,30 @@ test("English mode is wired through rankings, rules, pools and predictions pages
 test("prediction page has FIFA ranking help with compact rank badges in prediction choices", () => {
   assert.match(predictionsPage, /fifaHelpSummary: "Extra hulp: FIFA-ranking"/);
   assert.match(predictionsPage, /fifaHelpSummary: "Extra help: FIFA ranking"/);
-  assert.match(predictionsPage, /<FifaRankingHelp copy=\{copy\} locale=\{locale\} searchQuery=\{fifaSearchQuery\} worldCupTeamCodes=\{worldCupTeamCodes\} \/>/);
-  assert.match(predictionsPage, /<details className="panel overflow-hidden" open=\{searchQuery \? true : undefined\}>/);
-  assert.match(predictionsPage, /worldCupTeamCodes=\{worldCupTeamCodes\}/);
-  assert.match(predictionsPage, /name="fifa" type="search"/);
-  assert.match(predictionsPage, /formatMarketValue\(row\.marketValueMillions, locale\)/);
-  assert.match(predictionsPage, /€ \$\{value\.toLocaleString\("nl-NL", \{ maximumFractionDigits: 2 \}\)\} mld/);
-  assert.match(predictionsPage, /€\$\{value\.toFixed\(2\)\}bn/);
+  assert.match(predictionsPage, /<FifaRankingHelp/);
+  assert.match(predictionsPage, /worldCupTeamCodes=\{Array\.from\(worldCupTeamCodes\)\}/);
+  // FIFA-paneel is een client-component met live filteren tijdens typen (NL + EN).
+  assert.match(fifaRankingHelp, /"use client"/);
+  assert.match(fifaRankingHelp, /value=\{query\}/);
+  assert.match(fifaRankingHelp, /onChange=\{\(event\) => setQuery\(event\.target\.value\)\}/);
+  assert.match(fifaRankingHelp, /\[row\.code, row\.name, row\.nameNl\]\.some/);
+  assert.match(fifaRankingHelp, /formatMarketValue\(row\.marketValueMillions, locale\)/);
+  assert.match(fifaRankingHelp, /€ \$\{value\.toLocaleString\("nl-NL", \{ maximumFractionDigits: 2 \}\)\} mld/);
+  assert.match(fifaRankingHelp, /€\$\{value\.toFixed\(2\)\}bn/);
+  // Geen redundante "FIFA-ranking:"-titel meer onder de oranje balk.
+  assert.doesNotMatch(predictionsPage, /fifaTitle/);
+  assert.doesNotMatch(fifaRankingHelp, /<h2>/);
   assert.match(globalsCss, /\.fifa-ranking-row \{/);
   assert.match(globalsCss, /grid-template-columns: 42px minmax\(0, 1fr\) auto;/);
+  // Lijst beperkt in hoogte en scrollbaar (±10 landen zichtbaar).
+  assert.match(globalsCss, /\.fifa-ranking-list \{[\s\S]*max-height: min\(60vh, 460px\);[\s\S]*overflow-y: auto;/);
   assert.match(predictionsPage, /teamOptionLabel\(team, locale\)/);
   assert.match(groupPredictionCard, /fifaRankLabel\(match\.home_code\)/);
-  assert.match(groupPredictionCard, /className="prediction-team-label justify-end"/);
+  // Mobiel: vlag + afkorting altijd zichtbaar, rangchip eronder gestapeld.
+  assert.match(groupPredictionCard, /className="prediction-team-label prediction-team-label--home"/);
+  assert.match(groupPredictionCard, /className="prediction-team-label prediction-team-label--away"/);
+  assert.match(globalsCss, /\.prediction-team-label \{[\s\S]*flex-direction: column;/);
+  assert.match(globalsCss, /@media \(min-width: 640px\) \{[\s\S]*\.prediction-team-label \{[\s\S]*flex-direction: row;/);
   assert.match(knockoutPredictionPicker, /fifaRankLabel\(team\.code\)/);
   assert.match(knockoutPredictionPicker, /className="fifa-rank-chip"/);
   assert.match(globalsCss, /@media \(max-width: 559px\) \{[\s\S]*\.knockout-picker-name \{\n    font-size: 0\.72rem;\n  \}/);

@@ -1,17 +1,16 @@
-import { ChevronDown } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { savePredictions } from "@/app/actions";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
+import { FifaRankingHelp } from "@/components/fifa-ranking-help";
 import { GroupPredictionCard } from "@/components/group-prediction-card";
 import { KnockoutPredictionPicker } from "@/components/knockout-prediction-picker";
 import { PageHero } from "@/components/page-hero";
 import { PredictionsComplete } from "@/components/predictions-complete";
 import { StatusProgressSync } from "@/components/status-progress-sync";
-import { TeamFlag } from "@/components/team-flag";
 import { ENTRY_DEADLINE, ENTRY_GRACE_DEADLINE, groupLetters, isMatchLocked, POST_GROUP_DEADLINE } from "@/lib/constants";
-import { fifaRankLabel, fifaRanking, fifaRankingSource, squadValueSource, type FifaRankingRow } from "@/lib/fifa-ranking";
+import { fifaRankLabel } from "@/lib/fifa-ranking";
 import { teamNameForLocale } from "@/lib/format";
 import { calculateRound32 } from "@/lib/group-standings";
 import { localizedHref } from "@/lib/i18n";
@@ -70,9 +69,9 @@ const predictionCopy = {
     save: "Voorspellingen opslaan",
     helper: "Vul in voor punten; leeg bewaren mag om later af te maken.",
     fifaHelpSummary: "Extra hulp: FIFA-ranking",
-    fifaTitle: "FIFA-ranking:",
     fifaIntro: "Vetgedrukte landen doen mee aan het WK.",
     fifaSearch: "Zoek land of afkorting",
+    fifaNoResults: "Geen land gevonden.",
     participant: "WK-deelnemer",
     nonParticipant: "Nog niet in WK-veld",
     rank: "FIFA",
@@ -123,9 +122,9 @@ const predictionCopy = {
     save: "Save predictions",
     helper: "Fill in for points; leaving it empty is fine if you want to finish later.",
     fifaHelpSummary: "Extra help: FIFA ranking",
-    fifaTitle: "FIFA ranking:",
     fifaIntro: "Bold countries are World Cup teams.",
     fifaSearch: "Search country or code",
+    fifaNoResults: "No country found.",
     participant: "World Cup team",
     nonParticipant: "Not in World Cup field yet",
     rank: "FIFA",
@@ -150,12 +149,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function PredictionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ opgeslagen?: string; saved?: string; fifa?: string }>;
+  searchParams: Promise<{ opgeslagen?: string; saved?: string }>;
 }) {
   const params = await searchParams;
   const locale = await getServerLocale();
   const copy = predictionCopy[locale];
-  const fifaSearchQuery = (params.fifa ?? "").trim();
   const supabase = await createClient();
   const {
     data: { user },
@@ -272,7 +270,17 @@ export default async function PredictionsPage({
 
         {groupProgress === 100 ? <PredictionsComplete locale={locale} /> : null}
 
-        <FifaRankingHelp copy={copy} locale={locale} searchQuery={fifaSearchQuery} worldCupTeamCodes={worldCupTeamCodes} />
+        <FifaRankingHelp
+          locale={locale}
+          worldCupTeamCodes={Array.from(worldCupTeamCodes)}
+          copy={{
+            fifaHelpSummary: copy.fifaHelpSummary,
+            fifaIntro: copy.fifaIntro,
+            fifaSearch: copy.fifaSearch,
+            fifaNoResults: copy.fifaNoResults,
+            sourceNote: copy.sourceNote,
+          }}
+        />
       </div>
 
       <form action={savePredictions} className="grid gap-5">
@@ -409,89 +417,6 @@ function teamOptionLabel(team: Team, locale: "nl" | "en") {
   const rank = fifaRankLabel(team.code);
   const name = teamNameForLocale(team.code, team.name_nl, locale);
   return rank ? `${name} ${rank}` : name;
-}
-
-function FifaRankingHelp({
-  copy,
-  locale,
-  searchQuery,
-  worldCupTeamCodes,
-}: {
-  copy: (typeof predictionCopy)["nl"] | (typeof predictionCopy)["en"];
-  locale: "nl" | "en";
-  searchQuery: string;
-  worldCupTeamCodes: Set<string>;
-}) {
-  const normalizedSearch = searchQuery.toLocaleLowerCase(locale);
-  const rows = normalizedSearch
-    ? fifaRanking.filter((row) =>
-        [row.code, row.name, row.nameNl].some((value) => value.toLocaleLowerCase(locale).includes(normalizedSearch)),
-      )
-    : fifaRanking;
-
-  return (
-    <details className="panel overflow-hidden" open={searchQuery ? true : undefined}>
-      <summary className="fifa-help-summary">
-        <span>{copy.fifaHelpSummary}</span>
-        <ChevronDown aria-hidden="true" className="fifa-help-chevron size-5" />
-      </summary>
-      <div className="grid gap-2 px-4 pb-4">
-        <div className="grid gap-1">
-          <h2>{copy.fifaTitle}</h2>
-          <p>{copy.fifaIntro}</p>
-        </div>
-        <form action={localizedHref("/voorspellingen", locale)} className="fifa-ranking-search">
-          <input className="field" name="fifa" type="search" placeholder={copy.fifaSearch} defaultValue={searchQuery} />
-        </form>
-        <div className="overflow-hidden rounded-lg border border-slate-200 fifa-ranking-list">
-          <div className="divide-y divide-slate-100">
-            {rows.map((row) => (
-              <FifaRankingItem key={row.code} row={row} locale={locale} isWorldCupTeam={worldCupTeamCodes.has(row.code)} />
-            ))}
-          </div>
-        </div>
-        <p className="text-xs font-medium leading-5 text-[var(--text-muted)]">
-          {copy.sourceNote}: {fifaRankingSource}; {squadValueSource}.
-        </p>
-      </div>
-    </details>
-  );
-}
-
-function FifaRankingItem({
-  row,
-  locale,
-  isWorldCupTeam,
-}: {
-  row: FifaRankingRow;
-  locale: "nl" | "en";
-  isWorldCupTeam: boolean;
-}) {
-  const name = locale === "nl" ? row.nameNl : row.name;
-  const value = formatMarketValue(row.marketValueMillions, locale);
-
-  return (
-    <article className={`fifa-ranking-row ${isWorldCupTeam ? "font-black text-[var(--ink)]" : "font-semibold text-slate-700"}`}>
-      <span className="fifa-ranking-rank tabular-nums">#{row.rank}</span>
-      <div className="fifa-ranking-team">
-        <TeamFlag code={row.code} name={name} size="sm" locale={locale} />
-        <span className="font-black text-[#064ed6]">{row.code}</span>
-        <span className="fifa-ranking-name">{name}</span>
-      </div>
-      <span className="fifa-ranking-value tabular-nums">{value}</span>
-    </article>
-  );
-}
-
-function formatMarketValue(valueMillions: number | null, locale: "nl" | "en") {
-  if (valueMillions === null) return "—";
-  if (valueMillions >= 1000) {
-    const value = valueMillions / 1000;
-    return locale === "nl" ? `€ ${value.toLocaleString("nl-NL", { maximumFractionDigits: 2 })} mld` : `€${value.toFixed(2)}bn`;
-  }
-  return locale === "nl"
-    ? `€ ${valueMillions.toLocaleString("nl-NL", { maximumFractionDigits: 2 })} mln`
-    : `€${valueMillions.toFixed(2)}m`;
 }
 
 function groupBy<T>(items: T[] | null, keyFn: (item: T) => string) {
