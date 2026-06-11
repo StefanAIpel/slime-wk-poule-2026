@@ -102,7 +102,7 @@ export async function recalculateAllScores(admin: SupabaseClient): Promise<{ rec
     totals.set(prediction.user_id, current);
   }
 
-  if (facts) {
+  if (facts && actualByStage.has("champion")) {
     const actualFacts = facts as TournamentFacts;
     for (const prediction of (specialPredictions ?? []) as SpecialPrediction[]) {
       const current = totals.get(prediction.user_id) ?? emptyTotal();
