@@ -6216,3 +6216,127 @@ details[open] > .fifa-help-summary .fifa-help-chevron {
     transition: none;
   }
 }
+
+/* ===== Slime-polish: levendiger desktop-zijkanten + speelse micro-animaties ===== */
+
+/* Desktop/tablet-landscape: zachte slime-gloed in merk-kleuren aan de zijkanten,
+   zodat brede schermen niet vlak grijs ogen. Content blijft in de 1100px-kolom. */
+@media (min-width: 1200px) {
+  body {
+    background:
+      radial-gradient(560px 560px at -6% 28%, rgba(21, 163, 91, 0.14), transparent 70%),
+      radial-gradient(640px 640px at 105% 20%, rgba(30, 115, 184, 0.13), transparent 70%),
+      radial-gradient(520px 520px at -4% 86%, rgba(242, 106, 27, 0.1), transparent 70%),
+      radial-gradient(600px 600px at 104% 82%, rgba(21, 163, 91, 0.1), transparent 70%),
+      radial-gradient(circle at 50% -10%, rgba(30, 115, 184, 0.08), transparent 45%),
+      linear-gradient(180deg, #eef2f9 0%, #f5f7fb 46%, #f7f9fc 100%);
+    background-attachment: fixed;
+  }
+}
+
+/* iOS/Android (PWA): geen grijze tap-flits op interactieve elementen. */
+a,
+button,
+summary,
+input,
+select,
+label {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Slime-veer: knoppen krijgen een bouncy hover en squishen in bij het klikken. */
+.button-primary,
+.button-secondary,
+.button-plain,
+.button-whatsapp,
+.gmail-open-button {
+  transition:
+    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter 140ms ease,
+    border-color 140ms ease,
+    box-shadow 220ms ease;
+}
+
+.button-primary:active,
+.button-secondary:active,
+.button-plain:active,
+.button-whatsapp:active,
+.gmail-open-button:active {
+  transform: scale(0.95) translateY(1px);
+  filter: brightness(0.97);
+}
+
+/* Hero-mascottes deinen zachtjes mee (squash & stretch — net echte slimes). */
+@keyframes slime-bob {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  40% {
+    transform: translateY(-5px) scale(0.99, 1.02);
+  }
+  58% {
+    transform: translateY(0) scale(1.02, 0.98);
+  }
+  72% {
+    transform: translateY(-1px) scale(1, 1.005);
+  }
+}
+
+.hero-mascot,
+.live-hero-mascot {
+  animation: slime-bob 5.5s ease-in-out infinite;
+  transform-origin: bottom center;
+  will-change: transform;
+}
+
+/* Score-invoer: speelse focus-pop met oranje ring, fijn op touch én desktop. */
+.score-input {
+  transition:
+    transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.score-input:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow:
+    0 0 0 3px rgba(242, 106, 27, 0.16),
+    inset 0 1px 2px rgba(8, 22, 52, 0.05);
+  transform: scale(1.08);
+}
+
+/* Uitklap-inhoud (FIFA-hulp) glijdt zachtjes open. */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+details[open] > .fifa-help-summary + div {
+  animation: reveal-up 0.25s ease;
+}
+
+/* Toegankelijkheid: alle nieuwe beweging uit bij verminderde-bewegingsvoorkeur. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-mascot,
+  .live-hero-mascot,
+  details[open] > .fifa-help-summary + div {
+    animation: none;
+  }
+
+  .button-primary,
+  .button-secondary,
+  .button-plain,
+  .button-whatsapp,
+  .gmail-open-button,
+  .score-input {
+    transition: none;
+  }
+}
