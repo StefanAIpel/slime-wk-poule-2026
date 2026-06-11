@@ -118,12 +118,11 @@ textarea {
 .site-footer-line {
   display: inline-flex;
   max-width: 100%;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
   gap: 5px;
-  overflow: hidden;
-  white-space: nowrap;
-  font-size: 0.64rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: #9aa4b2;
 }
@@ -6158,3 +6157,34 @@ textarea {
 
 /* FOUC-vangnet: verbergt de probe wanneer de stylesheet is geladen (zie layout.tsx). */
 #css-probe { display: none; }
+
+/* Inklapbare "Extra hulp: FIFA-ranking"-balk: oranje zodat duidelijk is dat je hem
+   weer kunt inklappen; chevron draait bij open. */
+.fifa-help-summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  background: linear-gradient(100deg, var(--orange) 0%, var(--orange-2) 100%);
+  color: #fff;
+  font-weight: 900;
+  font-size: 1rem;
+}
+.fifa-help-summary::-webkit-details-marker {
+  display: none;
+}
+.fifa-help-chevron {
+  flex: 0 0 auto;
+  transition: transform 0.25s ease;
+}
+details[open] > .fifa-help-summary .fifa-help-chevron {
+  transform: rotate(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fifa-help-chevron {
+    transition: none;
+  }
+}
