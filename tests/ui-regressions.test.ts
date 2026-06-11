@@ -26,6 +26,7 @@ const slimeSoccerBanner = await readFile(new URL("../src/components/slime-soccer
 const apiMeRoute = await readFile(new URL("../src/app/api/me/route.ts", import.meta.url), "utf8");
 const predictionsPage = await readFile(new URL("../src/app/voorspellingen/page.tsx", import.meta.url), "utf8");
 const fifaRankingHelp = await readFile(new URL("../src/components/fifa-ranking-help.tsx", import.meta.url), "utf8");
+const autosaveExtrasComponent = await readFile(new URL("../src/components/autosave-extras.tsx", import.meta.url), "utf8");
 const fifaRankingData = await readFile(new URL("../src/lib/fifa-ranking.ts", import.meta.url), "utf8");
 const rankingPage = await readFile(new URL("../src/app/ranglijst/page.tsx", import.meta.url), "utf8");
 const rankingExplorer = await readFile(new URL("../src/components/ranking-explorer.tsx", import.meta.url), "utf8");
@@ -1281,6 +1282,13 @@ test("prediction page has FIFA ranking help with compact rank badges in predicti
   assert.match(actions, /\.from\("predictions"\)\s*\.upsert\(\{ user_id: user\.id, match_id: matchId/);
   assert.match(actions, /async function syncRound32\(/);
   assert.match(globalsCss, /\.prediction-save-status \{/);
+  // Autosave voor knock-outs + bonusvragen via een wrapper rond die secties.
+  assert.match(actions, /export async function autosaveExtras\(formData: FormData\)/);
+  assert.match(autosaveExtrasComponent, /autosaveExtras\(new FormData\(form\)\)/);
+  assert.match(predictionsPage, /import \{ AutosaveExtras \} from "@\/components\/autosave-extras"/);
+  assert.match(predictionsPage, /<AutosaveExtras locale=\{locale\}>/);
+  // Opslaan-knop niet meer permanent sticky in beeld; alleen onderaan als afronding.
+  assert.doesNotMatch(predictionsPage, /button-primary sticky bottom-24/);
   // Mobiel: vlag + afkorting altijd zichtbaar, rangchip eronder gestapeld.
   assert.match(groupPredictionCard, /className="prediction-team-label prediction-team-label--home"/);
   assert.match(groupPredictionCard, /className="prediction-team-label prediction-team-label--away"/);

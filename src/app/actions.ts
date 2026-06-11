@@ -837,3 +837,91 @@ export async function autosavePrediction(input: {
   await syncRound32(supabase, user.id);
   return { ok: true };
 }
+
+/**
+ * Autosave voor de knock-outkeuzes en bonusvragen. Spiegelt exact de niet-groep-logica
+ * van savePredictions (zelfde deadline-gates en kolommen), maar zonder redirect en zonder
+ * de round32-herberekening (die hangt aan de groepsscores en wordt door de
+ * wedstrijd-autosave bijgehouden). De client stuurt de volledige FormData mee.
+ */
+export async function autosaveExtras(formData: FormData): Promise<{ ok: true } | { ok: false; error: string }> {
+  const { supabase, user } = await requireUser();
+  const now = new Date();
+  const canEditPreKickoffBonus = now < ENTRY_DEADLINE;
+  const canEditMain = now < ENTRY_GRACE_DEADLINE;
+  const canEditLate = now < POST_GROUP_DEADLINE;
+
+  try {
+    if (canEditMain) {
+      const stageKeys = ["round16", "quarterfinal", "semifinal"] as const;
+      for (const stageKey of stageKeys) {
+        const teams = Array.from(new Set(formData.getAll(stageKey).map(String).filter(Boolean))).slice(
+          0,
+          stageSelectionLimits[stageKey],
+        );
+        const { error } = await supabase.from("bracket_predictions").upsert({
+          user_id: user.id,
+          stage_key: stageKey,
+          team_codes: teams,
+        });
+        if (error) {
+          logError("autosaveExtras.bracket", error, { userId: user.id, stageKey });
+          return { ok: false, error: "opslaan" };
+        }
+      }
+    }
+
+    if (canEditMain || canEditLate) {
+      const special: Record<string, unknown> = { user_id: user.id };
+
+      if (canEditPreKickoffBonus) {
+        special.total_goals = optionalInt(formData.get("total_goals"), 100, 400);
+        special.total_red_cards = optionalInt(formData.get("total_red_cards"), 0, 50);
+        special.fastest_goal_minute = optionalInt(formData.get("fastest_goal_minute"), 1, 120);
+        special.team_most_goals_code = cleanText(formData.get("team_most_goals_code"), 3).toUpperCase() || null;
+      }
+
+      let champion: string | null = null;
+      let finalists: string[] = [];
+      if (canEditLate) {
+        champion = cleanText(formData.get("champion_code"), 3).toUpperCase() || null;
+        finalists = Array.from(new Set(formData.getAll("finalists").map(String).filter(Boolean))).slice(0, 2);
+        special.champion_code = champion;
+        special.finalists = finalists;
+        special.penalty_shootouts_ko = optionalInt(formData.get("penalty_shootouts_ko"), 0, 20);
+        special.own_goals_ko = null;
+        special.cards_ko_team_code = cleanText(formData.get("cards_ko_team_code"), 3).toUpperCase() || null;
+        special.oranje_stage = cleanText(formData.get("oranje_stage"), 16) || null;
+        special.post_group_updated_at = now >= POST_GROUP_WINDOW_START ? new Date().toISOString() : null;
+      }
+
+      const { error } = await supabase.from("special_predictions").upsert(special);
+      if (error) {
+        logError("autosaveExtras.special", error, { userId: user.id });
+        return { ok: false, error: "opslaan" };
+      }
+
+      if (canEditLate) {
+        const { error: finalistsError } = await supabase
+          .from("bracket_predictions")
+          .upsert({ user_id: user.id, stage_key: "finalists", team_codes: finalists });
+        if (finalistsError) {
+          logError("autosaveExtras.finalists", finalistsError, { userId: user.id });
+          return { ok: false, error: "opslaan" };
+        }
+        const { error: championError } = await supabase
+          .from("bracket_predictions")
+          .upsert({ user_id: user.id, stage_key: "champion", team_codes: champion ? [champion] : [] });
+        if (championError) {
+          logError("autosaveExtras.champion", championError, { userId: user.id });
+          return { ok: false, error: "opslaan" };
+        }
+      }
+    }
+
+    return { ok: true };
+  } catch (error) {
+    logError("autosaveExtras", error, { userId: user.id });
+    return { ok: false, error: "opslaan" };
+  }
+}

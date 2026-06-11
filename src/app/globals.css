@@ -1584,6 +1584,18 @@ textarea {
   text-decoration: underline;
 }
 
+/* Autosave-status voor het knock-out/bonus-blok. */
+.autosave-extras {
+  display: grid;
+  gap: 20px;
+}
+
+.autosave-extras-status {
+  display: flex;
+  justify-content: center;
+  margin-top: -8px;
+}
+
 .fifa-ranking-list {
   background: #ffffff;
   /* Compact: ±top 10 zichtbaar, daarna scrollen binnen de lijst zodat de sticky

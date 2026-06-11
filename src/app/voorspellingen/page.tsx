@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { savePredictions } from "@/app/actions";
+import { AutosaveExtras } from "@/components/autosave-extras";
 import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { FifaRankingHelp } from "@/components/fifa-ranking-help";
@@ -322,6 +323,7 @@ export default async function PredictionsPage({
           );
         })}
 
+        <AutosaveExtras locale={locale}>
         <section id="knockouts" className="panel overflow-hidden">
           <div className="prediction-title-banner prediction-title-banner-inset">
             <h2>{copy.knockoutTitle}</h2>
@@ -403,8 +405,9 @@ export default async function PredictionsPage({
             <NumberField name="penalty_shootouts_ko" label={copy.penalties} value={special?.penalty_shootouts_ko} min={0} max={20} placeholder={`${copy.examplePrefix} 4`} helperText={copy.helper} />
           </fieldset>
         </section>
+        </AutosaveExtras>
 
-        <button className="button-primary sticky bottom-24 z-10 w-full md:static" type="submit">
+        <button className="button-primary mt-1 w-full" type="submit">
           {copy.save}
         </button>
       </form>
