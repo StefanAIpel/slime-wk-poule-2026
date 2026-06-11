@@ -3342,10 +3342,12 @@ textarea {
 
 .live-hero-cta {
   flex: 0 1 min(50%, 182px);
-  min-height: 42px;
-  padding-inline: 12px;
+  min-height: 44px;
+  padding: 7px 12px;
   font-size: 0.78rem;
-  line-height: 1.1;
+  line-height: 1.28;
+  text-align: left;
+  text-wrap: balance;
 }
 
 @media (min-width: 640px) {
@@ -3800,7 +3802,9 @@ textarea {
   grid-column: 2;
   grid-row: 1;
   justify-self: center;
-  padding: 0;
+  /* Op één lijn met de landcodes (vlaggen erboven), i.p.v. zwevend ertussen. */
+  align-self: end;
+  padding: 0 0 3px;
   font-size: 1.85rem;
   line-height: 1;
 }

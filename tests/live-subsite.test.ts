@@ -176,3 +176,9 @@ test("featured teams center around the score and line-ups are 2 columns on mobil
   assert.match(globalsCss, /\.lineups-grid \{\n  display: grid;\n  grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
   assert.match(globalsCss, /\.lineups-grid \.lineup-player-list \{\n    font-size: 0\.74rem;/);
 });
+
+test("featured score sits on the country-code line; hero schedule button has roomier leading", async () => {
+  const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
+  assert.match(globalsCss, /\.live-match-card-featured \.live-match-score \{[\s\S]*?align-self: end;/);
+  assert.match(globalsCss, /\.live-hero-cta \{[\s\S]*?line-height: 1\.28;/);
+});
