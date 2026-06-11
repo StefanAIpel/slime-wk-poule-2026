@@ -764,3 +764,76 @@ export async function savePredictions(formData: FormData) {
   revalidatePath("/");
   redirect("/voorspellingen?opgeslagen=1");
 }
+
+/**
+ * Herberekent de laatste-32 (round32) uit ALLE opgeslagen groepsvoorspellingen
+ * van de gebruiker en schrijft die weg. Gedeeld door de grote opslag en de autosave,
+ * zodat de bracket altijd in sync blijft met losse score-wijzigingen.
+ */
+async function syncRound32(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+): Promise<void> {
+  const [{ data: matches }, { data: predictions }] = await Promise.all([
+    supabase.from("matches").select("id,group_letter,home_code,away_code").eq("stage", "group"),
+    supabase.from("predictions").select("match_id,home_score,away_score").eq("user_id", userId),
+  ]);
+  const scoreLookup: ScoreLookup = new Map();
+  for (const prediction of predictions ?? []) {
+    if (prediction.home_score !== null && prediction.away_score !== null) {
+      scoreLookup.set(prediction.match_id, { home: prediction.home_score, away: prediction.away_score });
+    }
+  }
+  const round32 = calculateRound32(matches ?? [], scoreLookup);
+  await supabase.from("bracket_predictions").upsert({
+    user_id: userId,
+    stage_key: "round32",
+    team_codes: round32,
+  });
+}
+
+/**
+ * Slaat één groepswedstrijd direct op (autosave vanuit het voorspelformulier).
+ * Idempotent: upsert op PK (user_id, match_id). Her-checkt deadline + lock server-side
+ * en houdt de round32-bracket bij. Geeft een status terug i.p.v. te redirecten,
+ * zodat de client een "opgeslagen ✓"/"opnieuw"-indicator kan tonen.
+ */
+export async function autosavePrediction(input: {
+  matchId: number;
+  home: number;
+  away: number;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const { supabase, user } = await requireUser();
+  const now = new Date();
+  if (now >= ENTRY_GRACE_DEADLINE) return { ok: false, error: "gesloten" };
+
+  const matchId = Number(input?.matchId);
+  if (!Number.isInteger(matchId)) return { ok: false, error: "match" };
+
+  // Alleen bestaande, niet-vergrendelde groepswedstrijden mogen via autosave.
+  const { data: match, error: matchError } = await supabase
+    .from("matches")
+    .select("id,stage,starts_at")
+    .eq("id", matchId)
+    .maybeSingle();
+  if (matchError) return { ok: false, error: matchError.message };
+  if (!match || match.stage !== "group") return { ok: false, error: "match" };
+  if (isMatchLocked(match.starts_at, now)) return { ok: false, error: "vergrendeld" };
+
+  const home = Math.trunc(Number(input?.home));
+  const away = Math.trunc(Number(input?.away));
+  if (!Number.isFinite(home) || !Number.isFinite(away) || home < 0 || home > 20 || away < 0 || away > 20) {
+    return { ok: false, error: "ongeldig" };
+  }
+
+  const { error } = await supabase
+    .from("predictions")
+    .upsert({ user_id: user.id, match_id: matchId, home_score: home, away_score: away });
+  if (error) {
+    logError("autosavePrediction.upsert", error, { userId: user.id, matchId });
+    return { ok: false, error: "opslaan" };
+  }
+
+  await syncRound32(supabase, user.id);
+  return { ok: true };
+}

@@ -179,7 +179,7 @@ test("logged-in status header uses the user's avatar instead of the trophy icon"
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.56"/);
+  assert.match(constants, /APP_VERSION = "0.57"/);
 });
 
 
@@ -1262,6 +1262,17 @@ test("prediction page has FIFA ranking help with compact rank badges in predicti
   assert.match(globalsCss, /\.fifa-ranking-list \{[\s\S]*max-height: min\(60vh, 460px\);[\s\S]*overflow-y: auto;/);
   assert.match(predictionsPage, /teamOptionLabel\(team, locale\)/);
   assert.match(groupPredictionCard, /fifaRankLabel\(match\.home_code\)/);
+  // Autosave per wedstrijd: gedebouncede opslag + status-indicator, en server-action.
+  assert.match(groupPredictionCard, /import \{ autosavePrediction \} from "@\/app\/actions"/);
+  assert.match(groupPredictionCard, /scheduleAutosave\(matchId, updated\)/);
+  assert.match(groupPredictionCard, /autosavePrediction\(\{ matchId, home, away \}\)/);
+  assert.match(groupPredictionCard, /prediction-save-status/);
+  assert.match(actions, /export async function autosavePrediction\(/);
+  assert.match(actions, /if \(now >= ENTRY_GRACE_DEADLINE\) return \{ ok: false, error: "gesloten" \}/);
+  assert.match(actions, /isMatchLocked\(match\.starts_at, now\)/);
+  assert.match(actions, /\.from\("predictions"\)\s*\.upsert\(\{ user_id: user\.id, match_id: matchId/);
+  assert.match(actions, /async function syncRound32\(/);
+  assert.match(globalsCss, /\.prediction-save-status \{/);
   // Mobiel: vlag + afkorting altijd zichtbaar, rangchip eronder gestapeld.
   assert.match(groupPredictionCard, /className="prediction-team-label prediction-team-label--home"/);
   assert.match(groupPredictionCard, /className="prediction-team-label prediction-team-label--away"/);
