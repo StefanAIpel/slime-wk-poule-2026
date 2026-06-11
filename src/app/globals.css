@@ -118,12 +118,11 @@ textarea {
 .site-footer-line {
   display: inline-flex;
   max-width: 100%;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
   gap: 5px;
-  overflow: hidden;
-  white-space: nowrap;
-  font-size: 0.64rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: #9aa4b2;
 }
