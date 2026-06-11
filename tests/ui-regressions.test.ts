@@ -71,6 +71,7 @@ const groupPredictionCard = await readFile(new URL("../src/components/group-pred
 const predictionsComplete = await readFile(new URL("../src/components/predictions-complete.tsx", import.meta.url), "utf8");
 const formatLib = await readFile(new URL("../src/lib/format.ts", import.meta.url), "utf8");
 const rankingLib = await readFile(new URL("../src/lib/ranking.ts", import.meta.url), "utf8");
+const recalculateLib = await readFile(new URL("../src/lib/recalculate.ts", import.meta.url), "utf8");
 const limitsLib = await readFile(new URL("../src/lib/limits.ts", import.meta.url), "utf8");
 const lengthMigration = await readFile(new URL("../supabase/migrations/20260605103457_enforce_profile_pool_name_lengths.sql", import.meta.url), "utf8");
 const uniqueMigration = await readFile(new URL("../supabase/migrations/20260605132432_enforce_unique_display_names.sql", import.meta.url), "utf8");
@@ -180,8 +181,12 @@ test("logged-in status header uses the user's avatar instead of the trophy icon"
   assert.match(globalsCss, /\.status-chip-account \.avatar-img \{[\s\S]*width: 18px;[\s\S]*height: 18px;[\s\S]*background: rgba\(255, 255, 255, 0\.22\);/);
 });
 
+test("special bonus facts do not score before the champion is known", () => {
+  assert.match(recalculateLib, /if \(facts && actualByStage\.has\("champion"\)\)/);
+});
+
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.63"/);
+  assert.match(constants, /APP_VERSION = "0.64"/);
 });
 
 
