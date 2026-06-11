@@ -4188,6 +4188,11 @@ textarea {
   color: #fff;
 }
 
+.pool-tabs-root,
+.pool-tab-panel {
+  min-width: 0;
+}
+
 .pool-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -5962,31 +5967,105 @@ textarea {
   min-height: 62px;
 }
 
-/* Rij WK-emoji's onder het prikbord-tekstvak. */
-.pool-emoji-row {
+/* WhatsApp-achtig emoji-popover bij het prikbord-tekstvak. */
+.pool-board-composer {
+  position: relative;
+  display: grid;
+  gap: 8px;
+}
+
+.pool-emoji-toolbar {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.pool-emoji-trigger {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0b1f4d;
+  padding: 6px 11px;
+  font-size: 0.84rem;
+  font-weight: 850;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(8, 22, 52, 0.07);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pool-emoji-popover {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  z-index: 25;
+  width: min(100%, 390px);
+  overflow: hidden;
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 45px rgba(7, 18, 46, 0.2);
+}
+
+.pool-emoji-popover-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(8, 22, 52, 0.08);
+  background: #f8fbff;
+  padding: 8px 10px;
+  color: #081634;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.pool-emoji-close {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: #eef3fc;
+  color: #48617f;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pool-emoji-grid {
+  display: grid;
+  max-height: min(42vh, 260px);
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 4px;
+  overflow: auto;
+  padding: 8px;
+  overscroll-behavior: contain;
 }
 
 .pool-emoji-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid rgba(8, 22, 52, 0.1);
-  border-radius: 8px;
-  background: #ffffff;
-  font-size: 1.05rem;
+  aspect-ratio: 1;
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 1.28rem;
   line-height: 1;
   cursor: pointer;
-  transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 140ms ease;
+  transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), background 140ms ease, border-color 140ms ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .pool-emoji-btn:hover {
-  border-color: var(--orange, #f26a1b);
+  border-color: rgba(242, 106, 27, 0.26);
+  background: #fff7e8;
   transform: translateY(-1px);
 }
 
@@ -6090,7 +6169,14 @@ textarea {
 
 @media (max-width: 640px) {
   .poules-page-shell {
-    padding: 12px 10px calc(22px + env(safe-area-inset-bottom));
+    padding: 12px 16px calc(22px + env(safe-area-inset-bottom));
+  }
+
+  .poules-page-shell > section,
+  .pool-selector-mobile,
+  .pool-card {
+    width: 100%;
+    max-width: 100%;
   }
 
   .poules-page-shell > header {

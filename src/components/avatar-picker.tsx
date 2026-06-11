@@ -25,6 +25,7 @@ const avatarLabelsEn: Record<string, string> = {
   "wk-slime": "World Cup slime",
   netherlands: "Netherlands",
   "memphis-slime": "Memphis",
+  "ueda-slime": "Ueda",
   "virgil-slime": "Virgil",
   "ronaldo-slime": "Ronaldo",
   "oranje-aanvoerder": "Captain",
