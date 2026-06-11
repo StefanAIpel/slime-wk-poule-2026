@@ -182,3 +182,24 @@ test("featured score sits on the country-code line; hero schedule button has roo
   assert.match(globalsCss, /\.live-match-card-featured \.live-match-score \{[\s\S]*?align-self: end;/);
   assert.match(globalsCss, /\.live-hero-cta \{[\s\S]*?line-height: 1\.28;/);
 });
+
+test("match detail has a subtle share row (specific match url, 'Volg nu live') and a tighter event list", async () => {
+  const matchPage = await readFile(new URL("../src/app/live/match/[id]/page.tsx", import.meta.url), "utf8");
+  const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
+  // Deelknop direct onder de wedstrijd, link naar déze wedstrijd, "Volg nu live".
+  assert.match(matchPage, /function MatchShare/);
+  assert.match(matchPage, /<MatchShare fixture=\{fixture\} locale=\{locale\} \/>/);
+  assert.match(matchPage, /url=\{`\$\{LIVE_URL\}\/match\/\$\{fixture\.id\}`\}/);
+  assert.match(matchPage, /shareLive: "Volg nu live"/);
+  assert.match(matchPage, /compact/);
+  assert.match(globalsCss, /\.match-share \{/);
+  // Wedstrijdverloop compacter: kleiner font + minder regelafstand.
+  assert.match(matchPage, /<ul className="grid gap-1\.5">/);
+  assert.match(matchPage, /grid-cols-\[2\.3rem_1\.6rem_minmax\(0,1fr\)\] items-start gap-x-2 text-xs/);
+});
+
+test("hero share icons are outline-style on dark (no white fill, 50% border, white glyphs)", async () => {
+  const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
+  assert.match(globalsCss, /\.share-row-on-dark \.share-link \{\n  border: 1px solid rgba\(255, 255, 255, 0\.5\);\n  background: transparent;/);
+  assert.match(globalsCss, /\/\* Witte icoontjes op de donkere hero[\s\S]*?\.share-row-on-dark \.share-link \{\n  color: #ffffff;/);
+});

@@ -1,7 +1,9 @@
 import { ArrowLeft } from "lucide-react";
 import { LiveAutoRefresh } from "@/components/live-auto-refresh";
+import { ShareRow } from "@/components/share-button";
 import { TeamFlag } from "@/components/team-flag";
 import { getFixtureById, getFixtureDetail, getHeadToHead, isLiveStatus, isStartingSoon, manOfTheMatch, type LiveFixture, type MatchEvent, type TeamLineup, type TeamPlayers, type TeamStatistics } from "@/lib/apifootball-live";
+import { LIVE_URL } from "@/lib/constants";
 import { formatEventMinute } from "@/lib/live-events";
 import { getServerLocale } from "@/lib/server-locale";
 import type { Locale } from "@/lib/i18n";
@@ -9,8 +11,8 @@ import type { Locale } from "@/lib/i18n";
 export const revalidate = 30;
 
 const copy = {
-  nl: { back: "Terug naar live", finished: "Afgelopen", rest: "Rust", events: "Wedstrijdverloop", stats: "Statistieken", lineups: "Opstellingen", coach: "Coach", motm: "Man van de wedstrijd", h2h: "Onderlinge duels", notFound: "Deze wedstrijd kon niet geladen worden.", soon: "Opstellingen en statistieken verschijnen rond de aftrap." },
-  en: { back: "Back to live", finished: "Finished", rest: "HT", events: "Match events", stats: "Statistics", lineups: "Line-ups", coach: "Coach", motm: "Player of the match", h2h: "Head-to-head", notFound: "This match could not be loaded.", soon: "Line-ups and statistics appear around kick-off." },
+  nl: { back: "Terug naar live", finished: "Afgelopen", rest: "Rust", events: "Wedstrijdverloop", stats: "Statistieken", lineups: "Opstellingen", coach: "Coach", motm: "Man van de wedstrijd", h2h: "Onderlinge duels", notFound: "Deze wedstrijd kon niet geladen worden.", soon: "Opstellingen en statistieken verschijnen rond de aftrap.", share: "Deel deze wedstrijd", shareLive: "Volg nu live", shareUpcoming: "Volg straks live" },
+  en: { back: "Back to live", finished: "Finished", rest: "HT", events: "Match events", stats: "Statistics", lineups: "Line-ups", coach: "Coach", motm: "Player of the match", h2h: "Head-to-head", notFound: "This match could not be loaded.", soon: "Line-ups and statistics appear around kick-off.", share: "Share this match", shareLive: "Follow live now", shareUpcoming: "Follow live soon" },
 } as const;
 
 const EVENT_TRANSLATIONS = {
@@ -91,6 +93,22 @@ function MatchHeader({ fixture, locale }: { fixture: LiveFixture; locale: Locale
         </div>
       </div>
     </section>
+  );
+}
+
+/** Subtiele deelregel direct onder de wedstrijd: link naar déze wedstrijd, "Volg nu live: …". */
+function MatchShare({ fixture, locale }: { fixture: LiveFixture; locale: Locale }) {
+  const c = copy[locale];
+  const live = isLiveStatus(fixture.statusShort) || isStartingSoon(fixture);
+  const finished = ["FT", "AET", "PEN"].includes(fixture.statusShort);
+  const lead = finished ? c.share : live ? c.shareLive : c.shareUpcoming;
+  const teams = `${fixture.home.name} – ${fixture.away.name}`;
+  const text = `${lead}: ${teams} ${locale === "en" ? "on" : "op"} SlimeScore`;
+  return (
+    <div className="match-share">
+      <span className="match-share-label">{c.share}</span>
+      <ShareRow url={`${LIVE_URL}/match/${fixture.id}`} text={text} title={teams} locale={locale} compact />
+    </div>
   );
 }
 
@@ -192,16 +210,16 @@ function Events({ events, title, fixture, locale }: { events: MatchEvent[]; titl
   return (
     <section className="panel p-4">
       <h2 className="mb-3 text-lg font-bold text-[var(--ink)]">{title}</h2>
-      <ul className="grid gap-3">
+      <ul className="grid gap-1.5">
         {sortedEvents.map((event, index) => {
           const presentation = eventPresentation(event, locale);
           const text = eventText(event, locale);
           const minute = formatEventMinute(event);
           return (
-            <li key={index} className="grid grid-cols-[2.6rem_2rem_minmax(0,1fr)] items-start gap-x-2 text-sm text-[#2f3d57]">
-              <span className="pt-1 font-bold tabular-nums text-[var(--text-muted)]">{minute}</span>
-              <span className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-base leading-none" aria-hidden="true">{presentation.icon}</span>
-              <span className="min-w-0 leading-snug">
+            <li key={index} className="grid grid-cols-[2.3rem_1.6rem_minmax(0,1fr)] items-start gap-x-2 text-xs text-[#2f3d57]">
+              <span className="pt-0.5 font-bold tabular-nums text-[var(--text-muted)]">{minute}</span>
+              <span className="flex size-6 items-center justify-center rounded-full bg-slate-100 text-sm leading-none" aria-hidden="true">{presentation.icon}</span>
+              <span className="min-w-0 leading-tight">
                 {presentation.label ? <span className={`font-bold ${presentation.tone}`}>{presentation.label}</span> : null}
                 {text ? <span>{presentation.label ? " " : ""}{text}</span> : null}
                 <span className="text-[var(--text-muted)]"> ({teamNameForEvent(event, fixture)})</span>
@@ -300,6 +318,7 @@ export default async function LiveMatchPage({ params }: { params: Promise<{ id: 
       {fixture ? <MatchHeader fixture={fixture} locale={locale} /> : (
         <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm font-bold text-[#8a5a00]">{c.notFound}</div>
       )}
+      {fixture ? <MatchShare fixture={fixture} locale={locale} /> : null}
       {fixture ? <Motm players={detail.players} label={c.motm} /> : null}
       {fixture && detail.events?.length ? <Events events={detail.events} title={c.events} fixture={fixture} locale={locale} /> : null}
       {fixture && detail.statistics?.length ? <Statistics stats={detail.statistics} title={c.stats} fixture={fixture} locale={locale} /> : null}
