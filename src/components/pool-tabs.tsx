@@ -73,7 +73,7 @@ export function PoolTabs({
   }
 
   return (
-    <div className="grid gap-4">
+    <div className="pool-tabs-root grid gap-4">
       {multiple ? (
         <>
           <label className="pool-selector-mobile">
@@ -111,7 +111,7 @@ export function PoolTabs({
         </>
       ) : null}
       {panels.map((panel, index) => (
-        <div key={tabs[index]?.id ?? index} hidden={multiple && tabs[index]?.id !== active}>
+        <div key={tabs[index]?.id ?? index} className="pool-tab-panel" hidden={multiple && tabs[index]?.id !== active}>
           {panel}
         </div>
       ))}
