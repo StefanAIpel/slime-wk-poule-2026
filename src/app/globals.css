@@ -3909,6 +3909,33 @@ textarea {
   }
 }
 
+/* Subtiele deelregel direct onder de wedstrijd: kleine label + compacte icoontjes. */
+.match-share {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin-top: -6px;
+}
+
+.match-share-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-muted, #48617f);
+}
+
+/* Iets ingetogener dan de hero-deelknoppen: kleiner en zachter. */
+.match-share .share-actions {
+  gap: 6px;
+}
+
+.match-share .share-link {
+  width: 30px;
+  height: 30px;
+  opacity: 0.92;
+}
+
 /* Merk netjes gecentreerd in de header-pill. */
 .live-subsite-header .brand-wordmark {
   justify-content: center;
