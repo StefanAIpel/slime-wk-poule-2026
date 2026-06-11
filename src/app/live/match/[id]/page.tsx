@@ -257,18 +257,18 @@ function Lineups({ lineups, title, coachLabel }: { lineups: TeamLineup[]; title:
   return (
     <section className="panel p-4">
       <h2 className="mb-3 text-lg font-bold text-[var(--ink)]">{title}</h2>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="lineups-grid">
         {lineups.map((team) => (
-          <div key={team.team.id} className="grid gap-2">
-            <div className="flex items-center gap-2">
+          <div key={team.team.id} className="grid content-start gap-2">
+            <div className="lineup-team-head flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={team.team.logo} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
               <span className="font-bold text-[var(--ink)]">{team.team.name}</span>
               {team.formation ? <span className="text-xs font-bold text-[var(--text-muted)]">{team.formation}</span> : null}
             </div>
-            <ul className="grid gap-1 text-sm text-[#2f3d57]">
+            <ul className="lineup-player-list grid gap-1 text-sm text-[#2f3d57]">
               {team.startXI.map((p) => (
-                <li key={p.player.id}><span className="inline-block w-6 font-bold tabular-nums text-[var(--text-muted)]">{p.player.number ?? ""}</span>{p.player.name}</li>
+                <li key={p.player.id}><span className="lineup-player-number inline-block w-6 font-bold tabular-nums text-[var(--text-muted)]">{p.player.number ?? ""}</span>{p.player.name}</li>
               ))}
             </ul>
             {team.coach.name ? <p className="text-xs font-medium text-[var(--text-muted)]">{coachLabel}: {team.coach.name}</p> : null}
