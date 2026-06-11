@@ -34,6 +34,7 @@ const copy = {
     rest: "Rust",
     live: "Live",
     finished: "Afgelopen",
+    cardCta: "Opstellingen & details",
     soon: "Zodra het toernooi begint zie je hier de lopende wedstrijd, de laatste uitslagen en het volledige schema — alles op één plek.",
   },
   en: {
@@ -57,6 +58,7 @@ const copy = {
     rest: "HT",
     live: "Live",
     finished: "Finished",
+    cardCta: "Line-ups & details",
     soon: "Once the tournament kicks off you'll find the live match, the latest results and the full schedule here — all in one place.",
   },
 } as const;
@@ -125,6 +127,10 @@ function MatchCard({ fixture, locale, featured = false }: { fixture: LiveFixture
           {played ? `${fixture.home.goals ?? 0} - ${fixture.away.goals ?? 0}` : "- : -"}
         </span>
       </div>
+      <span className="live-match-cta">
+        {copy[locale].cardCta}
+        <ArrowRight aria-hidden="true" className="size-3.5" />
+      </span>
     </a>
   );
 }

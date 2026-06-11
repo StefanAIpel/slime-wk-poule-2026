@@ -56,6 +56,13 @@ test("live page has a commercial hero with a Speelschema button, red/green/blue 
   assert.doesNotMatch(livePage, /standing-card-header/);
 });
 
+test("match cards show a tappable cta so users find line-ups/details", () => {
+  assert.match(livePage, /live-match-cta/);
+  assert.match(livePage, /cardCta: "Opstellingen & details"/);
+  assert.match(livePage, /cardCta: "Line-ups & details"/);
+  assert.match(livePage, /\{copy\[locale\]\.cardCta\}/);
+});
+
 test("live page links compact result blocks to more matches and full upcoming mode", () => {
   assert.match(livePage, /view\?: string/);
   assert.match(livePage, /showAllUpcoming/);

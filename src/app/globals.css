@@ -3598,6 +3598,21 @@ textarea {
   background: #f7faff;
 }
 
+/* Maakt zichtbaar dat de kaart aanklikbaar is → opstellingen/details. */
+.live-match-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  justify-self: start;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #0866e8;
+}
+
+.live-match-card:hover .live-match-cta {
+  text-decoration: underline;
+}
+
 .live-match-meta {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
