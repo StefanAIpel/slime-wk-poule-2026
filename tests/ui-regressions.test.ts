@@ -186,7 +186,7 @@ test("special bonus facts do not score before the champion is known", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.72"/);
+  assert.match(constants, /APP_VERSION = "0.73"/);
 });
 
 
@@ -415,17 +415,18 @@ test("schedule filters fit one row with a compact Dutch flag chip", () => {
   assert.doesNotMatch(scheduleExplorer, />\s*\{scheduleCopy\[locale\]\.netherlandsFilter\}\s*<\/button>/);
 });
 
-test("logged-in homepage highlights the 14 June grace rule in orange bold and keeps compact mobile progress bars", () => {
+test("logged-in homepage shows the grace countdown and green edit-deadline copy", () => {
   assert.match(homePage, /dashboardTitle: "Voorspel je WK 2026"/);
-  assert.match(homePage, /dashboardIntroBefore: "Deadline:"/);
-  assert.match(homePage, /dashboardGraceNotice: "Niet-gespeelde wedstrijden, knock-outs en bonusvragen kun je wijzigen tot 14 juni 2026 om 21:00\."/);
-  assert.match(homePage, /dashboardGraceNotice: "Unplayed matches, knockouts and bonus questions can be changed until 14 June 2026 at 21:00\."/);
-  assert.match(homePage, /<strong className="dashboard-grace-highlight">\{copy\.dashboardGraceNotice\}<\/strong>/);
-  assert.doesNotMatch(homePage, /behalve 3 bonusvragen tot einde groepsfase/);
-  assert.doesNotMatch(homePage, /except 3 bonus questions until the end of the group stage/);
-  assert.match(globalsCss, /\.dashboard-grace-highlight \{[\s\S]*color: #f26a1b;[\s\S]*font-weight: 900;/);
+  assert.match(homePage, /dashboardStarted: "WK begonnen! 🎉"/);
+  assert.match(homePage, /dashboardGraceLead: "Tot zondag 14 juni 21:00"/);
+  assert.match(homePage, /dashboardAfterGrace: "Na 14 juni kun je alleen nog de 3 bonusvragen wijzigen\. Deadline: 28 juni\."/);
+  assert.match(homePage, /dashboardAfterGrace: "After 14 June you can only change the 3 bonus questions\. Deadline: 28 June\."/);
+  assert.match(homePage, /<strong className="dashboard-grace-lead">\{copy\.dashboardGraceLead\}<\/strong>/);
+  assert.match(homePage, /<GraceCountdown deadlineIso=\{ENTRY_GRACE_DEADLINE_ISO\} label=\{copy\.countdownLabel\} closedLabel=\{copy\.countdownClosed\} \/>/);
+  assert.match(globalsCss, /\.dashboard-grace-lead \{\n  color: #4ade80;/);
+  assert.match(globalsCss, /\.grace-countdown \{/);
   assert.match(homePage, /dark-panel p-4 text-white sm:p-5/);
-  assert.match(homePage, /max-w-\[32rem\] text-\[0\.78rem\] font-medium leading-\[1\.45\]/);
+  assert.match(homePage, /max-w-\[34rem\] text-\[0\.82rem\] font-medium leading-\[1\.5\]/);
   assert.match(homePage, /dashboard-progress-card mt-3 rounded-lg bg-\[#061b47\] p-2\.5 sm:p-3/);
   assert.match(homePage, /dashboard-progress-bar mt-2 h-2\.5/);
   assert.match(homePage, /dashboard-extra-progress-bar mt-2 h-2/);
@@ -832,7 +833,7 @@ test("dashboard copy matches the current prediction deadline and password flow",
   assert.match(homePage, /dashboardGraceNotice: "Niet-gespeelde wedstrijden, knock-outs en bonusvragen kun je wijzigen tot 14 juni 2026 om 21:00\."/);
   assert.match(homePage, /dashboardGraceNotice: "Unplayed matches, knockouts and bonus questions can be changed until 14 June 2026 at 21:00\."/);
   assert.doesNotMatch(homePage, /Respijt tot Oranje begint/);
-  assert.match(homePage, /max-w-\[32rem\] text-\[0\.78rem\] font-medium leading-\[1\.45\]/);
+  assert.match(homePage, /max-w-\[34rem\] text-\[0\.82rem\] font-medium leading-\[1\.5\]/);
   assert.match(homePage, /text-base font-bold text-\[var\(--ink\)\] sm:text-lg/);
   assert.match(homePage, /create-pool-title text-lg font-bold/);
   assert.doesNotMatch(homePage, /geen wachtwoord/);
