@@ -1,6 +1,7 @@
 import "server-only";
 
 import { requireAdmin } from "@/lib/admin-guard";
+import type { SiteMessageRow } from "@/lib/site-messages";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // Leeshelpers voor het admin-dashboard. getAdminDashboard() dwingt zelf de
@@ -45,6 +46,7 @@ export async function getAdminDashboard() {
     { data: kids },
     { data: recentProfiles },
     { data: recentPools },
+    { data: siteMessages },
   ] = await Promise.all([
     admin.from("profiles").select("id", { count: "exact", head: true }),
     admin.from("predictions").select("user_id", { count: "exact", head: true }),
@@ -68,6 +70,7 @@ export async function getAdminDashboard() {
     // Ledenaantal als server-side aggregate (geteld in Postgres), niet als
     // full-table-fetch: die zou stil afkappen op de PostgREST max-rows-cap.
     admin.from("pools").select("id,name,created_at,pool_members(count)").order("created_at", { ascending: false }).limit(20),
+    admin.from("site_messages").select("placement,body_nl,body_en,show_from,show_until").order("placement"),
   ]);
 
   const poolRows = ((recentPools ?? []) as unknown as PoolRow[]).map((pool) => ({
@@ -99,5 +102,6 @@ export async function getAdminDashboard() {
     kidRows: (kids ?? []) as unknown as KidRow[],
     profileRows: (recentProfiles ?? []) as unknown as ProfileRow[],
     poolRows,
+    siteMessageRows: (siteMessages ?? []) as unknown as SiteMessageRow[],
   };
 }

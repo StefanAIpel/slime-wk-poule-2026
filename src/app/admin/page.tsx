@@ -1,7 +1,7 @@
-import { Activity, ClipboardList, KeyRound, RefreshCw, ShieldAlert, Users } from "lucide-react";
+import { Activity, ClipboardList, KeyRound, Megaphone, RefreshCw, ShieldAlert, Users } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { adminRecalculate, adminSetResult, createKidAccount } from "@/app/actions";
+import { adminRecalculate, adminSetResult, adminSetSiteMessage, createKidAccount } from "@/app/actions";
 import { Brand } from "@/components/brand";
 import { PendingButton } from "@/components/pending-button";
 import { TeamFlag } from "@/components/team-flag";
@@ -30,8 +30,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     );
   }
 
-  const { userCount, predictionCount, poolCount, bracketCount, specialCount, scoreCount, anomalies, lastUpdate, matchRows, auditRows, kidRows, profileRows, poolRows } =
+  const { userCount, predictionCount, poolCount, bracketCount, specialCount, scoreCount, anomalies, lastUpdate, matchRows, auditRows, kidRows, profileRows, poolRows, siteMessageRows } =
     await getAdminDashboard();
+  const messagePlacements = [
+    { placement: "home" as const, label: "Ingelogde home", hint: "Banner bovenaan het dashboard van ingelogde spelers." },
+    { placement: "voorspellingen" as const, label: "Voorspellen", hint: "Banner bovenaan de voorspelpagina." },
+  ];
   const finishedCount = matchRows.filter((m) => m.status === "finished").length;
   const anomalyItems = [
     { label: "Spelers zonder score", value: anomalies.profilesWithoutScore },
@@ -168,6 +172,52 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         )}
       </section>
 
+      <section className="mt-4 panel p-4">
+        <div className="flex items-center gap-2">
+          <Megaphone aria-hidden="true" className="size-5 text-[var(--accent-blue)]" />
+          <h2 className="text-lg font-bold text-[var(--ink)]">Mededelingen op de site</h2>
+        </div>
+        <p className="mt-1 text-sm font-medium text-[var(--text-muted)]">
+          Eigen tekst als banner bovenaan de pagina. Leeg laten = geen banner. Het tijdvenster is optioneel (Nederlandse tijd) —
+          handig om bijv. vanaf 14 juni 21:00 automatisch een andere boodschap te tonen. Engels leeg laten = Nederlandse tekst op /en.
+        </p>
+        <div className="mt-3 grid gap-4 lg:grid-cols-2">
+          {messagePlacements.map(({ placement, label, hint }) => {
+            const row = siteMessageRows.find((m) => m.placement === placement);
+            return (
+              <form key={placement} action={adminSetSiteMessage} className="grid gap-2 rounded-lg border border-slate-200 p-3">
+                <input type="hidden" name="placement" value={placement} />
+                <div>
+                  <h3 className="font-bold text-[var(--ink)]">{label}</h3>
+                  <p className="text-xs font-medium text-[var(--text-muted)]">{hint}</p>
+                </div>
+                <label className="grid gap-1 text-xs font-bold text-[var(--ink)]">
+                  Tekst (NL)
+                  <textarea className="field min-h-16" name="body_nl" maxLength={300} defaultValue={row?.body_nl ?? ""} placeholder="Bijv. De voorspellingen zijn gesloten — veel succes!" />
+                </label>
+                <label className="grid gap-1 text-xs font-bold text-[var(--ink)]">
+                  Tekst (EN, optioneel)
+                  <textarea className="field min-h-16" name="body_en" maxLength={300} defaultValue={row?.body_en ?? ""} placeholder="E.g. Predictions are closed — good luck!" />
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <label className="grid gap-1 text-xs font-bold text-[var(--ink)]">
+                    Tonen vanaf (optioneel)
+                    <input className="field min-h-10" type="datetime-local" name="show_from" defaultValue={toAmsterdamLocalInput(row?.show_from ?? null)} />
+                  </label>
+                  <label className="grid gap-1 text-xs font-bold text-[var(--ink)]">
+                    Tonen tot (optioneel)
+                    <input className="field min-h-10" type="datetime-local" name="show_until" defaultValue={toAmsterdamLocalInput(row?.show_until ?? null)} />
+                  </label>
+                </div>
+                <PendingButton className="button-secondary min-h-10 justify-self-start px-4" pendingText="Opslaan…">
+                  Opslaan
+                </PendingButton>
+              </form>
+            );
+          })}
+        </div>
+      </section>
+
       <section className="mt-4 panel overflow-hidden">
         <div className="wc-header p-3 text-white">
           <h2 className="text-lg font-bold">Uitslagen invoeren / corrigeren</h2>
@@ -218,6 +268,21 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       </section>
     </main>
   );
+}
+
+/** ISO → "YYYY-MM-DDTHH:mm" in Nederlandse tijd, voor datetime-local-velden. */
+function toAmsterdamLocalInput(iso: string | null): string {
+  if (!iso) return "";
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/Amsterdam",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+    .format(new Date(iso))
+    .replace(" ", "T");
 }
 
 function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | number }) {

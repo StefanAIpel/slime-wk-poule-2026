@@ -305,6 +305,54 @@ export async function createKidAccount(formData: FormData) {
   redirect("/admin?fout=kind");
 }
 
+/** Zet "YYYY-MM-DDTHH:mm" (datetime-local, Nederlandse tijd) om naar ISO; leeg → null. */
+function parseAmsterdamLocal(value: FormDataEntryValue | null): string | null {
+  const raw = String(value ?? "").trim();
+  if (!raw) return null;
+  // Het hele WK valt in de zomertijd: Europe/Amsterdam = +02:00.
+  const date = new Date(`${raw}:00+02:00`);
+  return Number.isFinite(date.getTime()) ? date.toISOString() : null;
+}
+
+export async function adminSetSiteMessage(formData: FormData) {
+  const { user } = await requireAdmin();
+
+  const admin = createAdminClient();
+  if (!(await rateLimit(admin, `admin_sitemsg:${user.id}`, 30, 60))) redirect("/admin?fout=te-snel");
+  const placement = String(formData.get("placement") ?? "");
+  if (placement !== "home" && placement !== "voorspellingen") redirect("/admin?fout=mededeling");
+  const bodyNl = cleanText(formData.get("body_nl"), 300);
+  const bodyEn = cleanText(formData.get("body_en"), 300);
+  const showFrom = parseAmsterdamLocal(formData.get("show_from"));
+  const showUntil = parseAmsterdamLocal(formData.get("show_until"));
+
+  const { error } = await admin.from("site_messages").upsert({
+    placement,
+    body_nl: bodyNl,
+    body_en: bodyEn,
+    show_from: showFrom,
+    show_until: showUntil,
+    updated_by: user.email,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) {
+    logError("adminSetSiteMessage.upsert", error, { placement });
+    redirect("/admin?fout=opslaan");
+  }
+
+  await admin.from("admin_audit_log").insert({
+    actor_email: user.email,
+    action: "set_site_message",
+    detail: { placement, body_nl: bodyNl, body_en: bodyEn, show_from: showFrom, show_until: showUntil },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/");
+  revalidatePath("/en");
+  revalidatePath("/voorspellingen");
+  redirect("/admin?ok=1");
+}
+
 export async function adminRecalculate() {
   const { user } = await requireAdmin();
 
