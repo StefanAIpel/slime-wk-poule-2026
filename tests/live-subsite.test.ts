@@ -165,3 +165,14 @@ test("cron live-sync is window-gated, authorized and recalculates", async () => 
   assert.match(vercel, /\/api\/cron\/live-sync/);
   assert.match(vercel, /\* \* \* \* \*/);
 });
+
+test("featured teams center around the score and line-ups are 2 columns on mobile", async () => {
+  const globalsCss = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
+  const matchPage = await readFile(new URL("../src/app/live/match/[id]/page.tsx", import.meta.url), "utf8");
+  // Beide teamblokken gecentreerd in hun kolom (uitteam hing links tegen de score).
+  assert.match(globalsCss, /\.live-match-card-featured \.live-match-team \{[\s\S]*?justify-self: center;/);
+  // Opstellingen altijd naast elkaar; mobiel met kleiner font.
+  assert.match(matchPage, /className="lineups-grid"/);
+  assert.match(globalsCss, /\.lineups-grid \{\n  display: grid;\n  grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+  assert.match(globalsCss, /\.lineups-grid \.lineup-player-list \{\n    font-size: 0\.74rem;/);
+});

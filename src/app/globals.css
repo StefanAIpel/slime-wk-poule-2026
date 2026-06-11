@@ -3784,6 +3784,9 @@ textarea {
 
 .live-match-card-featured .live-match-team {
   display: grid;
+  /* Symmetrisch rond de uitslag: beide teamblokken gecentreerd in hun kolom
+     (anders hangt het uitteam links tegen de score aan). */
+  justify-self: center;
   justify-items: center;
   gap: 7px;
   text-align: center;
@@ -3860,6 +3863,45 @@ textarea {
   .live-match-card-featured .live-match-team > span:first-child {
     width: 46px;
     height: 31px;
+  }
+}
+
+/* Opstellingen: beide teams altijd naast elkaar — ook op mobiel (font dan iets kleiner). */
+.lineups-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .lineups-grid {
+    gap: 10px;
+  }
+
+  .lineups-grid .lineup-team-head {
+    flex-wrap: wrap;
+    gap: 5px;
+    font-size: 0.82rem;
+  }
+
+  .lineups-grid .lineup-team-head img {
+    width: 16px;
+    height: 16px;
+  }
+
+  .lineups-grid .lineup-player-list {
+    font-size: 0.74rem;
+    line-height: 1.35;
+  }
+
+  .lineups-grid .lineup-player-list li {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .lineups-grid .lineup-player-number {
+    width: 20px;
   }
 }
 
