@@ -3,7 +3,8 @@ import { LiveAutoRefresh } from "@/components/live-auto-refresh";
 import { ShareRow } from "@/components/share-button";
 import { SiteMessageBanner } from "@/components/site-message-banner";
 import { TeamFlag } from "@/components/team-flag";
-import { getWcFixtures, isLiveStatus, splitFixtures, type LiveFixture, type LiveTeam } from "@/lib/apifootball-live";
+import { getEvents, getWcFixtures, isLiveStatus, isStartingSoon, splitFixtures, type LiveFixture, type LiveTeam } from "@/lib/apifootball-live";
+import { goalLines, type GoalLine } from "@/lib/live-events";
 import { LIVE_URL } from "@/lib/constants";
 import { getServerLocale } from "@/lib/server-locale";
 import { activeSiteMessage, fetchSiteMessage } from "@/lib/site-messages";
@@ -34,6 +35,9 @@ const copy = {
     rest: "Rust",
     live: "Live",
     finished: "Afgelopen",
+    startingSoon: "Begint zo",
+    cardCta: "Opstellingen & details",
+    cardCtaLive: "Bekijk statistieken, opstellingen & verloop",
     soon: "Zodra het toernooi begint zie je hier de lopende wedstrijd, de laatste uitslagen en het volledige schema — alles op één plek.",
   },
   en: {
@@ -57,6 +61,9 @@ const copy = {
     rest: "HT",
     live: "Live",
     finished: "Finished",
+    startingSoon: "Starts soon",
+    cardCta: "Line-ups & details",
+    cardCtaLive: "View stats, line-ups & timeline",
     soon: "Once the tournament kicks off you'll find the live match, the latest results and the full schedule here — all in one place.",
   },
 } as const;
@@ -92,9 +99,15 @@ function roundLabel(fixture: LiveFixture, locale: Locale) {
 
 function statusWhen(fixture: LiveFixture, locale: Locale) {
   const c = copy[locale];
-  if (isLiveStatus(fixture.statusShort)) return { text: fixture.statusShort === "HT" ? c.rest : fixture.elapsed !== null ? `${fixture.elapsed}'` : c.live, live: true };
-  if (["FT", "AET", "PEN"].includes(fixture.statusShort)) return { text: fixture.statusShort === "FT" ? c.finished : fixture.statusShort, live: false };
-  return { text: whenLabel(fixture.date, locale), live: false };
+  if (isLiveStatus(fixture.statusShort))
+    return {
+      text: fixture.statusShort === "HT" ? c.rest : fixture.elapsed !== null ? `LIVE · ${fixture.elapsed}'` : "LIVE",
+      live: true,
+      soon: false,
+    };
+  if (["FT", "AET", "PEN"].includes(fixture.statusShort)) return { text: fixture.statusShort === "FT" ? c.finished : fixture.statusShort, live: false, soon: false };
+  if (isStartingSoon(fixture)) return { text: c.startingSoon, live: false, soon: true };
+  return { text: whenLabel(fixture.date, locale), live: false, soon: false };
 }
 
 function TeamInline({ team, locale }: { team: LiveTeam; locale: Locale }) {
@@ -107,15 +120,33 @@ function TeamInline({ team, locale }: { team: LiveTeam; locale: Locale }) {
   );
 }
 
-function MatchCard({ fixture, locale, featured = false }: { fixture: LiveFixture; locale: Locale; featured?: boolean }) {
+function ScorerList({ goals, locale }: { goals: GoalLine[]; locale: Locale }) {
+  if (!goals.length) return <span />;
+  return (
+    <span className="live-match-scorer-list">
+      {goals.map((goal, index) => (
+        <span key={`${goal.minute}-${goal.player}-${index}`}>
+          ⚽ {goal.minute} {goal.player}
+          {goal.penalty ? " (p)" : ""}
+          {goal.ownGoal ? (locale === "en" ? " (o.g.)" : " (e.d.)") : ""}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function MatchCard({ fixture, locale, featured = false, goals }: { fixture: LiveFixture; locale: Locale; featured?: boolean; goals?: GoalLine[] }) {
   const when = statusWhen(fixture, locale);
   const played = when.live || ["FT", "AET", "PEN"].includes(fixture.statusShort);
   const meta = [roundLabel(fixture, locale), fixture.venue].filter(Boolean).join(" · ");
+  const homeGoals = (goals ?? []).filter((goal) => goal.teamId === fixture.home.id);
+  const awayGoals = (goals ?? []).filter((goal) => goal.teamId === fixture.away.id);
+  const hasScorers = featured && homeGoals.length + awayGoals.length > 0;
   return (
     <a href={`/live/match/${fixture.id}`} className={featured ? "live-match-card live-match-card-featured" : "live-match-card"}>
       <div className="live-match-meta">
         <span className="live-match-round">{meta}</span>
-        <span className={when.live ? "live-match-when is-live" : "live-match-when"}>{when.text}</span>
+        <span className={when.live ? "live-match-when is-live" : when.soon ? "live-match-when is-soon" : "live-match-when"}>{when.text}</span>
       </div>
       <div className="live-match-body">
         <TeamInline team={fixture.home} locale={locale} />
@@ -125,6 +156,16 @@ function MatchCard({ fixture, locale, featured = false }: { fixture: LiveFixture
           {played ? `${fixture.home.goals ?? 0} - ${fixture.away.goals ?? 0}` : "- : -"}
         </span>
       </div>
+      {hasScorers ? (
+        <div className="live-match-scorers">
+          <ScorerList goals={homeGoals} locale={locale} />
+          <ScorerList goals={awayGoals} locale={locale} />
+        </div>
+      ) : null}
+      <span className={featured ? "live-match-cta live-match-cta-strong" : "live-match-cta"}>
+        {featured ? copy[locale].cardCtaLive : copy[locale].cardCta}
+        <ArrowRight aria-hidden="true" className="size-3.5" />
+      </span>
     </a>
   );
 }
@@ -136,6 +177,7 @@ function Section({
   empty,
   locale,
   action,
+  goalsByFixture,
 }: {
   title: string;
   tone: "live" | "latest" | "upcoming";
@@ -143,6 +185,7 @@ function Section({
   empty: string;
   locale: Locale;
   action?: { href: string; label: string; icon: "arrow" | "list" };
+  goalsByFixture?: ReadonlyMap<number, GoalLine[]>;
 }) {
   const isLive = tone === "live";
   const ActionIcon = action?.icon === "list" ? ListOrdered : ArrowRight;
@@ -153,7 +196,9 @@ function Section({
         {fixtures.length && isLive ? <span className="live-section-count">{fixtures.length}</span> : null}
       </header>
       {fixtures.length ? (
-        <div className="divide-y divide-slate-200">{fixtures.map((f) => <MatchCard key={f.id} fixture={f} locale={locale} featured={isLive} />)}</div>
+        <div className="divide-y divide-slate-200">
+          {fixtures.map((f) => <MatchCard key={f.id} fixture={f} locale={locale} featured={isLive} goals={goalsByFixture?.get(f.id)} />)}
+        </div>
       ) : (
         <p className="p-4 text-sm font-bold text-[var(--text-muted)]">{empty}</p>
       )}
@@ -223,9 +268,18 @@ export default async function LivePage({ searchParams }: { searchParams: Promise
   }
 
   const { live, recent, upcoming } = splitFixtures(all);
-  const allUpcoming = all.filter((f) => !f.friendly && f.statusShort === "NS").sort((a, b) => a.date.localeCompare(b.date));
+  const allUpcoming = all.filter((f) => !f.friendly && f.statusShort === "NS" && !isStartingSoon(f)).sort((a, b) => a.date.localeCompare(b.date));
   const showAllUpcoming = params.view === "upcoming";
   const upcomingFixtures = showAllUpcoming ? allUpcoming : upcoming;
+
+  // Doelpuntenmakers voor de "Nu bezig"-kaarten (begonnen wedstrijden; max 6
+  // gelijktijdig — events zijn 60s gecachet, dus dit blijft binnen de API-limiet).
+  const startedNow = live.filter((f) => f.statusShort !== "NS").slice(0, 6);
+  const goalsByFixture = new Map(
+    await Promise.all(
+      startedNow.map(async (f) => [f.id, goalLines(await getEvents(f.id))] as const),
+    ),
+  );
 
   return (
     <div className="grid gap-4">
@@ -233,7 +287,7 @@ export default async function LivePage({ searchParams }: { searchParams: Promise
       <Hero locale={locale} />
       <SiteMessageBanner body={siteMessage} />
       <div className="live-sections-grid">
-        <Section title={c.now} tone="live" fixtures={live} empty={c.emptyNow} locale={locale} />
+        <Section title={c.now} tone="live" fixtures={live} empty={c.emptyNow} locale={locale} goalsByFixture={goalsByFixture} />
         <Section title={c.latest} tone="latest" fixtures={recent} empty={c.emptyLatest} locale={locale} action={{ href: "/live/schema", label: c.moreMatches, icon: "arrow" }} />
         <Section
           title={showAllUpcoming ? c.upcomingAll : c.upcoming}

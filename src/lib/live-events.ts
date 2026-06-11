@@ -45,3 +45,22 @@ export function formatEventMinute(event: EventMinute) {
 
   return `${elapsed}'`;
 }
+
+export type GoalLine = { minute: string; player: string; teamId: number; ownGoal: boolean; penalty: boolean };
+
+/**
+ * Doelpuntenmakers uit de eventlijst, voor onder de uitslag op de live-kaart.
+ * Gemiste penalty's tellen niet; eigen goals en benutte penalty's krijgen een merkje.
+ * Let op: bij een eigen goal telt API-Football het doelpunt bij het profiterende team.
+ */
+export function goalLines(events: MatchEvent[] | null | undefined): GoalLine[] {
+  return (events ?? [])
+    .filter((event) => event.type === "Goal" && event.detail !== "Missed Penalty" && event.player?.name)
+    .map((event) => ({
+      minute: formatEventMinute(event),
+      player: event.player.name as string,
+      teamId: event.team.id,
+      ownGoal: event.detail === "Own Goal",
+      penalty: event.detail === "Penalty",
+    }));
+}

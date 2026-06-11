@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
+import { LiveAutoRefresh } from "@/components/live-auto-refresh";
 import { TeamFlag } from "@/components/team-flag";
-import { getFixtureById, getFixtureDetail, getHeadToHead, isLiveStatus, manOfTheMatch, type LiveFixture, type MatchEvent, type TeamLineup, type TeamPlayers, type TeamStatistics } from "@/lib/apifootball-live";
+import { getFixtureById, getFixtureDetail, getHeadToHead, isLiveStatus, isStartingSoon, manOfTheMatch, type LiveFixture, type MatchEvent, type TeamLineup, type TeamPlayers, type TeamStatistics } from "@/lib/apifootball-live";
 import { formatEventMinute } from "@/lib/live-events";
 import { getServerLocale } from "@/lib/server-locale";
 import type { Locale } from "@/lib/i18n";
@@ -286,9 +287,13 @@ export default async function LiveMatchPage({ params }: { params: Promise<{ id: 
   const [fixture, detail] = await Promise.all([getFixtureById(fixtureId), getFixtureDetail(fixtureId)]);
   const h2h = fixture ? await getHeadToHead(fixture.home.id, fixture.away.id) : null;
   const hasDetail = Boolean(detail.events?.length || detail.statistics?.length || detail.lineups?.length || detail.players?.length);
+  // Live of binnen 30 min vóór aftrap: ververs automatisch zodat opstellingen,
+  // statistieken en het wedstrijdverloop vanzelf binnenkomen.
+  const autoRefresh = Boolean(fixture && (isLiveStatus(fixture.statusShort) || isStartingSoon(fixture)));
 
   return (
     <div className="grid gap-4">
+      {autoRefresh ? <LiveAutoRefresh seconds={20} /> : null}
       <a href="/live" className="inline-flex w-fit items-center gap-1 text-sm font-bold text-[#0866e8]">
         <ArrowLeft aria-hidden="true" className="size-4" /> {c.back}
       </a>
