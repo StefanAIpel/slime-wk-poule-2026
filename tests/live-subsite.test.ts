@@ -203,3 +203,9 @@ test("hero share icons are outline-style on dark (no white fill, 50% border, whi
   assert.match(globalsCss, /\.share-row-on-dark \.share-link \{\n  border: 1px solid rgba\(255, 255, 255, 0\.5\);\n  background: transparent;/);
   assert.match(globalsCss, /\/\* Witte icoontjes op de donkere hero[\s\S]*?\.share-row-on-dark \.share-link \{\n  color: #ffffff;/);
 });
+
+test("live auto-refresh is interruptible (INP) and skips hidden tabs", async () => {
+  const autoRefresh = await readFile(new URL("../src/components/live-auto-refresh.tsx", import.meta.url), "utf8");
+  assert.match(autoRefresh, /startTransition\(\(\) => router\.refresh\(\)\)/);
+  assert.match(autoRefresh, /if \(document\.hidden\) return;/);
+});
