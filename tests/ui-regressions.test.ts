@@ -186,7 +186,7 @@ test("special bonus facts do not score before the champion is known", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.71"/);
+  assert.match(constants, /APP_VERSION = "0.72"/);
 });
 
 
@@ -1376,4 +1376,11 @@ test("mobile landing hero keeps title and host pills compact on one line", () =>
   assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home \.world-cup-kicker \{[\s\S]*flex-wrap: nowrap;[\s\S]*font-size: 0\.56rem;/);
   assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home \.world-cup-kicker span \{[\s\S]*padding: 3px 5px;/);
   assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home-title-block h1 \{[\s\S]*font-size: clamp\(1\.48rem, 7\.4vw, 1\.68rem\) !important;/);
+});
+
+test("pool quick-share icons use a thin 70%-transparent white rim, not a solid white disc", () => {
+  const block = globalsCss.match(/\.pool-quick-share-button \{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(block, /border: 1px solid rgba\(255, 255, 255, 0\.5\);/);
+  assert.match(block, /background: rgba\(255, 255, 255, 0\.3\);/);
+  assert.doesNotMatch(block, /rgba\(248, 251, 255, 0\.98\)/);
 });

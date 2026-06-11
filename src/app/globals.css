@@ -5914,11 +5914,15 @@ textarea {
   height: 31px;
   flex: 0 0 auto;
   place-items: center;
-  border: 1px solid rgba(8, 22, 52, 0.1);
+  /* Dunne, 70%-transparante witte rand + frosted vulling i.p.v. een dichte witte
+     cirkel; de merk-kleur van de glyph blijft, dus leesbaar op elke poule-kleur. */
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 999px;
-  background: rgba(248, 251, 255, 0.98);
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   color: #0b1f4d;
-  box-shadow: 0 5px 12px rgba(7, 18, 46, 0.12);
+  box-shadow: 0 2px 7px rgba(7, 18, 46, 0.1);
   cursor: pointer;
   text-decoration: none;
 }
@@ -6315,7 +6319,7 @@ textarea {
   .pool-quick-share-button {
     width: 29px;
     height: 29px;
-    box-shadow: 0 5px 12px rgba(7, 18, 46, 0.12);
+    box-shadow: 0 2px 7px rgba(7, 18, 46, 0.1);
   }
 
   .pool-members-section,
