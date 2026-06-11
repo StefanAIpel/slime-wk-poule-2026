@@ -10,7 +10,7 @@ import { KnockoutPredictionPicker } from "@/components/knockout-prediction-picke
 import { PageHero } from "@/components/page-hero";
 import { PredictionsComplete } from "@/components/predictions-complete";
 import { StatusProgressSync } from "@/components/status-progress-sync";
-import { ENTRY_DEADLINE, ENTRY_GRACE_DEADLINE, groupLetters, isMatchLocked, POST_GROUP_DEADLINE } from "@/lib/constants";
+import { ENTRY_GRACE_DEADLINE, groupLetters, isMatchLocked } from "@/lib/constants";
 import { fifaRankLabel } from "@/lib/fifa-ranking";
 import { teamNameForLocale } from "@/lib/format";
 import { calculateRound32 } from "@/lib/group-standings";
@@ -40,6 +40,7 @@ const predictionCopy = {
     saved: "Opgeslagen.",
     groupTitle: "Groepswedstrijden",
     groupOpen: "Geen perfecte glazen bol nodig: vul eerst je gevoel in, verfijn later.",
+    graceNotice: "Nog niet gespeelde wedstrijden, knock-outs en bonusvragen kun je nog wijzigen tot zondag 14 juni 21.00 uur!",
     groupClosed: "De hoofdvoorspellingen zijn gesloten.",
     progressTitle: "Voortgang groepswedstrijden",
     filled: "ingevuld",
@@ -59,8 +60,8 @@ const predictionCopy = {
     redCards: "Rode kaarten totaal",
     fastestGoal: "Snelste goal in minuut",
     examplePrefix: "Bijv.",
-    lateTitle: "Wijzigbaar t/m 28 juni 21:00",
-    lateIntro: "Deze keuzes (samen met de finalisten hierboven) mag je blijven aanpassen tot en met 28 juni 21:00 Nederlandse tijd.",
+    lateTitle: "Wijzigbaar t/m zondag 14 juni 21:00",
+    lateIntro: "Deze keuzes (samen met de finalisten hierboven) mag je blijven aanpassen tot zondag 14 juni 21:00 Nederlandse tijd.",
     champion: "Wereldkampioen",
     championHelp: "(vrij uit alle landen, ongeacht je bracket)",
     chooseChampion: "Kies kampioen",
@@ -94,6 +95,7 @@ const predictionCopy = {
     saved: "Saved.",
     groupTitle: "Group matches",
     groupOpen: "No perfect crystal ball needed: start with your gut and tweak later.",
+    graceNotice: "Unplayed matches, knockouts and bonus questions can still be changed until Sunday 14 June, 21:00!",
     groupClosed: "The main predictions are closed.",
     progressTitle: "Group match progress",
     filled: "filled in",
@@ -113,8 +115,8 @@ const predictionCopy = {
     redCards: "Total red cards",
     fastestGoal: "Fastest goal minute",
     examplePrefix: "e.g.",
-    lateTitle: "Editable until 28 June 21:00",
-    lateIntro: "These choices (together with the finalists above) can still be changed until 28 June 21:00 Amsterdam time.",
+    lateTitle: "Editable until Sunday 14 June 21:00",
+    lateIntro: "These choices (together with the finalists above) can still be changed until Sunday 14 June 21:00 Amsterdam time.",
     champion: "World champion",
     championHelp: "(choose from all countries, regardless of your bracket)",
     chooseChampion: "Choose champion",
@@ -184,9 +186,9 @@ export default async function PredictionsPage({
   const predictionByMatch = new Map((predictions ?? []).map((prediction) => [prediction.match_id, prediction]));
   const bracketByStage = new Map((bracket ?? []).map((row) => [row.stage_key, new Set(row.team_codes as string[])]));
   const now = new Date();
-  const preKickoffBonusOpen = now < ENTRY_DEADLINE;
   const mainOpen = now < ENTRY_GRACE_DEADLINE;
-  const lateOpen = now < POST_GROUP_DEADLINE;
+  const bonusOpen = mainOpen;
+  const lateOpen = mainOpen;
   // Wedstrijden die binnen 30 min vóór de aftrap (of al begonnen) zijn: vergrendeld.
   const lockedMatchIds = (matches ?? []).filter((match) => isMatchLocked(match.starts_at, now)).map((match) => match.id);
   const groupMatchTotal = (matches ?? []).length;
@@ -257,6 +259,7 @@ export default async function PredictionsPage({
           {mainOpen && copy.groupOpen ? (
             <p>{copy.groupOpen}</p>
           ) : null}
+          {mainOpen ? <p className="prediction-grace-notice">{copy.graceNotice}</p> : null}
           {!mainOpen ? <p>{copy.groupClosed}</p> : null}
         </section>
 
@@ -357,7 +360,7 @@ export default async function PredictionsPage({
             <p>{copy.bonusIntro}</p>
           </div>
           <div className="p-4 pt-0">
-          <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!preKickoffBonusOpen}>
+          <fieldset className="mt-4 grid gap-3 md:grid-cols-2" disabled={!bonusOpen}>
             <label className="grid gap-2 text-sm font-bold text-[var(--ink)] md:col-span-2">
               {copy.teamMostGoals}
               <select className="field choice-select" name="team_most_goals_code" defaultValue={special?.team_most_goals_code ?? ""}>

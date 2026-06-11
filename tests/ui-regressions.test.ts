@@ -403,12 +403,15 @@ test("schedule filters fit one row with a compact Dutch flag chip", () => {
   assert.doesNotMatch(scheduleExplorer, />\s*\{scheduleCopy\[locale\]\.netherlandsFilter\}\s*<\/button>/);
 });
 
-test("logged-in homepage uses shorter prediction deadline copy and compact mobile progress bars", () => {
+test("logged-in homepage highlights the 14 June grace rule in orange bold and keeps compact mobile progress bars", () => {
   assert.match(homePage, /dashboardTitle: "Voorspel je WK 2026"/);
   assert.match(homePage, /dashboardIntroBefore: "Deadline:"/);
-  assert.match(homePage, /Respijt tot Oranje begint/);
-  assert.match(homePage, /niet-gespeelde wedstrijden kun je wijzigen tot 14 juni 2026 om 21:00/);
-  assert.match(homePage, /behalve 3 bonusvragen tot einde groepsfase/);
+  assert.match(homePage, /dashboardGraceNotice: "Niet-gespeelde wedstrijden, knock-outs en bonusvragen kun je wijzigen tot 14 juni 2026 om 21:00\."/);
+  assert.match(homePage, /dashboardGraceNotice: "Unplayed matches, knockouts and bonus questions can be changed until 14 June 2026 at 21:00\."/);
+  assert.match(homePage, /<strong className="dashboard-grace-highlight">\{copy\.dashboardGraceNotice\}<\/strong>/);
+  assert.doesNotMatch(homePage, /behalve 3 bonusvragen tot einde groepsfase/);
+  assert.doesNotMatch(homePage, /except 3 bonus questions until the end of the group stage/);
+  assert.match(globalsCss, /\.dashboard-grace-highlight \{[\s\S]*color: #f26a1b;[\s\S]*font-weight: 900;/);
   assert.match(homePage, /dark-panel p-4 text-white sm:p-5/);
   assert.match(homePage, /max-w-\[32rem\] text-\[0\.78rem\] font-medium leading-\[1\.45\]/);
   assert.match(homePage, /dashboard-progress-card mt-3 rounded-lg bg-\[#061b47\] p-2\.5 sm:p-3/);
@@ -424,14 +427,19 @@ test("logged-in homepage uses shorter prediction deadline copy and compact mobil
   assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.home-mobile-user-avatar \.avatar-img \{[\s\S]*width: 78px;[\s\S]*height: 78px;/);
 });
 
-test("prediction edits stay open through the Oranje grace window while pre-kickoff bonus fields still close at kickoff", () => {
+test("prediction edits and bonus fields stay open through the 14 June grace window while every match keeps the 30-minute lock", () => {
   assert.match(constants, /ENTRY_GRACE_DEADLINE_ISO = "2026-06-14T21:00:00\+02:00"/);
-  assert.match(actions, /const canEditPreKickoffBonus = now < ENTRY_DEADLINE;/);
+  assert.match(actions, /const canEditBonus = now < ENTRY_GRACE_DEADLINE;/);
   assert.match(actions, /const canEditMain = now < ENTRY_GRACE_DEADLINE;/);
+  assert.match(actions, /const canEditLate = now < ENTRY_GRACE_DEADLINE;/);
+  assert.doesNotMatch(actions, /canEditPreKickoffBonus/);
+  assert.doesNotMatch(actions, /POST_GROUP_DEADLINE/);
+  assert.doesNotMatch(actions, /POST_GROUP_WINDOW_START/);
   assert.match(actions, /if \(isMatchLocked\(match\.starts_at, now\)\) continue;/);
-  assert.match(predictionsPage, /const preKickoffBonusOpen = now < ENTRY_DEADLINE;/);
-  assert.match(predictionsPage, /const mainOpen = now < ENTRY_GRACE_DEADLINE;/);
-  assert.match(predictionsPage, /disabled=\{!preKickoffBonusOpen\}/);
+  assert.match(actions, /if \(isMatchLocked\(match\.starts_at, now\)\) return \{ ok: false, error: "vergrendeld" \};/);
+  assert.match(predictionsPage, /const bonusOpen = mainOpen;/);
+  assert.match(predictionsPage, /const lateOpen = mainOpen;/);
+  assert.match(predictionsPage, /disabled=\{!bonusOpen\}/);
   assert.match(predictionsPage, /disabled=\{!mainOpen\}/);
 });
 
@@ -778,7 +786,9 @@ test("dashboard copy matches the current prediction deadline and password flow",
   assert.doesNotMatch(homePage, /Vul je wedstrijden en knock-outkeuzes in/);
   assert.match(homePage, /Voorspel je WK 2026/);
   assert.match(homePage, /dashboardIntroBefore: "Deadline:"/);
-  assert.match(homePage, /Respijt tot Oranje begint/);
+  assert.match(homePage, /dashboardGraceNotice: "Niet-gespeelde wedstrijden, knock-outs en bonusvragen kun je wijzigen tot 14 juni 2026 om 21:00\."/);
+  assert.match(homePage, /dashboardGraceNotice: "Unplayed matches, knockouts and bonus questions can be changed until 14 June 2026 at 21:00\."/);
+  assert.doesNotMatch(homePage, /Respijt tot Oranje begint/);
   assert.match(homePage, /max-w-\[32rem\] text-\[0\.78rem\] font-medium leading-\[1\.45\]/);
   assert.match(homePage, /text-base font-bold text-\[var\(--ink\)\] sm:text-lg/);
   assert.match(homePage, /create-pool-title text-lg font-bold/);
@@ -825,13 +835,17 @@ test("prediction saves sync the global status bar progress without requiring rel
   assert.match(statusBar, /setMe\(\(current\)/);
 });
 
-test("prediction page keeps deadline and scoring explanation out of the form because details live in rules", () => {
+test("prediction page shows a short orange grace notice without long scoring explanation", () => {
   assert.match(predictionsPage, /heroSubtitle: "Vul je voorspellingen in en sla op\."/);
   assert.match(predictionsPage, /heroSubtitle: "Fill in your predictions and save\."/);
   assert.match(predictionsPage, /Veel wedstrijden, maar in 10 minuten kun je klaar zijn voor het hele WK/);
   assert.match(predictionsPage, /hero-inline-note/);
   assert.doesNotMatch(predictionsPage, /prediction-helper-panel/);
   assert.match(predictionsPage, /groupOpen: "Geen perfecte glazen bol nodig: vul eerst je gevoel in, verfijn later\."/);
+  assert.match(predictionsPage, /graceNotice: "Nog niet gespeelde wedstrijden, knock-outs en bonusvragen kun je nog wijzigen tot zondag 14 juni 21\.00 uur!"/);
+  assert.match(predictionsPage, /graceNotice: "Unplayed matches, knockouts and bonus questions can still be changed until Sunday 14 June, 21:00!"/);
+  assert.match(predictionsPage, /className="prediction-grace-notice"/);
+  assert.match(globalsCss, /\.prediction-grace-notice \{[\s\S]*color: #f26a1b;[\s\S]*font-weight: 900;/);
   assert.match(predictionsPage, /prediction-title-banner/);
   assert.doesNotMatch(predictionsPage, /Deadlines en puntentelling staan bij Regels/);
   assert.doesNotMatch(predictionsPage, /Details and deadlines are in Rules/);

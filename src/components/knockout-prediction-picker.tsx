@@ -38,7 +38,7 @@ const stageCopy: Record<Locale, Record<StageKey, { title: string; hint: string; 
     },
     finalists: {
       title: "Finale",
-      hint: "Kies precies 2 finalisten. Wijzigbaar t/m 28 juni 21:00.",
+      hint: "Kies precies 2 finalisten. Wijzigbaar t/m zondag 14 juni 21:00.",
       empty: "Kies eerst halvefinalisten; daarna verschijnen hier je opties.",
     },
   },
@@ -60,7 +60,7 @@ const stageCopy: Record<Locale, Record<StageKey, { title: string; hint: string; 
     },
     finalists: {
       title: "Final",
-      hint: "Choose exactly 2 finalists. Editable until 28 June 21:00.",
+      hint: "Choose exactly 2 finalists. Editable until Sunday 14 June 21:00.",
       empty: "Choose semi-finalists first; then your options appear here.",
     },
   },

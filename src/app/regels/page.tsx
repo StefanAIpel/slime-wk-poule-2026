@@ -4,7 +4,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
-import { ENTRY_DEADLINE_ISO, ENTRY_GRACE_DEADLINE_ISO, POST_GROUP_DEADLINE_ISO, scoringRules } from "@/lib/constants";
+import { ENTRY_DEADLINE_ISO, ENTRY_GRACE_DEADLINE_ISO, scoringRules } from "@/lib/constants";
 import { localizedHref, type Locale } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/server-locale";
 
@@ -22,10 +22,10 @@ const rulesCopy = {
     deadlinesTitle: "Deadlines",
     mainDeadlinePrefix: "Inschrijven en invullen kan t/m",
     mainDeadlineSuffix: " (de eerste WK-wedstrijd).",
-    graceDeadlinePrefix: "Respijtperiode: niet-gespeelde groepswedstrijden kun je nog invullen of wijzigen t/m",
-    graceDeadlineSuffix: " — maar elke wedstrijd sluit altijd 30 min vóór de aftrap. Begonnen of gespeelde wedstrijden blijven dicht en leveren zonder voorspelling geen punten op.",
-    lateDeadlinePrefix: "Wereldkampioen, finalisten, penaltyseries en “hoe ver komt Oranje” blijven wijzigbaar t/m",
-    lateDeadlineSuffix: ".",
+    graceDeadlinePrefix: "Respijtperiode: niet-gespeelde groepswedstrijden kun je nog invullen of wijzigen tot",
+    graceDeadlineSuffix: "— maar elke wedstrijd sluit altijd 30 min vóór de aftrap. Gestarte of gespeelde wedstrijden blijven dicht en leveren zonder voorspelling geen punten op.",
+    lateDeadlinePrefix: "Knock-outs en bonusvragen blijven ook wijzigbaar tot",
+    lateDeadlineSuffix: ". Daarna staat alles vast.",
     poolsTitle: "WK-poules",
     poolsBodyPrefix: "Naast de algemene ranglijst kun je",
     poolsBodyStrong: "subpoules",
@@ -82,7 +82,7 @@ const rulesCopy = {
       { q: "Heb ik een wachtwoord nodig?", a: "Nee. Je logt in met een eenmalige link die we naar je e-mailadres sturen." },
       {
         q: "Tot wanneer kan ik invullen?",
-        a: "Je inschrijving loopt t/m donderdag 11 juni 21:00 (de eerste WK-wedstrijd). Daarna is er respijt t/m zondag 14 juni 21:00: groepswedstrijden die nog niet gespeeld zijn kun je dan nog invullen of wijzigen. Elke wedstrijd sluit wel altijd 30 minuten vóór de aftrap — wat al begonnen of gespeeld is, blijft dicht en levert zonder voorspelling geen punten op. Wereldkampioen, finalisten, penaltyseries en 'hoe ver komt Oranje' blijf je aanpassen t/m 28 juni 21:00.",
+        a: "Je inschrijving loopt t/m donderdag 11 juni 21:00 (de eerste WK-wedstrijd). Daarna is er respijt t/m zondag 14 juni 21:00: groepswedstrijden die nog niet gespeeld zijn kun je dan nog invullen of wijzigen. Elke wedstrijd sluit wel altijd 30 minuten vóór de aftrap — wat al begonnen of gespeeld is, blijft dicht en levert zonder voorspelling geen punten op. Knock-outs en bonusvragen kun je ook wijzigen tot zondag 14 juni 21:00; daarna staat alles vast.",
       },
       { q: "Zijn mijn WK 2026-voorspellingen privé?", a: "Ja, tot de deadline. Daarna zijn ze zichtbaar voor je medespelers in dezelfde WK-poule. Je e-mailadres blijft altijd privé." },
       { q: "Hoe werkt de laatste 32?", a: "Die rekenen we automatisch uit jouw voorspelde groepsstanden: de nummers 1 en 2 plus de beste acht nummers 3." },
@@ -106,8 +106,8 @@ const rulesCopy = {
     mainDeadlineSuffix: " (the first World Cup match).",
     graceDeadlinePrefix: "Grace period: group matches that have not been played yet can still be entered or edited until",
     graceDeadlineSuffix: " — but every match always closes 30 min before kick-off. Started or played matches stay locked and score no points without a prediction.",
-    lateDeadlinePrefix: "World champion, finalists, penalty shootouts and “how far will the Netherlands go” remain editable until",
-    lateDeadlineSuffix: ".",
+    lateDeadlinePrefix: "Knockouts and bonus questions also remain editable until",
+    lateDeadlineSuffix: ". After that everything is locked.",
     poolsTitle: "World Cup pools",
     poolsBodyPrefix: "Besides the overall leaderboard you can create or join",
     poolsBodyStrong: "sub-pools",
@@ -179,7 +179,7 @@ const rulesCopy = {
       { q: "Do I need a password?", a: "You can use a password for your account; confirmation and recovery also support email codes." },
       {
         q: "Until when can I fill in predictions?",
-        a: "Entry stays open until Thursday 11 June 21:00 (the first World Cup match). After that there is a grace period until Sunday 14 June 21:00: group matches that have not been played yet can still be entered or edited. Every match still closes 30 minutes before kick-off — anything already started or played stays locked and scores no points without a prediction. World champion, finalists, penalty shootouts and 'how far will the Netherlands go' stay editable until 28 June 21:00.",
+        a: "Entry stays open until Thursday 11 June 21:00 (the first World Cup match). After that there is a grace period until Sunday 14 June 21:00: group matches that have not been played yet can still be entered or edited. Every match still closes 30 minutes before kick-off — anything already started or played stays locked and scores no points without a prediction. Knockouts and bonus questions can also be changed until Sunday 14 June 21:00; after that everything is locked.",
       },
       { q: "Are my World Cup 2026 predictions private?", a: "Yes, until the deadline. After that they are visible to players in the same World Cup pool. Your email address always stays private." },
       { q: "How does the last 32 work?", a: "We calculate it automatically from your predicted group standings: places 1 and 2 plus the best eight third-placed teams." },
@@ -247,7 +247,7 @@ export default async function RulesPage() {
                 {copy.graceDeadlinePrefix} <strong className="text-[var(--ink)]">{formatDeadline(ENTRY_GRACE_DEADLINE_ISO, locale)}</strong>{copy.graceDeadlineSuffix}
               </p>
               <p>
-                {copy.lateDeadlinePrefix} <strong className="text-[var(--ink)]">{formatDeadline(POST_GROUP_DEADLINE_ISO, locale)}</strong>{copy.lateDeadlineSuffix}
+                {copy.lateDeadlinePrefix} <strong className="text-[var(--ink)]">{formatDeadline(ENTRY_GRACE_DEADLINE_ISO, locale)}</strong>{copy.lateDeadlineSuffix}
               </p>
             </div>
           </article>
