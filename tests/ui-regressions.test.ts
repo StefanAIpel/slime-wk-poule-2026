@@ -342,6 +342,12 @@ test("live sticky header has visible menu tabs, predict CTA, hamburger and high-
   assert.match(langMenuBlock, /z-index: 1001;/);
   assert.match(mobileLangMenuBlock, /position: fixed;/);
   assert.match(mobileLangMenuBlock, /top: calc\(101px \+ env\(safe-area-inset-top\)\);/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.live-subsite-header \{[\s\S]*padding: calc\(8px \+ env\(safe-area-inset-top\)\) 8px 8px;/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.live-subsite-header-inner \{[\s\S]*padding-inline: 0;/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.live-subsite-menu \{[\s\S]*grid-template-columns: minmax\(76px, 0\.78fr\) minmax\(88px, 0\.92fr\) minmax\(126px, 1\.3fr\);[\s\S]*gap: 5px;[\s\S]*overflow: visible;/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.live-subsite-menu-link,[\s\S]*\.live-subsite-menu-link-predict \{[\s\S]*min-height: 32px;[\s\S]*font-size: 0\.8rem;/);
+  assert.match(globalsCss, /@media \(min-width: 760px\) \{[\s\S]*\.live-subsite-menu \{[\s\S]*flex: 1 1 auto;[\s\S]*justify-content: flex-start;[\s\S]*gap: 14px;/);
+  assert.match(globalsCss, /@media \(min-width: 760px\) \{[\s\S]*\.live-subsite-menu-link-predict \{[\s\S]*width: 166px;[\s\S]*margin-left: auto;/);
   assert.match(globalsCss, /\.live-subsite-main :where\(\.live-hero-band\) \{[\s\S]*position: relative;[\s\S]*z-index: 0;/);
 });
 
