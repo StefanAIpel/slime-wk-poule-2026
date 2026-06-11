@@ -6,6 +6,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import { Avatar } from "@/components/avatar";
+import { GraceCountdown } from "@/components/grace-countdown";
 import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { LiveFollowBanner } from "@/components/live-follow-banner";
@@ -16,7 +17,7 @@ import { ProfileForm } from "@/components/profile-form";
 import { ShareRow } from "@/components/share-button";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
 import { UpcomingMatches } from "@/components/upcoming-matches";
-import { ENTRY_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
+import { ENTRY_GRACE_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
 import { localizedHref, type Locale } from "@/lib/i18n";
 import { POOL_NAME_MAX_LENGTH, POOL_NAME_MIN_LENGTH } from "@/lib/limits";
@@ -91,6 +92,12 @@ const homeCopy = {
       "3. Maak of join een WK-poule met een code.",
     ],
     dashboardTitle: "Voorspel je WK 2026",
+    dashboardStarted: "WK begonnen! 🎉",
+    dashboardGraceLead: "Tot zondag 14 juni 21:00",
+    dashboardGraceRest: " kun je je voorspelling nog aanvullen of wijzigen. Wedstrijden die eerder worden gespeeld, kun je tot 30 minuten voor aanvang wijzigen.",
+    dashboardAfterGrace: "Na 14 juni kun je alleen nog de 3 bonusvragen wijzigen. Deadline: 28 juni.",
+    countdownLabel: "Nog te wijzigen",
+    countdownClosed: "Gesloten",
     dashboardIntroBefore: "Deadline:",
     dashboardGraceNotice: "Niet-gespeelde wedstrijden, knock-outs en bonusvragen kun je wijzigen tot 14 juni 2026 om 21:00.",
     dashboardIntroAfter: " Daarna staat alles vast.",
@@ -166,6 +173,12 @@ const homeCopy = {
       "3. Create or join a World Cup pool with a code.",
     ],
     dashboardTitle: "Predict your World Cup 2026",
+    dashboardStarted: "The World Cup has started! 🎉",
+    dashboardGraceLead: "Until Sunday 14 June 21:00",
+    dashboardGraceRest: " you can still complete or change your predictions. Matches that kick off earlier can be changed up to 30 minutes before the start.",
+    dashboardAfterGrace: "After 14 June you can only change the 3 bonus questions. Deadline: 28 June.",
+    countdownLabel: "Time left to edit",
+    countdownClosed: "Closed",
     dashboardIntroBefore: "Deadline:",
     dashboardGraceNotice: "Unplayed matches, knockouts and bonus questions can be changed until 14 June 2026 at 21:00.",
     dashboardIntroAfter: " After that everything is locked.",
@@ -359,11 +372,6 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
           : "/voorspellingen",
     locale,
   );
-  const deadlineLabel = new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "nl-NL", {
-    timeZone: "Europe/Amsterdam",
-    dateStyle: "long",
-    timeStyle: "short",
-  }).format(new Date(ENTRY_DEADLINE_ISO));
 
   const siteMessage = activeSiteMessage(await fetchSiteMessage(supabase, "home"), locale);
 
@@ -394,14 +402,16 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
         <div className="grid gap-4">
           <div className="dark-panel p-4 text-white sm:p-5 dashboard-hero-panel">
             <div className="flex items-start justify-between gap-4">
-              <div>
-                <h1 className="text-[1.45rem] font-bold leading-tight md:text-4xl">{copy.dashboardTitle}</h1>
-                <p className="mt-1.5 max-w-[32rem] text-[0.78rem] font-medium leading-[1.45] text-blue-100 sm:text-sm sm:leading-6 md:text-base md:leading-7">
-                  {copy.dashboardIntroBefore}{" "}
-                  <strong className="font-bold text-white">{deadlineLabel}</strong>
-                  {" "}
-                  <strong className="dashboard-grace-highlight">{copy.dashboardGraceNotice}</strong>
-                  {copy.dashboardIntroAfter}
+              <div className="min-w-0">
+                <GraceCountdown deadlineIso={ENTRY_GRACE_DEADLINE_ISO} label={copy.countdownLabel} closedLabel={copy.countdownClosed} />
+                <h1 className="mt-2 text-[1.45rem] font-bold leading-tight md:text-4xl">{copy.dashboardTitle}</h1>
+                <p className="mt-2 max-w-[34rem] text-[0.82rem] font-medium leading-[1.5] text-blue-100 sm:text-sm sm:leading-6 md:text-base md:leading-7">
+                  <strong className="font-bold text-white">{copy.dashboardStarted}</strong>{" "}
+                  <strong className="dashboard-grace-lead">{copy.dashboardGraceLead}</strong>
+                  {copy.dashboardGraceRest}
+                </p>
+                <p className="mt-2 max-w-[34rem] text-[0.82rem] font-medium leading-[1.5] text-blue-100 sm:text-sm sm:leading-6 md:text-base md:leading-7">
+                  {copy.dashboardAfterGrace}
                 </p>
               </div>
               <a href={localizedHref("/account", locale)} className="dashboard-hero-avatar-link hidden md:inline-flex" aria-label={locale === "en" ? "My account" : "Mijn account"}>

@@ -262,6 +262,36 @@ textarea {
   font-weight: 900;
 }
 
+/* Groene nadruk op de wijzig-deadline in de dashboard-tekst. */
+.dashboard-grace-lead {
+  color: #4ade80;
+  font-weight: 900;
+}
+
+/* Aftelklok linksboven in de dashboard-hero: compacte chip. */
+.grace-countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid rgba(74, 222, 128, 0.45);
+  border-radius: 999px;
+  background: rgba(37, 168, 74, 0.18);
+  color: #d8ffe6;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.grace-countdown-label {
+  opacity: 0.85;
+}
+
+.grace-countdown-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 950;
+  color: #ffffff;
+}
+
 .dashboard-hero-avatar-link {
   flex: 0 0 auto;
   align-items: center;
@@ -5914,11 +5944,15 @@ textarea {
   height: 31px;
   flex: 0 0 auto;
   place-items: center;
-  border: 1px solid rgba(8, 22, 52, 0.1);
+  /* Dunne, 70%-transparante witte rand + frosted vulling i.p.v. een dichte witte
+     cirkel; de merk-kleur van de glyph blijft, dus leesbaar op elke poule-kleur. */
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 999px;
-  background: rgba(248, 251, 255, 0.98);
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   color: #0b1f4d;
-  box-shadow: 0 5px 12px rgba(7, 18, 46, 0.12);
+  box-shadow: 0 2px 7px rgba(7, 18, 46, 0.1);
   cursor: pointer;
   text-decoration: none;
 }
@@ -6315,7 +6349,7 @@ textarea {
   .pool-quick-share-button {
     width: 29px;
     height: 29px;
-    box-shadow: 0 5px 12px rgba(7, 18, 46, 0.12);
+    box-shadow: 0 2px 7px rgba(7, 18, 46, 0.1);
   }
 
   .pool-members-section,
