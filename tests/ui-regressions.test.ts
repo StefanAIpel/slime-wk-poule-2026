@@ -179,7 +179,7 @@ test("logged-in status header uses the user's avatar instead of the trophy icon"
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.57"/);
+  assert.match(constants, /APP_VERSION = "0.58"/);
 });
 
 
@@ -1251,15 +1251,23 @@ test("prediction page has FIFA ranking help with compact rank badges in predicti
   assert.match(fifaRankingHelp, /onChange=\{\(event\) => setQuery\(event\.target\.value\)\}/);
   assert.match(fifaRankingHelp, /\[row\.code, row\.name, row\.nameNl\]\.some/);
   assert.match(fifaRankingHelp, /formatMarketValue\(row\.marketValueMillions, locale\)/);
-  assert.match(fifaRankingHelp, /€ \$\{value\.toLocaleString\("nl-NL", \{ maximumFractionDigits: 2 \}\)\} mld/);
-  assert.match(fifaRankingHelp, /€\$\{value\.toFixed\(2\)\}bn/);
+  // Bedragen uniform in miljoen met één decimaal (bijv. "€ 1.520,0 mln").
+  assert.match(fifaRankingHelp, /minimumFractionDigits: 1/);
+  assert.match(fifaRankingHelp, /`€ \$\{formatted\} mln`/);
+  // Geen sources-tekst meer in het paneel; wel een datum in de titelbalk.
+  assert.doesNotMatch(fifaRankingHelp, /fifaRankingSource|squadValueSource|sourceNote/);
+  assert.match(predictionsPage, /fifaHelpDate: "per 10-06-2026"/);
+  assert.match(fifaRankingHelp, /fifa-help-date/);
   // Geen redundante "FIFA-ranking:"-titel meer onder de oranje balk.
   assert.doesNotMatch(predictionsPage, /fifaTitle/);
   assert.doesNotMatch(fifaRankingHelp, /<h2>/);
   assert.match(globalsCss, /\.fifa-ranking-row \{/);
-  assert.match(globalsCss, /grid-template-columns: 42px minmax\(0, 1fr\) auto;/);
-  // Lijst beperkt in hoogte en scrollbaar (±10 landen zichtbaar).
-  assert.match(globalsCss, /\.fifa-ranking-list \{[\s\S]*max-height: min\(60vh, 460px\);[\s\S]*overflow-y: auto;/);
+  assert.match(globalsCss, /grid-template-columns: 30px minmax\(0, 1fr\) 104px;/);
+  // Selectiewaarde-kolom links uitgelijnd.
+  assert.match(globalsCss, /\.fifa-ranking-value \{[\s\S]*justify-self: start;/);
+  // Sticky, compacte hulpbalk (±top 10 zichtbaar).
+  assert.match(globalsCss, /\.fifa-help-details \{[\s\S]*position: sticky;/);
+  assert.match(globalsCss, /\.fifa-ranking-list \{[\s\S]*max-height: min\(44vh, 320px\);[\s\S]*overflow-y: auto;/);
   assert.match(predictionsPage, /teamOptionLabel\(team, locale\)/);
   assert.match(groupPredictionCard, /fifaRankLabel\(match\.home_code\)/);
   // Autosave per wedstrijd: gedebouncede opslag + status-indicator, en server-action.

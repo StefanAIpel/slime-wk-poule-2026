@@ -69,6 +69,7 @@ const predictionCopy = {
     save: "Voorspellingen opslaan",
     helper: "Vul in voor punten; leeg bewaren mag om later af te maken.",
     fifaHelpSummary: "Extra hulp: FIFA-ranking",
+    fifaHelpDate: "per 10-06-2026",
     fifaIntro: "Vetgedrukte landen doen mee aan het WK.",
     fifaSearch: "Zoek land of afkorting",
     fifaNoResults: "Geen land gevonden.",
@@ -122,6 +123,7 @@ const predictionCopy = {
     save: "Save predictions",
     helper: "Fill in for points; leaving it empty is fine if you want to finish later.",
     fifaHelpSummary: "Extra help: FIFA ranking",
+    fifaHelpDate: "as of 10-06-2026",
     fifaIntro: "Bold countries are World Cup teams.",
     fifaSearch: "Search country or code",
     fifaNoResults: "No country found.",
@@ -269,21 +271,20 @@ export default async function PredictionsPage({
         </div>
 
         {groupProgress === 100 ? <PredictionsComplete locale={locale} /> : null}
+      </div>
 
+      <form action={savePredictions} className="grid gap-5">
         <FifaRankingHelp
           locale={locale}
           worldCupTeamCodes={Array.from(worldCupTeamCodes)}
           copy={{
             fifaHelpSummary: copy.fifaHelpSummary,
+            fifaHelpDate: copy.fifaHelpDate,
             fifaIntro: copy.fifaIntro,
             fifaSearch: copy.fifaSearch,
             fifaNoResults: copy.fifaNoResults,
-            sourceNote: copy.sourceNote,
           }}
         />
-      </div>
-
-      <form action={savePredictions} className="grid gap-5">
         <nav className="group-jump" aria-label={copy.jumpLabel}>
           <span className="group-jump-label">{copy.jumpText}</span>
           {groupLetters.map((group) =>
