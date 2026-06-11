@@ -106,7 +106,8 @@ const homeCopy = {
     ],
     dashboardTitle: "Voorspel je WK 2026",
     dashboardIntroBefore: "Deadline:",
-    dashboardIntroAfter: " Respijt tot Oranje begint: niet-gespeelde wedstrijden kun je wijzigen tot 14 juni 2026 om 21:00. Daarna staat alles vast, behalve 3 bonusvragen tot einde groepsfase.",
+    dashboardGraceNotice: "Niet-gespeelde wedstrijden, knock-outs en bonusvragen kun je wijzigen tot 14 juni 2026 om 21:00.",
+    dashboardIntroAfter: " Daarna staat alles vast.",
     progressTitle: "Voortgang",
     progressCount: (filled: number) => `${filled} van 72 uitslagen`,
     remaining: (count: number) => `Nog ${count} wedstrijden in te vullen.`,
@@ -180,7 +181,8 @@ const homeCopy = {
     ],
     dashboardTitle: "Predict your World Cup 2026",
     dashboardIntroBefore: "Deadline:",
-    dashboardIntroAfter: " Grace period until the Netherlands starts: unplayed matches can be changed until 14 June 2026 at 21:00. After that everything is locked, except 3 bonus questions until the end of the group stage.",
+    dashboardGraceNotice: "Unplayed matches, knockouts and bonus questions can be changed until 14 June 2026 at 21:00.",
+    dashboardIntroAfter: " After that everything is locked.",
     progressTitle: "Progress",
     progressCount: (filled: number) => `${filled} of 72 results`,
     remaining: (count: number) => `${count} matches left to predict.`,
@@ -407,6 +409,8 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                 <p className="mt-1.5 max-w-[32rem] text-[0.78rem] font-medium leading-[1.45] text-blue-100 sm:text-sm sm:leading-6 md:text-base md:leading-7">
                   {copy.dashboardIntroBefore}{" "}
                   <strong className="font-bold text-white">{deadlineLabel}</strong>
+                  {" "}
+                  <strong className="dashboard-grace-highlight">{copy.dashboardGraceNotice}</strong>
                   {copy.dashboardIntroAfter}
                 </p>
               </div>
