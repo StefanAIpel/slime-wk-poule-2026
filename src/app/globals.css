@@ -2159,6 +2159,41 @@ textarea {
     color: #d94d0a;
   }
 
+  /* LIVE-markering in het hoofdmenu: alleen zichtbaar als er nu een wedstrijd
+     bezig is; knipperend bolletje, klik opent live.slimescore.com in nieuw tabblad. */
+  .site-header-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #e1262f, #b91c1c);
+    padding: 6px 12px;
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 900;
+    text-decoration: none;
+    box-shadow: 0 6px 14px rgba(185, 28, 28, 0.28);
+  }
+
+  .site-header-live-badge::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ffffff;
+    animation: live-blink 1.2s ease-in-out infinite;
+  }
+
+  .site-header-live-badge:hover {
+    background: linear-gradient(135deg, #c81e26, #991414);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header-live-badge::before {
+      animation: none;
+    }
+  }
+
   .site-header-mini-action {
     display: inline-flex;
     align-items: center;

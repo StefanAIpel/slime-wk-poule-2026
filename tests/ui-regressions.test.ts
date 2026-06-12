@@ -186,7 +186,7 @@ test("special bonus facts do not score before the champion is known", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.75"/);
+  assert.match(constants, /APP_VERSION = "0.76"/);
 });
 
 
@@ -1402,4 +1402,21 @@ test("pool predictions are fetched paginated so the PostgREST cap can't hide mem
   assert.match(poulesPage, /\.range\(from, to\)/);
   // De voorspellingen-fetch mag niet terug naar één ongepagineerde query.
   assert.doesNotMatch(poulesPage, /admin\.from\("predictions"\)\.select\("user_id,match_id,home_score,away_score"\)\.in\("user_id", memberIds\),/);
+});
+
+test("header shows a blinking LIVE badge when a match is on, opening live site in a new tab", async () => {
+  const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
+  const badge = await readFile(new URL("../src/components/live-now-badge.tsx", import.meta.url), "utf8");
+  const route = await readFile(new URL("../src/app/api/live-now/route.ts", import.meta.url), "utf8");
+  assert.match(siteHeader, /<LiveNowBadge locale=\{locale\} \/>/);
+  // Alleen tonen bij een échte live wedstrijd; opent in een apart tabblad.
+  assert.match(badge, /if \(liveCount < 1\) return null;/);
+  assert.match(badge, /target="_blank"/);
+  assert.match(badge, /rel="noopener noreferrer"/);
+  assert.match(badge, /href=\{LIVE_URL\}/);
+  assert.match(route, /isLiveStatus\(fixture\.statusShort\)/);
+  assert.match(route, /!fixture\.friendly/);
+  // Knipperende dot met reduced-motion uitzondering.
+  assert.match(globalsCss, /\.site-header-live-badge::before \{[\s\S]*?animation: live-blink/);
+  assert.match(globalsCss, /prefers-reduced-motion: reduce[\s\S]*?\.site-header-live-badge::before \{\n      animation: none;/);
 });
