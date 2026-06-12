@@ -7,6 +7,7 @@ import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import { Avatar } from "@/components/avatar";
 import { InstallAppCard } from "@/components/install-app-card";
+import { JoinPoolScrollTarget } from "@/components/join-pool-scroll-target";
 import { LoginForm } from "@/components/login-form";
 import { LiveFollowBanner } from "@/components/live-follow-banner";
 import { PasswordResetForm } from "@/components/password-reset-form";
@@ -382,6 +383,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
 
   return (
     <main className="page-shell">
+      <JoinPoolScrollTarget />
       <header className="mb-6 grid gap-4 md:hidden">
         <div className="home-mobile-user-row">
           <a href={localizedHref("/account", locale)} className="home-mobile-user-avatar" aria-label={locale === "en" ? "My account" : "Mijn account"}>
@@ -452,7 +454,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
 
           {remaining === 0 && extraRemaining === 0 ? <PredictionsComplete locale={locale} /> : null}
 
-          <form id="meedoen" action={joinPool} className="panel grid gap-3 p-5 scroll-mt-24">
+          <form id="join-pool-form" action={joinPool} className="panel grid gap-3 p-5 scroll-mt-24">
             <div className="flex items-center gap-2">
               <KeyRound aria-hidden="true" className="size-5 flex-none text-[var(--accent-blue)]" />
               <h2 className="text-base font-bold text-[var(--ink)] sm:text-lg">{copy.joinPoolTitle}</h2>

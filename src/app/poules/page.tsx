@@ -373,7 +373,7 @@ export default async function PoolsPage({
         </div>
       ) : null}
 
-      <Link href={localizedHref("/#meedoen", locale)} className="poules-join-create-link">
+      <Link href={localizedHref("/?meedoen=1", locale)} className="poules-join-create-link">
         <KeyRound aria-hidden="true" className="size-4" />
         {copy.joinCreateLink}
       </Link>
