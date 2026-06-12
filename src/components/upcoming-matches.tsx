@@ -1,7 +1,9 @@
 import { CalendarDays, CheckCircle2, MapPin } from "lucide-react";
 import { TeamFlag } from "@/components/team-flag";
+import { NL_POINTS_MULTIPLIER, isNlMatch } from "@/lib/constants";
 import { formatAmsterdam, teamAbbrev, teamNameForLocale, venueHourOffset, venueLabel, venueShortLabel } from "@/lib/format";
 import { localizedHref, type Locale } from "@/lib/i18n";
+import { scoreMatchPrediction } from "@/lib/scoring";
 import { createOptionalAdminClient } from "@/lib/supabase/admin";
 
 type Row = {
@@ -18,20 +20,38 @@ type Row = {
   away_score: number | null;
   home: { name_nl: string | null } | null;
   away: { name_nl: string | null } | null;
+  userPoints?: number;
 };
 
 type MatchListKind = "upcoming" | "recent";
 
-function ResultBoxes({ home, away, locale }: { home: number | null; away: number | null; locale: Locale }) {
+type MatchListProps = {
+  rows: Row[];
+  kind: MatchListKind;
+  locale: Locale;
+  desktopCompact?: boolean;
+  compactMobileTitle?: boolean;
+};
+
+type PredictionRow = { match_id: number; home_score: number; away_score: number };
+
+function ResultBoxes({ home, away, locale, userPoints }: { home: number | null; away: number | null; locale: Locale; userPoints?: number }) {
   const complete = home !== null && away !== null;
   const label = complete
     ? (locale === "en" ? `Result ${home}-${away}` : `Uitslag ${home}-${away}`)
     : (locale === "en" ? "Result not known yet" : "Uitslag nog niet bekend");
   return (
-    <span className="match-score-boxes" aria-label={label}>
-      <span className={complete ? "score-box score-box-filled" : "score-box"}>{home ?? ""}</span>
-      <span className="score-dash" aria-hidden="true">-</span>
-      <span className={complete ? "score-box score-box-filled" : "score-box"}>{away ?? ""}</span>
+    <span className="match-score-stack">
+      {typeof userPoints === "number" ? (
+        <span className="match-user-points" title={locale === "en" ? "Your points for this match" : "Jouw punten voor deze wedstrijd"}>
+          +{userPoints} {locale === "en" ? "pts" : "pt"}
+        </span>
+      ) : null}
+      <span className="match-score-boxes" aria-label={label}>
+        <span className={complete ? "score-box score-box-filled" : "score-box"}>{home ?? ""}</span>
+        <span className="score-dash" aria-hidden="true">-</span>
+        <span className={complete ? "score-box score-box-filled" : "score-box"}>{away ?? ""}</span>
+      </span>
     </span>
   );
 }
@@ -47,22 +67,26 @@ function TeamLabel({ code, label, nameNl, locale }: { code: string | null; label
   );
 }
 
-function MatchList({ rows, kind, locale }: { rows: Row[]; kind: MatchListKind; locale: Locale }) {
+function MatchList({ rows, kind, locale, desktopCompact = false, compactMobileTitle = false }: MatchListProps) {
   const isRecent = kind === "recent";
   const Icon = isRecent ? CheckCircle2 : CalendarDays;
   const title = isRecent
     ? (locale === "en" ? "Latest WC results" : "Laatst gespeelde WK-wedstrijden")
     : (locale === "en" ? "Upcoming WC matches" : "Eerstvolgende WK-wedstrijden");
+  const mobileTitle = isRecent
+    ? (locale === "en" ? "Past matches" : "Afgelopen wedstrijden")
+    : (locale === "en" ? "Upcoming matches" : "Komende wedstrijden");
   const schemaLabel = locale === "en" ? "Full schedule" : "Hele schema";
 
   if (!rows.length) return null;
 
   return (
-    <div className={`panel match-summary-panel match-summary-panel-${kind} p-3`}>
+    <div className={`panel match-summary-panel match-summary-panel-${kind} ${desktopCompact ? "match-summary-panel-compact" : ""} ${compactMobileTitle ? "match-summary-panel-mobile-short" : ""} p-3`}>
       <div className="mb-1 flex items-center justify-between gap-3">
         <h2 className="flex min-w-0 items-center gap-2 text-base font-bold text-[var(--ink)]">
           <Icon aria-hidden="true" className="size-5 text-[var(--blue)]" />
-          <span className="truncate">{title}</span>
+          <span className="match-title-full truncate">{title}</span>
+          <span className="match-title-mobile-short truncate">{mobileTitle}</span>
         </h2>
         <a href={localizedHref("/schema", locale)} className="schedule-full-button">
           {schemaLabel}
@@ -103,7 +127,7 @@ function MatchList({ rows, kind, locale }: { rows: Row[]; kind: MatchListKind; l
                   <TeamFlag code={m.away_code} name={teamNameForLocale(m.away_code, m.away?.name_nl, locale)} locale={locale} />
                   <TeamLabel code={m.away_code} label={m.away_label} nameNl={m.away?.name_nl ?? null} locale={locale} />
                 </div>
-                <ResultBoxes home={m.home_score} away={m.away_score} locale={locale} />
+                <ResultBoxes home={m.home_score} away={m.away_score} locale={locale} userPoints={m.userPoints} />
               </div>
             </div>
           </div>
@@ -116,7 +140,17 @@ function MatchList({ rows, kind, locale }: { rows: Row[]; kind: MatchListKind; l
 const matchSelect = "id,starts_at,group_letter,venue,home_code,away_code,home_label,away_label,status,home_score,away_score,home:teams!matches_home_code_fkey(name_nl),away:teams!matches_away_code_fkey(name_nl)";
 
 /** Compact lijstje met de eerstvolgende wedstrijden — ook nuttig zonder login. */
-export async function UpcomingMatches({ limit = 3, locale = "nl" }: { limit?: number; locale?: Locale }) {
+export async function UpcomingMatches({
+  limit = 3,
+  locale = "nl",
+  desktopCompact = false,
+  compactMobileTitle = false,
+}: {
+  limit?: number;
+  locale?: Locale;
+  desktopCompact?: boolean;
+  compactMobileTitle?: boolean;
+}) {
   const admin = createOptionalAdminClient();
   if (!admin) return null;
 
@@ -127,11 +161,23 @@ export async function UpcomingMatches({ limit = 3, locale = "nl" }: { limit?: nu
     .order("starts_at", { ascending: true })
     .limit(limit);
 
-  return <MatchList rows={(data ?? []) as unknown as Row[]} kind="upcoming" locale={locale} />;
+  return <MatchList rows={(data ?? []) as unknown as Row[]} kind="upcoming" locale={locale} desktopCompact={desktopCompact} compactMobileTitle={compactMobileTitle} />;
 }
 
 /** Laatste gespeelde wedstrijden met uitslag — getoond onder eerstvolgende wedstrijden. */
-export async function RecentMatches({ limit = 3, locale = "nl" }: { limit?: number; locale?: Locale }) {
+export async function RecentMatches({
+  limit = 3,
+  locale = "nl",
+  desktopCompact = false,
+  compactMobileTitle = false,
+  userId,
+}: {
+  limit?: number;
+  locale?: Locale;
+  desktopCompact?: boolean;
+  compactMobileTitle?: boolean;
+  userId?: string;
+}) {
   const admin = createOptionalAdminClient();
   if (!admin) return null;
 
@@ -143,5 +189,32 @@ export async function RecentMatches({ limit = 3, locale = "nl" }: { limit?: numb
     .order("starts_at", { ascending: false })
     .limit(limit);
 
-  return <MatchList rows={(data ?? []) as unknown as Row[]} kind="recent" locale={locale} />;
+  const rows = (data ?? []) as unknown as Row[];
+  if (!userId || !rows.length) {
+    return <MatchList rows={rows} kind="recent" locale={locale} desktopCompact={desktopCompact} compactMobileTitle={compactMobileTitle} />;
+  }
+
+  const { data: predictions } = await admin
+    .from("predictions")
+    .select("match_id,home_score,away_score")
+    .eq("user_id", userId)
+    .in("match_id", rows.map((row) => row.id));
+  const predictionByMatch = new Map((predictions ?? []).map((prediction) => [prediction.match_id, prediction as PredictionRow]));
+  const rowsWithPoints = rows.map((row) => {
+    const prediction = predictionByMatch.get(row.id);
+    if (!prediction) return { ...row, userPoints: 0 };
+    const multiplier = isNlMatch(row.home_code, row.away_code) ? NL_POINTS_MULTIPLIER : 1;
+    const scored = scoreMatchPrediction(
+      {
+        predictedHome: prediction.home_score,
+        predictedAway: prediction.away_score,
+        actualHome: row.home_score,
+        actualAway: row.away_score,
+      },
+      multiplier,
+    );
+    return { ...row, userPoints: scored.points };
+  });
+
+  return <MatchList rows={rowsWithPoints} kind="recent" locale={locale} desktopCompact={desktopCompact} compactMobileTitle={compactMobileTitle} />;
 }

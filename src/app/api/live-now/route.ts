@@ -12,7 +12,7 @@ type LiveMatch = {
   minute: number | null;
 };
 
-type NextMatch = { home: string; away: string; kickoff: string };
+type NextMatch = { home: string; away: string; homeCode: string | null; awayCode: string | null; homeName: string; awayName: string; kickoff: string };
 
 /** 3-letter code voor de compacte weergave (MEX, RSA), met nette fallback. */
 function shortCode(fixture: LiveFixture, side: "home" | "away") {
@@ -46,7 +46,15 @@ export async function GET() {
     .filter((fixture) => !fixture.friendly && fixture.statusShort === "NS" && !isStartingSoon(fixture, now))
     .sort((a, b) => a.date.localeCompare(b.date))[0];
   const next: NextMatch | null = upcoming
-    ? { home: shortCode(upcoming, "home"), away: shortCode(upcoming, "away"), kickoff: upcoming.date }
+    ? {
+        home: shortCode(upcoming, "home"),
+        away: shortCode(upcoming, "away"),
+        homeCode: upcoming.home.code,
+        awayCode: upcoming.away.code,
+        homeName: upcoming.home.name,
+        awayName: upcoming.away.name,
+        kickoff: upcoming.date,
+      }
     : null;
 
   return NextResponse.json(
