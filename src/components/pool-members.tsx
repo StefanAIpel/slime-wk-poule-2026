@@ -26,6 +26,7 @@ export type PoolMember = {
   teamName: string | null;
   avatarKey: string | null;
   points: number;
+  dailyPoints: number;
   isYou: boolean;
   locked: boolean;
   past: MatchLine[];
@@ -100,6 +101,7 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
                 <Avatar name={member.name} avatarKey={member.avatarKey} size={open ? 34 : 22} />
                 <span className="pool-member-main min-w-0 flex-1 truncate">
                   <span className="pool-member-name font-bold text-[var(--ink)]">{member.name}</span>
+                  {member.dailyPoints > 0 ? <span className="pool-member-daily-score ml-1">(+{member.dailyPoints})</span> : null}
                   {member.isOwner ? (
                     <Crown aria-label={copy.owner} className="ml-1 inline size-4 -translate-y-px text-[#e0a516]" />
                   ) : null}
@@ -108,7 +110,7 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
                   {member.worldRank ? (
                     <span className="pool-member-world ml-1 inline-flex items-center gap-1 text-xs font-semibold text-[#7a8aa3]">
                       <Globe aria-hidden="true" className="size-3" />
-                      {copy.worldRank} #{member.worldRank}
+                      #{member.worldRank}
                     </span>
                   ) : null}
                 </span>

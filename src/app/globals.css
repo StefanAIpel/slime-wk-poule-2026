@@ -5996,13 +5996,11 @@ textarea {
   height: 31px;
   flex: 0 0 auto;
   place-items: center;
-  /* Dunne, 70%-transparante witte rand + frosted vulling i.p.v. een dichte witte
-     cirkel; de merk-kleur van de glyph blijft, dus leesbaar op elke poule-kleur. */
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  /* Alleen de cirkelrand blijft wit zichtbaar; geen melkachtige witte vulling
+     om de deelicoontjes heen, zodat de banner er schoon doorheen loopt. */
+  border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.3);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  background: transparent;
   color: #0b1f4d;
   box-shadow: 0 2px 7px rgba(7, 18, 46, 0.1);
   cursor: pointer;
@@ -6101,6 +6099,13 @@ textarea {
 .pool-member-name,
 .pool-member-points {
   font-size: 0.84rem;
+  line-height: 1.1;
+}
+
+.pool-member-daily-score {
+  color: #16863a;
+  font-size: 0.72rem;
+  font-weight: 500;
   line-height: 1.1;
 }
 
