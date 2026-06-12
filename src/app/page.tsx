@@ -42,6 +42,8 @@ type HomeLeaderboardRow = {
   isDemo?: boolean;
 };
 
+type PoolMemberRankRow = { pool_id: string; user_id: string };
+
 type HomeBracketPrediction = {
   stage_key: string;
   team_codes: string[] | null;
@@ -68,6 +70,16 @@ function selectedCount(teamCodes: string[] | null | undefined, expected: number)
 function hasAnswer(value: string | number | null | undefined) {
   if (typeof value === "number") return Number.isFinite(value);
   return Boolean(value && value.trim());
+}
+
+function poolRankLabel(rank: number, locale: Locale) {
+  if (locale === "en") {
+    const mod10 = rank % 10;
+    const mod100 = rank % 100;
+    const suffix = mod10 === 1 && mod100 !== 11 ? "st" : mod10 === 2 && mod100 !== 12 ? "nd" : mod10 === 3 && mod100 !== 13 ? "rd" : "th";
+    return `(${rank}${suffix})`;
+  }
+  return `(${rank}e)`;
 }
 
 const homeCopy = {
@@ -371,14 +383,36 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
 
   const siteMessage = activeSiteMessage(await fetchSiteMessage(supabase, "home"), locale);
 
-  // Jouw plek op de wereldranglijst: punten dalend, bij gelijke punten alfabetisch.
+  // Jouw plek op de wereldranglijst en per poule: punten dalend, bij gelijke punten alfabetisch.
   const admin = createOptionalAdminClient();
+  const poolRankByPoolId = new Map<string, number>();
   let myRank: number | null = null;
   if (admin) {
     const { data: rankScores } = await admin
       .from("scores")
       .select("user_id,points,profiles(nickname,team_name)");
-    myRank = worldRankForUser(withPublicRankScores((rankScores ?? []) as unknown as RankedScore[]), user.id);
+    const publicRankScores = withPublicRankScores((rankScores ?? []) as unknown as RankedScore[]);
+    myRank = worldRankForUser(publicRankScores, user.id);
+
+    const poolIds = homeMemberships.map((membership) => membership.pools?.id).filter(Boolean) as string[];
+    if (poolIds.length) {
+      const { data: poolMemberRows } = await admin
+        .from("pool_members")
+        .select("pool_id,user_id")
+        .in("pool_id", poolIds);
+      const scoreByUserId = new Map(publicRankScores.map((score) => [score.user_id ?? score.userId ?? "", score]));
+      const memberIdsByPool = new Map<string, string[]>();
+      for (const row of (poolMemberRows ?? []) as PoolMemberRankRow[]) {
+        memberIdsByPool.set(row.pool_id, [...(memberIdsByPool.get(row.pool_id) ?? []), row.user_id]);
+      }
+      for (const [poolId, memberIds] of memberIdsByPool) {
+        const poolScores = memberIds
+          .map((memberId) => scoreByUserId.get(memberId))
+          .filter((score): score is RankedScore => Boolean(score));
+        const rank = worldRankForUser(poolScores, user.id);
+        if (rank) poolRankByPoolId.set(poolId, rank);
+      }
+    }
   }
 
   return (
@@ -404,9 +438,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                 <p className="mt-2 max-w-[34rem] text-[0.82rem] font-medium leading-[1.5] text-blue-100 sm:text-sm sm:leading-6 md:text-base md:leading-7">
                   <strong className="font-bold text-white">{copy.dashboardStarted}</strong>{" "}
                   <strong className="dashboard-grace-lead">{copy.dashboardGraceLead}</strong>
-                  {copy.dashboardGraceRest}
-                </p>
-                <p className="mt-2 max-w-[34rem] text-[0.82rem] font-medium leading-[1.5] text-blue-100 sm:text-sm sm:leading-6 md:text-base md:leading-7">
+                  {copy.dashboardGraceRest}{" "}
                   {copy.dashboardAfterGrace}
                 </p>
               </div>
@@ -528,7 +560,12 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                   <span aria-hidden="true" className="grid size-7 flex-none place-items-center rounded-full bg-[#eef3fc] text-base leading-none">
                     {membership.pools.badge_emoji ?? "🏆"}
                   </span>
-                  <span className="truncate font-bold text-[var(--ink)]">{membership.pools.name}</span>
+                  <span className="truncate font-bold text-[var(--ink)]">
+                    {membership.pools.name}
+                    {poolRankByPoolId.get(membership.pools.id) ? (
+                      <span className="home-pool-rank"> {poolRankLabel(poolRankByPoolId.get(membership.pools.id)!, locale)}</span>
+                    ) : null}
+                  </span>
                   <span className="ml-auto rounded-full bg-[#e7eef8] px-2 py-0.5 text-xs font-bold tracking-wide text-[var(--blue-2)]">
                     {membership.pools.code}
                   </span>
@@ -539,8 +576,8 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
             )}
           </section>
 
-          <UpcomingMatches locale={locale} />
-          <RecentMatches locale={locale} />
+          <RecentMatches locale={locale} desktopCompact compactMobileTitle userId={user.id} />
+          <UpcomingMatches locale={locale} desktopCompact compactMobileTitle />
 
           <a href={localizedHref("/ranglijst", locale)} className="panel flex items-center justify-between gap-3 p-4 no-underline">
             <div className="flex items-center gap-3">
@@ -641,8 +678,8 @@ function PublicHome({
 
       <div className="grid gap-x-5 gap-y-3 md:grid-cols-[minmax(0,1fr)_340px] md:items-start">
         <section className="grid gap-4">
-          <UpcomingMatches locale={locale} />
           <RecentMatches locale={locale} />
+          <UpcomingMatches locale={locale} />
 
           <div className="dark-panel poule-share-panel grid gap-4 p-5 sm:p-6">
             <div className="grid gap-4 poule-share-copy">

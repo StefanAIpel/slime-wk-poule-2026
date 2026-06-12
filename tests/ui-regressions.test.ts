@@ -951,8 +951,9 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(siteHeader, /Uitloggen/);
   assert.match(siteHeader, /site-header-link-row/);
   assert.match(siteHeader, /site-header-utility-row/);
-  assert.match(globalsCss, /\.site-header-nav \{[\s\S]*display: grid;[\s\S]*justify-items: start;/);
-  assert.match(globalsCss, /\.site-header-utility-row \{[\s\S]*justify-content: flex-start;/);
+  assert.match(globalsCss, /\.site-header-nav \{[\s\S]*display: grid;[\s\S]*justify-items: end;/);
+  assert.match(globalsCss, /\.site-header-link-row,\n  \.site-header-utility-row \{[\s\S]*justify-content: flex-end;/);
+  assert.match(globalsCss, /\.site-header-live-row \{[\s\S]*justify-content: flex-start;/);
   assert.match(globalsCss, /\.site-header-next-badge \{[\s\S]*rgba\(206, 17, 38, 0\.11\)/);
   assert.match(quickMenu, /label: "Voorspellen"/);
   assert.doesNotMatch(quickMenu, /WK-poule invullen \/ wijzigen/);
@@ -1176,7 +1177,8 @@ test("world rankings are real Supabase scores without demo rows or fake #1 fallb
   assert.doesNotMatch(rankingLib, /withDemoRankScores|demoRankScores|DEMO_PLAYERS|hasSafePublicProfile/);
   assert.match(rankingPage, /hasPublicProfile\(row\.profiles\)/);
   assert.doesNotMatch(rankingPage, /DEMO_PLAYERS|DEMO_POOLS|demoPlayers|demoPoolRankings|hasSafePublicProfile/);
-  assert.match(homePage, /worldRankForUser\(withPublicRankScores\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\]\), user\.id\)/);
+  assert.match(homePage, /const publicRankScores = withPublicRankScores\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\]\)/);
+  assert.match(homePage, /myRank = worldRankForUser\(publicRankScores, user\.id\)/);
   assert.match(apiMeRoute, /worldRankForUser\(withPublicRankScores\(\(rankScores \?\? \[\]\) as unknown as RankedScore\[\]\), user\.id\)/);
   assert.doesNotMatch(apiMeRoute, /\?\? 1/);
   assert.match(statusBar, /typeof me\.rank === "number"/);
@@ -1197,7 +1199,7 @@ test("small team columns use official 3-letter country abbreviations on mobile",
 });
 
 test("match rows always reserve right-side API score boxes with fixed home-separator-away columns", () => {
-  assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} locale=\{locale\} \/>/);
+  assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} locale=\{locale\} userPoints=\{m\.userPoints\} \/>/);
   assert.match(scheduleExplorer, /<ResultBoxes match=\{match\} locale=\{locale\} \/>/);
   assert.match(globalsCss, /grid-template-columns: var\(--match-home-col, minmax\(118px, 160px\)\) 30px minmax\(0, 1fr\) 62px;/);
   assert.match(globalsCss, /\.schedule-team-grid-knockout \{[\s\S]*--match-home-col: minmax\(160px, 1fr\);/);
@@ -1431,7 +1433,8 @@ test("pool predictions are fetched paginated so the PostgREST cap can't hide mem
 
 test("home match cards use full country names on desktop, 3-letter codes on mobile and show recent results", () => {
   assert.match(homePage, /import \{ RecentMatches, UpcomingMatches \} from "@\/components\/upcoming-matches"/);
-  assert.match(homePage, /<UpcomingMatches locale=\{locale\} \/>[\s\S]*<RecentMatches locale=\{locale\} \/>/);
+  assert.match(homePage, /<RecentMatches locale=\{locale\} desktopCompact compactMobileTitle userId=\{user\.id\} \/>[\s\S]*<UpcomingMatches locale=\{locale\} desktopCompact compactMobileTitle \/>/);
+  assert.match(homePage, /<RecentMatches locale=\{locale\} \/>[\s\S]*<UpcomingMatches locale=\{locale\} \/>/);
   assert.match(upcomingMatches, /export async function RecentMatches/);
   assert.match(upcomingMatches, /Laatst gespeelde WK-wedstrijden/);
   assert.match(upcomingMatches, /Latest WC results/);
@@ -1443,11 +1446,19 @@ test("home match cards use full country names on desktop, 3-letter codes on mobi
   assert.match(globalsCss, /@media \(max-width: 460px\) \{[\s\S]*\.match-team-abbrev \{\n    display: inline;/);
   assert.match(globalsCss, /@media \(max-width: 460px\) \{[\s\S]*\.match-team-full \{\n    display: none;/);
   assert.match(globalsCss, /\.schedule-full-button \{[\s\S]*rgba\(30, 115, 184, 0\.1\)/);
+  assert.match(upcomingMatches, /match-summary-panel-compact/);
+  assert.match(upcomingMatches, /match-title-mobile-short/);
+  assert.match(upcomingMatches, /scoreMatchPrediction/);
+  assert.match(globalsCss, /\.match-summary-panel-compact \.match-team-abbrev \{\n  display: inline;/);
+  assert.match(globalsCss, /\.match-user-points \{[\s\S]*color: #0e7a44;/);
 });
 
 test("logged-in home pool rows deep-link to the selected pool instead of the first pool", () => {
   assert.match(homePage, /<section className="panel grid gap-2 p-4">/);
   assert.match(homePage, /href=\{localizedHref\(`\/poules\?pool=\$\{encodeURIComponent\(membership\.pools\.id\)\}`, locale\)\}/);
+  assert.match(homePage, /poolRankByPoolId\.get\(membership\.pools\.id\)/);
+  assert.match(homePage, /poolRankLabel\(poolRankByPoolId\.get\(membership\.pools\.id\)!/);
+  assert.match(globalsCss, /\.home-pool-rank \{[\s\S]*color: #0e7a44;/);
   assert.match(poulesPage, /<PoolTabs tabs=\{tabs\} initialId=\{params\.pool\} locale=\{locale\}>/);
 });
 
@@ -1471,8 +1482,11 @@ test("header shows a blinking LIVE badge when a match is on, opening live site i
   assert.match(badge, /if \(data\.next\)/);
   assert.match(badge, /Volg live:/);
   assert.match(badge, /Follow live:/);
+  assert.match(badge, /teamNameForLocale\(data\.next\.homeCode/);
+  assert.match(route, /homeName: upcoming\.home\.name/);
   assert.match(badge, /formatKickoff\(data\.next\.kickoff, locale\)/);
   assert.match(globalsCss, /\.site-header-next-badge \{/);
+  assert.match(globalsCss, /\.site-header-next-time \{[\s\S]*color: #b31b2c;/);
   // Knipperende dot met reduced-motion uitzondering.
   assert.match(globalsCss, /\.site-header-live-badge::before \{[\s\S]*?animation: live-blink/);
   assert.match(globalsCss, /prefers-reduced-motion: reduce[\s\S]*?\.site-header-live-badge::before \{\n      animation: none;/);

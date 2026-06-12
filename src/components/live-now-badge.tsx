@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { LIVE_URL } from "@/lib/constants";
+import { teamNameForLocale } from "@/lib/format";
 import type { Locale } from "@/lib/i18n";
 
 type LiveMatch = { id: number; home: string; away: string; homeScore: number; awayScore: number; minute: number | null };
-type NextMatch = { home: string; away: string; kickoff: string };
+type NextMatch = { home: string; away: string; homeCode?: string | null; awayCode?: string | null; homeName?: string | null; awayName?: string | null; kickoff: string };
 type LiveNow = { matches: LiveMatch[]; next: NextMatch | null };
 
 /** Aftrap compact in NL-tijd: vandaag "04:00", anders "12-6 04:00". */
@@ -69,10 +70,12 @@ export function LiveNowBadge({ locale }: { locale: Locale }) {
   }
 
   if (data.next) {
+    const homeName = teamNameForLocale(data.next.homeCode ?? data.next.home, data.next.homeName ?? data.next.home, locale);
+    const awayName = teamNameForLocale(data.next.awayCode ?? data.next.away, data.next.awayName ?? data.next.away, locale);
     return (
       <a href={LIVE_URL} target="_blank" rel="noopener noreferrer" className="site-header-next-badge" aria-label={nextAria}>
         <span className="site-header-next-label">{locale === "en" ? "Follow live:" : "Volg live:"}</span>
-        <span className="site-header-next-match">{data.next.home} – {data.next.away}</span>
+        <span className="site-header-next-match">{homeName} – {awayName}</span>
         <span className="site-header-next-time">{formatKickoff(data.next.kickoff, locale)}</span>
       </a>
     );
