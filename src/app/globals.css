@@ -2090,7 +2090,7 @@ textarea {
     width: min(1100px, 100%);
     margin: 0 auto;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 18px;
     padding: 10px 24px;
@@ -2116,11 +2116,22 @@ textarea {
   }
 
   .site-header-nav {
+    display: grid;
+    justify-items: start;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .site-header-link-row,
+  .site-header-utility-row {
     display: flex;
     align-items: center;
-    gap: 2px;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    gap: 2px;
+  }
+
+  .site-header-utility-row {
+    justify-content: flex-start;
   }
 
   .site-header-nav .language-switcher {
@@ -2209,24 +2220,26 @@ textarea {
     align-items: center;
     gap: 6px;
     border-radius: 999px;
-    border: 1px solid rgba(8, 22, 52, 0.12);
-    background: #eef3fc;
+    border: 1px solid rgba(206, 17, 38, 0.24);
+    background: rgba(206, 17, 38, 0.11);
     padding: 5px 11px;
-    color: var(--blue-2);
+    color: #8f1423;
     font-size: 0.78rem;
-    font-weight: 800;
+    font-weight: 850;
     text-decoration: none;
+    box-shadow: 0 6px 16px rgba(206, 17, 38, 0.08);
   }
 
   .site-header-next-badge:hover {
-    background: #e2ecfb;
+    background: rgba(206, 17, 38, 0.18);
+    border-color: rgba(206, 17, 38, 0.36);
   }
 
   .site-header-next-label {
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    font-size: 0.64rem;
-    opacity: 0.75;
+    letter-spacing: 0.01em;
+    font-size: 0.72rem;
+    font-weight: 900;
+    color: #b31b2c;
   }
 
   .site-header-next-time {
@@ -2737,6 +2750,36 @@ textarea {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.match-team-abbrev {
+  display: none;
+}
+
+.match-team-full {
+  display: inline;
+}
+
+.schedule-full-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(30, 115, 184, 0.22);
+  background: rgba(30, 115, 184, 0.1);
+  padding: 6px 11px;
+  color: #174c85;
+  font-size: 0.78rem;
+  font-weight: 850;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.schedule-full-button:hover {
+  background: rgba(30, 115, 184, 0.18);
+  border-color: rgba(30, 115, 184, 0.35);
 }
 
 .schedule-team-separator {
@@ -5650,6 +5693,14 @@ textarea {
     letter-spacing: -0.01em;
   }
 
+  .match-team-abbrev {
+    display: inline;
+  }
+
+  .match-team-full {
+    display: none;
+  }
+
   .match-location {
     max-width: 30%;
   }
@@ -5676,7 +5727,7 @@ textarea {
   }
 
   .upcoming-team-grid {
-    --match-home-col: minmax(92px, 128px);
+    --match-home-col: minmax(128px, 1fr);
   }
 
   .schedule-team-grid-knockout {

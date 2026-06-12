@@ -812,7 +812,7 @@ test("logged-in dashboard only shows SlimeSoccer in the right column and no Slim
 });
 
 test("homepage promo/ranking stacks keep desktop ranking tight below the pool block and mobile stack low", () => {
-  const loggedInRightColumn = homePage.match(/<div className=\"grid gap-4\">\n\s*<UpcomingMatches[\s\S]*?<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/)?.[0] ?? "";
+  const loggedInRightColumn = homePage.match(/<div className=\"grid gap-4\">\n\s*<section className=\"panel grid gap-2 p-4\">[\s\S]*?<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/)?.[0] ?? "";
   const publicRightColumn = homePage.match(/<aside className=\"public-login-stack[\s\S]*?<\/aside>/)?.[0] ?? "";
   const publicDesktopStack = homePage.match(new RegExp('<PublicPromoStack[\\s\\S]*className=\\"public-desktop-bottom-stack\\"[\\s\\S]*\\/>\\n\\s*<\\/section>'))?.[0] ?? "";
   const publicMobileStack = homePage.match(/<PublicPromoStack[\s\S]*className=\"public-mobile-bottom-stack\"[\s\S]*\/>/)?.[0] ?? "";
@@ -949,7 +949,11 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(siteHeader, /site-header-link-emphasis/);
   assert.match(siteHeader, /site-header-mini-action/);
   assert.match(siteHeader, /Uitloggen/);
-  assert.match(globalsCss, /\.site-header \{[\s\S]*position: sticky;[\s\S]*top: 0;[\s\S]*z-index: 90;/);
+  assert.match(siteHeader, /site-header-link-row/);
+  assert.match(siteHeader, /site-header-utility-row/);
+  assert.match(globalsCss, /\.site-header-nav \{[\s\S]*display: grid;[\s\S]*justify-items: start;/);
+  assert.match(globalsCss, /\.site-header-utility-row \{[\s\S]*justify-content: flex-start;/);
+  assert.match(globalsCss, /\.site-header-next-badge \{[\s\S]*rgba\(206, 17, 38, 0\.11\)/);
   assert.match(quickMenu, /label: "Voorspellen"/);
   assert.doesNotMatch(quickMenu, /WK-poule invullen \/ wijzigen/);
   assert.match(quickMenu, /joinPoolLink = \{ href: "\/\?meedoen=1"/);
@@ -1181,12 +1185,14 @@ test("world rankings are real Supabase scores without demo rows or fake #1 fallb
   assert.doesNotMatch(poulesPage, /withDemoRankScores|gelijke punten = gelijke wereldrang/);
 });
 
-test("small team columns use official 3-letter country abbreviations", () => {
+test("small team columns use official 3-letter country abbreviations on mobile", () => {
   assert.match(formatLib, /teamAbbrev/);
-  assert.match(upcomingMatches, /teamAbbrev\(m\.home_code/);
+  assert.match(upcomingMatches, /const abbrev = teamAbbrev\(code, label \?\? nameNl\)/);
+  assert.match(upcomingMatches, /match-team-abbrev/);
   assert.match(groupPredictionCard, /teamAbbrev\(match\.home_code/);
-  // Eerstvolgende wedstrijden: ook op tablet/desktop afgekort in de compacte dashboardkolom.
-  assert.doesNotMatch(upcomingMatches, /hidden sm:inline">\{m\.home_label/);
+  // Eerstvolgende wedstrijden: mobiel toont afkortingen, desktop kan de landennamen uitschrijven.
+  assert.match(globalsCss, /@media \(max-width: 460px\) \{[\s\S]*\.match-team-abbrev \{\n    display: inline;/);
+  assert.match(globalsCss, /@media \(max-width: 460px\) \{[\s\S]*\.match-team-full \{\n    display: none;/);
   assert.match(globalsCss, /\.upcoming-team-grid \.schedule-team-cell-home \{[\s\S]*justify-content: flex-start;[\s\S]*text-align: left;/);
 });
 
@@ -1423,6 +1429,28 @@ test("pool predictions are fetched paginated so the PostgREST cap can't hide mem
   assert.doesNotMatch(poulesPage, /admin\.from\("predictions"\)\.select\("user_id,match_id,home_score,away_score"\)\.in\("user_id", memberIds\),/);
 });
 
+test("home match cards use full country names on desktop, 3-letter codes on mobile and show recent results", () => {
+  assert.match(homePage, /import \{ RecentMatches, UpcomingMatches \} from "@\/components\/upcoming-matches"/);
+  assert.match(homePage, /<UpcomingMatches locale=\{locale\} \/>[\s\S]*<RecentMatches locale=\{locale\} \/>/);
+  assert.match(upcomingMatches, /export async function RecentMatches/);
+  assert.match(upcomingMatches, /Laatst gespeelde WK-wedstrijden/);
+  assert.match(upcomingMatches, /Latest WC results/);
+  assert.match(upcomingMatches, /className="schedule-full-button"/);
+  assert.match(upcomingMatches, /match-team-abbrev/);
+  assert.match(upcomingMatches, /match-team-full/);
+  assert.match(globalsCss, /\.match-team-abbrev \{\n  display: none;/);
+  assert.match(globalsCss, /\.match-team-full \{\n  display: inline;/);
+  assert.match(globalsCss, /@media \(max-width: 460px\) \{[\s\S]*\.match-team-abbrev \{\n    display: inline;/);
+  assert.match(globalsCss, /@media \(max-width: 460px\) \{[\s\S]*\.match-team-full \{\n    display: none;/);
+  assert.match(globalsCss, /\.schedule-full-button \{[\s\S]*rgba\(30, 115, 184, 0\.1\)/);
+});
+
+test("logged-in home pool rows deep-link to the selected pool instead of the first pool", () => {
+  assert.match(homePage, /<section className="panel grid gap-2 p-4">/);
+  assert.match(homePage, /href=\{localizedHref\(`\/poules\?pool=\$\{encodeURIComponent\(membership\.pools\.id\)\}`, locale\)\}/);
+  assert.match(poulesPage, /<PoolTabs tabs=\{tabs\} initialId=\{params\.pool\} locale=\{locale\}>/);
+});
+
 test("header shows a blinking LIVE badge when a match is on, opening live site in a new tab", async () => {
   const siteHeader = await readFile(new URL("../src/components/site-header.tsx", import.meta.url), "utf8");
   const badge = await readFile(new URL("../src/components/live-now-badge.tsx", import.meta.url), "utf8");
@@ -1441,6 +1469,8 @@ test("header shows a blinking LIVE badge when a match is on, opening live site i
   assert.match(route, /statusShort === "NS" && !isStartingSoon\(fixture, now\)/);
   assert.match(route, /next: NextMatch \| null/);
   assert.match(badge, /if \(data\.next\)/);
+  assert.match(badge, /Volg live:/);
+  assert.match(badge, /Follow live:/);
   assert.match(badge, /formatKickoff\(data\.next\.kickoff, locale\)/);
   assert.match(globalsCss, /\.site-header-next-badge \{/);
   // Knipperende dot met reduced-motion uitzondering.
