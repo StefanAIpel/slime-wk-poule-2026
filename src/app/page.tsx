@@ -425,6 +425,9 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
           </a>
           <Brand hideIcon locale={locale} />
         </div>
+        <div className="home-mobile-live-banner">
+          <LiveFollowBanner locale={locale} />
+        </div>
       </header>
 
       <SiteMessageBanner body={siteMessage} />
@@ -602,7 +605,9 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
             <span className="font-bold text-[var(--accent-blue)]">{copy.view}</span>
           </a>
 
-          <LiveFollowBanner locale={locale} />
+          <div className="home-side-live-banner">
+            <LiveFollowBanner locale={locale} />
+          </div>
           <SlimeSoccerBanner includeVolley={false} locale={locale} />
         </div>
       </section>
@@ -680,8 +685,12 @@ function PublicHome({
         </div>
       </div>
 
+      <div className="public-hero-live-banner">
+        <LiveFollowBanner locale={locale} />
+      </div>
+
       <div className="grid gap-x-5 gap-y-3 md:grid-cols-[minmax(0,1fr)_340px] md:items-start">
-        <section className="grid gap-4">
+        <section className="public-home-match-stack grid gap-4">
           <RecentMatches locale={locale} />
           <UpcomingMatches locale={locale} />
 
@@ -751,6 +760,7 @@ function PublicHome({
           className="public-mobile-bottom-stack"
           copy={copy}
           displayRows={displayRows}
+          includeLiveBanner={false}
           locale={locale}
         />
       </div>
@@ -765,11 +775,13 @@ function PublicPromoStack({
   className,
   copy,
   displayRows,
+  includeLiveBanner = true,
   locale,
 }: {
   className: string;
   copy: PublicHomeCopy;
   displayRows: HomeLeaderboardRow[];
+  includeLiveBanner?: boolean;
   locale: Locale;
 }) {
   return (
@@ -794,7 +806,7 @@ function PublicPromoStack({
           ))}
         </div>
       </a>
-      <LiveFollowBanner locale={locale} />
+      {includeLiveBanner ? <LiveFollowBanner locale={locale} /> : null}
       <SlimeSoccerBanner includeVolley={false} fullWidth locale={locale} />
     </div>
   );
