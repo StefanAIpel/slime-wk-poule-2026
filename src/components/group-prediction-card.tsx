@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { autosavePrediction } from "@/app/actions";
 import { TeamFlag } from "@/components/team-flag";
+import { NL_POINTS_MULTIPLIER, isNlMatch } from "@/lib/constants";
 import { fifaRankLabel } from "@/lib/fifa-ranking";
 import { formatAmsterdam, teamAbbrev, teamNameForLocale, venueLabel } from "@/lib/format";
 import {
@@ -13,6 +14,7 @@ import {
   type ScoreLookup,
 } from "@/lib/group-standings";
 import type { Locale } from "@/lib/i18n";
+import { scoreMatchPrediction } from "@/lib/scoring";
 import type { MatchWithTeams } from "@/lib/types";
 
 type Score = { home: number | null; away: number | null };
@@ -72,6 +74,22 @@ function scoreMapFromState(scores: Record<number, Score>): ScoreLookup {
     if (score.home !== null && score.away !== null) map.set(Number(id), { home: score.home, away: score.away });
   }
   return map;
+}
+
+function finishedMatchPoints(match: MatchWithTeams, score: Score | undefined): number | null {
+  if (match.status !== "finished") return null;
+  if (!score || score.home === null || score.away === null) return 0;
+  if (match.home_score === null || match.away_score === null) return null;
+  const multiplier = isNlMatch(match.home_code, match.away_code) ? NL_POINTS_MULTIPLIER : 1;
+  return scoreMatchPrediction(
+    {
+      predictedHome: score.home,
+      predictedAway: score.away,
+      actualHome: match.home_score,
+      actualAway: match.away_score,
+    },
+    multiplier,
+  ).points;
 }
 
 export function GroupPredictionCard({ group, matches, initialScores, disabled, lockedIds, locale = "nl" }: GroupPredictionCardProps) {
@@ -188,6 +206,7 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled, l
             const homeRank = fifaRankLabel(match.home_code);
             const awayRank = fifaRankLabel(match.away_code);
             const locked = lockedSet.has(match.id);
+            const matchPoints = finishedMatchPoints(match, existing);
             return (
               <div key={match.id} className={`p-3 md:p-4${locked ? " opacity-60" : ""}`}>
                 <div className="mb-1.5 flex items-center justify-between gap-2 text-xs font-medium text-[var(--muted)]">
@@ -195,14 +214,21 @@ export function GroupPredictionCard({ group, matches, initialScores, disabled, l
                     {formatAmsterdam(match.starts_at, dateLocale)}
                     {match.venue ? ` · ${venueLabel(match.venue)}` : ""}
                   </span>
-                  {locked ? (
-                    <span className="flex-none rounded-full bg-slate-200 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-slate-600">
+                  {matchPoints !== null ? (
+                    <span
+                      className="prediction-match-points"
+                      title={locale === "en" ? "Your points for this match" : "Jouw punten voor deze wedstrijd"}
+                    >
+                      +{matchPoints}
+                    </span>
+                  ) : locked ? (
+                    <span className="prediction-locked-pill">
                       {copy.locked}
                     </span>
                   ) : null}
                 </div>
                 <fieldset
-                  className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2"
+                  className="prediction-match-fieldset grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2"
                   disabled={disabled || locked}
                 >
                   <legend className="sr-only">{copy.predict(homeName, awayName)}</legend>

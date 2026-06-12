@@ -35,18 +35,13 @@ type MatchListProps = {
 
 type PredictionRow = { match_id: number; home_score: number; away_score: number };
 
-function ResultBoxes({ home, away, locale, userPoints }: { home: number | null; away: number | null; locale: Locale; userPoints?: number }) {
+function ResultBoxes({ home, away, locale }: { home: number | null; away: number | null; locale: Locale }) {
   const complete = home !== null && away !== null;
   const label = complete
     ? (locale === "en" ? `Result ${home}-${away}` : `Uitslag ${home}-${away}`)
     : (locale === "en" ? "Result not known yet" : "Uitslag nog niet bekend");
   return (
     <span className="match-score-stack">
-      {typeof userPoints === "number" ? (
-        <span className="match-user-points" title={locale === "en" ? "Your points for this match" : "Jouw punten voor deze wedstrijd"}>
-          +{userPoints} {locale === "en" ? "pts" : "pt"}
-        </span>
-      ) : null}
       <span className="match-score-boxes" aria-label={label}>
         <span className={complete ? "score-box score-box-filled" : "score-box"}>{home ?? ""}</span>
         <span className="score-dash" aria-hidden="true">-</span>
@@ -113,6 +108,11 @@ function MatchList({ rows, kind, locale, desktopCompact = false, compactMobileTi
                     <span className="hidden sm:inline">{venueLabel(m.venue)}</span>
                   </span>
                 ) : null}
+                {typeof m.userPoints === "number" ? (
+                  <span className="match-user-points" title={locale === "en" ? "Your points for this match" : "Jouw punten voor deze wedstrijd"}>
+                    +{m.userPoints} {locale === "en" ? "pts" : "pt"}
+                  </span>
+                ) : null}
               </div>
               <div className="upcoming-team-grid mt-2 text-sm">
                 <div className="schedule-team-cell schedule-team-cell-home">
@@ -127,7 +127,7 @@ function MatchList({ rows, kind, locale, desktopCompact = false, compactMobileTi
                   <TeamFlag code={m.away_code} name={teamNameForLocale(m.away_code, m.away?.name_nl, locale)} locale={locale} />
                   <TeamLabel code={m.away_code} label={m.away_label} nameNl={m.away?.name_nl ?? null} locale={locale} />
                 </div>
-                <ResultBoxes home={m.home_score} away={m.away_score} locale={locale} userPoints={m.userPoints} />
+                <ResultBoxes home={m.home_score} away={m.away_score} locale={locale} />
               </div>
             </div>
           </div>

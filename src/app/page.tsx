@@ -429,122 +429,126 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
 
       <SiteMessageBanner body={siteMessage} />
 
-      <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
-        <div className="grid gap-4">
-          <div className="dark-panel p-4 text-white sm:p-5 dashboard-hero-panel">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                <h1 className="text-[1.45rem] font-bold leading-tight md:text-4xl">{copy.dashboardTitle}</h1>
-                <p className="mt-2 max-w-[34rem] text-[0.82rem] font-medium leading-[1.5] text-blue-100 sm:text-sm sm:leading-6 md:text-base md:leading-7">
-                  <strong className="font-bold text-white">{copy.dashboardStarted}</strong>{" "}
-                  <strong className="dashboard-grace-lead">{copy.dashboardGraceLead}</strong>
-                  {copy.dashboardGraceRest}{" "}
-                  {copy.dashboardAfterGrace}
-                </p>
-              </div>
-              <a href={localizedHref("/account", locale)} className="dashboard-hero-avatar-link hidden md:inline-flex" aria-label={locale === "en" ? "My account" : "Mijn account"}>
-                <Avatar name={nickname || copy.you} avatarKey={profile?.avatar_key} size={116} />
-              </a>
-            </div>
-            <div className="dashboard-progress-card mt-3 rounded-lg bg-[#061b47] p-2.5 sm:p-3">
-              <div className="flex items-end justify-between gap-3">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-normal text-blue-100">{copy.progressTitle}</p>
-                  <p className="text-2xl font-bold sm:text-3xl">{progress}%</p>
+      <section className="home-dashboard-layout grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
+        <div className="home-main-stack grid gap-4 lg:col-start-1">
+          <div className="home-hero-stack">
+            <div className="dark-panel p-4 text-white sm:p-5 dashboard-hero-panel">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <h1 className="text-[1.45rem] font-bold leading-tight md:text-4xl">{copy.dashboardTitle}</h1>
+                  <p className="mt-2 max-w-[34rem] text-[0.82rem] font-medium leading-[1.5] text-blue-100 sm:text-sm sm:leading-6 md:text-base md:leading-7">
+                    <strong className="font-bold text-white">{copy.dashboardStarted}</strong>{" "}
+                    <strong className="dashboard-grace-lead">{copy.dashboardGraceLead}</strong>
+                    {copy.dashboardGraceRest}{" "}
+                    {copy.dashboardAfterGrace}
+                  </p>
                 </div>
-                <p className="text-right text-xs font-semibold text-blue-100 sm:text-sm">{copy.progressCount(predictionCount ?? 0)}</p>
+                <a href={localizedHref("/account", locale)} className="dashboard-hero-avatar-link hidden md:inline-flex" aria-label={locale === "en" ? "My account" : "Mijn account"}>
+                  <Avatar name={nickname || copy.you} avatarKey={profile?.avatar_key} size={116} />
+                </a>
               </div>
-              <div className="dashboard-progress-bar mt-2 h-2.5 overflow-hidden rounded-full bg-black/32 sm:h-3">
-                <div className="h-full rounded-full bg-[#25a84a]" style={{ width: `${Math.min(progress, 100)}%` }} />
-              </div>
-              <p className="mt-2 text-xs font-semibold text-blue-100 sm:text-sm">
-                {remaining > 0 ? copy.remaining(remaining) : copy.complete}
-              </p>
-              <div className={`mt-3 rounded-lg border p-2.5 ${extraRemaining > 0 ? "border-amber-300 bg-amber-50 text-[#8a5a00]" : "border-green-300 bg-green-50 text-[#137c35]"}`}>
+              <div className="dashboard-progress-card mt-3 rounded-lg bg-[#061b47] p-2.5 sm:p-3">
                 <div className="flex items-end justify-between gap-3">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-normal">{copy.extraProgressTitle}</p>
-                    <p className="text-xl font-bold tabular-nums sm:text-2xl">{extraProgress}%</p>
+                    <p className="text-xs font-bold uppercase tracking-normal text-blue-100">{copy.progressTitle}</p>
+                    <p className="text-2xl font-bold sm:text-3xl">{progress}%</p>
                   </div>
-                  <p className="text-right text-xs font-bold tabular-nums sm:text-sm">{copy.extraProgressCount(extraFilled, EXTRA_PROGRESS_TOTAL)}</p>
+                  <p className="text-right text-xs font-semibold text-blue-100 sm:text-sm">{copy.progressCount(predictionCount ?? 0)}</p>
                 </div>
-                <div className="dashboard-extra-progress-bar mt-2 h-2 overflow-hidden rounded-full bg-white/70">
-                  <div
-                    className={`h-full rounded-full ${extraRemaining > 0 ? "bg-[#f59e0b]" : "bg-[#25a84a]"}`}
-                    style={{ width: `${Math.min(extraProgress, 100)}%` }}
-                  />
+                <div className="dashboard-progress-bar mt-2 h-2.5 overflow-hidden rounded-full bg-black/32 sm:h-3">
+                  <div className="h-full rounded-full bg-[#25a84a]" style={{ width: `${Math.min(progress, 100)}%` }} />
                 </div>
-                <p className="mt-2 text-xs font-bold sm:text-sm">
-                  {extraRemaining > 0 ? copy.extraProgressOpen(knockoutRemaining, bonusRemaining) : copy.extraProgressComplete}
+                <p className="mt-2 text-xs font-semibold text-blue-100 sm:text-sm">
+                  {remaining > 0 ? copy.remaining(remaining) : copy.complete}
                 </p>
+                <div className={`mt-3 rounded-lg border p-2.5 ${extraRemaining > 0 ? "border-amber-300 bg-amber-50 text-[#8a5a00]" : "border-green-300 bg-green-50 text-[#137c35]"}`}>
+                  <div className="flex items-end justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-normal">{copy.extraProgressTitle}</p>
+                      <p className="text-xl font-bold tabular-nums sm:text-2xl">{extraProgress}%</p>
+                    </div>
+                    <p className="text-right text-xs font-bold tabular-nums sm:text-sm">{copy.extraProgressCount(extraFilled, EXTRA_PROGRESS_TOTAL)}</p>
+                  </div>
+                  <div className="dashboard-extra-progress-bar mt-2 h-2 overflow-hidden rounded-full bg-white/70">
+                    <div
+                      className={`h-full rounded-full ${extraRemaining > 0 ? "bg-[#f59e0b]" : "bg-[#25a84a]"}`}
+                      style={{ width: `${Math.min(extraProgress, 100)}%` }}
+                    />
+                  </div>
+                  <p className="mt-2 text-xs font-bold sm:text-sm">
+                    {extraRemaining > 0 ? copy.extraProgressOpen(knockoutRemaining, bonusRemaining) : copy.extraProgressComplete}
+                  </p>
+                </div>
+                <a href={predictionsHref} className="button-primary mt-3 w-full justify-center">
+                  {predictionsCtaLabel}
+                </a>
               </div>
-              <a href={predictionsHref} className="button-primary mt-3 w-full justify-center">
-                {predictionsCtaLabel}
-              </a>
             </div>
           </div>
 
-          {remaining === 0 && extraRemaining === 0 ? <PredictionsComplete locale={locale} /> : null}
+          <div className="home-form-stack grid gap-4">
+            {remaining === 0 && extraRemaining === 0 ? <PredictionsComplete locale={locale} /> : null}
 
-          <form id="join-pool-form" action={joinPool} className="panel grid gap-3 p-5 scroll-mt-24">
-            <div className="flex items-center gap-2">
-              <KeyRound aria-hidden="true" className="size-5 flex-none text-[var(--accent-blue)]" />
-              <h2 className="text-base font-bold text-[var(--ink)] sm:text-lg">{copy.joinPoolTitle}</h2>
-            </div>
-            <p className="text-xs font-medium leading-5 text-[var(--text-muted)] sm:text-sm sm:leading-6">
-              {copy.joinPoolIntro}
-            </p>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <input
-                name="code"
-                required
-                maxLength={10}
-                placeholder={copy.joinCodePlaceholder}
-                autoComplete="off"
-                autoCapitalize="characters"
-                className="field flex-1 uppercase tracking-wide"
-                aria-label={copy.joinCodeAria}
-              />
-              <button type="submit" className="button-primary justify-center px-5">{copy.joinButton}</button>
-            </div>
-          </form>
+            <form id="join-pool-form" action={joinPool} className="panel grid gap-3 p-5 scroll-mt-24">
+              <div className="flex items-center gap-2">
+                <KeyRound aria-hidden="true" className="size-5 flex-none text-[var(--accent-blue)]" />
+                <h2 className="text-base font-bold text-[var(--ink)] sm:text-lg">{copy.joinPoolTitle}</h2>
+              </div>
+              <p className="text-xs font-medium leading-5 text-[var(--text-muted)] sm:text-sm sm:leading-6">
+                {copy.joinPoolIntro}
+              </p>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <input
+                  name="code"
+                  required
+                  maxLength={10}
+                  placeholder={copy.joinCodePlaceholder}
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  className="field flex-1 uppercase tracking-wide"
+                  aria-label={copy.joinCodeAria}
+                />
+                <button type="submit" className="button-primary justify-center px-5">{copy.joinButton}</button>
+              </div>
+            </form>
 
-          <form action={createPool} className="panel create-pool-card grid gap-3 p-5">
-            <div className="flex items-center gap-2">
-              <PlusCircle aria-hidden="true" className="create-pool-icon size-5 flex-none" />
-              <h2 className="create-pool-title text-lg font-bold">{copy.createPoolTitle}</h2>
-            </div>
-            <p className="create-pool-copy text-sm font-medium leading-6">
-              {copy.createPoolIntro}
-            </p>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <input
-                name="name"
-                required
-                minLength={POOL_NAME_MIN_LENGTH}
-                maxLength={POOL_NAME_MAX_LENGTH}
-                placeholder={copy.createPoolPlaceholder}
-                className="field create-pool-field flex-1"
-                aria-label={copy.createPoolAria}
-              />
-              <button type="submit" className="button-primary create-pool-button justify-center px-5">{copy.createPoolButton}</button>
-            </div>
-            <div className="create-pool-share share-panel-strip" aria-label={copy.sharePanelLabel}>
-              <p className="share-panel-title">{copy.sharePanelTitle}</p>
-              <ShareRow
-                url={locale === "en" ? `${SITE_URL}/en` : SITE_URL}
-                text={copy.generalShareText}
-                title={copy.generalShareTitle}
-                messages={copy.generalShareMessages}
-                locale={locale}
-                compact
-                onDark
-              />
-            </div>
-          </form>
+            <form action={createPool} className="panel create-pool-card grid gap-3 p-5">
+              <div className="flex items-center gap-2">
+                <PlusCircle aria-hidden="true" className="create-pool-icon size-5 flex-none" />
+                <h2 className="create-pool-title text-lg font-bold">{copy.createPoolTitle}</h2>
+              </div>
+              <p className="create-pool-copy text-sm font-medium leading-6">
+                {copy.createPoolIntro}
+              </p>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <input
+                  name="name"
+                  required
+                  minLength={POOL_NAME_MIN_LENGTH}
+                  maxLength={POOL_NAME_MAX_LENGTH}
+                  placeholder={copy.createPoolPlaceholder}
+                  className="field create-pool-field flex-1"
+                  aria-label={copy.createPoolAria}
+                />
+                <button type="submit" className="button-primary create-pool-button justify-center px-5">{copy.createPoolButton}</button>
+              </div>
+              <div className="create-pool-share share-panel-strip" aria-label={copy.sharePanelLabel}>
+                <p className="share-panel-title">{copy.sharePanelTitle}</p>
+                <ShareRow
+                  url={locale === "en" ? `${SITE_URL}/en` : SITE_URL}
+                  text={copy.generalShareText}
+                  title={copy.generalShareTitle}
+                  messages={copy.generalShareMessages}
+                  locale={locale}
+                  compact
+                  onDark
+                />
+              </div>
+            </form>
+          </div>
         </div>
 
-        <div className="grid gap-4">
+        <div className="home-side-stack grid gap-4 lg:col-start-2 lg:row-start-1">
           <section className="panel grid gap-2 p-4">
             <a href={localizedHref("/poules", locale)} className="flex items-center justify-between gap-3 no-underline">
               <h2 className="text-lg font-bold text-[var(--ink)]">{copy.myPoolsTitle}</h2>
