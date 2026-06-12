@@ -1,5 +1,6 @@
 import { ArrowRight, CalendarDays, ListOrdered } from "lucide-react";
 import { LiveAutoRefresh } from "@/components/live-auto-refresh";
+import { LivePoll } from "@/components/live-poll";
 import { ShareRow } from "@/components/share-button";
 import { SiteMessageBanner } from "@/components/site-message-banner";
 import { TeamFlag } from "@/components/team-flag";
@@ -287,16 +288,21 @@ export default async function LivePage({ searchParams }: { searchParams: Promise
       <Hero locale={locale} />
       <SiteMessageBanner body={siteMessage} />
       <div className="live-sections-grid">
-        <Section title={c.now} tone="live" fixtures={live} empty={c.emptyNow} locale={locale} goalsByFixture={goalsByFixture} />
-        <Section title={c.latest} tone="latest" fixtures={recent} empty={c.emptyLatest} locale={locale} action={{ href: "/live/schema", label: c.moreMatches, icon: "arrow" }} />
-        <Section
-          title={showAllUpcoming ? c.upcomingAll : c.upcoming}
-          tone="upcoming"
-          fixtures={upcomingFixtures}
-          empty={c.emptyUpcoming}
-          locale={locale}
-          action={showAllUpcoming ? { href: "/live", label: c.compactUpcoming, icon: "arrow" } : { href: "/live?view=upcoming#alle-komende", label: c.allUpcoming, icon: "list" }}
-        />
+        <div className="live-col-main">
+          <Section title={c.now} tone="live" fixtures={live} empty={c.emptyNow} locale={locale} goalsByFixture={goalsByFixture} />
+        </div>
+        <div className="live-col-side">
+          <LivePoll locale={locale} />
+          <Section title={c.latest} tone="latest" fixtures={recent} empty={c.emptyLatest} locale={locale} action={{ href: "/live/schema", label: c.moreMatches, icon: "arrow" }} />
+          <Section
+            title={showAllUpcoming ? c.upcomingAll : c.upcoming}
+            tone="upcoming"
+            fixtures={upcomingFixtures}
+            empty={c.emptyUpcoming}
+            locale={locale}
+            action={showAllUpcoming ? { href: "/live", label: c.compactUpcoming, icon: "arrow" } : { href: "/live?view=upcoming#alle-komende", label: c.allUpcoming, icon: "list" }}
+          />
+        </div>
       </div>
     </div>
   );
