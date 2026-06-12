@@ -2090,13 +2090,13 @@ textarea {
     width: min(1100px, 100%);
     margin: 0 auto;
     display: grid;
-    gap: 6px;
-    padding: 10px 24px;
+    gap: 4px;
+    padding: 8px 24px 9px;
   }
 
   .site-header-top-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 18px;
   }
@@ -2121,10 +2121,18 @@ textarea {
   }
 
   .site-header-nav {
-    display: grid;
-    justify-items: end;
-    gap: 6px;
+    display: flex;
+    justify-content: flex-end;
     min-width: 0;
+    padding-top: 5px;
+  }
+
+  .site-header-second-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-height: 32px;
   }
 
   .site-header-link-row,
@@ -2139,10 +2147,15 @@ textarea {
   .site-header-live-row {
     display: flex;
     justify-content: flex-start;
-    min-height: 32px;
+    min-width: 0;
+    padding-left: 70px;
   }
 
-  .site-header-nav .language-switcher {
+  .site-header-utility-row {
+    flex: 1 0 auto;
+  }
+
+  .site-header-utility-row .language-switcher {
     margin-left: 4px;
   }
 
