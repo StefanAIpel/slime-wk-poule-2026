@@ -950,10 +950,12 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(siteHeader, /site-header-mini-action/);
   assert.match(siteHeader, /Uitloggen/);
   assert.match(siteHeader, /site-header-link-row/);
+  assert.match(siteHeader, /site-header-second-row/);
   assert.match(siteHeader, /site-header-utility-row/);
-  assert.match(globalsCss, /\.site-header-nav \{[\s\S]*display: grid;[\s\S]*justify-items: end;/);
+  assert.match(globalsCss, /\.site-header-nav \{[\s\S]*display: flex;[\s\S]*justify-content: flex-end;/);
+  assert.match(globalsCss, /\.site-header-second-row \{[\s\S]*justify-content: space-between;/);
   assert.match(globalsCss, /\.site-header-link-row,\n  \.site-header-utility-row \{[\s\S]*justify-content: flex-end;/);
-  assert.match(globalsCss, /\.site-header-live-row \{[\s\S]*justify-content: flex-start;/);
+  assert.match(globalsCss, /\.site-header-live-row \{[\s\S]*justify-content: flex-start;[\s\S]*padding-left: 70px;/);
   assert.match(globalsCss, /\.site-header-next-badge \{[\s\S]*rgba\(206, 17, 38, 0\.11\)/);
   assert.match(quickMenu, /label: "Voorspellen"/);
   assert.doesNotMatch(quickMenu, /WK-poule invullen \/ wijzigen/);

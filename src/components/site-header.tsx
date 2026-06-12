@@ -88,32 +88,34 @@ export function SiteHeader() {
                 );
               })}
             </div>
-            <div className="site-header-utility-row">
-              <LanguageSwitcher />
-              {loggedIn ? (
-                <>
-                  <Link href={localizedHref("/account", locale)} className="site-header-mini-action">
-                    <UserCog aria-hidden="true" className="size-3.5" />
-                    {locale === "en" ? "Account" : "Account"}
-                  </Link>
-                  <form action="/logout" method="post">
-                    <button className="site-header-mini-action" type="submit">
-                      <LogOut aria-hidden="true" className="size-3.5" />
-                      {locale === "en" ? "Log out" : "Uitloggen"}
-                    </button>
-                  </form>
-                </>
-              ) : (
-                <Link href={localizedHref("/aanmelden", locale)} className="site-header-cta site-header-cta-primary">
-                  <LogIn aria-hidden="true" className="size-4" />
-                  {locale === "en" ? "Sign up" : "Aanmelden"}
-                </Link>
-              )}
-            </div>
           </nav>
         </div>
-        <div className="site-header-live-row">
-          <LiveNowBadge locale={locale} />
+        <div className="site-header-second-row">
+          <div className="site-header-live-row">
+            <LiveNowBadge locale={locale} />
+          </div>
+          <div className="site-header-utility-row">
+            <LanguageSwitcher />
+            {loggedIn ? (
+              <>
+                <Link href={localizedHref("/account", locale)} className="site-header-mini-action">
+                  <UserCog aria-hidden="true" className="size-3.5" />
+                  {locale === "en" ? "Account" : "Account"}
+                </Link>
+                <form action="/logout" method="post">
+                  <button className="site-header-mini-action" type="submit">
+                    <LogOut aria-hidden="true" className="size-3.5" />
+                    {locale === "en" ? "Log out" : "Uitloggen"}
+                  </button>
+                </form>
+              </>
+            ) : (
+              <Link href={localizedHref("/aanmelden", locale)} className="site-header-cta site-header-cta-primary">
+                <LogIn aria-hidden="true" className="size-4" />
+                {locale === "en" ? "Sign up" : "Aanmelden"}
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </header>
