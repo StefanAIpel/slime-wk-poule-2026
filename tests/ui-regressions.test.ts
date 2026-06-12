@@ -186,7 +186,7 @@ test("special bonus facts do not score before the champion is known", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.76"/);
+  assert.match(constants, /APP_VERSION = "0.77"/);
 });
 
 
@@ -1409,13 +1409,21 @@ test("header shows a blinking LIVE badge when a match is on, opening live site i
   const badge = await readFile(new URL("../src/components/live-now-badge.tsx", import.meta.url), "utf8");
   const route = await readFile(new URL("../src/app/api/live-now/route.ts", import.meta.url), "utf8");
   assert.match(siteHeader, /<LiveNowBadge locale=\{locale\} \/>/);
-  // Alleen tonen bij een échte live wedstrijd; opent in een apart tabblad.
-  assert.match(badge, /if \(liveCount < 1\) return null;/);
+  // Live: knipperende pill met de stand (MEX 2-0 RSA); opent in een apart tabblad.
+  assert.match(badge, /if \(data\.matches\.length > 0\)/);
+  assert.match(badge, /\{first\.home\} \{first\.homeScore\}-\{first\.awayScore\} \{first\.away\}/);
   assert.match(badge, /target="_blank"/);
   assert.match(badge, /rel="noopener noreferrer"/);
   assert.match(badge, /href=\{LIVE_URL\}/);
-  assert.match(route, /isLiveStatus\(fixture\.statusShort\)/);
   assert.match(route, /!fixture\.friendly/);
+  // "Live" geldt ook 30 min vóór aftrap (zelfde promotie als de live-pagina).
+  assert.match(route, /isLiveStatus\(fixture\.statusShort\) \|\| isStartingSoon\(fixture, now\)/);
+  // Niets live → ingetogen chip met de eerstvolgende aftrap (niet de bijna-live).
+  assert.match(route, /statusShort === "NS" && !isStartingSoon\(fixture, now\)/);
+  assert.match(route, /next: NextMatch \| null/);
+  assert.match(badge, /if \(data\.next\)/);
+  assert.match(badge, /formatKickoff\(data\.next\.kickoff, locale\)/);
+  assert.match(globalsCss, /\.site-header-next-badge \{/);
   // Knipperende dot met reduced-motion uitzondering.
   assert.match(globalsCss, /\.site-header-live-badge::before \{[\s\S]*?animation: live-blink/);
   assert.match(globalsCss, /prefers-reduced-motion: reduce[\s\S]*?\.site-header-live-badge::before \{\n      animation: none;/);

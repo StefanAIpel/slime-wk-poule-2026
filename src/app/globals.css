@@ -2188,10 +2188,51 @@ textarea {
     background: linear-gradient(135deg, #c81e26, #991414);
   }
 
+  .site-header-live-match {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .site-header-live-more {
+    opacity: 0.85;
+    font-size: 0.72rem;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .site-header-live-badge::before {
       animation: none;
     }
+  }
+
+  /* Ingetogen chip met de eerstvolgende aftrap als er niets live is. */
+  .site-header-next-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(8, 22, 52, 0.12);
+    background: #eef3fc;
+    padding: 5px 11px;
+    color: var(--blue-2);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .site-header-next-badge:hover {
+    background: #e2ecfb;
+  }
+
+  .site-header-next-label {
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.64rem;
+    opacity: 0.75;
+  }
+
+  .site-header-next-time {
+    font-variant-numeric: tabular-nums;
+    font-weight: 950;
+    color: var(--ink, #101a2b);
   }
 
   .site-header-mini-action {
