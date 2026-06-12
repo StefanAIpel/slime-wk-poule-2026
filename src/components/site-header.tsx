@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { LiveNowBadge } from "@/components/live-now-badge";
 import { useActiveLocale } from "@/hooks/use-active-locale";
 import { localizedHref, stripLocaleFromPath } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/browser";
@@ -84,6 +85,7 @@ export function SiteHeader() {
               </Link>
             );
           })}
+          <LiveNowBadge locale={locale} />
           <LanguageSwitcher />
           {loggedIn ? (
             <>
