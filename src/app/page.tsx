@@ -16,7 +16,7 @@ import { PredictionsComplete } from "@/components/predictions-complete";
 import { ProfileForm } from "@/components/profile-form";
 import { ShareRow } from "@/components/share-button";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
-import { UpcomingMatches } from "@/components/upcoming-matches";
+import { RecentMatches, UpcomingMatches } from "@/components/upcoming-matches";
 import { SITE_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
 import { localizedHref, type Locale } from "@/lib/i18n";
@@ -513,15 +513,18 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
         </div>
 
         <div className="grid gap-4">
-          <UpcomingMatches locale={locale} />
-          <a href={localizedHref("/poules", locale)} className="panel grid gap-2 p-4 no-underline">
-            <div className="flex items-center justify-between gap-3">
+          <section className="panel grid gap-2 p-4">
+            <a href={localizedHref("/poules", locale)} className="flex items-center justify-between gap-3 no-underline">
               <h2 className="text-lg font-bold text-[var(--ink)]">{copy.myPoolsTitle}</h2>
               <Users aria-hidden="true" className="size-5 text-[var(--accent-blue)]" />
-            </div>
+            </a>
             {homeMemberships.length ? (
               homeMemberships.map((membership) => membership.pools && (
-                <div key={membership.pools.id} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-[#f7faff] px-3 py-2">
+                <a
+                  key={membership.pools.id}
+                  href={localizedHref(`/poules?pool=${encodeURIComponent(membership.pools.id)}`, locale)}
+                  className="flex items-center gap-2 rounded-lg border border-slate-200 bg-[#f7faff] px-3 py-2 no-underline transition hover:border-[#b8cbe8] hover:bg-[#eef5ff]"
+                >
                   <span aria-hidden="true" className="grid size-7 flex-none place-items-center rounded-full bg-[#eef3fc] text-base leading-none">
                     {membership.pools.badge_emoji ?? "🏆"}
                   </span>
@@ -529,12 +532,15 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
                   <span className="ml-auto rounded-full bg-[#e7eef8] px-2 py-0.5 text-xs font-bold tracking-wide text-[var(--blue-2)]">
                     {membership.pools.code}
                   </span>
-                </div>
+                </a>
               ))
             ) : (
               <p className="text-sm font-medium text-[var(--text-muted)]">{copy.noPools}</p>
             )}
-          </a>
+          </section>
+
+          <UpcomingMatches locale={locale} />
+          <RecentMatches locale={locale} />
 
           <a href={localizedHref("/ranglijst", locale)} className="panel flex items-center justify-between gap-3 p-4 no-underline">
             <div className="flex items-center gap-3">
@@ -636,6 +642,7 @@ function PublicHome({
       <div className="grid gap-x-5 gap-y-3 md:grid-cols-[minmax(0,1fr)_340px] md:items-start">
         <section className="grid gap-4">
           <UpcomingMatches locale={locale} />
+          <RecentMatches locale={locale} />
 
           <div className="dark-panel poule-share-panel grid gap-4 p-5 sm:p-6">
             <div className="grid gap-4 poule-share-copy">
