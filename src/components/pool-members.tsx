@@ -26,6 +26,7 @@ export type PoolMember = {
   teamName: string | null;
   avatarKey: string | null;
   points: number;
+  dailyPoints: number;
   isYou: boolean;
   locked: boolean;
   past: MatchLine[];
@@ -41,6 +42,7 @@ const poolMembersCopy = {
     worldRank: "Wereldrang",
     poolRankLabel: "Poule-rang",
     pointsSuffix: "pt",
+    dailyScoreLabel: "Dagscore",
     locked: "De voorspellingen van anderen zijn zichtbaar zodra de invulronde sluit.",
     pastTitle: "Afgelopen wedstrijden",
     upcomingTitle: "Komende wedstrijden",
@@ -56,6 +58,7 @@ const poolMembersCopy = {
     worldRank: "World rank",
     poolRankLabel: "Pool rank",
     pointsSuffix: "pts",
+    dailyScoreLabel: "Daily score",
     locked: "Other players’ predictions become visible once the prediction round closes.",
     pastTitle: "Past matches",
     upcomingTitle: "Upcoming matches",
@@ -108,9 +111,12 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
                   {member.worldRank ? (
                     <span className="pool-member-world ml-1 inline-flex items-center gap-1 text-xs font-semibold text-[#7a8aa3]">
                       <Globe aria-hidden="true" className="size-3" />
-                      {copy.worldRank} #{member.worldRank}
+                      #{member.worldRank}
                     </span>
                   ) : null}
+                </span>
+                <span className="pool-member-daily-score-cell" aria-label={member.dailyPoints > 0 ? `${copy.dailyScoreLabel} +${member.dailyPoints}` : undefined}>
+                  {member.dailyPoints > 0 ? `(+${member.dailyPoints})` : ""}
                 </span>
                 <span className="pool-member-points font-bold tabular-nums text-[var(--ink)]">{member.points} {copy.pointsSuffix}</span>
                 <ChevronDown

@@ -373,7 +373,7 @@ export default async function PoolsPage({
         </div>
       ) : null}
 
-      <Link href={localizedHref("/#meedoen", locale)} className="poules-join-create-link">
+      <Link href={localizedHref("/?meedoen=1", locale)} className="poules-join-create-link">
         <KeyRound aria-hidden="true" className="size-4" />
         {copy.joinCreateLink}
       </Link>
@@ -655,6 +655,21 @@ function roleLabel(role: MemberRow["role"], locale: Locale) {
   return copy.memberRole;
 }
 
+const amsterdamDayFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Europe/Amsterdam",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+function amsterdamDayKey(input: string | Date | null) {
+  if (!input) return "";
+  const date = typeof input === "string" ? new Date(input) : input;
+  if (Number.isNaN(date.getTime())) return "";
+  const parts = Object.fromEntries(amsterdamDayFormatter.formatToParts(date).map((part) => [part.type, part.value]));
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
 function buildPoolMembers(
   members: MemberRow[],
   currentUserId: string,
@@ -667,11 +682,13 @@ function buildPoolMembers(
 ): PoolMember[] {
   const dateLocale = locale === "en" ? "en-GB" : "nl-NL";
   const playerFallback = poolCopy[locale].player;
+  const todayKey = amsterdamDayKey(new Date());
   const built = members.map((member) => {
     const isYou = member.user_id === currentUserId;
     const visible = isYou || revealOthers;
     const past: MatchLine[] = [];
     const upcoming: MatchLine[] = [];
+    let dailyPoints = 0;
 
     if (visible) {
       const predictions = (predictionsByUser.get(member.user_id) ?? [])
@@ -699,8 +716,10 @@ function buildPoolMembers(
               }).points
             : null,
         };
-        if (finished) past.push(line);
-        else upcoming.push(line);
+        if (finished) {
+          if (amsterdamDayKey(match.startsAt) === todayKey) dailyPoints += line.points ?? 0;
+          past.push(line);
+        } else upcoming.push(line);
       }
       past.reverse();
     }
@@ -714,10 +733,11 @@ function buildPoolMembers(
       teamName: member.profiles?.team_name ?? null,
       avatarKey: member.profiles?.avatar_key ?? null,
       points: pointsByUser.get(member.user_id) ?? 0,
+      dailyPoints,
       isYou,
       locked: !visible,
-      past,
-      upcoming,
+      past: past.slice(0, 3),
+      upcoming: upcoming.slice(0, 3),
     };
   });
 

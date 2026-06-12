@@ -28,7 +28,7 @@ const privateLinks = [
 ];
 
 const accountLink = { href: "/account", label: "Mijn account", labelEn: "My account", icon: UserCog };
-const joinPoolLink = { href: "/#meedoen", label: "Meedoen", labelEn: "Join pool", icon: KeyRound };
+const joinPoolLink = { href: "/?meedoen=1", label: "Meedoen", labelEn: "Join pool", icon: KeyRound };
 
 export function QuickMenu() {
   const [open, setOpen] = useState(false);

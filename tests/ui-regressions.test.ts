@@ -62,6 +62,7 @@ const poolBoardComposer = await readFile(new URL("../src/components/pool-board-c
 const poolQr = await readFile(new URL("../src/components/pool-qr.tsx", import.meta.url), "utf8");
 const appFirstShareLink = await readFile(new URL("../src/components/app-first-share-link.tsx", import.meta.url), "utf8");
 const installAppCard = await readFile(new URL("../src/components/install-app-card.tsx", import.meta.url), "utf8");
+const joinPoolScrollTarget = await readFile(new URL("../src/components/join-pool-scroll-target.tsx", import.meta.url), "utf8");
 const siteFooter = await readFile(new URL("../src/components/site-footer.tsx", import.meta.url), "utf8");
 const localePreferenceSync = await readOptional("../src/components/locale-preference-sync.tsx");
 const localeApiRoute = await readOptional("../src/app/api/locale/route.ts");
@@ -633,6 +634,13 @@ test("pool card uses the uploaded banner as a full-width compact 5:1 hero", () =
 
 test("pool ranking rows are compact and keep player metadata on one line", () => {
   assert.match(poolMembers, /className="pool-member-world ml-1 inline-flex/);
+  assert.match(poolMembers, /#\{member\.worldRank\}/);
+  assert.doesNotMatch(poolMembers, /\{copy\.worldRank\} #\{member\.worldRank\}/);
+  assert.match(poolMembers, /className="pool-member-daily-score-cell"[\s\S]*?\{member\.dailyPoints > 0 \? `\(\+\$\{member\.dailyPoints\}\)` : ""\}[\s\S]*?<span className="pool-member-points/);
+  assert.match(globalsCss, /\.pool-member-daily-score-cell \{[\s\S]*flex: 0 0 44px;[\s\S]*text-align: right;/);
+  assert.match(poulesPage, /dailyPoints/);
+  assert.match(poulesPage, /past: past\.slice\(0, 3\)/);
+  assert.match(poulesPage, /upcoming: upcoming\.slice\(0, 3\)/);
   assert.doesNotMatch(poolMembers, /pool-member-world mt-0\.5 flex/);
   assert.match(globalsCss, /\.pool-members-section \{[\s\S]*padding: 12px;/);
   assert.match(globalsCss, /\.pool-member-button \{[\s\S]*min-height: 40px;[\s\S]*padding: 6px 9px;/);
@@ -944,7 +952,16 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(globalsCss, /\.site-header \{[\s\S]*position: sticky;[\s\S]*top: 0;[\s\S]*z-index: 90;/);
   assert.match(quickMenu, /label: "Voorspellen"/);
   assert.doesNotMatch(quickMenu, /WK-poule invullen \/ wijzigen/);
-  assert.match(quickMenu, /joinPoolLink = \{ href: "\/#meedoen"/);
+  assert.match(quickMenu, /joinPoolLink = \{ href: "\/\?meedoen=1"/);
+  assert.doesNotMatch(quickMenu, /joinPoolLink = \{ href: "\/#meedoen"/);
+  assert.match(poulesPage, /localizedHref\("\/\?meedoen=1", locale\)/);
+  assert.match(homePage, /<JoinPoolScrollTarget \/>/);
+  assert.match(joinPoolScrollTarget, /searchParams\.get\(JOIN_PARAM\) !== "1"/);
+  assert.match(joinPoolScrollTarget, /getElementById\("join-pool-form"\)\?\.scrollIntoView\(\{ block: "start", behavior: "smooth" \}\)/);
+  assert.match(homePage, /<form id="join-pool-form"/);
+  assert.doesNotMatch(homePage, /id="meedoen"/);
+  assert.match(joinPoolScrollTarget, /cleanParams\.delete\(JOIN_PARAM\)/);
+  assert.doesNotMatch(joinPoolScrollTarget, /location\.hash/);
   assert.match(quickMenu, /aria-label=\{locale === "en" \? "Pools and joining" : "WK-poules en meedoen"\}/);
   assert.match(quickMenu, /\[privateLinks\[1\], joinPoolLink\]\.map/);
   assert.match(quickMenu, /<form className=\"quick-menu-form\" action=\"\/logout\" method=\"post\">/);
@@ -1389,10 +1406,12 @@ test("mobile landing hero keeps title and host pills compact on one line", () =>
   assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home-title-block h1 \{[\s\S]*font-size: clamp\(1\.48rem, 7\.4vw, 1\.68rem\) !important;/);
 });
 
-test("pool quick-share icons use a thin 70%-transparent white rim, not a solid white disc", () => {
+test("pool quick-share icons keep only the white circle rim, with transparent surround", () => {
   const block = globalsCss.match(/\.pool-quick-share-button \{[\s\S]*?\}/)?.[0] ?? "";
-  assert.match(block, /border: 1px solid rgba\(255, 255, 255, 0\.5\);/);
-  assert.match(block, /background: rgba\(255, 255, 255, 0\.3\);/);
+  assert.match(block, /border: 1px solid rgba\(255, 255, 255, 0\.72\);/);
+  assert.match(block, /background: transparent;/);
+  assert.doesNotMatch(block, /background: rgba\(255, 255, 255/);
+  assert.doesNotMatch(block, /backdrop-filter/);
   assert.doesNotMatch(block, /rgba\(248, 251, 255, 0\.98\)/);
 });
 
