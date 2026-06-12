@@ -42,6 +42,7 @@ const poolMembersCopy = {
     worldRank: "Wereldrang",
     poolRankLabel: "Poule-rang",
     pointsSuffix: "pt",
+    dailyScoreLabel: "Dagscore",
     locked: "De voorspellingen van anderen zijn zichtbaar zodra de invulronde sluit.",
     pastTitle: "Afgelopen wedstrijden",
     upcomingTitle: "Komende wedstrijden",
@@ -57,6 +58,7 @@ const poolMembersCopy = {
     worldRank: "World rank",
     poolRankLabel: "Pool rank",
     pointsSuffix: "pts",
+    dailyScoreLabel: "Daily score",
     locked: "Other players’ predictions become visible once the prediction round closes.",
     pastTitle: "Past matches",
     upcomingTitle: "Upcoming matches",
@@ -101,7 +103,6 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
                 <Avatar name={member.name} avatarKey={member.avatarKey} size={open ? 34 : 22} />
                 <span className="pool-member-main min-w-0 flex-1 truncate">
                   <span className="pool-member-name font-bold text-[var(--ink)]">{member.name}</span>
-                  {member.dailyPoints > 0 ? <span className="pool-member-daily-score ml-1">(+{member.dailyPoints})</span> : null}
                   {member.isOwner ? (
                     <Crown aria-label={copy.owner} className="ml-1 inline size-4 -translate-y-px text-[#e0a516]" />
                   ) : null}
@@ -113,6 +114,9 @@ export function PoolMembers({ members, locale = "nl" }: { members: PoolMember[];
                       #{member.worldRank}
                     </span>
                   ) : null}
+                </span>
+                <span className="pool-member-daily-score-cell" aria-label={member.dailyPoints > 0 ? `${copy.dailyScoreLabel} +${member.dailyPoints}` : undefined}>
+                  {member.dailyPoints > 0 ? `(+${member.dailyPoints})` : ""}
                 </span>
                 <span className="pool-member-points font-bold tabular-nums text-[var(--ink)]">{member.points} {copy.pointsSuffix}</span>
                 <ChevronDown

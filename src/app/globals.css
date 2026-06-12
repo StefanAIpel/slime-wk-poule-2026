@@ -6102,11 +6102,20 @@ textarea {
   line-height: 1.1;
 }
 
-.pool-member-daily-score {
+.pool-member-daily-score-cell {
+  width: 44px;
+  flex: 0 0 44px;
   color: #16863a;
   font-size: 0.72rem;
   font-weight: 500;
   line-height: 1.1;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.pool-member-points {
+  min-width: 50px;
+  text-align: right;
 }
 
 .pool-member-team,
@@ -6467,6 +6476,12 @@ textarea {
   .pool-member-points {
     min-width: 44px;
     text-align: right;
+  }
+
+  .pool-member-daily-score-cell {
+    width: 36px;
+    flex-basis: 36px;
+    font-size: 0.68rem;
   }
 
   .pool-member-chevron {

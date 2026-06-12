@@ -635,7 +635,8 @@ test("pool ranking rows are compact and keep player metadata on one line", () =>
   assert.match(poolMembers, /className="pool-member-world ml-1 inline-flex/);
   assert.match(poolMembers, /#\{member\.worldRank\}/);
   assert.doesNotMatch(poolMembers, /\{copy\.worldRank\} #\{member\.worldRank\}/);
-  assert.match(poolMembers, /pool-member-daily-score/);
+  assert.match(poolMembers, /className="pool-member-daily-score-cell"[\s\S]*?\{member\.dailyPoints > 0 \? `\(\+\$\{member\.dailyPoints\}\)` : ""\}[\s\S]*?<span className="pool-member-points/);
+  assert.match(globalsCss, /\.pool-member-daily-score-cell \{[\s\S]*flex: 0 0 44px;[\s\S]*text-align: right;/);
   assert.match(poulesPage, /dailyPoints/);
   assert.match(poulesPage, /past: past\.slice\(0, 3\)/);
   assert.match(poulesPage, /upcoming: upcoming\.slice\(0, 3\)/);
