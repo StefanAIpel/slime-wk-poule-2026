@@ -5711,6 +5711,12 @@ textarea {
   color: #d62976;
 }
 
+/* Op de donkere hero blijven álle icoontjes wit (overrulet de merk-kleur-regels
+   hierboven, die signal/mail/insta anders weer blauw/bruin/roze kleurden). */
+.share-row-on-dark .share-link {
+  color: #ffffff;
+}
+
 .pool-invite-strip {
   display: grid;
   grid-template-columns: 1fr auto;
