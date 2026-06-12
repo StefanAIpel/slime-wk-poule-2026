@@ -52,7 +52,7 @@ export function LiveNowBadge({ locale }: { locale: Locale }) {
   }, []);
 
   const liveAria = locale === "en" ? "A World Cup match is live — open live.slimescore.com in a new tab" : "Er is een WK-wedstrijd bezig — open live.slimescore.com in een nieuw tabblad";
-  const nextAria = locale === "en" ? "Next World Cup match — open live.slimescore.com in a new tab" : "Volgende WK-wedstrijd — open live.slimescore.com in een nieuw tabblad";
+  const nextAria = locale === "en" ? "Follow the next World Cup match live — open live.slimescore.com in a new tab" : "Volg de volgende WK-wedstrijd live — open live.slimescore.com in een nieuw tabblad";
 
   if (data.matches.length > 0) {
     const first = data.matches[0];
@@ -71,7 +71,7 @@ export function LiveNowBadge({ locale }: { locale: Locale }) {
   if (data.next) {
     return (
       <a href={LIVE_URL} target="_blank" rel="noopener noreferrer" className="site-header-next-badge" aria-label={nextAria}>
-        <span className="site-header-next-label">{locale === "en" ? "Next" : "Volgende"}</span>
+        <span className="site-header-next-label">{locale === "en" ? "Follow live:" : "Volg live:"}</span>
         <span className="site-header-next-match">{data.next.home} – {data.next.away}</span>
         <span className="site-header-next-time">{formatKickoff(data.next.kickoff, locale)}</span>
       </a>

@@ -69,43 +69,47 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav className="site-header-nav" aria-label={locale === "en" ? "Main menu" : "Hoofdmenu"}>
-          {links.map((link) => {
-            const Icon = link.icon;
-            const active = stripLocaleFromPath(pathname || "/") === link.href;
-            const emphasized = "emphasis" in link && link.emphasis;
-            return (
-              <Link
-                key={link.href}
-                href={localizedHref(link.href, locale)}
-                className={`site-header-link ${emphasized ? "site-header-link-emphasis" : ""} ${active ? "is-active" : ""}`}
-                aria-current={active ? "page" : undefined}
-              >
-                <Icon aria-hidden="true" className="size-4" />
-                {locale === "en" ? link.labelEn : link.label}
+          <div className="site-header-link-row">
+            {links.map((link) => {
+              const Icon = link.icon;
+              const active = stripLocaleFromPath(pathname || "/") === link.href;
+              const emphasized = "emphasis" in link && link.emphasis;
+              return (
+                <Link
+                  key={link.href}
+                  href={localizedHref(link.href, locale)}
+                  className={`site-header-link ${emphasized ? "site-header-link-emphasis" : ""} ${active ? "is-active" : ""}`}
+                  aria-current={active ? "page" : undefined}
+                >
+                  <Icon aria-hidden="true" className="size-4" />
+                  {locale === "en" ? link.labelEn : link.label}
+                </Link>
+              );
+            })}
+          </div>
+          <div className="site-header-utility-row">
+            <LiveNowBadge locale={locale} />
+            <LanguageSwitcher />
+            {loggedIn ? (
+              <>
+                <Link href={localizedHref("/account", locale)} className="site-header-mini-action">
+                  <UserCog aria-hidden="true" className="size-3.5" />
+                  {locale === "en" ? "Account" : "Account"}
+                </Link>
+                <form action="/logout" method="post">
+                  <button className="site-header-mini-action" type="submit">
+                    <LogOut aria-hidden="true" className="size-3.5" />
+                    {locale === "en" ? "Log out" : "Uitloggen"}
+                  </button>
+                </form>
+              </>
+            ) : (
+              <Link href={localizedHref("/aanmelden", locale)} className="site-header-cta site-header-cta-primary">
+                <LogIn aria-hidden="true" className="size-4" />
+                {locale === "en" ? "Sign up" : "Aanmelden"}
               </Link>
-            );
-          })}
-          <LiveNowBadge locale={locale} />
-          <LanguageSwitcher />
-          {loggedIn ? (
-            <>
-              <Link href={localizedHref("/account", locale)} className="site-header-mini-action">
-                <UserCog aria-hidden="true" className="size-3.5" />
-                {locale === "en" ? "Account" : "Account"}
-              </Link>
-              <form action="/logout" method="post">
-                <button className="site-header-mini-action" type="submit">
-                  <LogOut aria-hidden="true" className="size-3.5" />
-                  {locale === "en" ? "Log out" : "Uitloggen"}
-                </button>
-              </form>
-            </>
-          ) : (
-            <Link href={localizedHref("/aanmelden", locale)} className="site-header-cta site-header-cta-primary">
-              <LogIn aria-hidden="true" className="size-4" />
-              {locale === "en" ? "Sign up" : "Aanmelden"}
-            </Link>
-          )}
+            )}
+          </div>
         </nav>
       </div>
     </header>
