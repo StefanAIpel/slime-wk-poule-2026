@@ -24,7 +24,7 @@ export function Brand({ hideIcon = false, locale = "nl" }: { hideIcon?: boolean;
         <div className="brand-lockup-name" aria-label="SlimeScore">
           <span className="brand-lockup-slime">Slime</span><span className="brand-lockup-score">Score</span>
         </div>
-        <div className="brand-lockup-sub">{locale === "en" ? "WC pool 2026" : "WK-poule 2026"}</div>
+        <div className="brand-lockup-sub">{locale === "en" ? "WC Pool 2026" : "WK-Poule 2026"}</div>
       </div>
     </Link>
   );
