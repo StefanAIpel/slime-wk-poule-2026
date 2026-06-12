@@ -62,6 +62,7 @@ const poolBoardComposer = await readFile(new URL("../src/components/pool-board-c
 const poolQr = await readFile(new URL("../src/components/pool-qr.tsx", import.meta.url), "utf8");
 const appFirstShareLink = await readFile(new URL("../src/components/app-first-share-link.tsx", import.meta.url), "utf8");
 const installAppCard = await readFile(new URL("../src/components/install-app-card.tsx", import.meta.url), "utf8");
+const joinPoolScrollTarget = await readFile(new URL("../src/components/join-pool-scroll-target.tsx", import.meta.url), "utf8");
 const siteFooter = await readFile(new URL("../src/components/site-footer.tsx", import.meta.url), "utf8");
 const localePreferenceSync = await readOptional("../src/components/locale-preference-sync.tsx");
 const localeApiRoute = await readOptional("../src/app/api/locale/route.ts");
@@ -951,7 +952,16 @@ test("logged-in navigation emphasizes Voorspel, keeps compact account/logout act
   assert.match(globalsCss, /\.site-header \{[\s\S]*position: sticky;[\s\S]*top: 0;[\s\S]*z-index: 90;/);
   assert.match(quickMenu, /label: "Voorspellen"/);
   assert.doesNotMatch(quickMenu, /WK-poule invullen \/ wijzigen/);
-  assert.match(quickMenu, /joinPoolLink = \{ href: "\/#meedoen"/);
+  assert.match(quickMenu, /joinPoolLink = \{ href: "\/\?meedoen=1"/);
+  assert.doesNotMatch(quickMenu, /joinPoolLink = \{ href: "\/#meedoen"/);
+  assert.match(poulesPage, /localizedHref\("\/\?meedoen=1", locale\)/);
+  assert.match(homePage, /<JoinPoolScrollTarget \/>/);
+  assert.match(joinPoolScrollTarget, /searchParams\.get\(JOIN_PARAM\) !== "1"/);
+  assert.match(joinPoolScrollTarget, /getElementById\("join-pool-form"\)\?\.scrollIntoView\(\{ block: "start", behavior: "smooth" \}\)/);
+  assert.match(homePage, /<form id="join-pool-form"/);
+  assert.doesNotMatch(homePage, /id="meedoen"/);
+  assert.match(joinPoolScrollTarget, /cleanParams\.delete\(JOIN_PARAM\)/);
+  assert.doesNotMatch(joinPoolScrollTarget, /location\.hash/);
   assert.match(quickMenu, /aria-label=\{locale === "en" \? "Pools and joining" : "WK-poules en meedoen"\}/);
   assert.match(quickMenu, /\[privateLinks\[1\], joinPoolLink\]\.map/);
   assert.match(quickMenu, /<form className=\"quick-menu-form\" action=\"\/logout\" method=\"post\">/);
