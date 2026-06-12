@@ -186,7 +186,7 @@ test("special bonus facts do not score before the champion is known", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.74"/);
+  assert.match(constants, /APP_VERSION = "0.75"/);
 });
 
 
@@ -210,6 +210,16 @@ test("entry deadline is extended until the first World Cup match", () => {
   assert.match(rulesPage, /Respijtperiode: niet-gespeelde groepswedstrijden/);
   assert.match(rulesPage, /ENTRY_GRACE_DEADLINE_ISO/);
   assert.match(rulesPage, /zondag 14 juni 21:00/);
+});
+
+test("status bar counts down through the grace window instead of saying 'closed'", () => {
+  // Drie fasen: vóór WK → respijt (wijzigen kan) → dicht. Telt af tot de grace-deadline.
+  assert.match(statusBar, /ENTRY_GRACE_DEADLINE_ISO/);
+  assert.match(statusBar, /phase: "grace"/);
+  assert.match(statusBar, /Nog te wijzigen <strong>\{status\.left\}<\/strong>/);
+  assert.match(statusBar, /Editable <strong>\{status\.left\}<\/strong>/);
+  // "Invullen gesloten" alleen ná de respijt-deadline (closed-fase).
+  assert.match(statusBar, /status\.phase === "closed"[\s\S]*?Invullen gesloten|Invullen gesloten/);
 });
 
 test("desktop UI uses compact page heroes, right-column rules banners and aligned game stage", () => {
@@ -415,16 +425,16 @@ test("schedule filters fit one row with a compact Dutch flag chip", () => {
   assert.doesNotMatch(scheduleExplorer, />\s*\{scheduleCopy\[locale\]\.netherlandsFilter\}\s*<\/button>/);
 });
 
-test("logged-in homepage shows the grace countdown and green edit-deadline copy", () => {
+test("logged-in homepage shows the green edit-deadline copy (countdown lives in the status bar)", () => {
   assert.match(homePage, /dashboardTitle: "Voorspel je WK 2026"/);
   assert.match(homePage, /dashboardStarted: "WK begonnen! 🎉"/);
   assert.match(homePage, /dashboardGraceLead: "Tot zondag 14 juni 21:00"/);
   assert.match(homePage, /dashboardAfterGrace: "Na 14 juni kun je alleen nog de 3 bonusvragen wijzigen\. Deadline: 28 juni\."/);
   assert.match(homePage, /dashboardAfterGrace: "After 14 June you can only change the 3 bonus questions\. Deadline: 28 June\."/);
   assert.match(homePage, /<strong className="dashboard-grace-lead">\{copy\.dashboardGraceLead\}<\/strong>/);
-  assert.match(homePage, /<GraceCountdown deadlineIso=\{ENTRY_GRACE_DEADLINE_ISO\} label=\{copy\.countdownLabel\} closedLabel=\{copy\.countdownClosed\} \/>/);
   assert.match(globalsCss, /\.dashboard-grace-lead \{\n  color: #4ade80;/);
-  assert.match(globalsCss, /\.grace-countdown \{/);
+  // De aftelklok hoort in de bovenbalk, niet in het dashboard-blok.
+  assert.doesNotMatch(homePage, /GraceCountdown/);
   assert.match(homePage, /dark-panel p-4 text-white sm:p-5/);
   assert.match(homePage, /max-w-\[34rem\] text-\[0\.82rem\] font-medium leading-\[1\.5\]/);
   assert.match(homePage, /dashboard-progress-card mt-3 rounded-lg bg-\[#061b47\] p-2\.5 sm:p-3/);

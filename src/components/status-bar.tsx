@@ -6,15 +6,16 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { useActiveLocale } from "@/hooks/use-active-locale";
-import { ENTRY_DEADLINE_ISO } from "@/lib/constants";
+import { ENTRY_DEADLINE_ISO, ENTRY_GRACE_DEADLINE_ISO } from "@/lib/constants";
 import { localizedHref, type Locale } from "@/lib/i18n";
 
 type Me = { loggedIn: boolean; nickname?: string | null; avatarKey?: string | null; rank?: number | null; progress?: number };
 
-const deadline = new Date(ENTRY_DEADLINE_ISO).getTime();
+const entryDeadline = new Date(ENTRY_DEADLINE_ISO).getTime();
+const graceDeadline = new Date(ENTRY_GRACE_DEADLINE_ISO).getTime();
 
-function countdown(now: number, locale: Locale) {
-  const diff = deadline - now;
+function remaining(target: number, now: number, locale: Locale) {
+  const diff = target - now;
   if (diff <= 0) return null;
   const d = Math.floor(diff / 86400000);
   const h = Math.floor((diff % 86400000) / 3600000);
@@ -24,11 +25,22 @@ function countdown(now: number, locale: Locale) {
   return `${m}m`;
 }
 
+/**
+ * Drie fasen: vóór de invuldeadline tellen we af tot het WK; daarna loopt nog de
+ * respijtperiode (wijzigen kan tot zo 14 juni 21:00) → "Nog te wijzigen"; pas
+ * daarna is alles dicht.
+ */
+function editStatus(now: number, locale: Locale): { phase: "pre" | "grace" | "closed"; left: string | null } {
+  if (now < entryDeadline) return { phase: "pre", left: remaining(entryDeadline, now, locale) };
+  if (now < graceDeadline) return { phase: "grace", left: remaining(graceDeadline, now, locale) };
+  return { phase: "closed", left: null };
+}
+
 export function StatusBar() {
   const pathname = usePathname();
   const locale = useActiveLocale(pathname || "/");
   const [me, setMe] = useState<Me | null>(null);
-  const [left, setLeft] = useState<string | null>(() => countdown(Date.now(), locale));
+  const [status, setStatus] = useState(() => editStatus(Date.now(), locale));
   const predictHref = locale === "en" && !me?.loggedIn ? "/en#login" : localizedHref("/voorspellingen", locale);
 
   useEffect(() => {
@@ -59,7 +71,7 @@ export function StatusBar() {
     window.addEventListener("focus", refreshMe);
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    const updateCountdown = () => setLeft(countdown(Date.now(), locale));
+    const updateCountdown = () => setStatus(editStatus(Date.now(), locale));
     const initialCountdownId = window.setTimeout(updateCountdown, 0);
     const id = setInterval(updateCountdown, 30000);
     return () => {
@@ -77,8 +89,10 @@ export function StatusBar() {
       <div className="status-bar-inner">
         <Link href={predictHref} className="status-chip status-chip-countdown">
           <CalendarClock aria-hidden="true" className="size-4" />
-          {left ? (
-            locale === "en" ? <><strong>{left}</strong> until WC</> : <>Nog <strong>{left}</strong> tot WK</>
+          {status.phase === "pre" ? (
+            locale === "en" ? <><strong>{status.left}</strong> until WC</> : <>Nog <strong>{status.left}</strong> tot WK</>
+          ) : status.phase === "grace" ? (
+            locale === "en" ? <>Editable <strong>{status.left}</strong></> : <>Nog te wijzigen <strong>{status.left}</strong></>
           ) : locale === "en" ? "Entries closed" : "Invullen gesloten"}
         </Link>
         {me?.loggedIn ? (

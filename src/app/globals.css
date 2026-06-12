@@ -268,30 +268,6 @@ textarea {
   font-weight: 900;
 }
 
-/* Aftelklok linksboven in de dashboard-hero: compacte chip. */
-.grace-countdown {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border: 1px solid rgba(74, 222, 128, 0.45);
-  border-radius: 999px;
-  background: rgba(37, 168, 74, 0.18);
-  color: #d8ffe6;
-  font-size: 0.74rem;
-  font-weight: 800;
-}
-
-.grace-countdown-label {
-  opacity: 0.85;
-}
-
-.grace-countdown-value {
-  font-variant-numeric: tabular-nums;
-  font-weight: 950;
-  color: #ffffff;
-}
-
 .dashboard-hero-avatar-link {
   flex: 0 0 auto;
   align-items: center;
