@@ -6,7 +6,6 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import { Avatar } from "@/components/avatar";
-import { GraceCountdown } from "@/components/grace-countdown";
 import { InstallAppCard } from "@/components/install-app-card";
 import { LoginForm } from "@/components/login-form";
 import { LiveFollowBanner } from "@/components/live-follow-banner";
@@ -17,7 +16,7 @@ import { ProfileForm } from "@/components/profile-form";
 import { ShareRow } from "@/components/share-button";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
 import { UpcomingMatches } from "@/components/upcoming-matches";
-import { ENTRY_GRACE_DEADLINE_ISO, SITE_URL } from "@/lib/constants";
+import { SITE_URL } from "@/lib/constants";
 import { displayName } from "@/lib/format";
 import { localizedHref, type Locale } from "@/lib/i18n";
 import { POOL_NAME_MAX_LENGTH, POOL_NAME_MIN_LENGTH } from "@/lib/limits";
@@ -96,8 +95,6 @@ const homeCopy = {
     dashboardGraceLead: "Tot zondag 14 juni 21:00",
     dashboardGraceRest: " kun je je voorspelling nog aanvullen of wijzigen. Wedstrijden die eerder worden gespeeld, kun je tot 30 minuten voor aanvang wijzigen.",
     dashboardAfterGrace: "Na 14 juni kun je alleen nog de 3 bonusvragen wijzigen. Deadline: 28 juni.",
-    countdownLabel: "Nog te wijzigen",
-    countdownClosed: "Gesloten",
     dashboardIntroBefore: "Deadline:",
     dashboardGraceNotice: "Niet-gespeelde wedstrijden, knock-outs en bonusvragen kun je wijzigen tot 14 juni 2026 om 21:00.",
     dashboardIntroAfter: " Daarna staat alles vast.",
@@ -177,8 +174,6 @@ const homeCopy = {
     dashboardGraceLead: "Until Sunday 14 June 21:00",
     dashboardGraceRest: " you can still complete or change your predictions. Matches that kick off earlier can be changed up to 30 minutes before the start.",
     dashboardAfterGrace: "After 14 June you can only change the 3 bonus questions. Deadline: 28 June.",
-    countdownLabel: "Time left to edit",
-    countdownClosed: "Closed",
     dashboardIntroBefore: "Deadline:",
     dashboardGraceNotice: "Unplayed matches, knockouts and bonus questions can be changed until 14 June 2026 at 21:00.",
     dashboardIntroAfter: " After that everything is locked.",
@@ -403,8 +398,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
           <div className="dark-panel p-4 text-white sm:p-5 dashboard-hero-panel">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <GraceCountdown deadlineIso={ENTRY_GRACE_DEADLINE_ISO} label={copy.countdownLabel} closedLabel={copy.countdownClosed} />
-                <h1 className="mt-2 text-[1.45rem] font-bold leading-tight md:text-4xl">{copy.dashboardTitle}</h1>
+                <h1 className="text-[1.45rem] font-bold leading-tight md:text-4xl">{copy.dashboardTitle}</h1>
                 <p className="mt-2 max-w-[34rem] text-[0.82rem] font-medium leading-[1.5] text-blue-100 sm:text-sm sm:leading-6 md:text-base md:leading-7">
                   <strong className="font-bold text-white">{copy.dashboardStarted}</strong>{" "}
                   <strong className="dashboard-grace-lead">{copy.dashboardGraceLead}</strong>
