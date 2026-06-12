@@ -1536,6 +1536,23 @@ textarea {
   white-space: nowrap;
 }
 
+@media (max-width: 639px) {
+  .prediction-match-fieldset {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    column-gap: 6px;
+  }
+
+  .prediction-match-fieldset > div:first-of-type {
+    gap: 5px;
+    padding-right: 1px;
+  }
+
+  .prediction-match-fieldset > div:last-of-type {
+    gap: 7px;
+    padding-left: 6px;
+  }
+}
+
 @media (min-width: 640px) {
   .prediction-team-label {
     flex-direction: row;
@@ -2788,28 +2805,78 @@ textarea {
 .match-score-stack {
   display: grid;
   justify-items: end;
-  gap: 3px;
   min-width: 62px;
 }
 
 .match-user-points {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
+  margin-left: auto;
   border-radius: 999px;
-  background: #e8f8ef;
-  padding: 2px 7px;
-  color: #0e7a44;
+  background: #eaf2ff;
+  padding: 1px 6px;
+  color: #064ed6;
   font-size: 0.68rem;
+  font-weight: 850;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.prediction-match-points {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  border-radius: 999px;
+  background: #eaf2ff;
+  padding: 2px 7px;
+  color: #064ed6;
+  font-size: 0.72rem;
   font-weight: 900;
   line-height: 1.1;
   white-space: nowrap;
+}
+
+.prediction-locked-pill {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  border-radius: 999px;
+  background: #e2e8f0;
+  padding: 2px 8px;
+  color: #475569;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+  text-transform: uppercase;
 }
 
 .home-pool-rank {
   color: #0e7a44;
   font-size: 0.84em;
   font-weight: 850;
+}
+
+@media (max-width: 1023px) {
+  .home-main-stack {
+    display: contents;
+  }
+
+  .home-hero-stack {
+    order: 1;
+  }
+
+  .home-side-stack {
+    order: 2;
+  }
+
+  .home-form-stack {
+    order: 3;
+  }
 }
 
 .match-summary-panel-compact .upcoming-team-grid {

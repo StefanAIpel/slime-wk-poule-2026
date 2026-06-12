@@ -812,7 +812,7 @@ test("logged-in dashboard only shows SlimeSoccer in the right column and no Slim
 });
 
 test("homepage promo/ranking stacks keep desktop ranking tight below the pool block and mobile stack low", () => {
-  const loggedInRightColumn = homePage.match(/<div className=\"grid gap-4\">\n\s*<section className=\"panel grid gap-2 p-4\">[\s\S]*?<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/)?.[0] ?? "";
+  const loggedInRightColumn = homePage.match(/<div className=\"home-side-stack grid gap-4 lg:col-start-2 lg:row-start-1\">[\s\S]*?<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/)?.[0] ?? "";
   const publicRightColumn = homePage.match(/<aside className=\"public-login-stack[\s\S]*?<\/aside>/)?.[0] ?? "";
   const publicDesktopStack = homePage.match(new RegExp('<PublicPromoStack[\\s\\S]*className=\\"public-desktop-bottom-stack\\"[\\s\\S]*\\/>\\n\\s*<\\/section>'))?.[0] ?? "";
   const publicMobileStack = homePage.match(/<PublicPromoStack[\s\S]*className=\"public-mobile-bottom-stack\"[\s\S]*\/>/)?.[0] ?? "";
@@ -828,6 +828,9 @@ test("homepage promo/ranking stacks keep desktop ranking tight below the pool bl
   assert.ok(slimeSoccerBanner.includes('externalTile = tile.href.startsWith("https://")'));
   assert.match(slimeSoccerBanner, /target=\{externalTile \? "_blank" : undefined\}/);
   assert.match(loggedInRightColumn, /<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/);
+  assert.match(homePage, /home-main-stack[\s\S]*home-hero-stack[\s\S]*dashboard-hero-panel[\s\S]*home-form-stack[\s\S]*join-pool-form/);
+  assert.match(homePage, /home-side-stack[\s\S]*<RecentMatches locale=\{locale\} desktopCompact compactMobileTitle userId=\{user\.id\} \/>/);
+  assert.match(globalsCss, /@media \(max-width: 1023px\) \{[\s\S]*\.home-main-stack \{\n    display: contents;[\s\S]*\.home-side-stack \{\n    order: 2;[\s\S]*\.home-form-stack \{\n    order: 3;/);
   const promoStackComponent = homePage.match(/function PublicPromoStack[\s\S]*$/)?.[0] ?? "";
   assert.match(publicDesktopStack, /className=\"public-desktop-bottom-stack\"/);
   assert.match(publicMobileStack, /className=\"public-mobile-bottom-stack\"/);
@@ -1201,7 +1204,8 @@ test("small team columns use official 3-letter country abbreviations on mobile",
 });
 
 test("match rows always reserve right-side API score boxes with fixed home-separator-away columns", () => {
-  assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} locale=\{locale\} userPoints=\{m\.userPoints\} \/>/);
+  assert.match(upcomingMatches, /<ResultBoxes home=\{m\.home_score\} away=\{m\.away_score\} locale=\{locale\} \/>/);
+  assert.match(upcomingMatches, /className=\"match-user-points\"/);
   assert.match(scheduleExplorer, /<ResultBoxes match=\{match\} locale=\{locale\} \/>/);
   assert.match(globalsCss, /grid-template-columns: var\(--match-home-col, minmax\(118px, 160px\)\) 30px minmax\(0, 1fr\) 62px;/);
   assert.match(globalsCss, /\.schedule-team-grid-knockout \{[\s\S]*--match-home-col: minmax\(160px, 1fr\);/);
@@ -1452,7 +1456,20 @@ test("home match cards use full country names on desktop, 3-letter codes on mobi
   assert.match(upcomingMatches, /match-title-mobile-short/);
   assert.match(upcomingMatches, /scoreMatchPrediction/);
   assert.match(globalsCss, /\.match-summary-panel-compact \.match-team-abbrev \{\n  display: inline;/);
-  assert.match(globalsCss, /\.match-user-points \{[\s\S]*color: #0e7a44;/);
+  assert.match(globalsCss, /\.match-user-points \{[\s\S]*color: #064ed6;/);
+  assert.match(upcomingMatches, /className=\"match-user-points\"[\s\S]*\+\{m\.userPoints\}/);
+  assert.match(globalsCss, /\.match-score-stack \{\n  display: grid;\n  justify-items: end;\n  min-width: 62px;/);
+});
+
+test("prediction tab replaces closed pills with earned match points for played matches and nudges mobile team spacing", () => {
+  assert.match(groupPredictionCard, /function finishedMatchPoints/);
+  assert.match(groupPredictionCard, /scoreMatchPrediction/);
+  assert.match(groupPredictionCard, /matchPoints !== null \? \(/);
+  assert.match(groupPredictionCard, /className=\"prediction-match-points\"/);
+  assert.match(groupPredictionCard, /: locked \? \([\s\S]*className=\"prediction-locked-pill\"/);
+  assert.match(globalsCss, /\.prediction-match-points \{[\s\S]*color: #064ed6;/);
+  assert.match(globalsCss, /@media \(max-width: 639px\) \{[\s\S]*\.prediction-match-fieldset > div:first-of-type \{[\s\S]*gap: 5px;[\s\S]*padding-right: 1px;/);
+  assert.match(globalsCss, /@media \(max-width: 639px\) \{[\s\S]*\.prediction-match-fieldset > div:last-of-type \{[\s\S]*gap: 7px;[\s\S]*padding-left: 6px;/);
 });
 
 test("logged-in home pool rows deep-link to the selected pool instead of the first pool", () => {
