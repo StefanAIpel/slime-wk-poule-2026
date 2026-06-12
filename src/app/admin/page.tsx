@@ -1,7 +1,7 @@
 import { Activity, ClipboardList, KeyRound, Megaphone, RefreshCw, ShieldAlert, Users } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { adminRecalculate, adminSetResult, adminSetSiteMessage, createKidAccount } from "@/app/actions";
+import { adminRecalculate, adminSetLivePoll, adminSetResult, adminSetSiteMessage, createKidAccount } from "@/app/actions";
 import { Brand } from "@/components/brand";
 import { PendingButton } from "@/components/pending-button";
 import { TeamFlag } from "@/components/team-flag";
@@ -31,7 +31,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     );
   }
 
-  const { userCount, predictionCount, poolCount, bracketCount, specialCount, scoreCount, anomalies, lastUpdate, matchRows, auditRows, kidRows, profileRows, poolRows, siteMessageRows, completionRows } =
+  const { userCount, predictionCount, poolCount, bracketCount, specialCount, scoreCount, anomalies, lastUpdate, matchRows, auditRows, kidRows, profileRows, poolRows, siteMessageRows, livePoll, completionRows } =
     await getAdminDashboard();
   const messagePlacements = [
     { placement: "home" as const, label: "Ingelogde home", hint: "Banner bovenaan het dashboard van ingelogde spelers." },
@@ -218,6 +218,43 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             </tbody>
           </table>
         </div>
+      </section>
+
+      <section className="mt-4 panel p-4">
+        <div className="flex items-center gap-2">
+          <ClipboardList aria-hidden="true" className="size-5 text-[var(--accent-blue)]" />
+          <h2 className="text-lg font-bold text-[var(--ink)]">Live poll (live.slimescore.com)</h2>
+        </div>
+        <p className="mt-1 text-sm font-medium text-[var(--text-muted)]">
+          Stelling met 2 of 3 keuzes, naast “Nu bezig”. Vink “Tonen” aan om ’m zichtbaar te maken. Een nieuwe vraag start met 0 stemmen;
+          alleen de keuzes/zichtbaarheid wijzigen behoudt de stemmen.
+        </p>
+        <form action={adminSetLivePoll} className="mt-3 grid max-w-xl gap-2">
+          <label className="grid gap-1 text-xs font-bold text-[var(--ink)]">
+            Vraag
+            <input className="field min-h-10" name="question" maxLength={120} required defaultValue={livePoll?.question ?? ""} placeholder="Bijv. Nederland – Japan: wie wint?" />
+          </label>
+          <div className="grid gap-2 sm:grid-cols-3">
+            <label className="grid gap-1 text-xs font-bold text-[var(--ink)]">
+              Keuze A
+              <input className="field min-h-10" name="option_a" maxLength={40} required defaultValue={livePoll?.option_a ?? ""} placeholder="Nederland wint" />
+            </label>
+            <label className="grid gap-1 text-xs font-bold text-[var(--ink)]">
+              Keuze B
+              <input className="field min-h-10" name="option_b" maxLength={40} required defaultValue={livePoll?.option_b ?? ""} placeholder="Japan wint" />
+            </label>
+            <label className="grid gap-1 text-xs font-bold text-[var(--ink)]">
+              Keuze C (optioneel)
+              <input className="field min-h-10" name="option_c" maxLength={40} defaultValue={livePoll?.option_c ?? ""} placeholder="Gelijk" />
+            </label>
+          </div>
+          <label className="flex items-center gap-2 text-sm font-medium text-[#101a2b]">
+            <input type="checkbox" name="active" defaultChecked={livePoll?.active ?? false} /> Tonen op de live-site
+          </label>
+          <PendingButton className="button-secondary min-h-10 justify-self-start px-4" pendingText="Opslaan…">
+            Poll opslaan
+          </PendingButton>
+        </form>
       </section>
 
       <section className="mt-4 panel p-4">

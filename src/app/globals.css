@@ -3501,25 +3501,119 @@ textarea {
   gap: 14px;
 }
 
+.live-col-main,
+.live-col-side {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  min-width: 0;
+}
+
 @media (min-width: 860px) {
+  /* Consistent met slimescore.com: links ~60% ("Nu bezig"), rechts ~40% (poll +
+     uitslagen + aankomend). */
   .live-sections-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas:
-      "live live"
-      "upcoming latest";
+    grid-template-columns: 1.5fr 1fr;
+    align-items: start;
   }
 
-  .live-section-live {
-    grid-area: live;
+  /* In de smalle rechterkolom de landen als vlag + 3-letter code (niet de volle naam). */
+  .live-col-side .live-row-name {
+    display: none;
   }
 
-  .live-section-latest {
-    grid-area: latest;
+  .live-col-side .live-row-code {
+    display: inline;
   }
+}
 
-  .live-section-upcoming {
-    grid-area: upcoming;
-  }
+/* Admin-poll naast "Nu bezig". */
+.live-poll-header {
+  padding: 11px 14px;
+  background: linear-gradient(135deg, #f59e0b, #ea7a0c);
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 1000;
+}
+
+.live-poll-body {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px 14px;
+}
+
+.live-poll-question {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 900;
+  line-height: 1.3;
+  color: #0b1f4d;
+}
+
+.live-poll-options {
+  display: grid;
+  gap: 8px;
+}
+
+.live-poll-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(8, 22, 52, 0.12);
+  border-radius: 10px;
+  background: #f7faff;
+  padding: 10px 12px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #0b1f4d;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.live-poll-option:hover {
+  border-color: var(--blue, #1e73b8);
+}
+
+.live-poll-option.is-yours {
+  border-color: #25a84a;
+  background: #eefaf1;
+}
+
+.live-poll-option:disabled {
+  cursor: default;
+}
+
+.live-poll-bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: 0;
+  background: rgba(30, 115, 184, 0.14);
+}
+
+.live-poll-option.is-yours .live-poll-bar {
+  background: rgba(37, 168, 74, 0.18);
+}
+
+.live-poll-option-label,
+.live-poll-option-pct {
+  position: relative;
+  z-index: 1;
+}
+
+.live-poll-option-pct {
+  font-variant-numeric: tabular-nums;
+  font-weight: 1000;
+}
+
+.live-poll-foot {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted, #48617f);
 }
 
 .live-section-header {
@@ -5760,6 +5854,12 @@ textarea {
 .share-link-instagram,
 .share-row-on-dark .share-link-instagram {
   color: #d62976;
+}
+
+/* Op de donkere hero blijven álle icoontjes wit (overrulet de merk-kleur-regels
+   hierboven, die signal/mail/insta anders weer blauw/bruin/roze kleurden). */
+.share-row-on-dark .share-link {
+  color: #ffffff;
 }
 
 .pool-invite-strip {

@@ -1,5 +1,6 @@
 import { ArrowRight, CalendarDays, ListOrdered } from "lucide-react";
 import { LiveAutoRefresh } from "@/components/live-auto-refresh";
+import { LivePoll } from "@/components/live-poll";
 import { ShareRow } from "@/components/share-button";
 import { SiteMessageBanner } from "@/components/site-message-banner";
 import { TeamFlag } from "@/components/team-flag";
@@ -18,7 +19,7 @@ const copy = {
     kicker: "WK 2026 live",
     heroTitle: "WK 2026 Live:",
     heroTitleSub: "uitslagen, standen & schema",
-    heroSub: "100% gratis. Blijf op de hoogte van élke WK 2026-wedstrijd — aankomend, bezig of gespeeld — en volg alles live: tussenstanden, opstellingen, statistieken en het complete speelschema.",
+    heroSub: "Blijf op de hoogte van élke WK 2026-wedstrijd: aankomend, bezig en gespeeld. Volg alles live met tussenstanden, opstellingen, statistieken en het volledige speelschema. 100% gratis.",
     schedule: "Hele WK speelschema",
     shareText: "Volg het WK 2026 live op SlimeScore: uitslagen, stand en schema.",
     shareTitle: "WK 2026 live — SlimeScore",
@@ -44,7 +45,7 @@ const copy = {
     kicker: "World Cup 2026 live",
     heroTitle: "World Cup 2026 Live:",
     heroTitleSub: "scores, standings & schedule",
-    heroSub: "100% free. Stay on top of every 2026 World Cup match — upcoming, live or finished — and follow it all in real time: live scores, line-ups, stats and the complete schedule.",
+    heroSub: "Stay on top of every 2026 World Cup match: upcoming, live and finished. Follow it all in real time with live scores, line-ups, stats and the full schedule. 100% free.",
     schedule: "Total World Cup Schedule",
     shareText: "Follow the 2026 World Cup live on SlimeScore: scores, standings and schedule.",
     shareTitle: "World Cup 2026 live — SlimeScore",
@@ -287,16 +288,21 @@ export default async function LivePage({ searchParams }: { searchParams: Promise
       <Hero locale={locale} />
       <SiteMessageBanner body={siteMessage} />
       <div className="live-sections-grid">
-        <Section title={c.now} tone="live" fixtures={live} empty={c.emptyNow} locale={locale} goalsByFixture={goalsByFixture} />
-        <Section title={c.latest} tone="latest" fixtures={recent} empty={c.emptyLatest} locale={locale} action={{ href: "/live/schema", label: c.moreMatches, icon: "arrow" }} />
-        <Section
-          title={showAllUpcoming ? c.upcomingAll : c.upcoming}
-          tone="upcoming"
-          fixtures={upcomingFixtures}
-          empty={c.emptyUpcoming}
-          locale={locale}
-          action={showAllUpcoming ? { href: "/live", label: c.compactUpcoming, icon: "arrow" } : { href: "/live?view=upcoming#alle-komende", label: c.allUpcoming, icon: "list" }}
-        />
+        <div className="live-col-main">
+          <Section title={c.now} tone="live" fixtures={live} empty={c.emptyNow} locale={locale} goalsByFixture={goalsByFixture} />
+        </div>
+        <div className="live-col-side">
+          <LivePoll locale={locale} />
+          <Section title={c.latest} tone="latest" fixtures={recent} empty={c.emptyLatest} locale={locale} action={{ href: "/live/schema", label: c.moreMatches, icon: "arrow" }} />
+          <Section
+            title={showAllUpcoming ? c.upcomingAll : c.upcoming}
+            tone="upcoming"
+            fixtures={upcomingFixtures}
+            empty={c.emptyUpcoming}
+            locale={locale}
+            action={showAllUpcoming ? { href: "/live", label: c.compactUpcoming, icon: "arrow" } : { href: "/live?view=upcoming#alle-komende", label: c.allUpcoming, icon: "list" }}
+          />
+        </div>
       </div>
     </div>
   );

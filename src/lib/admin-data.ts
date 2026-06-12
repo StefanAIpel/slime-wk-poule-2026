@@ -64,6 +64,7 @@ export async function getAdminDashboard() {
     { data: recentProfiles },
     { data: recentPools },
     { data: siteMessages },
+    { data: livePoll },
     { data: completion },
   ] = await Promise.all([
     admin.from("profiles").select("id", { count: "exact", head: true }),
@@ -89,6 +90,7 @@ export async function getAdminDashboard() {
     // full-table-fetch: die zou stil afkappen op de PostgREST max-rows-cap.
     admin.from("pools").select("id,name,created_at,pool_members(count)").order("created_at", { ascending: false }).limit(20),
     admin.from("site_messages").select("placement,body_nl,body_en,show_from,show_until").order("placement"),
+    admin.from("live_polls").select("id,question,option_a,option_b,option_c,active").eq("active", true).order("updated_at", { ascending: false }).limit(1).maybeSingle(),
     // Per-speler invulvoortgang (server-side aggregate-view): minst-ingevuld eerst,
     // zodat je snel ziet wie nog moet aanvullen. Cap op 50 voor een overzichtelijk paneel.
     admin
@@ -141,6 +143,7 @@ export async function getAdminDashboard() {
     profileRows: (recentProfiles ?? []) as unknown as ProfileRow[],
     poolRows,
     siteMessageRows: (siteMessages ?? []) as unknown as SiteMessageRow[],
+    livePoll: (livePoll ?? null) as { id: string; question: string; option_a: string; option_b: string; option_c: string | null; active: boolean } | null,
     completionRows,
   };
 }

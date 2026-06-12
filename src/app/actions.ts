@@ -354,6 +354,60 @@ export async function adminSetSiteMessage(formData: FormData) {
   redirect("/admin?ok=1");
 }
 
+export async function adminSetLivePoll(formData: FormData) {
+  const { user } = await requireAdmin();
+
+  const admin = createAdminClient();
+  if (!(await rateLimit(admin, `admin_poll:${user.id}`, 30, 60))) redirect("/admin?fout=te-snel");
+  const question = cleanText(formData.get("question"), 120);
+  const optionA = cleanText(formData.get("option_a"), 40);
+  const optionB = cleanText(formData.get("option_b"), 40);
+  const optionC = cleanText(formData.get("option_c"), 40);
+  const active = formData.get("active") === "on";
+  if (!question || !optionA || !optionB) redirect("/admin?fout=poll");
+
+  const { data: current } = await admin
+    .from("live_polls")
+    .select("id,question")
+    .eq("active", true)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const base = {
+    question,
+    option_a: optionA,
+    option_b: optionB,
+    option_c: optionC || null,
+    active,
+    updated_by: user.email,
+    updated_at: new Date().toISOString(),
+  };
+
+  // Zelfde vraag → opties/zichtbaarheid bijwerken (stemmen behouden). Nieuwe
+  // vraag → oude poll(s) deactiveren en met een verse poll (0 stemmen) starten.
+  let error;
+  if (current && (current as { question: string }).question === question) {
+    ({ error } = await admin.from("live_polls").update(base).eq("id", (current as { id: string }).id));
+  } else {
+    await admin.from("live_polls").update({ active: false }).eq("active", true);
+    ({ error } = await admin.from("live_polls").insert(base));
+  }
+  if (error) {
+    logError("adminSetLivePoll", error, { question });
+    redirect("/admin?fout=opslaan");
+  }
+
+  await admin.from("admin_audit_log").insert({
+    actor_email: user.email,
+    action: "set_live_poll",
+    detail: { question, active },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/live");
+  redirect("/admin?ok=1");
+}
+
 export async function adminRecalculate() {
   const { user } = await requireAdmin();
 
