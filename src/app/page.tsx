@@ -151,7 +151,7 @@ const homeCopy = {
     publicKicker: "WK 2026",
     publicTitle: "Gratis WK 2026 Poule",
     publicIntro: "In tien minuten vul je voorspellingen voor het hele WK. Deadline: 11 juni 21:00. Respijt t/m zondag 14 juni voor niet-gespeelde wedstrijden. Speel gratis met je vrienden en familie.",
-    publicCta: "Gratis meedoen",
+    publicCta: "Aanmelden",
     quickLinks: "Snelle links",
     scheduleLink: "WK-speelschema",
     rulesLink: "Regels",
@@ -230,7 +230,7 @@ const homeCopy = {
     publicKicker: "World Cup 2026",
     publicTitle: "Free World Cup 2026 pool",
     publicIntro: "Fill in your predictions for the full World Cup in about ten minutes. Deadline: 11 June 21:00. Grace until Sunday 14 June for matches not yet played. Play free with friends and family.",
-    publicCta: "Join for free",
+    publicCta: "Sign up",
     quickLinks: "Quick links",
     scheduleLink: "Match schedule",
     rulesLink: "Rules",
@@ -688,8 +688,11 @@ function PublicHome({
 
       <div className="grid gap-x-5 gap-y-3 md:grid-cols-[minmax(0,1fr)_340px] md:items-start">
         <section className="public-home-match-stack grid gap-4">
-          <RecentMatches locale={locale} />
-          <UpcomingMatches locale={locale} />
+          <div className="public-home-live-now">
+            <LiveNowBadge locale={locale} />
+          </div>
+          <RecentMatches locale={locale} compactMobileTitle />
+          <UpcomingMatches locale={locale} compactMobileTitle />
 
           <div className="dark-panel poule-share-panel grid gap-4 p-5 sm:p-6">
             <div className="grid gap-4 poule-share-copy">
@@ -725,6 +728,7 @@ function PublicHome({
             className="public-desktop-bottom-stack"
             copy={copy}
             displayRows={displayRows}
+            includeLiveBanner={false}
             locale={locale}
           />
         </section>
@@ -757,6 +761,7 @@ function PublicHome({
           className="public-mobile-bottom-stack"
           copy={copy}
           displayRows={displayRows}
+          includeLiveBanner={false}
           locale={locale}
         />
       </div>

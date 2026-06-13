@@ -187,7 +187,7 @@ test("special bonus facts do not score before the champion is known", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.82"/);
+  assert.match(constants, /APP_VERSION = "0.83"/);
 });
 
 
@@ -285,16 +285,19 @@ test("main mobile header and hamburger stay sticky and quick menu has a Schema/L
   assert.match(liveLinkBlock, /rgba\(242, 106, 27, 0\.28\)/);
 });
 
-test("mobile public home keeps the promo live banner in the lower promo stack", () => {
+test("mobile public home shows the live/current match chip directly above match summaries", () => {
   const publicMobileStack = homePage.match(/<PublicPromoStack[\s\S]*className=\"public-mobile-bottom-stack\"[\s\S]*\/>/)?.[0] ?? "";
   const promoStackComponent = homePage.match(/function PublicPromoStack[\s\S]*$/)?.[0] ?? "";
   const bottomStackBlock = globalsCss.match(/\.public-mobile-bottom-stack \{[\s\S]*?\}/)?.[0] ?? "";
+  const publicMatchStack = homePage.match(/<section className=\"public-home-match-stack grid gap-4\">[\s\S]*?<div className=\"dark-panel poule-share-panel/)?.[0] ?? "";
   assert.doesNotMatch(homePage, /public-hero-live-banner/);
+  assert.match(publicMatchStack, /public-home-live-now[\s\S]*<LiveNowBadge locale=\{locale\} \/>[\s\S]*<RecentMatches locale=\{locale\} compactMobileTitle \/>[\s\S]*<UpcomingMatches locale=\{locale\} compactMobileTitle \/>/);
   assert.match(publicMobileStack, /className=\"public-mobile-bottom-stack\"/);
-  assert.doesNotMatch(publicMobileStack, /includeLiveBanner=\{false\}/);
+  assert.match(publicMobileStack, /includeLiveBanner=\{false\}/);
   assert.match(promoStackComponent, /public-score-card/);
   assert.match(promoStackComponent, /\{includeLiveBanner \? <LiveFollowBanner locale=\{locale\} \/> : null\}[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} fullWidth locale=\{locale\} \/>/);
   assert.match(bottomStackBlock, /display: grid;/);
+  assert.match(globalsCss, /\.public-home-live-now \{\n  display: grid;\n  justify-items: start;\n\}/);
   assert.match(globalsCss, /\.public-home-shell \{\n  overflow: clip;\n\}/);
   assert.match(globalsCss, /\.shell-top-tight\.public-home-shell \{[\s\S]*max-width: 100vw;[\s\S]*overflow-x: hidden;/);
   assert.match(globalsCss, /\.public-home-shell \.hero-band,[\s\S]*\.public-home-shell \.public-mobile-bottom-stack > \* \{[\s\S]*width: 100%;[\s\S]*max-width: 100%;[\s\S]*min-width: 0;/);
@@ -473,13 +476,14 @@ test("prediction edits and bonus fields stay open through the 14 June grace wind
   assert.match(predictionsPage, /disabled=\{!mainOpen\}/);
 });
 
-test("hero primary Gratis meedoen button is compact on mobile with a light emphasis border", () => {
+test("hero primary Aanmelden button is compact on mobile with a light emphasis border", () => {
   const heroPrimaryBlock = globalsCss.match(/\.button-primary\.hero-primary-cta \{[\s\S]*?\}/)?.[0] ?? "";
   const mobileHeroBlock = globalsCss.match(/@media \(max-width: 759px\) \{[\s\S]*?\.button-primary\.hero-primary-cta \{[\s\S]*?\}\n\}/)?.[0] ?? "";
+  assert.match(homePage, /publicCta: "Aanmelden"/);
   assert.match(heroPrimaryBlock, /width: min\(100%, 260px\);/);
   assert.match(heroPrimaryBlock, /justify-content: center;/);
   assert.match(heroPrimaryBlock, /border-color: rgba\(255, 255, 255, 0\.62\);/);
-  assert.match(mobileHeroBlock, /width: min\(100%, 180px\);/);
+  assert.match(mobileHeroBlock, /width: min\(100%, clamp\(152px, 40vw, 184px\)\);/);
   assert.match(mobileHeroBlock, /min-height: 44px;/);
   assert.doesNotMatch(heroPrimaryBlock, /width: auto;/);
 });
@@ -848,13 +852,14 @@ test("homepage promo/ranking stacks keep desktop ranking tight below the pool bl
   assert.match(globalsCss, /@media \(max-width: 1023px\) \{[\s\S]*\.home-main-stack \{\n    display: contents;[\s\S]*\.home-side-stack \{\n    order: 2;[\s\S]*\.home-form-stack \{\n    order: 3;/);
   assert.match(globalsCss, /\.home-side-live-banner \{\n  display: grid;\n\}/);
   assert.match(globalsCss, /@media \(max-width: 767px\) \{\n  \.home-side-live-banner \{\n    display: none;/);
-  assert.match(globalsCss, /\.home-mobile-live-now \{[\s\S]*padding-left: 94px;/);
+  assert.match(globalsCss, /\.home-mobile-live-now \{[\s\S]*margin-top: -11px;[\s\S]*padding-left: 94px;/);
   assert.match(globalsCss, /@media \(max-width: 374px\) \{\n  \.home-mobile-live-now \{\n    padding-left: 0;/);
   assert.match(globalsCss, /\.home-mobile-live-now \.site-header-next-label \{\n  display: none;/);
   const promoStackComponent = homePage.match(/function PublicPromoStack[\s\S]*$/)?.[0] ?? "";
   assert.match(publicDesktopStack, /className=\"public-desktop-bottom-stack\"/);
   assert.match(publicMobileStack, /className=\"public-mobile-bottom-stack\"/);
-  assert.doesNotMatch(publicMobileStack, /includeLiveBanner=\{false\}/);
+  assert.match(publicDesktopStack, /includeLiveBanner=\{false\}/);
+  assert.match(publicMobileStack, /includeLiveBanner=\{false\}/);
   assert.match(promoStackComponent, /public-score-card[\s\S]*<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} fullWidth locale=\{locale\} \/>/);
   assert.match(globalsCss, /\.public-desktop-bottom-stack \{\n  display: none;/);
   assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-desktop-bottom-stack \{[\s\S]*display: grid;[\s\S]*grid-template-columns: minmax\(0, 1fr\) minmax\(250px, 0\.78fr\);/);
@@ -1055,6 +1060,7 @@ test("English landing page translates the public signup flow without changing th
   assert.match(loginForm, /Forgot password\?/);
   assert.match(upcomingMatches, /locale = "nl"/);
   assert.match(upcomingMatches, /locale === "en" \? "Upcoming WC matches" : "Eerstvolgende WK-wedstrijden"/);
+  assert.match(upcomingMatches, /locale === "en" \? "Next matches" : "Volgende wedstrijden"/);
   assert.match(homePage, /Gratis WK 2026 Poule/);
   assert.match(homePage, /<LoginForm surface=\"inline\" initialMode=\{initialLoginMode\} next=\{loginNext\} \/>/);
 });
@@ -1222,6 +1228,7 @@ test("small team columns use official 3-letter country abbreviations on mobile",
   assert.match(globalsCss, /@media \(max-width: 460px\) \{[\s\S]*\.match-team-abbrev \{\n    display: inline;/);
   assert.match(globalsCss, /@media \(max-width: 460px\) \{[\s\S]*\.match-team-full \{\n    display: none;/);
   assert.match(globalsCss, /\.upcoming-team-grid \.schedule-team-cell-home \{[\s\S]*justify-content: flex-start;[\s\S]*text-align: left;/);
+  assert.match(globalsCss, /@media \(max-width: 460px\) \{[\s\S]*\.match-summary-panel-compact \.schedule-team-cell-home \{[\s\S]*justify-content: flex-start;[\s\S]*text-align: left;/);
 });
 
 test("match rows always reserve right-side API score boxes with fixed home-separator-away columns", () => {
@@ -1463,7 +1470,7 @@ test("pool predictions are fetched paginated so the PostgREST cap can't hide mem
 test("home match cards use full country names on desktop, 3-letter codes on mobile and show recent results", () => {
   assert.match(homePage, /import \{ RecentMatches, UpcomingMatches \} from "@\/components\/upcoming-matches"/);
   assert.match(homePage, /<RecentMatches locale=\{locale\} desktopCompact compactMobileTitle userId=\{user\.id\} \/>[\s\S]*<UpcomingMatches locale=\{locale\} desktopCompact compactMobileTitle \/>/);
-  assert.match(homePage, /<RecentMatches locale=\{locale\} \/>[\s\S]*<UpcomingMatches locale=\{locale\} \/>/);
+  assert.match(homePage, /public-home-live-now[\s\S]*<RecentMatches locale=\{locale\} compactMobileTitle \/>[\s\S]*<UpcomingMatches locale=\{locale\} compactMobileTitle \/>/);
   assert.match(upcomingMatches, /export async function RecentMatches/);
   assert.match(upcomingMatches, /Laatst gespeelde WK-wedstrijden/);
   assert.match(upcomingMatches, /Latest WC results/);
