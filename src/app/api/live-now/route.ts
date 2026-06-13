@@ -7,12 +7,16 @@ type LiveMatch = {
   id: number;
   home: string;
   away: string;
+  homeCode: string | null;
+  awayCode: string | null;
+  homeName: string;
+  awayName: string;
   homeScore: number;
   awayScore: number;
   minute: number | null;
 };
 
-type NextMatch = { home: string; away: string; homeCode: string | null; awayCode: string | null; homeName: string; awayName: string; kickoff: string };
+type NextMatch = { id: number; home: string; away: string; homeCode: string | null; awayCode: string | null; homeName: string; awayName: string; kickoff: string };
 
 /** 3-letter code voor de compacte weergave (MEX, RSA), met nette fallback. */
 function shortCode(fixture: LiveFixture, side: "home" | "away") {
@@ -37,6 +41,10 @@ export async function GET() {
       id: fixture.id,
       home: shortCode(fixture, "home"),
       away: shortCode(fixture, "away"),
+      homeCode: fixture.home.code,
+      awayCode: fixture.away.code,
+      homeName: fixture.home.name,
+      awayName: fixture.away.name,
       homeScore: fixture.home.goals ?? 0,
       awayScore: fixture.away.goals ?? 0,
       minute: fixture.elapsed,
@@ -47,6 +55,7 @@ export async function GET() {
     .sort((a, b) => a.date.localeCompare(b.date))[0];
   const next: NextMatch | null = upcoming
     ? {
+        id: upcoming.id,
         home: shortCode(upcoming, "home"),
         away: shortCode(upcoming, "away"),
         homeCode: upcoming.home.code,

@@ -5,8 +5,19 @@ import { LIVE_URL } from "@/lib/constants";
 import { teamNameForLocale } from "@/lib/format";
 import type { Locale } from "@/lib/i18n";
 
-type LiveMatch = { id: number; home: string; away: string; homeScore: number; awayScore: number; minute: number | null };
-type NextMatch = { home: string; away: string; homeCode?: string | null; awayCode?: string | null; homeName?: string | null; awayName?: string | null; kickoff: string };
+type LiveMatch = {
+  id: number;
+  home: string;
+  away: string;
+  homeCode?: string | null;
+  awayCode?: string | null;
+  homeName?: string | null;
+  awayName?: string | null;
+  homeScore: number;
+  awayScore: number;
+  minute: number | null;
+};
+type NextMatch = { id?: number; home: string; away: string; homeCode?: string | null; awayCode?: string | null; homeName?: string | null; awayName?: string | null; kickoff: string };
 type LiveNow = { matches: LiveMatch[]; next: NextMatch | null };
 
 /** Aftrap compact in NL-tijd: vandaag "04:00", anders "12-6 04:00". */
@@ -21,18 +32,22 @@ function formatKickoff(iso: string, locale: Locale) {
   return `${day} ${time}`;
 }
 
+/** Link naar de specifieke wedstrijd op de live-subsite, of de live-homepage. */
+function matchHref(id?: number) {
+  return id ? `${LIVE_URL}/live/match/${id}` : LIVE_URL;
+}
+
 /**
- * Markering in het hoofdmenu. Is er nú een WK-wedstrijd bezig, dan een
- * knipperende rode LIVE-pill met de stand (MEX 2-0 RSA). Anders een ingetogen
- * chip met de eerstvolgende aftrap. Beide openen live.slimescore.com in een
- * nieuw tabblad. Data via /api/live-now (elke 60s, slaat verborgen tabs over).
+ * Live-markering. `variant="chip"` (desktop-header) toont een compacte pill;
+ * `variant="banner"` (mobiele home) een volle-breedte rode banner met de
+ * voluit geschreven landen, die naar de specifieke wedstrijd linkt. Data via
+ * /api/live-now (elke 60s, slaat verborgen tabs over).
  */
-export function LiveNowBadge({ locale }: { locale: Locale }) {
+export function LiveNowBadge({ locale, variant = "chip" }: { locale: Locale; variant?: "chip" | "banner" }) {
   const [data, setData] = useState<LiveNow>({ matches: [], next: null });
 
   useEffect(() => {
     let mounted = true;
-
     async function refresh() {
       if (document.hidden) return;
       try {
@@ -43,7 +58,6 @@ export function LiveNowBadge({ locale }: { locale: Locale }) {
         // Tijdelijke netwerkfout: laat de huidige status staan.
       }
     }
-
     void refresh();
     const id = window.setInterval(refresh, 60000);
     return () => {
@@ -52,17 +66,44 @@ export function LiveNowBadge({ locale }: { locale: Locale }) {
     };
   }, []);
 
-  const liveAria = locale === "en" ? "A World Cup match is live — open live.slimescore.com in a new tab" : "Er is een WK-wedstrijd bezig — open live.slimescore.com in een nieuw tabblad";
+  const liveAria = locale === "en" ? "A World Cup match is live — open the match on live.slimescore.com in a new tab" : "Er is een WK-wedstrijd bezig — open de wedstrijd op live.slimescore.com in een nieuw tabblad";
   const nextAria = locale === "en" ? "Follow the next World Cup match live — open live.slimescore.com in a new tab" : "Volg de volgende WK-wedstrijd live — open live.slimescore.com in een nieuw tabblad";
+  const teamName = (code?: string | null, name?: string | null, fallback?: string) => teamNameForLocale(code ?? fallback ?? "", name ?? fallback ?? "", locale);
 
-  if (data.matches.length > 0) {
-    const first = data.matches[0];
-    const extra = data.matches.length - 1;
+  const live = data.matches[0];
+  const extra = data.matches.length - 1;
+
+  if (variant === "banner") {
+    if (live) {
+      return (
+        <a href={matchHref(live.id)} target="_blank" rel="noopener noreferrer" className="live-banner is-live" aria-label={liveAria}>
+          <span className="live-banner-kicker"><span className="live-banner-dot" aria-hidden="true" />SlimeScore • Live</span>
+          <span className="live-banner-match">
+            {teamName(live.homeCode, live.homeName, live.home)} {live.homeScore} - {live.awayScore} {teamName(live.awayCode, live.awayName, live.away)}
+          </span>
+        </a>
+      );
+    }
+    if (data.next) {
+      return (
+        <a href={matchHref(data.next.id)} target="_blank" rel="noopener noreferrer" className="live-banner is-next" aria-label={nextAria}>
+          <span className="live-banner-kicker">SlimeScore • {locale === "en" ? "Up next" : "Volg live"}</span>
+          <span className="live-banner-match">
+            {teamName(data.next.homeCode, data.next.homeName, data.next.home)} – {teamName(data.next.awayCode, data.next.awayName, data.next.away)}
+            <span className="live-banner-time"> · {formatKickoff(data.next.kickoff, locale)}</span>
+          </span>
+        </a>
+      );
+    }
+    return null;
+  }
+
+  if (live) {
     return (
-      <a href={LIVE_URL} target="_blank" rel="noopener noreferrer" className="site-header-live-badge" aria-label={liveAria}>
+      <a href={matchHref(live.id)} target="_blank" rel="noopener noreferrer" className="site-header-live-badge" aria-label={liveAria}>
         <span className="site-header-live-label">Live</span>
         <span className="site-header-live-match">
-          {first.home} {first.homeScore}-{first.awayScore} {first.away}
+          {live.home} {live.homeScore}-{live.awayScore} {live.away}
         </span>
         {extra > 0 ? <span className="site-header-live-more">+{extra}</span> : null}
       </a>
@@ -70,12 +111,10 @@ export function LiveNowBadge({ locale }: { locale: Locale }) {
   }
 
   if (data.next) {
-    const homeName = teamNameForLocale(data.next.homeCode ?? data.next.home, data.next.homeName ?? data.next.home, locale);
-    const awayName = teamNameForLocale(data.next.awayCode ?? data.next.away, data.next.awayName ?? data.next.away, locale);
     return (
-      <a href={LIVE_URL} target="_blank" rel="noopener noreferrer" className="site-header-next-badge" aria-label={nextAria}>
+      <a href={matchHref(data.next.id)} target="_blank" rel="noopener noreferrer" className="site-header-next-badge" aria-label={nextAria}>
         <span className="site-header-next-label">{locale === "en" ? "Follow live:" : "Volg live:"}</span>
-        <span className="site-header-next-match">{homeName} – {awayName}</span>
+        <span className="site-header-next-match">{teamName(data.next.homeCode, data.next.homeName, data.next.home)} – {teamName(data.next.awayCode, data.next.awayName, data.next.away)}</span>
         <span className="site-header-next-time">{formatKickoff(data.next.kickoff, locale)}</span>
       </a>
     );

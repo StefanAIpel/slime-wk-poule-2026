@@ -422,12 +422,12 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
       <header className="mb-4 grid gap-2 md:hidden">
         <div className="home-mobile-user-row">
           <a href={localizedHref("/account", locale)} className="home-mobile-user-avatar" aria-label={locale === "en" ? "My account" : "Mijn account"}>
-            <Avatar name={nickname || copy.you} avatarKey={profile?.avatar_key} size={78} />
+            <Avatar name={nickname || copy.you} avatarKey={profile?.avatar_key} size={72} />
           </a>
           <Brand hideIcon locale={locale} />
         </div>
         <div className="home-mobile-live-now">
-          <LiveNowBadge locale={locale} />
+          <LiveNowBadge locale={locale} variant="banner" />
         </div>
       </header>
 
@@ -689,7 +689,7 @@ function PublicHome({
       <div className="grid gap-x-5 gap-y-3 md:grid-cols-[minmax(0,1fr)_340px] md:items-start">
         <section className="public-home-match-stack grid gap-4">
           <div className="public-home-live-now">
-            <LiveNowBadge locale={locale} />
+            <LiveNowBadge locale={locale} variant="banner" />
           </div>
           <RecentMatches locale={locale} compactMobileTitle />
           <UpcomingMatches locale={locale} compactMobileTitle />

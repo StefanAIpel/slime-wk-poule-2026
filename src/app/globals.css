@@ -96,6 +96,11 @@ textarea {
   padding: 20px 16px calc(32px + env(safe-area-inset-bottom));
 }
 
+/* Beheer: smallere, vastere kolombreedte voor rustiger overzicht. */
+.admin-shell {
+  width: min(880px, 100%);
+}
+
 @media (max-width: 759px) {
   .page-shell {
     padding: 8px 14px calc(30px + env(safe-area-inset-bottom));
@@ -269,13 +274,70 @@ textarea {
 }
 
 .home-mobile-live-now {
-  margin-top: -11px;
-  padding-left: 94px;
+  margin-top: 2px;
 }
 
 .public-home-live-now {
   display: grid;
   justify-items: start;
+}
+
+/* Volle-breedte live-banner (mobiele home, in- en uitgelogd): "SlimeScore • Live
+   Brazilië 0 - 0 Marokko", links naar de specifieke wedstrijd. */
+.live-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  width: 100%;
+  border-radius: 12px;
+  padding: 9px 14px;
+  color: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 8px 18px rgba(8, 22, 52, 0.12);
+}
+
+.live-banner.is-live {
+  background: linear-gradient(135deg, #e1262f, #b91c1c);
+}
+
+.live-banner.is-next {
+  background: linear-gradient(135deg, #1e73b8, #114b82);
+}
+
+.live-banner-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  opacity: 0.95;
+}
+
+.live-banner-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffffff;
+  animation: live-blink 1.2s ease-in-out infinite;
+}
+
+.live-banner-match {
+  font-size: 0.92rem;
+  font-weight: 1000;
+  font-variant-numeric: tabular-nums;
+}
+
+.live-banner-time {
+  font-weight: 800;
+  opacity: 0.92;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-banner-dot {
+    animation: none;
+  }
 }
 
 .public-home-live-now:empty {
@@ -398,8 +460,8 @@ textarea {
 }
 
 .home-mobile-user-avatar .avatar-img {
-  width: 84px;
-  height: 84px;
+  width: 72px;
+  height: 72px;
   border: 2px solid rgba(242, 106, 27, 0.92);
   background: transparent;
   box-shadow: 0 14px 26px rgba(8, 22, 52, 0.14);
@@ -452,8 +514,8 @@ textarea {
 
 @media (max-width: 759px) {
   .home-mobile-user-avatar .avatar-img {
-    width: 78px;
-    height: 78px;
+    width: 68px;
+    height: 68px;
     box-shadow: 0 12px 22px rgba(8, 22, 52, 0.14);
   }
 }
@@ -2933,6 +2995,8 @@ textarea {
 .schedule-team-cell-away {
   justify-content: flex-start;
   text-align: left;
+  /* Iets meer lucht tussen het scheidingsteken en het uitteam (schema + dashboard). */
+  padding-left: 8px;
 }
 
 .schedule-team-name {
@@ -4135,16 +4199,19 @@ textarea {
 .live-match-cta-strong {
   justify-self: center;
   gap: 6px;
-  margin-top: 2px;
+  /* Witregel/lucht boven de knop, daarna iets naar onder. */
+  margin-top: 14px;
   border-radius: 999px;
-  background: #0866e8;
+  /* Rood van de titelbalk, 40% transparant (i.p.v. blauw); donkerrode tekst voor leesbaarheid. */
+  border: 1px solid rgba(225, 38, 47, 0.55);
+  background: rgba(225, 38, 47, 0.4);
   padding: 8px 16px;
-  color: #ffffff;
+  color: #b91c1c;
   font-size: 0.8rem;
 }
 
 .live-match-card:hover .live-match-cta-strong {
-  background: #0654c2;
+  background: rgba(225, 38, 47, 0.52);
   text-decoration: none;
 }
 
@@ -6465,12 +6532,13 @@ textarea {
 }
 
 .pool-quick-share {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  z-index: 2;
   display: inline-flex;
-  flex: 0 1 auto;
-  max-width: 100%;
-  min-width: 0;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .pool-share-actions {
@@ -6488,13 +6556,19 @@ textarea {
   place-items: center;
   /* Alleen de cirkelrand blijft wit zichtbaar; geen melkachtige witte vulling
      om de deelicoontjes heen, zodat de banner er schoon doorheen loopt. */
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 999px;
-  background: transparent;
-  color: #0b1f4d;
-  box-shadow: 0 2px 7px rgba(7, 18, 46, 0.1);
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  box-shadow: 0 2px 7px rgba(7, 18, 46, 0.18);
   cursor: pointer;
   text-decoration: none;
+}
+
+/* Witte glyphs op de banner (overrulet de merk-kleuren hieronder), net als de
+   deelknoppen elders. */
+.pool-quick-share .pool-quick-share-button {
+  color: #ffffff;
 }
 
 .pool-quick-share-button:disabled {
@@ -6895,7 +6969,8 @@ textarea {
   }
 
   .pool-quick-share {
-    flex-basis: 100%;
+    right: 10px;
+    bottom: 8px;
   }
 
   .pool-share-actions {
