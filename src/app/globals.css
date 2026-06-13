@@ -117,8 +117,21 @@ textarea {
 
 @media (max-width: 759px) {
   .shell-top-tight.public-home-shell {
+    max-width: 100vw;
     padding-top: 8px !important;
     padding-inline: 14px;
+    overflow-x: hidden;
+  }
+
+  .public-home-shell > *,
+  .public-home-shell .hero-band,
+  .public-home-shell .public-home-match-stack,
+  .public-home-shell .public-home-match-stack > *,
+  .public-home-shell .public-mobile-bottom-stack,
+  .public-home-shell .public-mobile-bottom-stack > * {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 }
 
