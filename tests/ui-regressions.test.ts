@@ -291,7 +291,7 @@ test("mobile public home shows the live/current match chip directly above match 
   const bottomStackBlock = globalsCss.match(/\.public-mobile-bottom-stack \{[\s\S]*?\}/)?.[0] ?? "";
   const publicMatchStack = homePage.match(/<section className=\"public-home-match-stack grid gap-4\">[\s\S]*?<div className=\"dark-panel poule-share-panel/)?.[0] ?? "";
   assert.doesNotMatch(homePage, /public-hero-live-banner/);
-  assert.match(publicMatchStack, /public-home-live-now[\s\S]*<LiveNowBadge locale=\{locale\} \/>[\s\S]*<RecentMatches locale=\{locale\} compactMobileTitle \/>[\s\S]*<UpcomingMatches locale=\{locale\} compactMobileTitle \/>/);
+  assert.match(publicMatchStack, /public-home-live-now[\s\S]*<LiveNowBadge locale=\{locale\} variant="banner" \/>[\s\S]*<RecentMatches locale=\{locale\} compactMobileTitle \/>[\s\S]*<UpcomingMatches locale=\{locale\} compactMobileTitle \/>/);
   assert.match(publicMobileStack, /className=\"public-mobile-bottom-stack\"/);
   assert.match(publicMobileStack, /includeLiveBanner=\{false\}/);
   assert.match(promoStackComponent, /public-score-card/);
@@ -452,12 +452,12 @@ test("logged-in homepage shows the green edit-deadline copy (countdown lives in 
   assert.match(homePage, /dashboard-extra-progress-bar mt-2 h-2/);
   assert.match(homePage, /<p className="text-2xl font-bold sm:text-3xl">\{progress\}%<\/p>/);
   assert.match(homePage, /<p className="text-xl font-bold tabular-nums sm:text-2xl">\{extraProgress\}%<\/p>/);
-  assert.match(homePage, /<Avatar name=\{nickname \|\| copy\.you\} avatarKey=\{profile\?\.avatar_key\} size=\{78\} \/>/);
+  assert.match(homePage, /<Avatar name=\{nickname \|\| copy\.you\} avatarKey=\{profile\?\.avatar_key\} size=\{72\} \/>/);
   assert.match(homePage, /<Brand hideIcon locale=\{locale\} \/>/);
   assert.match(globalsCss, /\.home-mobile-user-avatar \{[\s\S]*display: inline-flex;/);
-  assert.match(globalsCss, /\.home-mobile-user-avatar \.avatar-img \{[\s\S]*width: 84px;[\s\S]*height: 84px;/);
+  assert.match(globalsCss, /\.home-mobile-user-avatar \.avatar-img \{[\s\S]*width: 72px;[\s\S]*height: 72px;/);
   assert.match(globalsCss, /\.home-mobile-user-avatar \.avatar-img \{[\s\S]*border: 2px solid rgba\(242, 106, 27, 0\.92\);[\s\S]*background: transparent;/);
-  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.home-mobile-user-avatar \.avatar-img \{[\s\S]*width: 78px;[\s\S]*height: 78px;/);
+  assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.home-mobile-user-avatar \.avatar-img \{[\s\S]*width: 68px;[\s\S]*height: 68px;/);
 });
 
 test("prediction edits and bonus fields stay open through the 14 June grace window while every match keeps the 30-minute lock", () => {
@@ -846,14 +846,15 @@ test("homepage promo/ranking stacks keep desktop ranking tight below the pool bl
   assert.ok(slimeSoccerBanner.includes('externalTile = tile.href.startsWith("https://")'));
   assert.match(slimeSoccerBanner, /target=\{externalTile \? "_blank" : undefined\}/);
   assert.match(loggedInRightColumn, /<div className=\"home-side-live-banner\">[\s\S]*<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<\/div>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/);
-  assert.match(loggedInMobileHeader, /home-mobile-user-row[\s\S]*<Brand hideIcon locale=\{locale\} \/>[\s\S]*home-mobile-live-now[\s\S]*<LiveNowBadge locale=\{locale\} \/>/);
+  assert.match(loggedInMobileHeader, /home-mobile-user-row[\s\S]*<Brand hideIcon locale=\{locale\} \/>[\s\S]*home-mobile-live-now[\s\S]*<LiveNowBadge locale=\{locale\} variant="banner" \/>/);
   assert.match(homePage, /home-main-stack[\s\S]*home-hero-stack[\s\S]*dashboard-hero-panel[\s\S]*home-form-stack[\s\S]*join-pool-form/);
   assert.match(homePage, /home-side-stack[\s\S]*<RecentMatches locale=\{locale\} desktopCompact compactMobileTitle userId=\{user\.id\} \/>/);
   assert.match(globalsCss, /@media \(max-width: 1023px\) \{[\s\S]*\.home-main-stack \{\n    display: contents;[\s\S]*\.home-side-stack \{\n    order: 2;[\s\S]*\.home-form-stack \{\n    order: 3;/);
   assert.match(globalsCss, /\.home-side-live-banner \{\n  display: grid;\n\}/);
   assert.match(globalsCss, /@media \(max-width: 767px\) \{\n  \.home-side-live-banner \{\n    display: none;/);
-  assert.match(globalsCss, /\.home-mobile-live-now \{[\s\S]*margin-top: -11px;[\s\S]*padding-left: 94px;/);
-  assert.match(globalsCss, /@media \(max-width: 374px\) \{\n  \.home-mobile-live-now \{\n    padding-left: 0;/);
+  assert.match(globalsCss, /\.home-mobile-live-now \{\n  margin-top: 2px;\n\}/);
+  assert.match(globalsCss, /\.live-banner \{[\s\S]*width: 100%;/);
+  assert.match(globalsCss, /\.live-banner\.is-live \{[\s\S]*linear-gradient/);
   assert.match(globalsCss, /\.home-mobile-live-now \.site-header-next-label \{\n  display: none;/);
   const promoStackComponent = homePage.match(/function PublicPromoStack[\s\S]*$/)?.[0] ?? "";
   assert.match(publicDesktopStack, /className=\"public-desktop-bottom-stack\"/);
@@ -1450,13 +1451,9 @@ test("mobile landing hero keeps title and host pills compact on one line", () =>
   assert.match(globalsCss, /@media \(max-width: 420px\) \{[\s\S]*\.hero-home-title-block h1 \{[\s\S]*font-size: clamp\(1\.48rem, 7\.4vw, 1\.68rem\) !important;/);
 });
 
-test("pool quick-share icons keep only the white circle rim, with transparent surround", () => {
-  const block = globalsCss.match(/\.pool-quick-share-button \{[\s\S]*?\}/)?.[0] ?? "";
-  assert.match(block, /border: 1px solid rgba\(255, 255, 255, 0\.72\);/);
-  assert.match(block, /background: transparent;/);
-  assert.doesNotMatch(block, /background: rgba\(255, 255, 255/);
-  assert.doesNotMatch(block, /backdrop-filter/);
-  assert.doesNotMatch(block, /rgba\(248, 251, 255, 0\.98\)/);
+test("pool quick-share icons are white and pinned bottom-right of the banner", () => {
+  assert.match(globalsCss, /\.pool-quick-share \{[\s\S]*position: absolute;[\s\S]*right: 12px;[\s\S]*bottom: 10px;/);
+  assert.match(globalsCss, /\.pool-quick-share \.pool-quick-share-button \{\n  color: #ffffff;\n\}/);
 });
 
 test("pool predictions are fetched paginated so the PostgREST cap can't hide members", () => {
@@ -1517,11 +1514,11 @@ test("header shows a blinking LIVE badge when a match is on, opening live site i
   const route = await readFile(new URL("../src/app/api/live-now/route.ts", import.meta.url), "utf8");
   assert.match(siteHeader, /<LiveNowBadge locale=\{locale\} \/>/);
   // Live: knipperende pill met de stand (MEX 2-0 RSA); opent in een apart tabblad.
-  assert.match(badge, /if \(data\.matches\.length > 0\)/);
-  assert.match(badge, /\{first\.home\} \{first\.homeScore\}-\{first\.awayScore\} \{first\.away\}/);
+  assert.match(badge, /const live = data\.matches\[0\]/);
+  assert.match(badge, /\{live\.home\} \{live\.homeScore\}-\{live\.awayScore\} \{live\.away\}/);
   assert.match(badge, /target="_blank"/);
   assert.match(badge, /rel="noopener noreferrer"/);
-  assert.match(badge, /href=\{LIVE_URL\}/);
+  assert.match(badge, /href=\{matchHref\(/);
   assert.match(route, /!fixture\.friendly/);
   // "Live" geldt ook 30 min vóór aftrap (zelfde promotie als de live-pagina).
   assert.match(route, /isLiveStatus\(fixture\.statusShort\) \|\| isStartingSoon\(fixture, now\)/);
@@ -1531,7 +1528,8 @@ test("header shows a blinking LIVE badge when a match is on, opening live site i
   assert.match(badge, /if \(data\.next\)/);
   assert.match(badge, /Volg live:/);
   assert.match(badge, /Follow live:/);
-  assert.match(badge, /teamNameForLocale\(data\.next\.homeCode/);
+  assert.match(badge, /teamName\(data\.next\.homeCode/);
+  assert.match(badge, /import \{ teamNameForLocale \} from "@\/lib\/format"/);
   assert.match(route, /homeName: upcoming\.home\.name/);
   assert.match(badge, /formatKickoff\(data\.next\.kickoff, locale\)/);
   assert.match(globalsCss, /\.site-header-next-badge \{/);
@@ -1539,4 +1537,25 @@ test("header shows a blinking LIVE badge when a match is on, opening live site i
   // Knipperende dot met reduced-motion uitzondering.
   assert.match(globalsCss, /\.site-header-live-badge::before \{[\s\S]*?animation: live-blink/);
   assert.match(globalsCss, /prefers-reduced-motion: reduce[\s\S]*?\.site-header-live-badge::before \{\n      animation: none;/);
+});
+
+test("mobile live banner: full-width, spelled-out, links to the specific match; admin width constrained", async () => {
+  const badge = await readFile(new URL("../src/components/live-now-badge.tsx", import.meta.url), "utf8");
+  const route = await readFile(new URL("../src/app/api/live-now/route.ts", import.meta.url), "utf8");
+  const adminPage = await readFile(new URL("../src/app/admin/page.tsx", import.meta.url), "utf8");
+  // Banner-variant met voluit geschreven namen en link naar /live/match/{id}.
+  assert.match(badge, /variant\?: "chip" \| "banner"/);
+  assert.match(badge, /`\$\{LIVE_URL\}\/live\/match\/\$\{id\}`/);
+  assert.match(badge, /live-banner is-live/);
+  assert.match(badge, /SlimeScore • Live/);
+  assert.match(route, /homeName: fixture\.home\.name/);
+  assert.match(route, /id: upcoming\.id/);
+  // Featured CTA: rood (40% transparant) i.p.v. blauw.
+  assert.match(globalsCss, /\.live-match-cta-strong \{[\s\S]*background: rgba\(225, 38, 47, 0\.4\);/);
+  assert.doesNotMatch(globalsCss, /\.live-match-cta-strong \{[\s\S]*background: #0866e8;/);
+  // Uitteam iets van het scheidingsteken.
+  assert.match(globalsCss, /\.schedule-team-cell-away \{[\s\S]*padding-left: 8px;/);
+  // Beheer smaller.
+  assert.match(adminPage, /page-shell admin-shell/);
+  assert.match(globalsCss, /\.admin-shell \{\n  width: min\(880px, 100%\);/);
 });

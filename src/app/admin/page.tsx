@@ -46,7 +46,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   ];
 
   return (
-    <main className="page-shell">
+    <main className="page-shell admin-shell">
       <header className="mb-5 grid gap-3">
         <Brand />
         <h1 className="text-2xl font-bold text-[var(--ink)]">Beheer</h1>
