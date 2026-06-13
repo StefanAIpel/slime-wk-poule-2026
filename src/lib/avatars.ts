@@ -6,10 +6,7 @@ export type AvatarOption = { key: string; label: string };
 export const avatarOptions: AvatarOption[] = [
   { key: "wk2026-international", label: "WK 2026" },
   { key: "netherlands", label: "Nederland" },
-  { key: "memphis-slime", label: "Memphis" },
   { key: "ueda-slime", label: "Ueda" },
-  { key: "virgil-slime", label: "Virgil" },
-  { key: "ronaldo-slime", label: "Ronaldo" },
   { key: "oranje-aanvoerder", label: "Aanvoerder" },
   { key: "oranje-spelmaker", label: "Spelmaker" },
   { key: "oranje-aanvaller", label: "Aanvaller" },
@@ -44,8 +41,8 @@ export const avatarOptions: AvatarOption[] = [
 ];
 
 // Legacy keys blijven geldig voor bestaande profielen, maar staan niet meer in de picker
-// zodat visuele dubbelen (Messi/Argentinië en WK-slime/WK 2026) verdwijnen.
-const legacyAvatarKeys = ["messi-slime", "wk-slime"];
+// zodat visuele dubbelen en kapotte/oude picks uit de keuzelijst verdwijnen.
+const legacyAvatarKeys = ["messi-slime", "wk-slime", "memphis-slime", "virgil-slime", "ronaldo-slime"];
 const avatarKeys = Array.from(new Set([...avatarOptions.map((option) => option.key), ...legacyAvatarKeys]));
 const webpAvatarKeys = new Set([
   "ajax-slime",
@@ -73,6 +70,7 @@ const webpAvatarKeys = new Set([
   "oranje-supporter",
   "portugal-slime",
   "rode-duivel",
+  "ronaldo-slime",
   "scheidsrechter-slime",
   "scotland-fan",
   "seychellen-slime",
@@ -101,7 +99,7 @@ export function avatarKeyForName(name: string) {
   const label = name?.trim() || "Speler";
   let hash = 0;
   for (let i = 0; i < label.length; i += 1) hash = (hash * 31 + label.charCodeAt(i)) >>> 0;
-  return avatarKeys[hash % avatarKeys.length];
+  return avatarOptions[hash % avatarOptions.length].key;
 }
 
 /** Kies de expliciet gekozen avatar, of val terug op de vaste naam-avatar. */
