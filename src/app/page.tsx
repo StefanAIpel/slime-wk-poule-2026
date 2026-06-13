@@ -10,6 +10,7 @@ import { InstallAppCard } from "@/components/install-app-card";
 import { JoinPoolScrollTarget } from "@/components/join-pool-scroll-target";
 import { LoginForm } from "@/components/login-form";
 import { LiveFollowBanner } from "@/components/live-follow-banner";
+import { LiveNowBadge } from "@/components/live-now-badge";
 import { PasswordResetForm } from "@/components/password-reset-form";
 import { SiteMessageBanner } from "@/components/site-message-banner";
 import { PredictionsComplete } from "@/components/predictions-complete";
@@ -418,15 +419,15 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
   return (
     <main className="page-shell">
       <JoinPoolScrollTarget />
-      <header className="mb-6 grid gap-4 md:hidden">
+      <header className="mb-4 grid gap-2 md:hidden">
         <div className="home-mobile-user-row">
           <a href={localizedHref("/account", locale)} className="home-mobile-user-avatar" aria-label={locale === "en" ? "My account" : "Mijn account"}>
             <Avatar name={nickname || copy.you} avatarKey={profile?.avatar_key} size={78} />
           </a>
           <Brand hideIcon locale={locale} />
         </div>
-        <div className="home-mobile-live-banner">
-          <LiveFollowBanner locale={locale} />
+        <div className="home-mobile-live-now">
+          <LiveNowBadge locale={locale} />
         </div>
       </header>
 
@@ -638,7 +639,7 @@ function PublicHome({
   const signupHref = localizedHref("/aanmelden", locale);
 
   return (
-    <main className="page-shell shell-top-tight grid gap-5">
+    <main className="page-shell shell-top-tight public-home-shell grid gap-5">
       <div className="hero-band hero-band-visual hero-home hero-band-topbar">
         {/* LCP-element als echt <img> achter de tekst: de preload-scanner vindt 'm meteen
             in de HTML (vóór CSS-parsing), met fetchPriority high. <picture> kiest de juiste
@@ -683,10 +684,6 @@ function PublicHome({
             {copy.rulesLink}
           </a>
         </div>
-      </div>
-
-      <div className="public-hero-live-banner">
-        <LiveFollowBanner locale={locale} />
       </div>
 
       <div className="grid gap-x-5 gap-y-3 md:grid-cols-[minmax(0,1fr)_340px] md:items-start">
@@ -760,7 +757,6 @@ function PublicHome({
           className="public-mobile-bottom-stack"
           copy={copy}
           displayRows={displayRows}
-          includeLiveBanner={false}
           locale={locale}
         />
       </div>

@@ -187,7 +187,7 @@ test("special bonus facts do not score before the champion is known", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.81"/);
+  assert.match(constants, /APP_VERSION = "0.82"/);
 });
 
 
@@ -285,19 +285,17 @@ test("main mobile header and hamburger stay sticky and quick menu has a Schema/L
   assert.match(liveLinkBlock, /rgba\(242, 106, 27, 0\.28\)/);
 });
 
-test("mobile public home puts the live banner directly under the hero and keeps bottom promos lean", () => {
-  const publicHeroLiveBanner = homePage.match(/<div className=\"public-hero-live-banner\">[\s\S]*?<LiveFollowBanner locale=\{locale\} \/>[\s\S]*?<\/div>/)?.[0] ?? "";
+test("mobile public home keeps the promo live banner in the lower promo stack", () => {
   const publicMobileStack = homePage.match(/<PublicPromoStack[\s\S]*className=\"public-mobile-bottom-stack\"[\s\S]*\/>/)?.[0] ?? "";
   const promoStackComponent = homePage.match(/function PublicPromoStack[\s\S]*$/)?.[0] ?? "";
   const bottomStackBlock = globalsCss.match(/\.public-mobile-bottom-stack \{[\s\S]*?\}/)?.[0] ?? "";
-  assert.match(publicHeroLiveBanner, /<LiveFollowBanner locale=\{locale\} \/>/);
+  assert.doesNotMatch(homePage, /public-hero-live-banner/);
   assert.match(publicMobileStack, /className=\"public-mobile-bottom-stack\"/);
-  assert.match(publicMobileStack, /includeLiveBanner=\{false\}/);
+  assert.doesNotMatch(publicMobileStack, /includeLiveBanner=\{false\}/);
   assert.match(promoStackComponent, /public-score-card/);
   assert.match(promoStackComponent, /\{includeLiveBanner \? <LiveFollowBanner locale=\{locale\} \/> : null\}[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} fullWidth locale=\{locale\} \/>/);
   assert.match(bottomStackBlock, /display: grid;/);
-  assert.match(globalsCss, /\.public-hero-live-banner \{[\s\S]*margin-top: -8px;/);
-  assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-hero-live-banner \{[\s\S]*display: none;/);
+  assert.doesNotMatch(globalsCss, /\.public-hero-live-banner/);
   assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-mobile-bottom-stack \{[\s\S]*display: none;/);
 });
 
@@ -737,7 +735,12 @@ test("avatar picker adds the latest slime pack options without the visual duplic
   }
   assert.doesNotMatch(avatarsLib, /key: "messi-slime"/);
   assert.doesNotMatch(avatarsLib, /key: "wk-slime"/);
-  assert.match(avatarsLib, /legacyAvatarKeys = \["messi-slime", "wk-slime"\]/);
+  assert.doesNotMatch(avatarsLib, /key: "memphis-slime"/);
+  assert.doesNotMatch(avatarsLib, /key: "virgil-slime"/);
+  assert.doesNotMatch(avatarsLib, /key: "ronaldo-slime"/);
+  assert.match(avatarsLib, /legacyAvatarKeys = \["messi-slime", "wk-slime", "memphis-slime", "virgil-slime", "ronaldo-slime"\]/);
+  assert.match(avatarsLib, /return avatarOptions\[hash % avatarOptions\.length\]\.key/);
+  assert.match(avatarsLib, /"ronaldo-slime"/);
   assert.match(avatarPicker, /"koe-slime": "Cow"/);
   assert.match(avatarPicker, /"scheidsrechter-slime": "Referee"/);
   assert.match(avatarPicker, /"seychellen-slime": "Seychelles"/);
@@ -819,12 +822,13 @@ test("logged-in dashboard only shows SlimeSoccer in the right column and no Slim
 
 test("homepage promo/ranking stacks keep desktop ranking tight below the pool block and mobile stack low", () => {
   const loggedInRightColumn = homePage.match(/<div className=\"home-side-stack grid gap-4 lg:col-start-2 lg:row-start-1\">[\s\S]*?<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/)?.[0] ?? "";
-  const loggedInMobileHeader = homePage.match(/<header className=\"mb-6 grid gap-4 md:hidden\">[\s\S]*?<\/header>/)?.[0] ?? "";
+  const loggedInMobileHeader = homePage.match(/<header className=\"mb-4 grid gap-2 md:hidden\">[\s\S]*?<\/header>/)?.[0] ?? "";
   const publicRightColumn = homePage.match(/<aside className=\"public-login-stack[\s\S]*?<\/aside>/)?.[0] ?? "";
   const publicDesktopStack = homePage.match(new RegExp('<PublicPromoStack[\\s\\S]*className=\\"public-desktop-bottom-stack\\"[\\s\\S]*\\/>\\n\\s*<\\/section>'))?.[0] ?? "";
   const publicMobileStack = homePage.match(/<PublicPromoStack[\s\S]*className=\"public-mobile-bottom-stack\"[\s\S]*\/>/)?.[0] ?? "";
   const liveBannerBlock = globalsCss.match(/^\.live-follow-banner \{[\s\S]*?^\}/m)?.[0] ?? "";
   assert.match(homePage, /import \{ LiveFollowBanner \}/);
+  assert.match(homePage, /import \{ LiveNowBadge \}/);
   assert.match(liveFollowBanner, /LIVE_URL/);
   assert.match(liveFollowBanner, /href=\{LIVE_URL\}/);
   assert.match(liveFollowBanner, /target=\"_blank\"/);
@@ -835,18 +839,19 @@ test("homepage promo/ranking stacks keep desktop ranking tight below the pool bl
   assert.ok(slimeSoccerBanner.includes('externalTile = tile.href.startsWith("https://")'));
   assert.match(slimeSoccerBanner, /target=\{externalTile \? "_blank" : undefined\}/);
   assert.match(loggedInRightColumn, /<div className=\"home-side-live-banner\">[\s\S]*<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<\/div>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} locale=\{locale\} \/>/);
-  assert.match(loggedInMobileHeader, /home-mobile-user-row[\s\S]*<Brand hideIcon locale=\{locale\} \/>[\s\S]*home-mobile-live-banner[\s\S]*<LiveFollowBanner locale=\{locale\} \/>/);
+  assert.match(loggedInMobileHeader, /home-mobile-user-row[\s\S]*<Brand hideIcon locale=\{locale\} \/>[\s\S]*home-mobile-live-now[\s\S]*<LiveNowBadge locale=\{locale\} \/>/);
   assert.match(homePage, /home-main-stack[\s\S]*home-hero-stack[\s\S]*dashboard-hero-panel[\s\S]*home-form-stack[\s\S]*join-pool-form/);
   assert.match(homePage, /home-side-stack[\s\S]*<RecentMatches locale=\{locale\} desktopCompact compactMobileTitle userId=\{user\.id\} \/>/);
   assert.match(globalsCss, /@media \(max-width: 1023px\) \{[\s\S]*\.home-main-stack \{\n    display: contents;[\s\S]*\.home-side-stack \{\n    order: 2;[\s\S]*\.home-form-stack \{\n    order: 3;/);
   assert.match(globalsCss, /\.home-side-live-banner \{\n  display: grid;\n\}/);
   assert.match(globalsCss, /@media \(max-width: 767px\) \{\n  \.home-side-live-banner \{\n    display: none;/);
-  assert.match(globalsCss, /\.home-mobile-live-banner \{[\s\S]*padding-left: 94px;/);
-  assert.match(globalsCss, /\.home-mobile-live-banner \.live-follow-banner-text \{\n  display: none;/);
+  assert.match(globalsCss, /\.home-mobile-live-now \{[\s\S]*padding-left: 94px;/);
+  assert.match(globalsCss, /@media \(max-width: 374px\) \{\n  \.home-mobile-live-now \{\n    padding-left: 0;/);
+  assert.match(globalsCss, /\.home-mobile-live-now \.site-header-next-label \{\n  display: none;/);
   const promoStackComponent = homePage.match(/function PublicPromoStack[\s\S]*$/)?.[0] ?? "";
   assert.match(publicDesktopStack, /className=\"public-desktop-bottom-stack\"/);
   assert.match(publicMobileStack, /className=\"public-mobile-bottom-stack\"/);
-  assert.match(publicMobileStack, /includeLiveBanner=\{false\}/);
+  assert.doesNotMatch(publicMobileStack, /includeLiveBanner=\{false\}/);
   assert.match(promoStackComponent, /public-score-card[\s\S]*<LiveFollowBanner locale=\{locale\} \/>[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} fullWidth locale=\{locale\} \/>/);
   assert.match(globalsCss, /\.public-desktop-bottom-stack \{\n  display: none;/);
   assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-desktop-bottom-stack \{[\s\S]*display: grid;[\s\S]*grid-template-columns: minmax\(0, 1fr\) minmax\(250px, 0\.78fr\);/);

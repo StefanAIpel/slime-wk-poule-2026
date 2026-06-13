@@ -96,6 +96,12 @@ textarea {
   padding: 20px 16px calc(32px + env(safe-area-inset-bottom));
 }
 
+@media (max-width: 759px) {
+  .page-shell {
+    padding: 8px 14px calc(30px + env(safe-area-inset-bottom));
+  }
+}
+
 .game-page-shell {
   width: min(1420px, 100%);
 }
@@ -103,6 +109,17 @@ textarea {
 /* Landing: net genoeg lucht onder menu/statusbalk, daarna meteen hero. */
 .shell-top-tight {
   padding-top: 10px !important;
+}
+
+.public-home-shell {
+  overflow: clip;
+}
+
+@media (max-width: 759px) {
+  .shell-top-tight.public-home-shell {
+    padding-top: 8px !important;
+    padding-inline: 14px;
+  }
 }
 
 @media (min-width: 800px) {
@@ -238,28 +255,108 @@ textarea {
   gap: 16px;
 }
 
-.home-mobile-live-banner {
-  margin-top: -2px;
+.home-mobile-live-now {
+  margin-top: -7px;
   padding-left: 94px;
 }
 
-.home-mobile-live-banner .live-follow-banner {
-  min-height: 92px;
-  padding: 11px 82px 11px 12px;
-}
-
-.home-mobile-live-banner .live-follow-banner-text {
+.home-mobile-live-now:empty {
   display: none;
 }
 
-.home-mobile-live-banner .live-follow-banner img {
-  right: -12px;
-  width: 104px;
-  max-height: 102px;
+.home-mobile-live-now .site-header-live-badge,
+.home-mobile-live-now .site-header-next-badge {
+  max-width: min(100%, 350px);
+  min-height: 34px;
+  padding: 6px 11px;
+  font-size: 0.75rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.home-mobile-live-now .site-header-next-label {
+  display: none;
 }
 
 .home-side-live-banner {
   display: grid;
+}
+
+/* LiveNowBadge is used in the desktop header and as a compact mobile home chip. */
+.site-header-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e1262f, #b91c1c);
+  padding: 6px 12px;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 6px 14px rgba(185, 28, 28, 0.28);
+}
+
+.site-header-live-badge::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #ffffff;
+  animation: live-blink 1.2s ease-in-out infinite;
+}
+
+.site-header-live-badge:hover {
+  background: linear-gradient(135deg, #c81e26, #991414);
+}
+
+.site-header-live-match {
+  font-variant-numeric: tabular-nums;
+}
+
+.site-header-live-more {
+  opacity: 0.85;
+  font-size: 0.72rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header-live-badge::before {
+    animation: none;
+  }
+}
+
+.site-header-next-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(206, 17, 38, 0.24);
+  border-radius: 999px;
+  background: rgba(206, 17, 38, 0.11);
+  padding: 5px 11px;
+  color: #8f1423;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(206, 17, 38, 0.08);
+}
+
+.site-header-next-badge:hover {
+  border-color: rgba(206, 17, 38, 0.36);
+  background: rgba(206, 17, 38, 0.18);
+}
+
+.site-header-next-label {
+  color: #b31b2c;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
+
+.site-header-next-time {
+  color: #b31b2c;
+  font-variant-numeric: tabular-nums;
+  font-weight: 950;
 }
 
 .home-mobile-user-avatar {
@@ -677,16 +774,7 @@ textarea {
   gap: 14px;
 }
 
-.public-hero-live-banner {
-  display: grid;
-  margin-top: -8px;
-}
-
 @media (min-width: 768px) {
-  .public-hero-live-banner {
-    display: none;
-  }
-
   .public-desktop-bottom-stack {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(250px, 0.78fr);
@@ -6012,7 +6100,7 @@ textarea {
 }
 
 @media (max-width: 374px) {
-  .home-mobile-live-banner {
+  .home-mobile-live-now {
     padding-left: 0;
   }
 }
