@@ -269,8 +269,26 @@ textarea {
 }
 
 .home-mobile-live-now {
-  margin-top: -7px;
+  margin-top: -11px;
   padding-left: 94px;
+}
+
+.public-home-live-now {
+  display: grid;
+  justify-items: start;
+}
+
+.public-home-live-now:empty {
+  display: none;
+}
+
+.public-home-live-now .site-header-live-badge,
+.public-home-live-now .site-header-next-badge {
+  max-width: 100%;
+  min-height: 34px;
+  padding: 6px 11px;
+  font-size: 0.75rem;
+  line-height: 1;
 }
 
 .home-mobile-live-now:empty {
@@ -1491,9 +1509,9 @@ textarea {
   }
 
   .button-primary.hero-primary-cta {
-    width: min(100%, 180px);
+    width: min(100%, clamp(152px, 40vw, 184px));
     min-height: 44px;
-    padding-inline: 12px;
+    padding-inline: 14px;
     font-size: 0.9rem;
   }
 }
@@ -6087,6 +6105,21 @@ textarea {
 
   .match-summary-panel-mobile-short .match-title-mobile-short {
     display: inline;
+  }
+
+  .match-summary-panel-compact .schedule-team-cell-home {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .match-summary-panel-compact .upcoming-team-grid {
+    grid-template-columns: minmax(58px, 76px) 20px minmax(0, 1fr) 54px;
+    column-gap: 4px;
+    padding-right: 7px;
+  }
+
+  .match-summary-panel-compact .schedule-team-cell-away {
+    padding-left: 7px;
   }
 
   .match-location {

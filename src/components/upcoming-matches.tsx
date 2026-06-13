@@ -70,7 +70,7 @@ function MatchList({ rows, kind, locale, desktopCompact = false, compactMobileTi
     : (locale === "en" ? "Upcoming WC matches" : "Eerstvolgende WK-wedstrijden");
   const mobileTitle = isRecent
     ? (locale === "en" ? "Past matches" : "Afgelopen wedstrijden")
-    : (locale === "en" ? "Upcoming matches" : "Komende wedstrijden");
+    : (locale === "en" ? "Next matches" : "Volgende wedstrijden");
   const schemaLabel = locale === "en" ? "Full schedule" : "Hele schema";
 
   if (!rows.length) return null;
