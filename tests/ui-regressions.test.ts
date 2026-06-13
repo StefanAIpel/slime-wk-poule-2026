@@ -295,6 +295,9 @@ test("mobile public home keeps the promo live banner in the lower promo stack", 
   assert.match(promoStackComponent, /public-score-card/);
   assert.match(promoStackComponent, /\{includeLiveBanner \? <LiveFollowBanner locale=\{locale\} \/> : null\}[\s\S]*<SlimeSoccerBanner includeVolley=\{false\} fullWidth locale=\{locale\} \/>/);
   assert.match(bottomStackBlock, /display: grid;/);
+  assert.match(globalsCss, /\.public-home-shell \{\n  overflow: clip;\n\}/);
+  assert.match(globalsCss, /\.shell-top-tight\.public-home-shell \{[\s\S]*max-width: 100vw;[\s\S]*overflow-x: hidden;/);
+  assert.match(globalsCss, /\.public-home-shell \.hero-band,[\s\S]*\.public-home-shell \.public-mobile-bottom-stack > \* \{[\s\S]*width: 100%;[\s\S]*max-width: 100%;[\s\S]*min-width: 0;/);
   assert.doesNotMatch(globalsCss, /\.public-hero-live-banner/);
   assert.match(globalsCss, /@media \(min-width: 768px\) \{[\s\S]*\.public-mobile-bottom-stack \{[\s\S]*display: none;/);
 });
