@@ -61,7 +61,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         </div>
       ) : null}
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat icon={<Users className="size-5" />} label="Spelers" value={userCount} />
         <Stat icon={<ClipboardList className="size-5" />} label="Voorspellingen" value={predictionCount} />
         <Stat icon={<Users className="size-5" />} label="WK-poules" value={poolCount} />
@@ -73,7 +73,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
       <section className="mt-4 panel p-4">
         <h2 className="text-lg font-bold text-[var(--ink)]">Datacontrole (alleen-lezen)</h2>
-        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {anomalyItems.map((item) => {
             const flagged = item.value > 0;
             return (

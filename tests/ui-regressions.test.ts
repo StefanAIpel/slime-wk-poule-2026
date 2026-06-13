@@ -187,7 +187,7 @@ test("special bonus facts do not score before the champion is known", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.83"/);
+  assert.match(constants, /APP_VERSION = "0.84"/);
 });
 
 
@@ -1557,5 +1557,5 @@ test("mobile live banner: full-width, spelled-out, links to the specific match; 
   assert.match(globalsCss, /\.schedule-team-cell-away \{[\s\S]*padding-left: 8px;/);
   // Beheer smaller.
   assert.match(adminPage, /page-shell admin-shell/);
-  assert.match(globalsCss, /\.admin-shell \{\n  width: min\(880px, 100%\);/);
+  assert.match(globalsCss, /\.admin-shell \{\n  width: min\(760px, 100%\);/);
 });
