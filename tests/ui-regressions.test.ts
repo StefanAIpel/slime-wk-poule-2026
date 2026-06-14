@@ -187,7 +187,7 @@ test("special bonus facts do not score before the champion is known", () => {
 });
 
 test("footer version is bumped for this high-priority deploy", () => {
-  assert.match(constants, /APP_VERSION = "0.84"/);
+  assert.match(constants, /APP_VERSION = "0.85"/);
 });
 
 
@@ -460,20 +460,25 @@ test("logged-in homepage shows the green edit-deadline copy (countdown lives in 
   assert.match(globalsCss, /@media \(max-width: 759px\) \{[\s\S]*\.home-mobile-user-avatar \.avatar-img \{[\s\S]*width: 68px;[\s\S]*height: 68px;/);
 });
 
-test("prediction edits and bonus fields stay open through the 14 June grace window while every match keeps the 30-minute lock", () => {
+test("all group matches stay editable per-match (30-min lock); knockouts + bonus close at the 14 June grace deadline", () => {
   assert.match(constants, /ENTRY_GRACE_DEADLINE_ISO = "2026-06-14T21:00:00\+02:00"/);
-  assert.match(actions, /const canEditBonus = now < ENTRY_GRACE_DEADLINE;/);
-  assert.match(actions, /const canEditMain = now < ENTRY_GRACE_DEADLINE;/);
-  assert.match(actions, /const canEditLate = now < ENTRY_GRACE_DEADLINE;/);
-  assert.doesNotMatch(actions, /canEditPreKickoffBonus/);
-  assert.doesNotMatch(actions, /POST_GROUP_DEADLINE/);
-  assert.doesNotMatch(actions, /POST_GROUP_WINDOW_START/);
+  // Groepswedstrijden: per-match (geen globale deadline meer).
+  assert.match(actions, /const canEditGroup = true;/);
   assert.match(actions, /if \(isMatchLocked\(match\.starts_at, now\)\) continue;/);
   assert.match(actions, /if \(isMatchLocked\(match\.starts_at, now\)\) return \{ ok: false, error: "vergrendeld" \};/);
+  // Groep-autosave heeft geen globale grace-gate meer.
+  assert.doesNotMatch(actions, /if \(now >= ENTRY_GRACE_DEADLINE\) return \{ ok: false, error: "gesloten" \};/);
+  // Knock-outs + bonus blijven op de respijtdeadline.
+  assert.match(actions, /const canEditMain = now < ENTRY_GRACE_DEADLINE;/);
+  assert.match(actions, /const canEditBonus = canEditMain;/);
+  assert.match(actions, /const canEditLate = canEditMain;/);
+  assert.doesNotMatch(actions, /POST_GROUP_DEADLINE/);
+  // Pagina: groep altijd open (per-match), knock-outs/bonus op mainOpen.
   assert.match(predictionsPage, /const bonusOpen = mainOpen;/);
   assert.match(predictionsPage, /const lateOpen = mainOpen;/);
-  assert.match(predictionsPage, /disabled=\{!bonusOpen\}/);
-  assert.match(predictionsPage, /disabled=\{!mainOpen\}/);
+  assert.match(predictionsPage, /disabled=\{false\}\n\s*lockedIds=\{lockedMatchIds\}/);
+  assert.match(predictionsPage, /mainDisabled=\{!mainOpen\}/);
+  assert.match(predictionsPage, /groupPerMatchNote: "Elke groepswedstrijd kun je wijzigen tot 30 minuten vóór de aftrap/);
 });
 
 test("hero primary Aanmelden button is compact on mobile with a light emphasis border", () => {
@@ -1415,7 +1420,7 @@ test("prediction page has FIFA ranking help with compact rank badges in predicti
   assert.match(groupPredictionCard, /autosavePrediction\(\{ matchId, home, away \}\)/);
   assert.match(groupPredictionCard, /prediction-save-status/);
   assert.match(actions, /export async function autosavePrediction\(/);
-  assert.match(actions, /if \(now >= ENTRY_GRACE_DEADLINE\) return \{ ok: false, error: "gesloten" \}/);
+  // Groep-autosave: alleen per-match-lock (geen globale grace-gate meer).
   assert.match(actions, /isMatchLocked\(match\.starts_at, now\)/);
   assert.match(actions, /\.from\("predictions"\)\s*\.upsert\(\{ user_id: user\.id, match_id: matchId/);
   assert.match(actions, /async function syncRound32\(/);

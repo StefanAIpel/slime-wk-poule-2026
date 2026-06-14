@@ -734,9 +734,13 @@ export async function setMemberRole(formData: FormData) {
 export async function savePredictions(formData: FormData) {
   const { supabase, user } = await requireUser();
   const now = new Date();
+  // Groepswedstrijden blijven per wedstrijd open tot 30 min vóór aanvang (de
+  // per-match-vergrendeling bewaakt dat). Knock-outrondes + bonusvragen sluiten
+  // op de respijtdeadline (zo 14 juni 21:00).
+  const canEditGroup = true;
   const canEditMain = now < ENTRY_GRACE_DEADLINE;
-  const canEditBonus = now < ENTRY_GRACE_DEADLINE;
-  const canEditLate = now < ENTRY_GRACE_DEADLINE;
+  const canEditBonus = canEditMain;
+  const canEditLate = canEditMain;
 
   const { data: matches, error: matchError } = await supabase
     .from("matches")
@@ -744,7 +748,7 @@ export async function savePredictions(formData: FormData) {
     .eq("stage", "group");
   if (matchError) throw new Error(matchError.message);
 
-  if (canEditMain) {
+  if (canEditGroup) {
     const predictionRows: {
       user_id: string;
       match_id: number;
@@ -797,7 +801,10 @@ export async function savePredictions(formData: FormData) {
       team_codes: round32,
     });
     if (round32Error) throw new Error(round32Error.message);
+  }
 
+  // Knock-outrondes sluiten op de respijtdeadline (zo 14 juni 21:00).
+  if (canEditMain) {
     const stageKeys = ["round16", "quarterfinal", "semifinal", "finalists"] as const;
     for (const stageKey of stageKeys) {
       const teams = Array.from(new Set(formData.getAll(stageKey).map(String).filter(Boolean))).slice(
@@ -819,7 +826,6 @@ export async function savePredictions(formData: FormData) {
     const special: Record<string, unknown> = { user_id: user.id };
 
     if (canEditBonus) {
-      // Bonusvragen blijven wijzigbaar tot de Oranje-respijtdeadline.
       special.total_goals = optionalInt(formData.get("total_goals"), 100, 400);
       special.total_red_cards = optionalInt(formData.get("total_red_cards"), 0, 50);
       special.fastest_goal_minute = optionalInt(formData.get("fastest_goal_minute"), 1, 120);
@@ -829,7 +835,6 @@ export async function savePredictions(formData: FormData) {
     let champion: string | null = null;
     let finalists: string[] = [];
     if (canEditLate) {
-      // Wijzigbaar t/m zondag 14 juni 21:00.
       champion = cleanText(formData.get("champion_code"), 3).toUpperCase() || null;
       finalists = Array.from(new Set(formData.getAll("finalists").map(String).filter(Boolean))).slice(0, 2);
       special.champion_code = champion;
@@ -905,7 +910,8 @@ export async function autosavePrediction(input: {
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   const { supabase, user } = await requireUser();
   const now = new Date();
-  if (now >= ENTRY_GRACE_DEADLINE) return { ok: false, error: "gesloten" };
+  // Groepswedstrijden blijven per wedstrijd open tot 30 min vóór aanvang (geen
+  // globale deadline meer); de per-match-vergrendeling hieronder bewaakt dat.
 
   const matchId = Number(input?.matchId);
   if (!Number.isInteger(matchId)) return { ok: false, error: "match" };
@@ -948,8 +954,8 @@ export async function autosaveExtras(formData: FormData): Promise<{ ok: true } |
   const { supabase, user } = await requireUser();
   const now = new Date();
   const canEditMain = now < ENTRY_GRACE_DEADLINE;
-  const canEditBonus = now < ENTRY_GRACE_DEADLINE;
-  const canEditLate = now < ENTRY_GRACE_DEADLINE;
+  const canEditBonus = canEditMain;
+  const canEditLate = canEditMain;
 
   try {
     if (canEditMain) {
