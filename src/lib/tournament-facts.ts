@@ -64,23 +64,27 @@ export function computeTournamentFacts(fixtures: LiveFixture[], eventsByFixture?
     notes.push("kampioen/finalisten nog niet bekend (finale niet gespeeld)");
   }
 
-  // Diepe facts (vereisen events per wedstrijd): totaal rode kaarten + snelste goal.
+  // Diepe facts (vereisen events per wedstrijd): totaal gele/rode kaarten + snelste goal.
   if (eventsByFixture && allFinished) {
+    let yellows = 0;
     let reds = 0;
     let fastest: number | null = null;
     for (const f of finished) {
       for (const ev of eventsByFixture.get(f.id) ?? []) {
-        if (ev.type === "Card" && ev.detail.toLowerCase().includes("red card")) reds++;
+        const detail = ev.detail.toLowerCase();
+        if (ev.type === "Card" && detail.includes("yellow card")) yellows++;
+        if (ev.type === "Card" && detail.includes("red card")) reds++;
         if (ev.type === "Goal" && !/missed|cancel/i.test(ev.detail)) {
           const minute = (ev.time.elapsed ?? 0) + (ev.time.extra ?? 0);
           if (minute > 0 && (fastest === null || minute < fastest)) fastest = minute;
         }
       }
     }
+    facts.total_yellow_cards = yellows;
     facts.total_red_cards = reds;
     if (fastest !== null) facts.fastest_goal_minute = fastest;
   } else if (!eventsByFixture) {
-    notes.push("total_red_cards / fastest_goal_minute vereisen deep-modus (events per wedstrijd)");
+    notes.push("total_yellow_cards / total_red_cards / fastest_goal_minute vereisen deep-modus (events per wedstrijd)");
   }
 
   return { facts, stageResults, notes };

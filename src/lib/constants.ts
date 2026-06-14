@@ -40,21 +40,53 @@ export const APP_VERSION = "0.85";
 export const COMPANY_NAME = "Feliro";
 export const COMPANY_URL = "https://feliro.nl";
 
+const GROUP_MATCH_TOTAL_FOR_SCORING = 72;
+const NL_GROUP_MATCHES_FOR_SCORING = 3;
+
+const pointMaximumBreakdown = {
+  matches: GROUP_MATCH_TOTAL_FOR_SCORING * matchScoring.exact + NL_GROUP_MATCHES_FOR_SCORING * matchScoring.exact,
+  knockouts:
+    32 * stageScoring.round32 +
+    16 * stageScoring.round16 +
+    8 * stageScoring.quarterfinal +
+    4 * stageScoring.semifinal +
+    2 * stageScoring.finalists +
+    stageScoring.champion,
+  bonus:
+    specialScoring.teamMostGoals +
+    specialScoring.oranjeExact +
+    specialScoring.totalGoalsExact +
+    specialScoring.totalYellowCardsExact +
+    specialScoring.totalRedCardsExact +
+    specialScoring.exactStat +
+    specialScoring.exactStat,
+};
+
+export const pointMaximums = {
+  ...pointMaximumBreakdown,
+  total: pointMaximumBreakdown.matches + pointMaximumBreakdown.knockouts + pointMaximumBreakdown.bonus,
+};
+
+export const pointMaximumTotal = pointMaximums.total;
+
 export const scoringRules = [
   { label: "Exacte uitslag", points: matchScoring.exact, note: "Max per wedstrijd" },
   { label: "Juiste winnaar/gelijkspel", points: matchScoring.outcome, note: "Als het niet exact is" },
   { label: "Juiste doelsaldo", points: matchScoring.goalDifference, note: "Als het niet exact is" },
   { label: "Per juist teamdoelpunt", points: matchScoring.teamGoal, note: "Bijv. Nederland precies 2" },
-  { label: "Land in laatste 32", points: stageScoring.round32, note: "Automatisch uit jouw groepsstand" },
+  { label: "Land in laatste 32", points: stageScoring.round32, note: "Max 32 landen · automatisch uit jouw groepsstand" },
   { label: "Land in achtste finale", points: stageScoring.round16, note: "Max 16 landen" },
   { label: "Land in kwartfinale", points: stageScoring.quarterfinal, note: "Max 8 landen" },
   { label: "Land in halve finale", points: stageScoring.semifinal, note: "Max 4 landen" },
   { label: "Finalist goed", points: stageScoring.finalists, note: "Max 2 landen" },
   { label: "Wereldkampioen goed", points: stageScoring.champion, note: "Grote inhaalbonus" },
   { label: "Team met meeste goals", points: specialScoring.teamMostGoals, note: "Exact het juiste land" },
-  { label: "Hoe ver komt Oranje", points: specialScoring.oranjeExact, note: "Dichtbij levert minder op" },
-  { label: "Totaal goals exact", points: specialScoring.totalGoalsExact, note: "Dichtbij levert minder op" },
-  { label: "Bonusstat exact", points: specialScoring.exactStat, note: "Dichtbij levert minder op" },
+  { label: "Hoe ver komt Oranje", points: specialScoring.oranjeExact, note: `${specialScoring.oranjeClose} pt als je er één ronde naast zit` },
+  { label: "Totaal goals", points: specialScoring.totalGoalsExact, note: "Exact 36; elke afwijking kost 1 punt tot 0" },
+  { label: "Totaal gele kaarten", points: specialScoring.totalYellowCardsExact, note: "Exact 36; elke afwijking kost 1 punt tot 0" },
+  { label: "Rode kaarten totaal", points: specialScoring.totalRedCardsExact, note: "Alleen exact" },
+  { label: "Snelste goal", points: specialScoring.exactStat, note: `${specialScoring.closeStat} pt binnen 2 minuten` },
+  { label: "Penaltyseries knock-out", points: specialScoring.exactStat, note: `${specialScoring.closeStat} pt als je er 1 naast zit` },
 ];
 
 export const stageLabels: Record<string, string> = {

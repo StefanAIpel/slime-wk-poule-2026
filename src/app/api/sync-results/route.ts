@@ -18,6 +18,7 @@ type StageUpdate = {
 
 type FactUpdate = {
   total_goals?: number;
+  total_yellow_cards?: number;
   total_red_cards?: number;
   fastest_goal_minute?: number;
   team_most_goals_code?: string;
@@ -91,6 +92,7 @@ export async function POST(request: NextRequest) {
     const factRow: {
       id: true;
       total_goals?: number;
+      total_yellow_cards?: number;
       total_red_cards?: number;
       fastest_goal_minute?: number;
       team_most_goals_code?: string;
@@ -101,6 +103,7 @@ export async function POST(request: NextRequest) {
     } = { id: true };
 
     if (body.facts.total_goals !== undefined) factRow.total_goals = body.facts.total_goals;
+    if (body.facts.total_yellow_cards !== undefined) factRow.total_yellow_cards = body.facts.total_yellow_cards;
     if (body.facts.total_red_cards !== undefined) factRow.total_red_cards = body.facts.total_red_cards;
     if (body.facts.fastest_goal_minute !== undefined) factRow.fastest_goal_minute = body.facts.fastest_goal_minute;
     if (body.facts.team_most_goals_code !== undefined) factRow.team_most_goals_code = body.facts.team_most_goals_code.toUpperCase();

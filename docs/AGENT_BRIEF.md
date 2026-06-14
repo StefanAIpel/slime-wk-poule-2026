@@ -71,9 +71,13 @@ Actuele waarden:
 - Halve finale: 30 per land.
 - Finalist: 45 per land.
 - Wereldkampioen: 90.
-- Topscorer: 35.
-- Totaal goals exact/dichtbij/bijna: 20/12/6.
-- Overige bonusstat exact/dichtbij: 12/6.
+- Team met meeste goals: 20.
+- Hoe ver komt Oranje: 20 exact, 8 als je er één ronde naast zit.
+- Totaal goals: exact 36; elke afwijking kost 1 punt tot 0.
+- Totaal gele kaarten: exact 36; elke afwijking kost 1 punt tot 0.
+- Rode kaarten totaal: 10 alleen bij exact.
+- Snelste goal: 12 exact, 6 binnen 2 minuten.
+- Penaltyseries knock-out: 12 exact, 6 als je er 1 naast zit.
 
 Server-side begrenzing is belangrijk: rondecheckboxes mogen niet onbeperkt punten geven.
 

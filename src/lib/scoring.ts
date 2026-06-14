@@ -16,9 +16,9 @@ export const stageScoring: Record<string, number> = {
 
 export const specialScoring = {
   topScorer: 35,
-  totalGoalsExact: 20,
-  totalGoalsClose: 12,
-  totalGoalsNear: 6,
+  totalGoalsExact: 36,
+  totalYellowCardsExact: 36,
+  totalRedCardsExact: 10,
   exactStat: 12,
   closeStat: 6,
   teamMostGoals: 20,
@@ -127,13 +127,18 @@ export function scoreCloseNumber(
   return 0;
 }
 
-export function scoreTotalGoalsPrediction(predicted: number | null | undefined, actual: number | null | undefined) {
+export function scoreLinearNumberPrediction(predicted: number | null | undefined, actual: number | null | undefined, maxPoints: number) {
   if (predicted === null || predicted === undefined || actual === null || actual === undefined) return 0;
-  const diff = Math.abs(predicted - actual);
-  if (diff === 0) return specialScoring.totalGoalsExact;
-  if (diff <= 5) return specialScoring.totalGoalsClose;
-  if (diff <= 10) return specialScoring.totalGoalsNear;
-  return 0;
+  return Math.max(maxPoints - Math.abs(predicted - actual), 0);
+}
+
+export function scoreExactNumberPrediction(predicted: number | null | undefined, actual: number | null | undefined, exactPoints: number) {
+  if (predicted === null || predicted === undefined || actual === null || actual === undefined) return 0;
+  return predicted === actual ? exactPoints : 0;
+}
+
+export function scoreTotalGoalsPrediction(predicted: number | null | undefined, actual: number | null | undefined) {
+  return scoreLinearNumberPrediction(predicted, actual, specialScoring.totalGoalsExact);
 }
 
 function normalizeText(value: string) {

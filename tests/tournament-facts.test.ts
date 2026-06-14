@@ -43,14 +43,16 @@ test("penalty shootouts in the knockout are counted when all KO matches are done
   assert.equal(facts.penalty_shootouts_ko, 1);
 });
 
-test("deep mode derives red cards and fastest goal from events", () => {
+test("deep mode derives yellow cards, red cards and fastest goal from events", () => {
   const events = new Map([
     [1, [
       { time: { elapsed: 3, extra: null }, team: { id: 1, name: "NED" }, player: { name: "X" }, assist: { name: null }, type: "Goal", detail: "Normal Goal" },
+      { time: { elapsed: 22, extra: null }, team: { id: 1, name: "NED" }, player: { name: "Z" }, assist: { name: null }, type: "Card", detail: "Yellow Card" },
       { time: { elapsed: 70, extra: null }, team: { id: 2, name: "USA" }, player: { name: "Y" }, assist: { name: null }, type: "Card", detail: "Red Card" },
     ]],
   ]);
   const { facts } = computeTournamentFacts([fx(1, "Group Stage - 1", "FT", team("NED", 1), team("USA", 0))], events);
+  assert.equal(facts.total_yellow_cards, 1);
   assert.equal(facts.total_red_cards, 1);
   assert.equal(facts.fastest_goal_minute, 3);
 });

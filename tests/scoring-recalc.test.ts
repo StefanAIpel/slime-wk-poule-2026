@@ -48,3 +48,11 @@ test("recalculate.ts stopt bij stage/special/facts-queryfouten voordat scores wo
   assert.match(recalc, /error:\s*factError/);
   assert.match(recalc, /if \(bracketError \|\| stageError \|\| specialError \|\| factError\)/);
 });
+
+test("recalculate.ts bedraadt total-goals, gele-kaarten en rode-kaarten bonusregels in", () => {
+  const recalc = readFileSync(new URL("../src/lib/recalculate.ts", import.meta.url), "utf8");
+  assert.match(recalc, /total_yellow_cards/);
+  assert.match(recalc, /scoreLinearNumberPrediction\(prediction\.total_goals, actualFacts\.total_goals/);
+  assert.match(recalc, /scoreLinearNumberPrediction\(prediction\.total_yellow_cards, actualFacts\.total_yellow_cards/);
+  assert.match(recalc, /scoreExactNumberPrediction\(prediction\.total_red_cards, actualFacts\.total_red_cards, specialScoring\.totalRedCardsExact\)/);
+});

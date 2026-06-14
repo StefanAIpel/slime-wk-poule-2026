@@ -7,6 +7,8 @@ import {
   scoreMatchPrediction,
   scoreOranjeStage,
   scoreStagePrediction,
+  scoreExactNumberPrediction,
+  scoreLinearNumberPrediction,
   scoreTextPrediction,
   scoreTotalGoalsPrediction,
   specialScoring,
@@ -95,12 +97,24 @@ test("scoreCloseNumber: exact vs dichtbij vs mis", () => {
   assert.equal(scoreCloseNumber(null, 10), 0);
 });
 
-test("totaal goals beloont exact, dichtbij en bijna", () => {
-  assert.equal(scoreTotalGoalsPrediction(172, 172), specialScoring.totalGoalsExact);
-  assert.equal(scoreTotalGoalsPrediction(168, 172), specialScoring.totalGoalsClose);
-  assert.equal(scoreTotalGoalsPrediction(162, 172), specialScoring.totalGoalsNear);
-  assert.equal(scoreTotalGoalsPrediction(150, 172), 0);
+test("totaal goals loopt vanaf 36 per afwijking 1 punt terug", () => {
+  assert.equal(scoreTotalGoalsPrediction(172, 172), 36);
+  assert.equal(scoreTotalGoalsPrediction(171, 172), 35);
+  assert.equal(scoreTotalGoalsPrediction(170, 172), 34);
+  assert.equal(scoreTotalGoalsPrediction(136, 172), 0);
+  assert.equal(scoreTotalGoalsPrediction(135, 172), 0);
   assert.equal(scoreTotalGoalsPrediction(null, 172), 0);
+});
+
+test("gele kaarten gebruiken dezelfde lineaire bonus als totaal goals", () => {
+  assert.equal(scoreLinearNumberPrediction(400, 400, specialScoring.totalYellowCardsExact), 36);
+  assert.equal(scoreLinearNumberPrediction(399, 400, specialScoring.totalYellowCardsExact), 35);
+  assert.equal(scoreLinearNumberPrediction(398, 400, specialScoring.totalYellowCardsExact), 34);
+});
+
+test("rode kaarten leveren alleen 10 punten bij exact op", () => {
+  assert.equal(scoreExactNumberPrediction(8, 8, specialScoring.totalRedCardsExact), 10);
+  assert.equal(scoreExactNumberPrediction(7, 8, specialScoring.totalRedCardsExact), 0);
 });
 
 test("hoe ver komt Oranje: exact = vol, één ronde ernaast = deel, verder = 0", () => {

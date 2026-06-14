@@ -4,7 +4,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Brand } from "@/components/brand";
 import { PageHero } from "@/components/page-hero";
 import { SlimeSoccerBanner } from "@/components/slime-soccer-banner";
-import { ENTRY_DEADLINE_ISO, ENTRY_GRACE_DEADLINE_ISO, scoringRules } from "@/lib/constants";
+import { ENTRY_DEADLINE_ISO, ENTRY_GRACE_DEADLINE_ISO, pointMaximums, scoringRules } from "@/lib/constants";
 import { localizedHref, type Locale } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/server-locale";
 
@@ -42,7 +42,7 @@ const rulesCopy = {
     dataPrivateStrong: "privé tot de deadline",
     dataParagraphPrefix: "Je voorspellingen blijven",
     dataParagraphSuffix:
-      "Zodra uitslagen binnenkomen rekenen we de ranglijst opnieuw door: eerst de wedstrijdpunten, daarna rondekeuzes, kampioen en bonusvragen.",
+      "Zodra uitslagen binnenkomen rekenen we de ranglijst opnieuw door: eerst de wedstrijdpunten, daarna rondekeuzes. Bonusvragen tellen pas mee zodra de finale is afgelopen en de kampioen bekend is.",
     moreInfoPrefix: "Meer weten? Lees ons",
     privacyLink: "privacybeleid",
     termsLink: "voorwaarden",
@@ -67,6 +67,13 @@ const rulesCopy = {
     detailsSummary: "Volledige puntentelling",
     scoringDetails: scoringRules,
     pointsSuffix: "pt",
+    maximumTitle: "Maximaal haalbaar",
+    maximumRows: [
+      { label: "Alle 72 groepsuitslagen exact", value: pointMaximums.matches, note: "inclusief 3 Oranje-wedstrijden dubbel" },
+      { label: "Alle knock-outkeuzes goed", value: pointMaximums.knockouts, note: "laatste 32 t/m kampioen" },
+      { label: "Alle bonusvragen perfect", value: pointMaximums.bonus, note: "telt pas na de finale" },
+    ],
+    maximumTotalLabel: "Totaal bij alles goed",
     maxPerMatch:
       "Per wedstrijd is 12 punten het maximum (Oranje-wedstrijden tellen dubbel: max 24). Bij een exacte uitslag stapelen de deelpunten niet door; bij een gedeeltelijk goede voorspelling tellen juiste richting, doelsaldo en teamgoals wél samen op.",
     exampleTitle: "Voorbeeld",
@@ -124,7 +131,7 @@ const rulesCopy = {
     dataPrivateStrong: "private until the deadline",
     dataParagraphPrefix: "Your predictions stay",
     dataParagraphSuffix:
-      "When results come in, we recalculate the leaderboard: first match points, then round picks, champion and bonus questions.",
+      "When results come in, we recalculate the leaderboard: first match points, then round picks. Bonus questions only score once the final is finished and the champion is known.",
     moreInfoPrefix: "Want to know more? Read our",
     privacyLink: "privacy policy",
     termsLink: "terms",
@@ -152,18 +159,28 @@ const rulesCopy = {
       { label: "Correct winner/draw", points: scoringRules[1].points, note: "If it is not exact" },
       { label: "Correct goal difference", points: scoringRules[2].points, note: "If it is not exact" },
       { label: "Per exact team goal", points: scoringRules[3].points, note: "For example Netherlands exactly 2" },
-      { label: "Country in last 32", points: scoringRules[4].points, note: "Automatic from your group standings" },
+      { label: "Country in last 32", points: scoringRules[4].points, note: "Max 32 countries · automatic from your group standings" },
       { label: "Country in round of 16", points: scoringRules[5].points, note: "Max 16 countries" },
       { label: "Country in quarter-final", points: scoringRules[6].points, note: "Max 8 countries" },
       { label: "Country in semi-final", points: scoringRules[7].points, note: "Max 4 countries" },
       { label: "Correct finalist", points: scoringRules[8].points, note: "Max 2 countries" },
       { label: "Correct world champion", points: scoringRules[9].points, note: "Big catch-up bonus" },
       { label: "Team with most goals", points: scoringRules[10].points, note: "Exactly the right country" },
-      { label: "How far the Netherlands go", points: scoringRules[11].points, note: "Close answers score less" },
-      { label: "Total goals exact", points: scoringRules[12].points, note: "Close answers score less" },
-      { label: "Bonus stat exact", points: scoringRules[13].points, note: "Close answers score less" },
+      { label: "How far the Netherlands go", points: scoringRules[11].points, note: "8 pts if you are one round off" },
+      { label: "Total goals", points: scoringRules[12].points, note: "Exact 36; every goal off costs 1 point down to 0" },
+      { label: "Total yellow cards", points: scoringRules[13].points, note: "Exact 36; every card off costs 1 point down to 0" },
+      { label: "Total red cards", points: scoringRules[14].points, note: "Only exact" },
+      { label: "Fastest goal", points: scoringRules[15].points, note: "6 pts within 2 minutes" },
+      { label: "Penalty shootouts in knockouts", points: scoringRules[16].points, note: "6 pts if you are 1 off" },
     ],
     pointsSuffix: "pts",
+    maximumTitle: "Maximum possible",
+    maximumRows: [
+      { label: "All 72 group scores exact", value: pointMaximums.matches, note: "including 3 Netherlands matches doubled" },
+      { label: "All knockout picks correct", value: pointMaximums.knockouts, note: "last 32 through champion" },
+      { label: "All bonus questions perfect", value: pointMaximums.bonus, note: "only scores after the final" },
+    ],
+    maximumTotalLabel: "Total if everything is correct",
     maxPerMatch:
       "Per match, 12 points is the maximum (Netherlands matches count double: max 24). With an exact score, the partial points are not stacked; with a partly correct prediction, correct direction, goal difference and team goals do add up.",
     exampleTitle: "Example",
@@ -321,6 +338,24 @@ export default async function RulesPage() {
                 ))}
               </div>
               <p className="mt-3 text-sm leading-6 text-[#2f3d57]">{copy.maxPerMatch}</p>
+              <div className="mt-3 rounded-lg border border-[#c7eed0] bg-[#f0fff4] p-3 text-sm leading-6 text-[#174d28]">
+                <p className="font-bold text-[#0f3f20]">{copy.maximumTitle}</p>
+                <div className="mt-2 grid gap-2">
+                  {copy.maximumRows.map((row) => (
+                    <div key={row.label} className="grid gap-1 border-b border-[#c7eed0] pb-2 last:border-b-0 last:pb-0 sm:grid-cols-[1fr_auto] sm:items-start">
+                      <div>
+                        <span className="font-semibold">{row.label}</span>
+                        <span className="block text-xs font-medium text-[#3f7650]">{row.note}</span>
+                      </div>
+                      <span className="font-black">{row.value} {copy.pointsSuffix}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 flex items-center justify-between rounded-md bg-white px-3 py-2 font-black text-[#0f3f20]">
+                  <span>{copy.maximumTotalLabel}</span>
+                  <span>{pointMaximums.total} {copy.pointsSuffix}</span>
+                </div>
+              </div>
               <div className="mt-3 rounded-lg border border-[#bcd4f5] bg-[#eef4ff] p-3 text-sm font-medium leading-7 text-[#1c3a66]">
                 <p className="font-bold text-[#0b1f4d]">{copy.exampleTitle}</p>
                 <p className="mt-1">{copy.exampleText}</p>
