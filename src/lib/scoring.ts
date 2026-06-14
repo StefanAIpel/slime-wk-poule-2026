@@ -127,6 +127,15 @@ export function scoreCloseNumber(
   return 0;
 }
 
+export function scoreTotalGoalsPrediction(predicted: number | null | undefined, actual: number | null | undefined) {
+  if (predicted === null || predicted === undefined || actual === null || actual === undefined) return 0;
+  const diff = Math.abs(predicted - actual);
+  if (diff === 0) return specialScoring.totalGoalsExact;
+  if (diff <= 5) return specialScoring.totalGoalsClose;
+  if (diff <= 10) return specialScoring.totalGoalsNear;
+  return 0;
+}
+
 function normalizeText(value: string) {
   return value
     .normalize("NFD")

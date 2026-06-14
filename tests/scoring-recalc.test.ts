@@ -39,3 +39,12 @@ test("recalculate.ts bedraadt de Oranje-dubbel daadwerkelijk in", () => {
   assert.match(recalc, /NL_POINTS_MULTIPLIER/);
   assert.match(recalc, /scoreMatchPrediction\(\s*\{[\s\S]*?\},\s*multiplier,?\s*\)/);
 });
+
+test("recalculate.ts stopt bij stage/special/facts-queryfouten voordat scores worden overschreven", () => {
+  const recalc = readFileSync(new URL("../src/lib/recalculate.ts", import.meta.url), "utf8");
+  assert.match(recalc, /error:\s*bracketError/);
+  assert.match(recalc, /error:\s*stageError/);
+  assert.match(recalc, /error:\s*specialError/);
+  assert.match(recalc, /error:\s*factError/);
+  assert.match(recalc, /if \(bracketError \|\| stageError \|\| specialError \|\| factError\)/);
+});

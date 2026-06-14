@@ -8,6 +8,7 @@ import {
   scoreOranjeStage,
   scoreStagePrediction,
   scoreTextPrediction,
+  scoreTotalGoalsPrediction,
   specialScoring,
   stageScoring,
 } from "../src/lib/scoring.ts";
@@ -92,6 +93,14 @@ test("scoreCloseNumber: exact vs dichtbij vs mis", () => {
   assert.equal(scoreCloseNumber(10, 11, 12, 6, 1), 6);
   assert.equal(scoreCloseNumber(10, 20, 12, 6, 1), 0);
   assert.equal(scoreCloseNumber(null, 10), 0);
+});
+
+test("totaal goals beloont exact, dichtbij en bijna", () => {
+  assert.equal(scoreTotalGoalsPrediction(172, 172), specialScoring.totalGoalsExact);
+  assert.equal(scoreTotalGoalsPrediction(168, 172), specialScoring.totalGoalsClose);
+  assert.equal(scoreTotalGoalsPrediction(162, 172), specialScoring.totalGoalsNear);
+  assert.equal(scoreTotalGoalsPrediction(150, 172), 0);
+  assert.equal(scoreTotalGoalsPrediction(null, 172), 0);
 });
 
 test("hoe ver komt Oranje: exact = vol, één ronde ernaast = deel, verder = 0", () => {
