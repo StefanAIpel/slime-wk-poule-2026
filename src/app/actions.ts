@@ -827,6 +827,7 @@ export async function savePredictions(formData: FormData) {
 
     if (canEditBonus) {
       special.total_goals = optionalInt(formData.get("total_goals"), 100, 400);
+      special.total_yellow_cards = optionalInt(formData.get("total_yellow_cards"), 0, 700);
       special.total_red_cards = optionalInt(formData.get("total_red_cards"), 0, 50);
       special.fastest_goal_minute = optionalInt(formData.get("fastest_goal_minute"), 1, 120);
       special.team_most_goals_code = cleanText(formData.get("team_most_goals_code"), 3).toUpperCase() || null;
@@ -982,6 +983,7 @@ export async function autosaveExtras(formData: FormData): Promise<{ ok: true } |
 
       if (canEditBonus) {
         special.total_goals = optionalInt(formData.get("total_goals"), 100, 400);
+        special.total_yellow_cards = optionalInt(formData.get("total_yellow_cards"), 0, 700);
         special.total_red_cards = optionalInt(formData.get("total_red_cards"), 0, 50);
         special.fastest_goal_minute = optionalInt(formData.get("fastest_goal_minute"), 1, 120);
         special.team_most_goals_code = cleanText(formData.get("team_most_goals_code"), 3).toUpperCase() || null;

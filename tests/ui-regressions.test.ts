@@ -896,7 +896,7 @@ test("home dashboard warns when knockout picks or bonus questions are still open
   assert.match(homePage, /KNOCKOUT_TARGETS/);
   assert.match(homePage, /EXTRA_PROGRESS_TOTAL/);
   assert.match(homePage, /bracket_predictions[\s\S]*select\("stage_key,team_codes"\)/);
-  assert.match(homePage, /special_predictions[\s\S]*team_most_goals_code,total_goals,total_red_cards,fastest_goal_minute,champion_code,oranje_stage,penalty_shootouts_ko,finalists/);
+  assert.match(homePage, /special_predictions[\s\S]*team_most_goals_code,total_goals,total_yellow_cards,total_red_cards,fastest_goal_minute,champion_code,oranje_stage,penalty_shootouts_ko,finalists/);
   assert.match(homePage, /extraProgressTitle: "Knock-outs \+ bonus"/);
   assert.match(homePage, /extraProgressOpen: \(knockout: number, bonus: number\)/);
   assert.match(homePage, /extraProgress = Math\.round\(\(extraFilled \/ EXTRA_PROGRESS_TOTAL\) \* 100\)/);
@@ -910,6 +910,20 @@ test("empty prediction select placeholders are highlighted as pending choices", 
   assert.match(predictionsPage, /name="champion_code"[\s\S]*<option value="">\{copy\.chooseChampion\}<\/option>/);
   assert.match(predictionsPage, /name="oranje_stage"[\s\S]*<option value="">\{copy\.chooseOranje\}<\/option>/);
   assert.match(globalsCss, /\.choice-select:has\(option\[value=""\]:checked\)/);
+});
+
+test("prediction page includes yellow-card bonus and rules show full point breakdown plus max total", () => {
+  assert.match(predictionsPage, /yellowCards: "Gele kaarten totaal"/);
+  assert.match(predictionsPage, /name="total_yellow_cards"/);
+  assert.match(actions, /special\.total_yellow_cards = optionalInt\(formData\.get\("total_yellow_cards"\), 0, 700\)/);
+  assert.match(recalculateLib, /scoreLinearNumberPrediction\(prediction\.total_yellow_cards, actualFacts\.total_yellow_cards/);
+  assert.match(recalculateLib, /scoreExactNumberPrediction\(prediction\.total_red_cards, actualFacts\.total_red_cards, specialScoring\.totalRedCardsExact\)/);
+  assert.match(constants, /label: "Totaal goals"[\s\S]*Exact 36; elke afwijking kost 1 punt/);
+  assert.match(constants, /label: "Totaal gele kaarten"[\s\S]*Exact 36; elke afwijking kost 1 punt/);
+  assert.match(constants, /label: "Rode kaarten totaal"[\s\S]*Alleen exact/);
+  assert.match(rulesPage, /maximumTitle: "Maximaal haalbaar"/);
+  assert.match(rulesPage, /pointMaximums\.total/);
+  assert.match(rulesPage, /Bonusvragen tellen pas mee zodra de finale is afgelopen en de kampioen bekend is\./);
 });
 
 test("share panel keeps the Deel SlimeScore label above a single icon row on every breakpoint", () => {

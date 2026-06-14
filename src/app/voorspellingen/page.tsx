@@ -60,6 +60,7 @@ const predictionCopy = {
     teamMostGoals: "Team met de meeste doelpunten",
     chooseCountry: "Kies land",
     totalGoals: "Totaal aantal goals",
+    yellowCards: "Gele kaarten totaal",
     redCards: "Rode kaarten totaal",
     fastestGoal: "Snelste goal in minuut",
     examplePrefix: "Bijv.",
@@ -118,6 +119,7 @@ const predictionCopy = {
     teamMostGoals: "Team with most goals",
     chooseCountry: "Choose country",
     totalGoals: "Total number of goals",
+    yellowCards: "Total yellow cards",
     redCards: "Total red cards",
     fastestGoal: "Fastest goal minute",
     examplePrefix: "e.g.",
@@ -385,6 +387,7 @@ export default async function PredictionsPage({
               </select>
             </label>
             <NumberField name="total_goals" label={copy.totalGoals} value={special?.total_goals} min={100} max={400} placeholder={`${copy.examplePrefix} 172`} helperText={copy.helper} />
+            <NumberField name="total_yellow_cards" label={copy.yellowCards} value={special?.total_yellow_cards} min={0} max={700} placeholder={`${copy.examplePrefix} 420`} helperText={copy.helper} />
             <NumberField name="total_red_cards" label={copy.redCards} value={special?.total_red_cards} min={0} max={50} placeholder={`${copy.examplePrefix} 8`} helperText={copy.helper} />
             <NumberField name="fastest_goal_minute" label={copy.fastestGoal} value={special?.fastest_goal_minute} min={1} max={120} placeholder={`${copy.examplePrefix} 3`} helperText={copy.helper} />
           </fieldset>

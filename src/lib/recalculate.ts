@@ -2,6 +2,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { NL_POINTS_MULTIPLIER, isNlMatch } from "@/lib/constants";
 import {
   scoreCloseNumber,
+  scoreExactNumberPrediction,
+  scoreLinearNumberPrediction,
   scoreMatchPrediction,
   scoreOranjeStage,
   scoreStagePrediction,
@@ -22,6 +24,7 @@ type BracketPrediction = { user_id: string; stage_key: string; team_codes: strin
 type SpecialPrediction = {
   user_id: string;
   total_goals: number | null;
+  total_yellow_cards: number | null;
   total_red_cards: number | null;
   fastest_goal_minute: number | null;
   team_most_goals_code: string | null;
@@ -85,15 +88,22 @@ export async function recalculateAllScores(admin: SupabaseClient): Promise<{ rec
     totals.set(prediction.user_id, current);
   }
 
-  const [{ data: bracketPredictions }, { data: stageResults }, { data: specialPredictions }, { data: facts }] =
-    await Promise.all([
-      admin.from("bracket_predictions").select("user_id,stage_key,team_codes"),
-      admin.from("stage_results").select("stage_key,team_codes"),
-      admin
-        .from("special_predictions")
-        .select("user_id,total_goals,total_red_cards,fastest_goal_minute,team_most_goals_code,oranje_stage,penalty_shootouts_ko,cards_ko_team_code"),
-      admin.from("tournament_facts").select("*").eq("id", true).maybeSingle(),
-    ]);
+  const [
+    { data: bracketPredictions, error: bracketError },
+    { data: stageResults, error: stageError },
+    { data: specialPredictions, error: specialError },
+    { data: facts, error: factError },
+  ] = await Promise.all([
+    admin.from("bracket_predictions").select("user_id,stage_key,team_codes"),
+    admin.from("stage_results").select("stage_key,team_codes"),
+    admin
+      .from("special_predictions")
+      .select("user_id,total_goals,total_yellow_cards,total_red_cards,fastest_goal_minute,team_most_goals_code,oranje_stage,penalty_shootouts_ko,cards_ko_team_code"),
+    admin.from("tournament_facts").select("*").eq("id", true).maybeSingle(),
+  ]);
+  if (bracketError || stageError || specialError || factError) {
+    return { error: bracketError?.message ?? stageError?.message ?? specialError?.message ?? factError?.message ?? "recalculate query failed" };
+  }
 
   const actualByStage = new Map((stageResults ?? []).map((stage) => [stage.stage_key, stage.team_codes as string[]]));
   for (const prediction of (bracketPredictions ?? []) as unknown as BracketPrediction[]) {
@@ -106,12 +116,9 @@ export async function recalculateAllScores(admin: SupabaseClient): Promise<{ rec
     const actualFacts = facts as TournamentFacts;
     for (const prediction of (specialPredictions ?? []) as SpecialPrediction[]) {
       const current = totals.get(prediction.user_id) ?? emptyTotal();
-      addBonus(
-        current,
-        scoreCloseNumber(prediction.total_goals, actualFacts.total_goals, specialScoring.totalGoalsExact, specialScoring.totalGoalsClose, 5) ||
-          scoreCloseNumber(prediction.total_goals, actualFacts.total_goals, specialScoring.totalGoalsNear, 0, 10),
-      );
-      addBonus(current, scoreCloseNumber(prediction.total_red_cards, actualFacts.total_red_cards));
+      addBonus(current, scoreLinearNumberPrediction(prediction.total_goals, actualFacts.total_goals, specialScoring.totalGoalsExact));
+      addBonus(current, scoreLinearNumberPrediction(prediction.total_yellow_cards, actualFacts.total_yellow_cards, specialScoring.totalYellowCardsExact));
+      addBonus(current, scoreExactNumberPrediction(prediction.total_red_cards, actualFacts.total_red_cards, specialScoring.totalRedCardsExact));
       addBonus(current, scoreCloseNumber(prediction.fastest_goal_minute, actualFacts.fastest_goal_minute, specialScoring.exactStat, specialScoring.closeStat, 2));
       addBonus(current, scoreTextPrediction(prediction.team_most_goals_code, actualFacts.team_most_goals_code ? [actualFacts.team_most_goals_code] : [], specialScoring.teamMostGoals));
       addBonus(current, scoreOranjeStage(prediction.oranje_stage, actualFacts.oranje_stage));

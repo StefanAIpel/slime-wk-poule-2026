@@ -7,14 +7,14 @@ import {
   predictionCompletion,
 } from "../src/lib/prediction-progress.ts";
 
-test("totals match the tournament shape (72 group, 31 knockout, 6 bonus)", () => {
+test("totals match the tournament shape (72 group, 31 knockout, 7 bonus)", () => {
   assert.equal(GROUP_MATCH_TOTAL, 72);
   assert.equal(KNOCKOUT_TOTAL, 31);
-  assert.equal(BONUS_TOTAL, 6);
+  assert.equal(BONUS_TOTAL, 7);
 });
 
 test("predictionCompletion computes per-section and overall percentages", () => {
-  const full = predictionCompletion({ groupFilled: 72, knockoutFilled: 31, bonusFilled: 6 });
+  const full = predictionCompletion({ groupFilled: 72, knockoutFilled: 31, bonusFilled: 7 });
   assert.deepEqual(
     { g: full.groupPct, k: full.knockoutPct, b: full.bonusPct, o: full.overallPct },
     { g: 100, k: 100, b: 100, o: 100 },
@@ -25,9 +25,9 @@ test("predictionCompletion computes per-section and overall percentages", () => 
 
   const partial = predictionCompletion({ groupFilled: 36, knockoutFilled: 0, bonusFilled: 3 });
   assert.equal(partial.groupPct, 50);
-  assert.equal(partial.bonusPct, 50);
-  // Totaal weegt naar het aantal velden: (36+0+3) / (72+31+6) = 39/109.
-  assert.equal(partial.overallPct, Math.round((39 / 109) * 100));
+  assert.equal(partial.bonusPct, 43);
+  // Totaal weegt naar het aantal velden: (36+0+3) / (72+31+7) = 39/110.
+  assert.equal(partial.overallPct, Math.round((39 / 110) * 100));
 });
 
 test("predictionCompletion clamps out-of-range counts", () => {

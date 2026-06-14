@@ -22,6 +22,7 @@ export const KNOCKOUT_TOTAL = Object.values(KNOCKOUT_TARGETS).reduce((sum, value
 export const BONUS_FIELD_KEYS = [
   "team_most_goals_code",
   "total_goals",
+  "total_yellow_cards",
   "total_red_cards",
   "fastest_goal_minute",
   "oranje_stage",

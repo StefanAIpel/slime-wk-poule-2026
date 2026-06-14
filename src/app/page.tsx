@@ -53,6 +53,7 @@ type HomeBracketPrediction = {
 type HomeSpecialPrediction = {
   team_most_goals_code: string | null;
   total_goals: number | null;
+  total_yellow_cards: number | null;
   total_red_cards: number | null;
   fastest_goal_minute: number | null;
   champion_code: string | null;
@@ -305,7 +306,7 @@ export async function HomeContent({ searchParams, locale }: { searchParams: Prom
     supabase.from("bracket_predictions").select("stage_key,team_codes").eq("user_id", user.id),
     supabase
       .from("special_predictions")
-      .select("team_most_goals_code,total_goals,total_red_cards,fastest_goal_minute,champion_code,oranje_stage,penalty_shootouts_ko,finalists")
+      .select("team_most_goals_code,total_goals,total_yellow_cards,total_red_cards,fastest_goal_minute,champion_code,oranje_stage,penalty_shootouts_ko,finalists")
       .eq("user_id", user.id)
       .maybeSingle(),
   ]);
