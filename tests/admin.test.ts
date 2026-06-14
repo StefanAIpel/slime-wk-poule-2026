@@ -133,8 +133,9 @@ test("admin can configure a live poll; live page shows it beside 'Nu bezig' (75/
   assert.match(actions, /rateLimit\(admin, `admin_poll:/);
   assert.match(actionBody("adminSetLivePoll"), /action: "set_live_poll"/);
   assert.match(adminPage, /action=\{adminSetLivePoll\}/);
-  // Stemmen: 1 per apparaat (cookie), upsert via service-role.
-  assert.match(route, /ss_poll_voter/);
+  // Stemmen: 1 per IP (gehasht), upsert via service-role.
+  assert.match(route, /voterIdFromRequest/);
+  assert.match(route, /x-forwarded-for/);
   assert.match(route, /from\("live_poll_votes"\)\.upsert\(/);
   // API-routes worden op de live-host direct geserveerd (anders HTML i.p.v. JSON).
   assert.match(middleware, /path\.startsWith\("\/api\/"\)/);

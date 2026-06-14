@@ -1,5 +1,4 @@
-import { randomUUID } from "crypto";
-import { cookies } from "next/headers";
+import { createHash } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { isValidChoice, type PollChoice } from "@/lib/live-poll";
 import { logError } from "@/lib/log";
@@ -8,7 +7,13 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
-const VOTER_COOKIE = "ss_poll_voter";
+/** Stem-identiteit op basis van IP (gehasht), zodat één persoon niet via meerdere
+ *  browsers dubbel stemt. Bewust grof (gedeeld IP = 1 stem) — prima voor een poll. */
+function voterIdFromRequest(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip") ?? "";
+  const ip = forwarded.split(",")[0]?.trim() || "unknown";
+  return createHash("sha256").update(`slimepoll:${ip}`).digest("hex").slice(0, 32);
+}
 
 type ActivePoll = { id: string; question: string; option_a: string; option_b: string; option_c: string | null };
 
@@ -38,22 +43,19 @@ function pollPayload(poll: ActivePoll, counts: { a: number; b: number; c: number
   };
 }
 
-/** Huidige actieve poll + stemmen + jouw keuze (via cookie). Per gebruiker, no-store. */
-export async function GET() {
+/** Huidige actieve poll + stemmen + jouw keuze (op IP). Per gebruiker, no-store. */
+export async function GET(request: NextRequest) {
   const admin = createAdminClient();
   const poll = await getActivePoll(admin);
   if (!poll) return NextResponse.json({ poll: null }, { headers: { "Cache-Control": "no-store" } });
 
-  const voterId = (await cookies()).get(VOTER_COOKIE)?.value ?? null;
-  let yourChoice: PollChoice | null = null;
-  if (voterId) {
-    const { data } = await admin.from("live_poll_votes").select("choice").eq("poll_id", poll.id).eq("voter_id", voterId).maybeSingle();
-    yourChoice = (data?.choice as PollChoice | undefined) ?? null;
-  }
+  const voterId = voterIdFromRequest(request);
+  const { data } = await admin.from("live_poll_votes").select("choice").eq("poll_id", poll.id).eq("voter_id", voterId).maybeSingle();
+  const yourChoice = (data?.choice as PollChoice | undefined) ?? null;
   return NextResponse.json(pollPayload(poll, await countsFor(admin, poll.id), yourChoice), { headers: { "Cache-Control": "no-store" } });
 }
 
-/** Stem uitbrengen (1 per apparaat; nogmaals stemmen past je keuze aan). */
+/** Stem uitbrengen (1 per IP; nogmaals stemmen past je keuze aan). */
 export async function POST(request: NextRequest) {
   const admin = createAdminClient();
   const poll = await getActivePoll(admin);
@@ -65,10 +67,7 @@ export async function POST(request: NextRequest) {
   }
   const choice = body.choice;
 
-  let voterId = (await cookies()).get(VOTER_COOKIE)?.value ?? "";
-  const isNewVoter = !voterId;
-  if (isNewVoter) voterId = randomUUID();
-
+  const voterId = voterIdFromRequest(request);
   if (!(await rateLimit(admin, `live_poll_vote:${voterId}`, 30, 60))) {
     return NextResponse.json({ error: "te-snel" }, { status: 429 });
   }
@@ -79,9 +78,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "opslaan" }, { status: 500 });
   }
 
-  const response = NextResponse.json(pollPayload(poll, await countsFor(admin, poll.id), choice));
-  if (isNewVoter) {
-    response.cookies.set(VOTER_COOKIE, voterId, { httpOnly: true, sameSite: "lax", secure: true, maxAge: 60 * 60 * 24 * 120, path: "/" });
-  }
-  return response;
+  return NextResponse.json(pollPayload(poll, await countsFor(admin, poll.id), choice));
 }

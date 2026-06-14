@@ -43,6 +43,7 @@ const predictionCopy = {
     groupTitle: "Groepswedstrijden",
     groupOpen: "Geen perfecte glazen bol nodig: vul eerst je gevoel in, verfijn later.",
     graceNotice: "Nog niet gespeelde wedstrijden, knock-outs en bonusvragen kun je nog wijzigen tot zondag 14 juni 21.00 uur!",
+    groupPerMatchNote: "Elke groepswedstrijd kun je wijzigen tot 30 minuten vóór de aftrap — ook later in het toernooi. Knock-outs en bonusvragen sluiten zondag 14 juni 21:00.",
     groupClosed: "De hoofdvoorspellingen zijn gesloten.",
     progressTitle: "Voortgang groepswedstrijden",
     filled: "ingevuld",
@@ -100,6 +101,7 @@ const predictionCopy = {
     groupTitle: "Group matches",
     groupOpen: "No perfect crystal ball needed: start with your gut and tweak later.",
     graceNotice: "Unplayed matches, knockouts and bonus questions can still be changed until Sunday 14 June, 21:00!",
+    groupPerMatchNote: "Every group match stays editable until 30 minutes before kick-off — also later in the tournament. Knockouts and bonus questions close Sunday 14 June, 21:00.",
     groupClosed: "The main predictions are closed.",
     progressTitle: "Group match progress",
     filled: "filled in",
@@ -266,11 +268,9 @@ export default async function PredictionsPage({
       <div className="grid gap-5">
         <section className="prediction-title-banner">
           <h2>{copy.groupTitle}</h2>
-          {mainOpen && copy.groupOpen ? (
-            <p>{copy.groupOpen}</p>
-          ) : null}
-          {mainOpen ? <p className="prediction-grace-notice">{copy.graceNotice}</p> : null}
-          {!mainOpen ? <p>{copy.groupClosed}</p> : null}
+          {copy.groupOpen ? <p>{copy.groupOpen}</p> : null}
+          {/* Groepswedstrijden blijven per wedstrijd open tot 30 min vóór aanvang. */}
+          <p className="prediction-grace-notice">{copy.groupPerMatchNote}</p>
         </section>
 
         <div className="panel p-4">
@@ -325,7 +325,7 @@ export default async function PredictionsPage({
               key={group}
               group={group}
               matches={groupMatches}
-              disabled={!mainOpen}
+              disabled={false}
               lockedIds={lockedMatchIds}
               locale={locale}
               initialScores={Object.fromEntries(
