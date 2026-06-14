@@ -24,6 +24,11 @@ export async function middleware(request: NextRequest) {
     if (isLiveHost && !isLivePath && /\.[a-zA-Z0-9]+$/.test(path)) {
       return NextResponse.next();
     }
+    // API-routes op het subdomein direct serveren (niet rewriten naar /live/api,
+    // anders krijgt de client HTML i.p.v. JSON — bv. de live-poll/live-now fetch).
+    if (isLiveHost && !isLivePath && path.startsWith("/api/")) {
+      return NextResponse.next();
+    }
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-slimescore-surface", "live");
     if (isLiveHost && !isLivePath) {

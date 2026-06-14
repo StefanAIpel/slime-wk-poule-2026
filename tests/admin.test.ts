@@ -123,10 +123,11 @@ test("admin shows per-user completion from the server-side aggregate view (no fu
   assert.match(adminPage, /completionRows\.map/);
 });
 
-test("admin can configure a live poll; live page shows it in a 60/40 right column", async () => {
+test("admin can configure a live poll; live page shows it beside 'Nu bezig' (75/25 top, 50/50 bottom)", async () => {
   const livePage = readFileSync(new URL("../src/app/live/page.tsx", import.meta.url), "utf8");
   const globalsCss = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
   const route = readFileSync(new URL("../src/app/api/live-poll/route.ts", import.meta.url), "utf8");
+  const middleware = readFileSync(new URL("../middleware.ts", import.meta.url), "utf8");
   // Admin-actie achter requireAdmin + rate limit + auditlog.
   assert.match(actionBody("adminSetLivePoll"), /await requireAdmin\(\)/);
   assert.match(actions, /rateLimit\(admin, `admin_poll:/);
@@ -135,10 +136,13 @@ test("admin can configure a live poll; live page shows it in a 60/40 right colum
   // Stemmen: 1 per apparaat (cookie), upsert via service-role.
   assert.match(route, /ss_poll_voter/);
   assert.match(route, /from\("live_poll_votes"\)\.upsert\(/);
-  // Live-pagina: 60/40 met de poll in de rechterkolom.
+  // API-routes worden op de live-host direct geserveerd (anders HTML i.p.v. JSON).
+  assert.match(middleware, /path\.startsWith\("\/api\/"\)/);
+  // Live-pagina: poll naast de live-wedstrijd boven, gespeeld/komend 50/50 eronder.
   assert.match(livePage, /<LivePoll locale=\{locale\} \/>/);
-  assert.match(livePage, /live-col-main/);
-  assert.match(livePage, /live-col-side/);
-  assert.match(globalsCss, /grid-template-columns: 1\.5fr 1fr;/);
-  assert.match(globalsCss, /\.live-col-side \.live-row-code \{\n    display: inline;/);
+  assert.match(livePage, /live-col-now/);
+  assert.match(livePage, /live-col-poll/);
+  assert.match(livePage, /live-row-bottom/);
+  assert.match(globalsCss, /\.live-row-top \{\n    grid-template-columns: 3fr 1fr;/);
+  assert.match(globalsCss, /\.live-row-bottom \{\n    grid-template-columns: 1fr 1fr;/);
 });

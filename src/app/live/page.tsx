@@ -288,11 +288,15 @@ export default async function LivePage({ searchParams }: { searchParams: Promise
       <Hero locale={locale} />
       <SiteMessageBanner body={siteMessage} />
       <div className="live-sections-grid">
-        <div className="live-col-main">
-          <Section title={c.now} tone="live" fixtures={live} empty={c.emptyNow} locale={locale} goalsByFixture={goalsByFixture} />
+        <div className="live-row-top">
+          <div className="live-col-now">
+            <Section title={c.now} tone="live" fixtures={live} empty={c.emptyNow} locale={locale} goalsByFixture={goalsByFixture} />
+          </div>
+          <div className="live-col-poll">
+            <LivePoll locale={locale} />
+          </div>
         </div>
-        <div className="live-col-side">
-          <LivePoll locale={locale} />
+        <div className="live-row-bottom">
           <Section title={c.latest} tone="latest" fixtures={recent} empty={c.emptyLatest} locale={locale} action={{ href: "/live/schema", label: c.moreMatches, icon: "arrow" }} />
           <Section
             title={showAllUpcoming ? c.upcomingAll : c.upcoming}
